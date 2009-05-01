@@ -6,7 +6,7 @@ Although they can be made to produce excellent results, many existing approaches
 
 A suitable method which requires very little input from the user is the watershed/waterfall approach \cite{?} described in Chapter~\ref{?}. Because it produces a global segmentation of the image, it requires no seed points (as we are not trying to segment any particular feature). Furthermore, whilst the preprocessing steps required to produce the watershed input image generally require some parameters to control the smoothing of the original image, experience has shown that good results are obtained without the need to vary these on a per-image basis (see Chapter~\ref{chap:segmentation}). The approach thus succeeds in minimising the level of user interaction necessary.
 
-The basic watershed/waterfall approach, however, is in some ways a victim of its own automation. Its lack of large numbers of parameters, whilst a blessing to the end user, is also problematic when the produced segmentation is not precisely what was wanted. It provides a segmentation process driven entirely by grey levels in the original image and independent of important anatomical knowledge. TODO
+The problem with using the basic watershed/waterfall approach for medical image segmentation is that because the segmentation process is driven entirely by grey levels in the original image, the generated segmentation regions may not always correspond perfectly to features which are anatomically significant. There is thus a need for the user to introduce their own anatomical knowledge into the segmentation process, but initially no obvious way to achieve this due to the lack of parameters to the method. TODO
 
 \iffalse
 
