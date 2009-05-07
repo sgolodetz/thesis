@@ -1,4 +1,48 @@
 \chapter{Segmentation}
 \label{chap:segmentation}
 
+\iffalse
+
+- Quick summary of watershed/waterfall methods from Chapter 2
+- Explanation that this chapter will extend the original explanation to include image partition forests + definition of them
+- Overview of the implementation algorithms used (incl. the preprocessing necessary)
+- Detailed implementation of the preprocessing steps
+- Detailed implementation of the watershed transform (reference original paper)
+- Detailed implementation of the waterfall algorithm (reference original paper)
+- Demonstration that the produced segmentations are generally good, whilst showing that they aren't always
+- Discussion of factors affecting the segmentation (CT window, image resolution and quality, etc.)
+- 3D visualizations to illustrate that good results can be obtained through automatic segmentation followed by manual feature identification (explain user interface)
+
+\fi
+
+The essential ideas behind the watershed/waterfall method were described in Chapter~\ref{chap:background} but, as discussed there, it can be implemented in a number of different ways. Since I have not been able to find a full implementation which outputs a partition hierarchy described in detail anywhere in the relevant literature \cite{?}, I will describe my implementation (based on the ideas in \cite{meijster98} and \cite{marcotegui05}) in this chapter, before presenting some results and discussion.
+
+\section{Image Partition Forests}
+
+At the highest possible level of abstraction, the watershed/waterfall method can be seen to take an image (either 2D or 3D) as input, and produce an \emph{image partition forest} (IPF) for the image as output (see Figure~\ref{?}). A formal definition for image partition forests can be built up as follows:
+
+\begin{definition}
+A set of $k$ objects $\{o_1,\ldots,o_k\}$ \textbf{partitions} object $o'$ iff $\bigcup_i o_i = o'$ and $\forall i,j \cdot i \ne j \Rightarrow o_i \cap o_j = \emptyset$. We write the relation as $\mathbf{P}(\{o_1,\ldots,o_k\},o')$.
+\end{definition}
+
+\begin{definition}
+Given two object sets $O_f = \{o_{f1},\ldots,o_{fk(f)}\}$ and $O_c = \{o_{c1},\ldots,o_{ck(c)}\}$, and an object $o'$ partitioned by both $O_f$ and $O_c$, we say that $O_c$ is a \textbf{coarser partition} of $o'$ than $O_f$ (written $O_f \sqsubseteq O_c$) iff for every object $o_{ci} \in O_c$ there exists a subset $S_i \subseteq O_f$ such that $\mathbf{P}(S_i, o_{ci})$, and furthermore, $\forall i,j \in [1,k(c)] \cdot i \ne j \Rightarrow S_i \cap S_j = \emptyset$. (In other words, $O_f$ is a partition of $o'$ in which each individual object in $O_c$ has itself been partitioned.)
+\end{definition}
+
+\begin{definition}
+Given a set of regions in an image $I$, $R_I = \{r_1,\ldots,r_k\}$, a function $w : R_I \times R_I \rightarrow \mathbb{R}^{+}$ is a \textbf{weight function} for $R_I$ iff $w(r_i,r_j) \ne \infty$ when, and only when, $r_i$ and $r_j$ are physically adjacent (share a common border) in $I$.
+\end{definition}
+
+\begin{definition}
+A \textbf{weight function generator} is a function of type $(R : \{\mbox{Region}\}) \rightarrow (R \times R \rightarrow \mathbb{R}^{+})$.
+\end{definition}
+
+\begin{definition}
+The \textbf{region adjacency graph} $\mbox{RAG}_{\mbox{WFG}}(R_I)$ is the graph with nodes $r_i$ and edge weights given by the weight function $\mbox{WFG}(R_I)$.
+\end{definition}
+
+\begin{definition}
+Let $T$ be a technique for generating image partition forests, and $\mbox{WFG}_T$ be its associated weight function generator. Given an image $I$, the \textbf{image partition forest} $\mbox{IPF}_{T}(I)$ is the sequence of $n_T$ pairs $[(P_{T1},\mbox{RAG}_{\mbox{WFG}_T}(P_{T1})),\ldots,(P_{Tn_T},\mbox{RAG}_{\mbox{WFG}_T}(P_{Tn_T}))]$, where $P_{Ti}$ is the $i^{th}$ partition produced by technique $T$ and satisfies $\mathbf{P}(P_{Ti},I)$, and $\forall i \in [1,n) \cdot P_{Ti} \sqsubseteq P_{T(i+1)}$.
+\end{definition}
+
 TODO

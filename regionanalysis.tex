@@ -2,3 +2,45 @@
 \label{chap:regionanalysis}
 
 TODO
+
+\section{Image Partition Forest Algorithms}
+
+\subsection{Fundamental Algorithms}
+
+\subsubsection{Layer Creation}
+
+TODO: Add a new layer (clone the layer above/below, if any, or create a single-region layer if there are no existing layers)
+
+\subsubsection{Layer Deletion}
+
+TODO: Almost trivial, just need to update the links between the layers either side of the deleted one
+
+\subsubsection{Region Splitting}
+
+TODO: Splitting a region into (contiguous) subregions
+
+\subsubsection{Sibling Region Merging}
+
+TODO: Merge together several (adjacent) regions with the same (or no) parent
+
+\subsubsection{Unzipping}
+
+TODO: Unzipping a region R means splitting recursively up the hierarchy from R until a given layer or the top of the hierarchy is reached. Each split is performed with R as one component and the other components determined as the connected components of the remaining subregions.
+
+\subsubsection{Zipping}
+
+TODO: Zipping merges two or more branches of (adjacent) regions together until a given layer or the bottom of the hierarchy is reached
+
+\subsection{Applications}
+
+\subsubsection{Feature Identification}
+
+TODO: Unzip the region to the top of the hierarchy and mark its highest ancestor as the feature
+
+\subsubsection{Full Region Merging}
+
+TODO: Merge together several regions in the same layer. First find the connected components. Then for each connected component: unzip all regions to their common ancestor (if any), then zip all the branches together again.
+
+\subsubsection{Parent Switching}
+
+TODO: Find the common ancestor of the old and new parents, unzip the child up the tree to the common ancestor, zip the new branch created and the branch from the common ancestor down to the new parent
