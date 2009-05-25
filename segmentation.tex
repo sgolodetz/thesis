@@ -42,7 +42,7 @@ The \textbf{region adjacency graph} $\mbox{RAG}_{\mbox{WFG}}(R_I)$ is the graph 
 \end{definition}
 
 \begin{definition}
-Let $T$ be a technique for generating image partition forests, and $\mbox{WFG}_T$ be its associated weight function generator. Given an image $I$, the \textbf{image partition forest} $\mbox{IPF}_{T}(I)$ is the sequence of $n_T$ pairs $[(P_{T1},\mbox{RAG}_{\mbox{WFG}_T}(P_{T1})),\ldots,(P_{Tn_T},\mbox{RAG}_{\mbox{WFG}_T}(P_{Tn_T}))]$, where $P_{Ti}$ is the $i^{th}$ partition produced by technique $T$ and satisfies $\mathbf{P}(P_{Ti},I)$, and $\forall i \in [1,n) \cdot P_{Ti} \sqsubseteq P_{T(i+1)}$.
+Let $T$ be a technique for generating image partition forests, and $\mbox{WFG}_T$ be its associated weight function generator. Given an image $I$, the \textbf{image partition forest} $\mbox{IPF}_{T}(I)$ is the sequence of $n_T$ pairs $[(P_{T1},\mbox{RAG}_{\mbox{WFG}_T}(P_{T1})),\ldots,(P_{Tn_T},\mbox{RAG}_{\mbox{WFG}_T}(P_{Tn_T}))]$, where $P_{Ti}$ is the $i^{th}$ partition produced by technique $T$ and satisfies $\mathbf{P}(P_{Ti},I)$, and $\forall i \in [1,n_T) \cdot P_{Ti} \sqsubseteq P_{T(i+1)}$.
 \end{definition}
 
-TODO
+This formal presentation of image partition forests is precise, but unfortunately rather opaque. A more intuitive description would be that an image partition forest is a sequence of partitions of the same image (accompanied by corresponding region adjacency graphs), each of which (aside from the initial, finest, partition) is formed by merging some of the regions in its immediately preceding partition together. For example, consider Figure~\ref{?}.
