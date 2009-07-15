@@ -1,0 +1,191 @@
+%%% Preamble %%%
+\documentclass[a4paper,12pt]{report}
+\usepackage{alltt}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{color}
+\usepackage{epigraph}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{latexsym}						% Include extra symbols like \Box and \sqsubset
+\usepackage{listings}
+\usepackage{setspace}
+\usepackage{subfigure}
+\usepackage{times}
+\usepackage[nottoc]{tocbibind}	% Include the bibliography in the table of contents
+\usepackage{url}
+\usepackage{vmargin}
+
+% Set the paper size and margins
+\setpapersize{A4}
+\setmargnohfrb{2cm}{2cm}{2cm}{2cm}
+
+% Set the table of contents depth
+\setcounter{tocdepth}{2}
+
+% Change the line spacing
+\doublespacing
+
+% Program listings
+\floatstyle{ruled}
+\newfloat{program}{thp}{lop}
+\floatname{program}{Listing}
+
+% Code listings use a smaller font so that they fit on the page better.
+% All the tricky stuff in square brackets says is that we can specify an argument (namely where to put the listing) and if we don't then the default is ht.
+\newenvironment{listing}[1][ht]{\begin{program}[#1]\footnotesize}{\end{program}}
+
+\def\ASSIGN{$\leftarrow$}
+\def\CALL#1{\textsc{#1}}
+\def\FUNC#1{\textbf{\textsc{#1}}}
+\def\KW#1{\textbf{#1}}
+
+\definecolor{darkgreen}{rgb}{0,0.75,0}
+%\def\COMMENT#1{\textcolor{darkgreen}{\% #1}}	% Normal comments
+\def\COMMENT#1{\vspace{-\baselineskip}}				% Disable comments (vspace necessary since listings are in an alltt environment)
+%\def\INITIALCOMMENT#1{\COMMENT{#1}}					% Normal initial comment
+\def\INITIALCOMMENT#1{}												% Disable initial comment
+
+\def\CASE{\KW{case}}
+\def\CONTINUE{\KW{continue}}
+\def\DO{\KW{do}}
+\def\ELSE{\KW{else}}
+\def\FOREACH{\KW{for each}}
+\def\IF{\KW{if}}
+\def\NOT{\KW{not}}
+\def\NULL{\textbf{\textsc{NULL}}}
+\def\RETURN{\KW{return}}
+\def\SWITCH{\KW{switch}}
+\def\THEN{\KW{then}}
+\def\TRUE{\KW{true}}
+\def\WHILE{\KW{while}}
+% End program listings
+
+% Prevent footnotes being split across multiple pages.
+\interfootnotelinepenalty=10000
+
+% Define new math operators
+\newcommand{\argmax}{\mathop{\rm argmax}}
+\newcommand{\argmin}{\mathop{\rm argmin}}
+\newcommand{\diag}{\mathop{\rm diag}}
+
+% Define the definition environment
+\newtheorem{definition}{Definition}
+
+% Define the thesis environment
+\newtheorem*{thesis}{Thesis}
+
+% Macros
+\def\dx{\Delta x}
+\def\dy{\Delta y}
+\def\dz{\Delta z}
+\def\dt{\Delta t}
+
+\def\pd#1#2{\frac{\partial #1}{\partial #2}}						% partial derivative
+\def\pdd#1#2{\frac{\partial^2 #1}{\partial #2^2}}				% partial second derivative
+\def\pdk#1#2#3{\frac{\partial^#3 #1}{\partial #2^#3}}		% partial k'th derivative
+
+\def\pdnf#1#2{\partial #1/\partial #2}									% partial derivative (no frac)
+\def\pddnf#1#2{\partial^2 #1/\partial #2^2}							% partial second derivative (no frac)
+\def\pdknf#1#2#3{\partial^#3 #1/\partial #2^#3}					% partial k'th derivative (no frac)
+
+\def\acronym#1{\mbox{\textup{\textbf{#1}}}}
+
+% Define a shorter way to include graphics.
+\newcommand{\stufig}[4]
+{
+	\begin{figure}
+	\begin{center}
+		\includegraphics[#1]{#2}
+		\caption{#3}
+		\label{#4}
+	\end{center}
+	\end{figure}
+}
+
+\newcommand{\stufigex}[5]
+{
+	\begin{figure}[#5]
+	\begin{center}
+		\includegraphics[#1]{#2}
+		\caption{#3}
+		\label{#4}
+	\end{center}
+	\end{figure}
+}
+
+\newcommand{\stufignc}[2]					% images without captions
+{
+	\begin{figure}[H]
+	\begin{center}
+		\includegraphics[#1]{#2}
+	\end{center}
+	\label{fig:#2}
+	\end{figure}
+}
+
+\begin{document}
+
+% Setup before using the listings package
+\renewcommand{\lstlistingname}{\textbf{Listing}}
+\renewcommand{\thelstlisting}{\textbf{\arabic{lstlisting}}}
+
+\definecolor{darkgreen}{rgb}{0, 0.6, 0}
+
+\lstset{
+abovecaptionskip=0.5cm,
+basicstyle=\scriptsize\ttfamily,
+belowcaptionskip=0.5cm,
+belowskip=0.5cm,
+commentstyle=\color{darkgreen},
+frame=lines,
+language=Java,
+showstringspaces=false,
+tabsize=2
+}
+
+% Define extra colours
+\definecolor{gold}{rgb}{0.75, 0.75, 0}
+\definecolor{cyan}{rgb}{0, 0.75, 0.75}
+\definecolor{purple}{rgb}{0.75, 0, 0.75}
+
+%%% Top Matter %%%
+\input{title}
+
+%%% Main Document %%%
+\tableofcontents
+
+% Get rid of the unnecessary space before chapter titles
+\dropchapter{-2cm}
+
+% Add page numbers
+\pagestyle{plain}
+
+% Stop the page numbers overlapping the text at the bottom of the page
+\addtolength{\footskip}{7mm}
+
+\input{introduction}
+\input{background}
+\input{motivation}
+\input{ipfs}
+\input{segmentation}
+\input{featureid}
+\input{otherapplications}
+\input{criticalassessment}
+\input{conclusions}
+
+\appendix
+
+% Get rid of the unnecessary space before chapter titles (again)
+\dropchapter{-2cm}
+
+%\input{ipfs}
+%\input{segmentation}
+%\input{featureid}
+%\input{visualization}
+%\input{volumecalculation}
+%\input{otheravenues}
+
+\input{bibliography}
+
+\end{document}
