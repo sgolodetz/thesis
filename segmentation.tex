@@ -1,3 +1,26 @@
-\chapter{Constructing IPFs for Medical Images:\\A Segmentation Problem}
+\chapter[Constructing IPFs for Medical Images: A Segmentation Problem]{Constructing IPFs for Medical Images:\\A Segmentation Problem}
+
+%---
+\section{Chapter Overview}
+
+In Chapter~\ref{chap:ipfs}, the image partition forest (IPF) data structure was introduced, together with an accompanying set of algorithms. This chapter looks at how IPFs can be constructed from medical image slices (2D) or volumes (3D) by adapting the morphological watershed and waterfall algorithms \cite{beucher94,marcotegui05}. This forms the backdrop for Chapter~\ref{chap:featureid}, which describes IPF algorithms for performing automatic feature identification.
+
+%---
+\section{The Watershed Transform}
+
+The grey-scale watershed transform is an image segmentation algorithm which takes a grey-scale image (whether 2D or 3D) as input and produces a partition of that image into regions, one for each local minimum in the image. For the purposes of IPF construction, it is used to construct the leaf layer of the forest, as will be explained later. The algorithm treats an image as a height map (in 2D, this resembles a landscape), as shown in Figure~\ref{?}.
+
+% TODO: Figure here
+
+Formally, an image is considered to be a function $f: \Omega \subset \mathbb{Z}^n \to \mathbb{Z}$ that maps elements of the domain $\Omega$ to integer grey values. (For instance, a $512 \times 512$ image could be defined to have domain $\Omega = \{(x,y) : 0 \le x,y < 512\}$. Note that in this case $n = 2$.) A pixel $\mathbf{p} \in \Omega$ is defined to have height $f(\mathbf{p})$ and neighbour set $N(\mathbf{p})$, according to some implementation-defined notion of neighbourhood: usually neighbourhood is defined so that pixels are either 4- or 8-connected in 2D, and 6- or 26-connected in 3D (see Figure~\ref{?}).
+
+% TODO: Figure here
+
+A \smgidx[singular minimum]{singular minimum} of an image is a point whose neighbours are all strictly higher than it. Formally, $\mathbf{p}$ is a singular minimum iff $\forall \mathbf{p'} \in N(\mathbf{p}) \cdot f(\mathbf{p'} > f(\mathbf{p})$. A \smgidx[plateau]{plateau} of an image is a maximal set of two or more connected pixels of equal altitude. A \smgidx[plateau!minimal]{minimal plateau} is a plateau from which it is impossible to descend, and a \smgidx[plateau!non-minimal]{non-minimal plateau} is the opposite. Together, the singular minima and minimal plateaux of an image form the \smgidx[local minimum!of image]{local minima} of the image.
+
+TODO
+
+%---
+\section{The Waterfall Algorithm}
 
 TODO
