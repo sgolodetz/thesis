@@ -5,24 +5,20 @@
 
 In Chapter~\ref{chap:ipfs}, the image partition forest (IPF) data structure was introduced, together with an accompanying set of algorithms. This chapter looks at how IPFs can be constructed from medical image slices (2D) or volumes (3D) by adapting the morphological watershed and waterfall algorithms \cite{beucher94,marcotegui05}. This forms the backdrop for Chapter~\ref{chap:featureid}, which describes IPF algorithms for performing automatic feature identification.
 
+The IPF construction process described in the following sections uses the watershed algorithm to generate the lowest (leaf) layer of the IPF (the finest partition of the image). The waterfall algorithm is then used to generate the higher layers of the IPF: in particular, each non-leaf layer of the IPF is the result of running an iteration of the waterfall algorithm on the layer immediately below it.
+
 %---
 \section{The Watershed Transform}
 
 \subsection{Overview}
 
-\iffalse
-
-The grey-scale watershed transform is an image segmentation algorithm which takes a grey-scale image (whether 2D or 3D) as input and produces a partition of that image into regions, one for each local minimum in the image. For the purposes of IPF construction, it is used to construct the leaf layer of the forest, as will be explained later. The algorithm treats an image as a height map. In 2D, this resembles a landscape, as shown in Figure~\ref{fig:segmentation-watershed-landscapeanalogy}.
-
-\fi
-
 The grey-scale watershed transform is an image segmentation algorithm which takes a grey-scale image (whether 2D or 3D) as input and produces a partition of that image into regions, one for each local minimum in the image. It does this by simulating a process of flooding that starts with a pool of water at each local minimum. As the algorithm proceeds, these pools grow, until some of them are on the point of touching each other. At this point, watersheds (dams) are added to keep the pools apart: in segmentation terms, these will become region boundaries, which in turn will yield a partition of the original image into regions associated with its local minima.
 
 %---
-\stufigex{height=5cm}{segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a 3D terrain}{fig:segmentation-watershed-landscapeanalogy}{t}
+\stufigex{height=8cm}{segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a 3D terrain}{fig:segmentation-watershed-landscapeanalogy}{t}
 %---
 
-The process is most easily visualized in 2D. An image $I$ may be considered as a height map, or landscape, as shown in Figure~\ref{fig:segmentation-watershed-landscapeanalogy}: for every point $(x,y)$ in the domain of the image, there is an associated pixel value $I(x,y)$ which gives the height of the landscape at that point. In the 8-bit image shown, for instance, black pixels in the image correspond to a height of $0$ and white pixels correspond to a height of $255$. The watershed process involves metaphorically taking this surface, poking holes through its local minima and lowering it perpendicularly into a lake. As the water rises, the pools of water, or catchment basins, associated with the local minima grow (see Figure~\ref{fig:segmentation-watershed-construction}(a)). Eventually, these catchment basins will meet (Figure~\ref{fig:segmentation-watershed-construction}(b)) and a watershed will be constructed to keep them apart (Figure~\ref{fig:segmentation-watershed-construction}(c)). This process continues until the water has reached the top of the landscape, at which point the algorithm terminates. The watersheds generated during the process divide the landscape into the valleys associated with its local minima, which is equivalent to dividing the base image into regions.
+The process is most easily visualized in 2D. An image $I$ may be considered as a height map, or landscape, as shown in Figure~\ref{fig:segmentation-watershed-landscapeanalogy}: for every point $(x,y)$ in the domain of the image, there is an associated pixel value $I(x,y)$ which gives the height of the landscape at that point. In the 8-bit image shown, for instance, black pixels in the image correspond to a height of $0$ and white pixels correspond to a height of $255$. The watershed process involves metaphorically taking this surface, poking holes through its local minima and lowering it perpendicularly into a lake. As the water rises, the pools of water, or catchment basins, associated with the local minima grow (see Figure~\ref{fig:segmentation-watershed-construction}(a)). Eventually, these catchment basins will meet (Figure~\ref{fig:segmentation-watershed-construction}(b)) and a watershed will be constructed to keep them apart (Figure~\ref{fig:segmentation-watershed-construction}(c)). This process continues until the water has reached the top of the landscape, at which point the algorithm terminates. The watersheds generated during the process divide the landscape into the valleys associated with its local minima (see Figure~\ref{fig:segmentation-watershed-construction}(d)), which is equivalent to dividing the base image into regions.
 
 %---
 \begin{figure}[t]
@@ -39,6 +35,74 @@ The process is most easily visualized in 2D. An image $I$ may be considered as a
 \label{fig:segmentation-watershed-construction}
 \end{figure}
 %---
+
+\subsection{Pre-Processing}
+
+\subsubsection{Overview}
+
+Using the watershed algorithm as just described to process an image will almost invariably have undesired results, for two reasons:
+%
+\begin{enumerate}
+\item The watershed algorithm segments the landscape into its valleys, but there is no a priori reason to suppose that these valleys correspond to features of interest in the original image.
+\item The image is unlikely to be smooth: it may have large numbers of local minima, especially in the presence of noise. In terrain terms, this is equivalent to having a pock-marked landscape, which the watershed algorithm will over-segment into far too many regions (each minor dimple in the landscape gets treated as a separate valley).
+\end{enumerate}
+%
+The first problem is very domain-specific, depending on both the type of image being segmented and the particular features we are trying to segment. When trying to segment organs in abdominal CT scans, we observe that each organ exhibits a high degree of grey-value homogeneity: that is, the grey value varies relatively little across it. This implies that the image landscape is relatively flat over the area of each organ, or alternatively that the magnitude of the gradient is small there. By contrast, we hope that the gradient magnitude at the edges of organs will be relatively large (although in practice it is not always as large as we would like). The gradient magnitude of the original image is thus an image whose valleys are much more likely to correspond to organs than those of the original image (see Figure~\ref{?}): we can use this as the input to the watershed algorithm in place of our original input.
+
+The second problem is much harder to solve: the solution lies partly in smoothing the original image (a pre-processing step), and partly in merging the large number of small regions generated by the watershed algorithm together into larger regions with more semantic meaning (a post-processing step for which we use the waterfall algorithm, described later). There are a number of different possible approaches to smoothing the image, a few of which are described in the following subsections.
+
+\subsubsection{Gaussian Filtering}
+
+Gaussian filtering (also called Gaussian blurring) is essentially a form of weighted pixel averaging based on a discrete approximation to the nD version of the Gaussian (normal) distribution (where n is the dimension of the image we're blurring). The 1D Gaussian is defined as:
+%
+\[
+g_\sigma^1(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp \frac{-x^2}{2\sigma^2}
+\]
+%
+Its 2D version\footnote{The 3D version can be obtained analogously as $g_\sigma^3(x,y,z) = g_\sigma^1(x) \times g_\sigma^1(y) \times g_\sigma^1(z)$.} can be obtained by multiplying a 1-D Gaussian in the x direction with one in the y direction:
+%
+\[
+g_\sigma^2(x,y) = g_\sigma^1(x) \times g_\sigma^1(y) = \frac{1}{2\pi\sigma^2} \exp \left( -\frac{x^2+y^2}{2\sigma^2} \right)
+\]
+%
+The graph of the 1D Gaussian is the familiar bell curve; the 2D version is a bell-shaped surface (see Figure~\ref{?}).
+
+% TODO: Figure here
+
+Using this for image blurring involves forming a symmetric mask (see Figure~\ref{?}) from the values of $g_\sigma^2(x,y)$ at discrete points in a grid centred at the origin (e.g.~for a 3x3 mask, we should calculate $g_\sigma^2$ at $(-1,-1), (0,-1), (1,-1), \ldots, (0,0), \ldots, (1,1)$). The mask then needs to be normalized by dividing by the sum of all the values in it (this is done to ensure that regions of uniform intensity in the image will be unaffected by smoothing). This procedure can be used to generate masks of any size.
+
+% TODO: Figure here
+
+The actual blurring is performed by \emph{convolving} an image $I$ with the mask to form a new image $I'$. Letting $M_\sigma^{3,3}$ be the 3x3 mask, this is written as $I' = I \otimes M_\sigma^{3,3}$. Convolution means overlaying the mask on each pixel of the image in turn, multiplying the value of each pixel in the mask by the value of the pixel beneath it, summing the results and using the value thus obtained as the value of the centre pixel in the blurred image. For the 3x3 mask with $\sigma = 1$, this means that:
+%
+\begin{eqnarray*}
+I'(x,y)
+& = & 0.0751 \times (I(x-1,y-1) + I(x+1,y-1) + I(x-1,y+1) + I(x+1,y+1)) \; + \\
+&   & 0.1238 \times (I(x,y-1) + I(x,y+1) + I(x-1,y) + I(x+1,y)) \; + \\
+&   & 0.2042 \times I(x,y)
+\end{eqnarray*}
+%
+This begs the question of what happens when the mask is placed on one of the border pixels of the image (i.e.~such that part of it is outside the image). The simplest way to deal with this is to perform the weighted sum with the pixels that are in range, and then normalize by dividing by the sum of the mask values used. For instance, using this scheme we would have:
+%
+\[
+I'(0,1) = \frac{0.0751 \times (I(1,0) + I(1,2)) + 0.1238 \times (I(0,0) + I(0,2) + I(1,1)) + 0.2042 \times I(0,1)}{2 \times 0.0751 + 3 \times 0.1238 + 0.2042}
+\]
+%
+Gaussian filtering is very good at smoothing an image (see Figure~\ref{?}), but its use as a pre-processing filter for image segmentation is nevertheless limited because it uniformly blurs the image. This makes the image smoother, but at the cost of destroying the fine detail in the image in which we're interested (e.g.~boundaries betweens organs). For any application, this would cause problems; for medical applications, in particular, it is unacceptable. The solution is to be selective about how much blurring we do in different parts of the image: specifically, we want to blur a lot in areas of little or no interest, and blur a minimal amount (or not at all) near features of interest, such as edges between organs. Each of the following two approaches described aims to accomplish this.
+
+% TODO: Figure here
+
+\subsubsection{Spatially-Variant Gaussian Filtering}
+
+TODO
+
+\subsubsection{Anisotropic Diffusion Filtering}
+
+TODO
+
+\subsubsection{Constructing the Pre-Processing Pipeline}
+
+TODO
 
 \subsection{Definitions}
 
