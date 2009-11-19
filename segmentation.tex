@@ -65,13 +65,41 @@ Its 2D version\footnote{The 3D version can be obtained analogously as $g_\sigma^
 g_\sigma^2(x,y) = g_\sigma^1(x) \times g_\sigma^1(y) = \frac{1}{2\pi\sigma^2} \exp \left( -\frac{x^2+y^2}{2\sigma^2} \right)
 \]
 %
-The graph of the 1D Gaussian is the familiar bell curve; the 2D version is a bell-shaped surface (see Figure~\ref{?}).
+The graph of the 1D Gaussian is the familiar bell curve; the 2D version is a bell-shaped surface (see Figure~\ref{fig:segmentation-watershed-gaussian2d}).
 
-% TODO: Figure here
+%---
+\stufigex{height=8cm}{segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{t}
+%---
 
-Using this for image blurring involves forming a symmetric mask (see Figure~\ref{?}) from the values of $g_\sigma^2(x,y)$ at discrete points in a grid centred at the origin (e.g.~for a 3x3 mask, we should calculate $g_\sigma^2$ at $(-1,-1), (0,-1), (1,-1), \ldots, (0,0), \ldots, (1,1)$). The mask then needs to be normalized by dividing by the sum of all the values in it (this is done to ensure that regions of uniform intensity in the image will be unaffected by smoothing). This procedure can be used to generate masks of any size.
+Using this for image blurring involves forming a symmetric mask (see Figure~\ref{fig:segmentation-watershed-gaussianmask}) from the values of $g_\sigma^2(x,y)$ at discrete points in a grid centred at the origin (e.g.~for a 3x3 mask, we should calculate $g_\sigma^2$ at $(-1,-1), (0,-1), (1,-1), \ldots, (0,0), \ldots, (1,1)$). The mask then needs to be normalized by dividing by the sum of all the values in it (this is done to ensure that regions of uniform intensity in the image will be unaffected by smoothing). This procedure can be used to generate masks of any size.
 
-% TODO: Figure here
+%---
+\begin{figure}[t]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+0.0585 & 0.0965 & 0.0585 \\
+\hline
+0.0965 & 0.1592 & 0.0965 \\
+\hline
+0.0585 & 0.0965 & 0.0585 \\
+\hline
+\end{tabular}%
+$\;\; \longrightarrow \;\;$%
+\begin{tabular}{|c|c|c|}
+\hline
+0.0751 & 0.1238 & 0.0751 \\
+\hline
+0.1238 & 0.2042 & 0.1238 \\
+\hline
+0.0751 & 0.1238 & 0.0751 \\
+\hline
+\end{tabular}
+\end{center}
+\caption{As an example, we'll calculate a 3x3 mask for the 2D Gaussian $g_1^2(x,y)$ (i.e. the Gaussian with standard deviation $\sigma = 1$). First we calculate the values of $g_1^2(x,y)$ at the grid points (i.e. we calculate $g_1^2(-1,-1), \ldots, g_1^2(1,1)$) to give us the unnormalized mask (left); then, we normalize it by dividing through by the sum of all the values in the mask to give the final result (right).}
+\label{fig:segmentation-watershed-gaussianmask}
+\end{figure}
+%---
 
 The actual blurring is performed by \emph{convolving} an image $I$ with the mask to form a new image $I'$. Letting $M_\sigma^{3,3}$ be the 3x3 mask, this is written as $I' = I \otimes M_\sigma^{3,3}$. Convolution means overlaying the mask on each pixel of the image in turn, multiplying the value of each pixel in the mask by the value of the pixel beneath it, summing the results and using the value thus obtained as the value of the centre pixel in the blurred image. For the 3x3 mask with $\sigma = 1$, this means that:
 %
@@ -122,9 +150,11 @@ A suitable mapping function for the 8-bit edge estimate image is thus
 y = \frac{8}{1 + \exp(106x/255 - 6)},
 \]
 %
-a function which starts off at nearly $8$ when $x = 0$, then drops off rapidly to nearly zero at around $x = 30$ (see Figure~\ref{?}).
+a function which starts off at nearly $8$ when $x = 0$, then drops off rapidly to nearly zero at around $x = 30$ (see Figure~\ref{fig:segmentation-watershed-sigmoid}).
 
-% TODO: Figure here
+%---
+\stufigex{height=10cm}{segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{t}
+%---
 
 SVGF produces good results when used in combination with normal Gaussian filtering: in particular, performing a small amount of Gaussian filtering followed by running the image through the spatially-variant filter works well. This is described further in \textbf{Constructing the Pre-Processing Pipeline}, below.
 
