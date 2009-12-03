@@ -160,7 +160,27 @@ SVGF produces good results when used in combination with normal Gaussian filteri
 
 \subsubsection{Anisotropic Diffusion Filtering}
 
-TODO
+Anisotropic diffusion filtering (ADF) is a standard technique for doing edge-preserving smoothing on an image, originally introduced by Perona and Malik in \cite{?}. The idea comes from the fact that solving a heat equation of the form
+%
+\[
+\pd{I(x,y,t)}{t} = \nabla^2 I(x,y,t) \equiv \nabla \cdot \nabla I(x,y,t)
+\]
+%
+on an image $I_0(x,y)$, by setting $I(x,y,0) = I_0(x,y)$ as the initial condition, is equivalent to convolving $I_0$ with a Gaussian of standard deviation $\sqrt{2t}$. (In other words, by finding the solution to the heat equation at a time $t_0$, we are effectively blurring the image with the corresponding Gaussian.) Perona and Malik's idea was that by replacing $\nabla I(x,y,t)$ in the equation with $C \nabla I(x,y,t)$, for some $C$, the results of solving the heat equation could be influenced to depend on where we expect the edges in the original image to be. In particular, if we assume that the gradient magnitude of the original image provides a reasonable estimate of where the edges are, then we can write $C = c(|\nabla I(x,y,t)|)$, for some function $c$, giving us the anisotropic diffusion equation
+%
+\[
+\pd{I(x,y,t)}{t} = \nabla \cdot c(|\nabla I(x,y,t)|) \nabla I(x,y,t).
+\]
+%
+We thereby introduce a prior expectation of where the edges to be into the equation, allowing us to influence the smoothing process so as to preserve them. The key to this is in how we specify $c$. We want the image to be blurred less where $|\nabla I|$ is large, so $c$ must yield a small value for large $|\nabla I|$ and a larger value for small $|\nabla I|$. There are obviously an infinite number of functions which would satisfy this, but an effective $c$ from the literature (and, in particular, the one used in the Insight Toolkit \cite{ITK} implementation I used) is given by
+%
+\[
+c(|\nabla I|) = e^{-\frac{|\nabla I|^2}{2k^2}},
+\]
+%
+where $k$ is simply a parameter used to affect the extent to which smoothing is affected by the gradient magnitude image.
+
+ADF thus takes two parameters: a time $t_0$, which indirectly specifies the standard deviation of the Gaussian used, and $k$, as just mentioned. It is significantly more effective than SVGF in practice, so I now use it in preference to SVGF.
 
 \subsubsection{Constructing the Pre-Processing Pipeline}
 
