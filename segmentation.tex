@@ -160,7 +160,7 @@ SVGF produces good results when used in combination with normal Gaussian filteri
 
 \subsubsection{Anisotropic Diffusion Filtering}
 
-Anisotropic diffusion filtering (ADF) is a standard technique for doing edge-preserving smoothing on an image, originally introduced by Perona and Malik in \cite{?}. The idea comes from the fact that solving a heat equation of the form
+Anisotropic diffusion filtering (ADF) is a standard technique for doing edge-preserving smoothing on an image, originally introduced by Perona and Malik in \cite{perona90}. The idea comes from the fact that solving a heat equation of the form
 %
 \[
 \pd{I(x,y,t)}{t} = \nabla^2 I(x,y,t) \equiv \nabla \cdot \nabla I(x,y,t)
@@ -186,6 +186,8 @@ ADF thus takes two parameters: a time $t_0$, which indirectly specifies the stan
 
 TODO
 
+\iffalse
+
 \subsection{Definitions}
 
 Formally, an image is considered to be a function $f: \Omega_{\subset \mathbb{Z}^n} \to \mathbb{Z}$ that maps elements of the domain $\Omega$ to integer grey values. (For instance, a $2$-dimensional $512 \times 512$ image could be defined to have domain $\Omega = \{(x,y) : 0 \le x,y < 512\}$.) A pixel $\mathbf{p} \in \Omega$ is defined to have height $f(\mathbf{p})$ and neighbour set $N(\mathbf{p})$, according to some implementation-defined notion of neighbourhood: usually neighbourhood is defined so that pixels are either 4- or 8-connected in 2D, and 6- or 26-connected in 3D (see Figure~\ref{?}).
@@ -193,6 +195,46 @@ Formally, an image is considered to be a function $f: \Omega_{\subset \mathbb{Z}
 % TODO: Figure here
 
 A \smgidx[singular minimum]{singular minimum} of an image is a point whose neighbours are all strictly higher than it. Formally, $\mathbf{p}$ is a singular minimum iff $\forall \mathbf{p'} \in N(\mathbf{p}) \cdot f(\mathbf{p'} > f(\mathbf{p})$. A \smgidx[plateau]{plateau} of an image is a maximal set of two or more connected pixels of equal altitude. A \smgidx[plateau!minimal]{minimal plateau} is a plateau from which it is impossible to descend, and a \smgidx[plateau!non-minimal]{non-minimal plateau} is the opposite. Together, the singular minima and minimal plateaux of an image form the \smgidx[local minimum!of image]{local minima} of the image.
+
+TODO
+
+\fi
+
+\subsection{Implementing the Watershed Transform}
+
+Having described how the input image is pre-processed, we turn our attentions to the implementation of the watershed transform itself. We must first define a few terms, however. Formally, an image is considered to be a function $f: \Omega_{\subset \mathbb{Z}^n} \to \mathbb{Z}$ that maps elements of the domain $\Omega$ to integer grey values. (For instance, a $2$-dimensional $512 \times 512$ image could be defined to have domain $\Omega = \{(x,y) : 0 \le x,y < 512\}$.) A pixel $\mathbf{p} \in \Omega$ is defined to have height $f(\mathbf{p})$ and neighbour set $N(\mathbf{p})$, according to some implementation-defined notion of neighbourhood: usually neighbourhood is defined so that pixels are either 4- or 8-connected in 2D, and 6- or 26-connected in 3D (see Figure~\ref{?}).
+
+% TODO: Figure here
+
+A \smgidx[singular minimum]{singular minimum} of an image is a point whose neighbours are all strictly higher than it. Formally, $\mathbf{p}$ is a singular minimum iff $\forall \mathbf{p'} \in N(\mathbf{p}) \cdot f(\mathbf{p'}) > f(\mathbf{p})$. A \smgidx[plateau]{plateau} of an image is a maximal set of two or more connected pixels of equal altitude. A \smgidx[plateau!minimal]{minimal plateau} is a plateau from which it is impossible to descend, and a \smgidx[plateau!non-minimal]{non-minimal plateau} is the opposite. Together, the singular minima and minimal plateaux of an image form the \smgidx[local minimum!of image]{local minima} of the image.
+
+\subsubsection{The Rainfalling Method}
+
+There are two main approaches to implementing the watershed: the flooding, or immersion, method (see \cite{?} for an example), which works essentially as outlined in the overview above, or the rainfalling method, which is the approach I used in my implementation. The end results are equivalent (although there are implementation choices involved that can lead to subtle differences, depending on the precise algorithm chosen); the only fundamental difference is one of perspective.
+
+The rainfalling method involves thinking of the valleys in the landscape as catchment basins. For each point on the landscape, we can picture what would happen if we dropped water on it from above: since water takes a path of least resistance, it will run downhill to a local minimum (the bottom of a valley) via a path of steepest descent (in the image, this corresponds to a path where each step involves moving to a lowest neighbour of the current point). The catchment basin of a particular local minimum can thus be viewed as all the points from which a path of steepest descent leads to the minimum in question. Evidently something has been left of this description, since a given point may have more than one path of steepest descent, leading to different local minima (see Figure~\ref{?}): in this case, any consistent (i.e.~not random) choice of which path to choose is sufficient.
+
+% TODO: Figure here
+
+\subsubsection{Dealing with Non-Minimal Plateaux}
+
+Non-minimal plateaux cause problems for the watershed transform, since it is unclear which way the water would run off them. There are various different approaches to dealing with this (e.g.~\cite{?,?,?}); the approach I took in practice was that in \cite{meijster98}, which involves transforming the image into one with no non-minimal plateaux (known as a lower-complete image).
+
+In essence, the idea is to raise all plateau pixels up by their distance from the plateau edge (see Figure~\ref{?}). Of course, doing this naively doesn't work, since we might end up changing the ordering of the plateau pixels with respect to the other pixels in the image (see Figure~\ref{?}). The solution is to find the maximum amount by which we're going to raise a plateau pixel and multiply the base image by that before raising any pixels on the plateau: this has the effect of spreading the landscape heights out to accommodate the new altitudes in the middle (see Figure~\ref{?}).
+
+% TODO: Figures here
+
+Implementing this is relatively straightforward using a queue (see Listing~\ref{?}). The basic idea is to add all pixels with a lower neighbour to the queue at the start, then gradually flood out from them a level at a time (essentially a breadth-first search), incrementing the distance counter after each level.
+
+\subsubsection{Fletching}
+
+Given the lower-complete image constructed in the previous section, the next step is to calculate paths of steepest descent for each point in the image. Evidently the na\"ive approach of finding a steepest path for each point in turn would be computationally costly, but this is unnecessary as the problem of finding the steepest paths exhibits optimal substructure. Our approach, then, is to construct an arrow on each pixel (hence the process being called fletching) which indicates the first step of the steepest path from that pixel (see Figure~\ref{?}). In the case of a local minimum, the arrow is a self-loop back to the pixel itself (for a minimal plateau, one of the pixels is chosen as a canonical element of the plateau and all the other pixels point to it); for all other pixels, the arrow points to a lowest neighbouring node.
+
+The implementation (see Listing~\ref{?}) uses Tarjan's disjoint-set forest data structure (see Appendix~\ref{?}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points during this phase of the process.
+
+% TODO: Figure here
+
+\subsubsection{Labelling the Image}
 
 TODO
 
