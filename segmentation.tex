@@ -3,9 +3,9 @@
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:ipfs}, the image partition forest (IPF) data structure was introduced, together with an accompanying set of algorithms. This chapter looks at how IPFs can be constructed from medical image slices (2D) or volumes (3D) by adapting the morphological watershed and waterfall algorithms \cite{beucher94,marcotegui05}. This forms the backdrop for Chapter~\ref{chap:featureid}, which describes IPF algorithms for performing automatic feature identification.
+In Chapter~\ref{chap:ipfs}, the image partition forest (IPF) data structure was introduced, together with an accompanying set of algorithms. This chapter looks at how IPFs can be constructed from medical image slices (2D) or volumes (3D) by adapting the morphological watershed and waterfall transforms \cite{beucher94,marcotegui05}. This forms the backdrop for Chapter~\ref{chap:featureid}, which describes IPF algorithms for performing automatic feature identification.
 
-The IPF construction process described in the following sections uses the watershed algorithm to generate the lowest (leaf) layer of the IPF (the finest partition of the image). The waterfall algorithm is then used to generate the higher layers of the IPF: in particular, each non-leaf layer of the IPF is the result of running an iteration of the waterfall algorithm on the layer immediately below it.
+The IPF construction process described in the following sections uses the watershed transform to generate the lowest (leaf) layer of the IPF (the finest partition of the image). The waterfall transform is then used to generate the higher layers of the IPF: in particular, each non-leaf layer of the IPF is the result of running an iteration of the waterfall transform on the layer immediately below it.
 
 %---
 \section{The Watershed Transform}
@@ -186,59 +186,126 @@ ADF thus takes two parameters: a time $t_0$, which indirectly specifies the stan
 
 TODO
 
-\iffalse
-
-\subsection{Definitions}
-
-Formally, an image is considered to be a function $f: \Omega_{\subset \mathbb{Z}^n} \to \mathbb{Z}$ that maps elements of the domain $\Omega$ to integer grey values. (For instance, a $2$-dimensional $512 \times 512$ image could be defined to have domain $\Omega = \{(x,y) : 0 \le x,y < 512\}$.) A pixel $\mathbf{p} \in \Omega$ is defined to have height $f(\mathbf{p})$ and neighbour set $N(\mathbf{p})$, according to some implementation-defined notion of neighbourhood: usually neighbourhood is defined so that pixels are either 4- or 8-connected in 2D, and 6- or 26-connected in 3D (see Figure~\ref{?}).
-
-% TODO: Figure here
-
-A \smgidx[singular minimum]{singular minimum} of an image is a point whose neighbours are all strictly higher than it. Formally, $\mathbf{p}$ is a singular minimum iff $\forall \mathbf{p'} \in N(\mathbf{p}) \cdot f(\mathbf{p'} > f(\mathbf{p})$. A \smgidx[plateau]{plateau} of an image is a maximal set of two or more connected pixels of equal altitude. A \smgidx[plateau!minimal]{minimal plateau} is a plateau from which it is impossible to descend, and a \smgidx[plateau!non-minimal]{non-minimal plateau} is the opposite. Together, the singular minima and minimal plateaux of an image form the \smgidx[local minimum!of image]{local minima} of the image.
-
-TODO
-
-\fi
-
 \subsection{Implementing the Watershed Transform}
 
-Having described how the input image is pre-processed, we turn our attentions to the implementation of the watershed transform itself. We must first define a few terms, however. Formally, an image is considered to be a function $f: \Omega_{\subset \mathbb{Z}^n} \to \mathbb{Z}$ that maps elements of the domain $\Omega$ to integer grey values. (For instance, a $2$-dimensional $512 \times 512$ image could be defined to have domain $\Omega = \{(x,y) : 0 \le x,y < 512\}$.) A pixel $\mathbf{p} \in \Omega$ is defined to have height $f(\mathbf{p})$ and neighbour set $N(\mathbf{p})$, according to some implementation-defined notion of neighbourhood: usually neighbourhood is defined so that pixels are either 4- or 8-connected in 2D, and 6- or 26-connected in 3D (see Figure~\ref{?}).
+Having described how the input image is pre-processed, we turn our attentions to the implementation of the watershed transform itself. We must first define a few terms, however. Formally, an image is considered to be a function $f: \Omega_{\subset \mathbb{Z}^n} \to \mathbb{Z}$ that maps elements of the domain $\Omega$ to integer grey values. (For instance, a $2$-dimensional $512 \times 512$ image could be defined to have domain $\Omega = \{(x,y) : 0 \le x,y < 512\}$.) A pixel $\mathbf{p} \in \Omega$ is defined to have height $f(\mathbf{p})$ and neighbour set $N(\mathbf{p})$, according to some implementation-defined notion of neighbourhood: usually neighbourhood is defined so that pixels are either 4- or 8-connected in 2D, and 6- or 26-connected in 3D (see Figure~\ref{fig:segmentation-watershed-connectedness}).
 
-% TODO: Figure here
+%---
+\stufigex{height=5cm}{segmentation-watershed-connectedness.png}{4-connected pixels are only connected to their horizontal and vertical neighbours, whereas 8-connected ones are connected to their diagonal neighbours as well}{fig:segmentation-watershed-connectedness}{t}
+%---
 
 A \smgidx[singular minimum]{singular minimum} of an image is a point whose neighbours are all strictly higher than it. Formally, $\mathbf{p}$ is a singular minimum iff $\forall \mathbf{p'} \in N(\mathbf{p}) \cdot f(\mathbf{p'}) > f(\mathbf{p})$. A \smgidx[plateau]{plateau} of an image is a maximal set of two or more connected pixels of equal altitude. A \smgidx[plateau!minimal]{minimal plateau} is a plateau from which it is impossible to descend, and a \smgidx[plateau!non-minimal]{non-minimal plateau} is the opposite. Together, the singular minima and minimal plateaux of an image form the \smgidx[local minimum!of image]{local minima} of the image.
 
 \subsubsection{The Rainfalling Method}
 
-There are two main approaches to implementing the watershed: the flooding, or immersion, method (see \cite{?} for an example), which works essentially as outlined in the overview above, or the rainfalling method, which is the approach I used in my implementation. The end results are equivalent (although there are implementation choices involved that can lead to subtle differences, depending on the precise algorithm chosen); the only fundamental difference is one of perspective.
+There are two main approaches to implementing the watershed: the flooding, or immersion, method (see \cite{rambabu07} for an example), which works essentially as outlined in the overview above, or the rainfalling method, which is the approach I used in my implementation. The end results are equivalent (although there are implementation choices involved that can lead to subtle differences, depending on the precise algorithm chosen); the only fundamental difference is one of perspective.
 
-The rainfalling method involves thinking of the valleys in the landscape as catchment basins. For each point on the landscape, we can picture what would happen if we dropped water on it from above: since water takes a path of least resistance, it will run downhill to a local minimum (the bottom of a valley) via a path of steepest descent (in the image, this corresponds to a path where each step involves moving to a lowest neighbour of the current point). The catchment basin of a particular local minimum can thus be viewed as all the points from which a path of steepest descent leads to the minimum in question. Evidently something has been left of this description, since a given point may have more than one path of steepest descent, leading to different local minima (see Figure~\ref{?}): in this case, any consistent (i.e.~not random) choice of which path to choose is sufficient.
+The rainfalling method involves thinking of the valleys in the landscape as catchment basins. For each point on the landscape, we can picture what would happen if we dropped water on it from above: since water takes a path of least resistance, it will run downhill to a local minimum (the bottom of a valley) via a path of steepest descent (in the image, this corresponds to a path where each step involves moving to a lowest neighbour of the current point). The catchment basin of a particular local minimum can thus be viewed as all the points from which a path of steepest descent leads to the minimum in question. Evidently something has been left of this description, since a given point may have more than one path of steepest descent, leading to different local minima (see Figure~\ref{fig:segmentation-watershed-steepestdescent}): in this case, any consistent (i.e.~not random) choice of which path to choose is sufficient.
 
-% TODO: Figure here
+%---
+\stufigex{height=7cm}{segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{t}
+%---
 
 \subsubsection{Dealing with Non-Minimal Plateaux}
 
-Non-minimal plateaux cause problems for the watershed transform, since it is unclear which way the water would run off them. There are various different approaches to dealing with this (e.g.~\cite{?,?,?}); the approach I took in practice was that in \cite{meijster98}, which involves transforming the image into one with no non-minimal plateaux (known as a lower-complete image).
+Non-minimal plateaux cause problems for the watershed transform, since it is unclear which way the water would run off them. There are various different approaches to dealing with this (e.g.~\cite{bieniek00,osma-ruiz06,stoev00}); the approach I took in practice was that in \cite{meijster98}, which involves transforming the image into one with no non-minimal plateaux (known as a lower-complete image).
 
-In essence, the idea is to raise all plateau pixels up by their distance from the plateau edge (see Figure~\ref{?}). Of course, doing this naively doesn't work, since we might end up changing the ordering of the plateau pixels with respect to the other pixels in the image (see Figure~\ref{?}). The solution is to find the maximum amount by which we're going to raise a plateau pixel and multiply the base image by that before raising any pixels on the plateau: this has the effect of spreading the landscape heights out to accommodate the new altitudes in the middle (see Figure~\ref{?}).
+In essence, the idea is to raise all plateau pixels up by their distance from the plateau edge (see Figure~\ref{fig:segmentation-watershed-plateau}(a)). Of course, doing this naively doesn't work, since we might end up changing the ordering of the plateau pixels with respect to the other pixels in the image (see Figure~\ref{fig:segmentation-watershed-plateau}(b)). The solution is to find the maximum amount by which we're going to raise a plateau pixel and multiply the base image by that before raising any pixels on the plateau: this has the effect of spreading the landscape heights out to accommodate the new altitudes in the middle (see Figure~\ref{fig:segmentation-watershed-plateau}(c)).
 
-% TODO: Figures here
+%---
+\begin{figure}[t]
+\begin{center}
+	\subfigure[The `intuition' is to raise plateau pixels by their distance from the edge]{\includegraphics[width=.45\linewidth]{segmentation-watershed-plateau1.png}}%
+	\hspace{4mm}%
+	\subfigure[Doing this na\"ively can change the height ordering of the pixels in the image]{\includegraphics[width=.45\linewidth]{segmentation-watershed-plateau2.png}}%
+	\hspace{4mm}%
+	\subfigure[This can be fixed by spreading the landscape out prior to raising the pixels]{\includegraphics[width=.45\linewidth]{segmentation-watershed-plateau3.png}}%
+\end{center}
+\caption{A solution to the non-minimal plateau problem}
+\label{fig:segmentation-watershed-plateau}
+\end{figure}
+%---
 
 Implementing this is relatively straightforward using a queue (see Listing~\ref{?}). The basic idea is to add all pixels with a lower neighbour to the queue at the start, then gradually flood out from them a level at a time (essentially a breadth-first search), incrementing the distance counter after each level.
 
-\subsubsection{Fletching}
+\subsubsection{Arrow Construction}
 
-Given the lower-complete image constructed in the previous section, the next step is to calculate paths of steepest descent for each point in the image. Evidently the na\"ive approach of finding a steepest path for each point in turn would be computationally costly, but this is unnecessary as the problem of finding the steepest paths exhibits optimal substructure. Our approach, then, is to construct an arrow on each pixel (hence the process being called fletching) which indicates the first step of the steepest path from that pixel (see Figure~\ref{?}). In the case of a local minimum, the arrow is a self-loop back to the pixel itself (for a minimal plateau, one of the pixels is chosen as a canonical element of the plateau and all the other pixels point to it); for all other pixels, the arrow points to a lowest neighbouring node.
+Given the lower-complete image constructed in the previous section (e.g.~see Figure~\ref{fig:segmentation-watershed-example}(b)), the next step is to calculate paths of steepest descent for each point in the image. Evidently the na\"ive approach of finding a steepest path for each point in turn would be computationally costly, but this is unnecessary as the problem of finding the steepest paths exhibits optimal substructure. Our approach, then, is to construct an arrow on each pixel that indicates the first step of the steepest path from that pixel (see Figure~\ref{fig:segmentation-watershed-example}(c)). In the case of a local minimum, the arrow is a self-loop back to the pixel itself (for a minimal plateau, one of the pixels is chosen as a canonical element of the plateau and all the other pixels point to it); for all other pixels, the arrow points to a lowest neighbouring node.
 
 The implementation (see Listing~\ref{?}) uses Tarjan's disjoint-set forest data structure (see Appendix~\ref{?}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points during this phase of the process.
 
-% TODO: Figure here
+%---
+\begin{figure}[t]
+\begin{center}
+	\subfigure[The original image]{\includegraphics[height=4cm]{segmentation-watershed-example1.png}}%
+	\hspace{4mm}%
+	\subfigure[The lower-complete image]{\includegraphics[height=4cm]{segmentation-watershed-example2.png}}%
+	\hspace{4mm}%
+	\subfigure[The arrows on each pixel]{\includegraphics[height=4cm]{segmentation-watershed-example3.png}}%
+	\hspace{4mm}%
+	\subfigure[The final labelling]{\includegraphics[height=4cm]{segmentation-watershed-example4.png}}%
+\end{center}
+\caption{Stages of the algorithm}
+\label{fig:segmentation-watershed-example}
+\end{figure}
+%---
 
 \subsubsection{Labelling the Image}
+
+Once an arrow has been calculated for each pixel in the image, all that remains is to assign labels to the pixels. This involves following the arrows from each pixel to find the minimum with which it's associated, and giving it the same label as that minimum (see Listing~\ref{?}). The process can be made more efficient by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint-set forests are implemented, which is described in Appendix~\ref{?}. The result of the labelling process is a numerically-labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). In general, we must expect that this will be an oversegmentation of the input image, for the reasons mentioned earlier.
+
+\subsection{The IPF Leaf Layer}
 
 TODO
 
 %---
-\section{The Waterfall Algorithm}
+\section{The Waterfall Transform}
+
+\subsection{Overview}
+
+TODO
+
+\subsection{Traditional Algorithm}
+
+\subsubsection{Data Structures}
+
+TODO
+
+\subsubsection{Step 1: Finding the Regional Minimum Edges}
+
+TODO
+
+\subsubsection{Step 2: Edge Elision}
+
+TODO
+
+\subsubsection{Step 3: Marker Propagation}
+
+TODO
+
+\subsubsection{Step 4: Rebuilding the MST}
+
+TODO
+
+\subsection{Nicholls' Algorithm}
+
+\subsubsection{Data Structures}
+
+TODO
+
+\subsubsection{Algorithm}
+
+TODO
+
+\subsubsection{Comparison with Traditional Method}
+
+TODO
+
+\subsection{The IPF Hierarchy}
+
+TODO
+
+%---
+\section{Chapter Summary}
 
 TODO
