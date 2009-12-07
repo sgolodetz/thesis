@@ -5,7 +5,7 @@
 
 In Chapter~\ref{chap:ipfs}, the image partition forest (IPF) data structure was introduced, together with an accompanying set of algorithms. This chapter looks at how IPFs can be constructed from medical image slices (2D) or volumes (3D) by adapting the morphological watershed and waterfall transforms \cite{beucher94,marcotegui05}. This forms the backdrop for Chapter~\ref{chap:featureid}, which describes IPF algorithms for performing automatic feature identification.
 
-The IPF construction process described in the following sections uses the watershed transform to generate the lowest (leaf) layer of the IPF (the finest partition of the image). The waterfall transform is then used to generate the higher layers of the IPF: in particular, each non-leaf layer of the IPF is the result of running an iteration of the waterfall transform on the layer immediately below it.
+The IPF construction process described in the following sections uses the watershed transform to generate the lowest (leaf) layer of the IPF (the finest partition of the image). The waterfall transform is then used to generate the higher layers of the IPF: in particular, each non-leaf layer of the IPF is the result of running a pass of the waterfall transform on the layer immediately below it.
 
 %---
 \section{The Watershed Transform}
@@ -263,9 +263,21 @@ TODO
 
 \subsection{Overview}
 
-TODO
+The waterfall transform is a multi-pass hierarchical segmentation algorithm. Each pass of the waterfall takes a partition of some original image as input, and produces a coarser partition of the same image (i.e.~one with fewer regions in it) by merging some adjacent regions in the input partition together (see Figure~\ref{?}). The input partition for the first pass of the waterfall algorithm can theoretically be generated in any number of different ways, but the algorithm was originally designed to work on the oversegmented partition output by the watershed transform \cite{marcotegui05}.
 
-\subsection{Traditional Algorithm}
+% TODO: Figure here
+
+A waterfall pass works on the region adjacency graph (RAG) of its input partition. This is an undirected graph with one vertex for each region in the partition, and weighted edges joining adjacent regions (see Figure~\ref{?}). (The weights on the edges affect how the waterfall proceeds: as will be described later, different methods for weighting the edges are possible and can be used to vary the results obtained.)
+
+% TODO: Figure here
+
+The idea is to do something very like a watershed transform\footnote{Technically speaking, it's analogous to a watershed-from-markers transform: e.g.~see \cite{meyer94}.} on this RAG: rather than finding the local minima of an image, and flooding out from them to segment the image into its watershed regions, here the approach is to find the regional minimum edges (defined more precisely in due course) of the graph and flood out from those. The output from the pass is a partition with one region for each regional minimum edge (RME) in the graph: this will be coarser than the input partition because the number of possible RMEs is necessarily smaller than the number of regions in the original graph.
+
+It is possible to implement the waterfall transform in a number of different ways. The approaches described in Beucher's original descriptions of the waterfall transform \cite{?,?} are effective, but were found to be too slow to allow some applications (e.g.~automatic track detection) to run in real-time \cite{marcotegui05}. Further work by Marcotegui and Beucher yielded a more efficient waterfall algorithm, which is presented in \cite{marcotegui05}. This works on the minimum spanning tree of the RAG, rather than the whole graph, and is described in detail below. It starts by finding the regional minimum edges, and then floods out from them, as per the original description of the transform above.
+
+An alternative, simpler waterfall algorithm was developed by Chris Nicholls, an intern in our research group \cite{nicholls09}. His insight was that it is possible to compute the waterfall without ever explicitly finding the regional minimum edges or simulating a flooding process: all the waterfall actually needs to do is decide which edges in the minimum spanning tree need to be merged. This produces an algorithm which is much simpler to implement than the Marcotegui one, without being any less efficient at run time.
+
+\subsection{Marcotegui's Algorithm}
 
 \subsubsection{Data Structures}
 
@@ -308,4 +320,4 @@ TODO
 %---
 \section{Chapter Summary}
 
-TODO
+In this chapter, we saw how to generate IPFs from medical images using the morphological watershed and waterfall transforms. The next chapter will show how the generated IPFs can be used to automatically identify salient features in the original images.
