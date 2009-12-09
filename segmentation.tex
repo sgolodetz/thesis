@@ -1,4 +1,5 @@
 \chapter[Constructing IPFs for Medical Images: A Segmentation Problem]{Constructing IPFs for Medical Images:\\A Segmentation Problem}
+\label{chap:segmentation}
 
 %---
 \section{Chapter Overview}
@@ -263,17 +264,21 @@ TODO
 
 \subsection{Overview}
 
-The waterfall transform is a multi-pass hierarchical segmentation algorithm. Each pass of the waterfall takes a partition of some original image as input, and produces a coarser partition of the same image (i.e.~one with fewer regions in it) by merging some adjacent regions in the input partition together (see Figure~\ref{?}). The input partition for the first pass of the waterfall algorithm can theoretically be generated in any number of different ways, but the algorithm was originally designed to work on the oversegmented partition output by the watershed transform \cite{marcotegui05}.
+The waterfall transform is a multi-pass hierarchical segmentation algorithm. Each pass of the waterfall takes a partition of some original image as input, and produces a coarser partition of the same image (i.e.~one with fewer regions in it) by merging some adjacent regions in the input partition together (see Figure~\ref{fig:segmentation-waterfall-hierarchy}). The input partition for the first pass of the waterfall algorithm can theoretically be generated in any number of different ways, but the algorithm was originally designed to work on the oversegmented partition output by the watershed transform \cite{marcotegui05}.
 
-% TODO: Figure here
+%---
+\stufigex{width=\linewidth}{segmentation-waterfall-hierarchy.jpg}{The waterfall transform produces a hierarchical sequence of partitions of an image, typically starting from the result of the watershed transform (far left). The final partition will eventually be a single region if the waterfall is run to completion, although this is not usually done.}{fig:segmentation-waterfall-hierarchy}{t}
+%---
 
-A waterfall pass works on the region adjacency graph (RAG) of its input partition. This is an undirected graph with one vertex for each region in the partition, and weighted edges joining adjacent regions (see Figure~\ref{?}). (The weights on the edges affect how the waterfall proceeds: as will be described later, different methods for weighting the edges are possible and can be used to vary the results obtained.)
+A waterfall pass works on the region adjacency graph (RAG) of its input partition. This is an undirected graph with one vertex for each region in the partition, and weighted edges joining adjacent regions (see Figure~\ref{fig:segmentation-waterfall-rag}). (The weights on the edges affect how the waterfall proceeds: as will be described later, different methods for weighting the edges are possible and can be used to vary the results obtained.)
 
-% TODO: Figure here
+%---
+\stufigex{height=7cm}{segmentation-waterfall-rag.jpg}{A set of regions (left) and their region adjacency graph (right) - note that edges to the surrounding region (in beige) are not shown to make things clearer.}{fig:segmentation-waterfall-rag}{t}
+%---
 
 The idea is to do something very like a watershed transform\footnote{Technically speaking, it's analogous to a watershed-from-markers transform: e.g.~see \cite{meyer94}.} on this RAG: rather than finding the local minima of an image, and flooding out from them to segment the image into its watershed regions, here the approach is to find the regional minimum edges (defined more precisely in due course) of the graph and flood out from those. The output from the pass is a partition with one region for each regional minimum edge (RME) in the graph: this will be coarser than the input partition because the number of possible RMEs is necessarily smaller than the number of regions in the original graph.
 
-It is possible to implement the waterfall transform in a number of different ways. The approaches described in Beucher's original descriptions of the waterfall transform \cite{?,?} are effective, but were found to be too slow to allow some applications (e.g.~automatic track detection) to run in real-time \cite{marcotegui05}. Further work by Marcotegui and Beucher yielded a more efficient waterfall algorithm, which is presented in \cite{marcotegui05}. This works on the minimum spanning tree of the RAG, rather than the whole graph, and is described in detail below. It starts by finding the regional minimum edges, and then floods out from them, as per the original description of the transform above.
+It is possible to implement the waterfall transform in a number of different ways. The approaches described in Beucher's original descriptions of the waterfall transform \cite{beucher90,beucher94} are effective, but were found to be too slow to allow some applications (e.g.~automatic track detection) to run in real-time \cite{marcotegui05}. Further work by Marcotegui and Beucher yielded a more efficient waterfall algorithm, which is presented in \cite{marcotegui05}. This works on the minimum spanning tree (see Appendix~\ref{?}) of the RAG, rather than the whole graph, and is described in detail below. It starts by finding the regional minimum edges, and then floods out from them, as per the original description of the transform above.
 
 An alternative, simpler waterfall algorithm was developed by Chris Nicholls, an intern in our research group \cite{nicholls09}. His insight was that it is possible to compute the waterfall without ever explicitly finding the regional minimum edges or simulating a flooding process: all the waterfall actually needs to do is decide which edges in the minimum spanning tree need to be merged. This produces an algorithm which is much simpler to implement than the Marcotegui one, without being any less efficient at run time.
 
@@ -309,7 +314,7 @@ TODO
 
 TODO
 
-\subsubsection{Comparison with Traditional Method}
+\subsubsection{Comparison with Marcotegui's Algorithm}
 
 TODO
 
