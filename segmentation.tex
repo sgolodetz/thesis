@@ -278,31 +278,54 @@ A waterfall pass works on the region adjacency graph (RAG) of its input partitio
 
 The idea is to do something very like a watershed transform\footnote{Technically speaking, it's analogous to a watershed-from-markers transform: e.g.~see \cite{meyer94}.} on this RAG: rather than finding the local minima of an image, and flooding out from them to segment the image into its watershed regions, here the approach is to find the regional minimum edges (defined more precisely in due course) of the graph and flood out from those. The output from the pass is a partition with one region for each regional minimum edge (RME) in the graph: this will be coarser than the input partition because the number of possible RMEs is necessarily smaller than the number of regions in the original graph.
 
-It is possible to implement the waterfall transform in a number of different ways. The approaches described in Beucher's original descriptions of the waterfall transform \cite{beucher90,beucher94} are effective, but were found to be too slow to allow some applications (e.g.~automatic track detection) to run in real-time \cite{marcotegui05}. Further work by Marcotegui and Beucher yielded a more efficient waterfall algorithm, which is presented in \cite{marcotegui05}. This works on the minimum spanning tree (see Appendix~\ref{?}) of the RAG, rather than the whole graph, and is described in detail below. It starts by finding the regional minimum edges, and then floods out from them, as per the original description of the transform above.
+It is possible to implement the waterfall transform in a number of different ways. The approaches described in Beucher's original descriptions of the waterfall transform \cite{beucher90,beucher94} are effective, but were found to be too slow to allow some applications (e.g.~automatic track detection) to run in real-time \cite{marcotegui05}. Further work by Marcotegui and Beucher yielded a more efficient waterfall algorithm, which is presented in \cite{marcotegui05}. This works on the minimum spanning tree (see Appendix~\ref{?}) of the RAG, rather than the whole graph; my implementation of it is described in detail below. It starts by finding the regional minimum edges, and then floods out from them, as per the original description of the transform above.
 
 An alternative, simpler waterfall algorithm was developed by Chris Nicholls, an intern in our research group \cite{nicholls09}. His insight was that it is possible to compute the waterfall without ever explicitly finding the regional minimum edges or simulating a flooding process: all the waterfall actually needs to do is decide which edges in the minimum spanning tree need to be merged. This produces an algorithm which is much simpler to implement than the Marcotegui one, without being any less efficient at run time.
 
+\subsection{Edge Valuation}
+
+TODO
+
 \subsection{Marcotegui's Algorithm}
+
+\subsubsection{Overview}
+
+At a high level, each pass of Marcotegui's waterfall algorithm consists of four steps:
+%
+\begin{enumerate}
+
+\item Finding the Regional Minimum Edges
+\item Eliding the Regional Minimum Edges
+\item Marker Propagation
+\item Rebuilding the Minimum Spanning Tree
+
+\end{enumerate}
 
 \subsubsection{Data Structures}
 
-TODO
+The algorithm uses a disjoint set forest (see Appendix~\ref{?}) to store which regions are connected to each other. Initially, we have a tree for each region in the watershed result; as we merge regions (see Steps 2 and 3 below), we then union their respective trees. This makes region merging a very fast process, since we don't have to update the regions indices for all the individual pixels in the regions. Instead, each pixel maintains the label it was originally given by the watershed transform: this can be used to look up the correct region value in the disjoint set forest associated with any given level of the waterfall. The space savings are also noticeable: instead of storing a full image of labels for each waterfall iteration, we need only store the results of the watershed and a disjoint set forest for each level of the hierarchy.
+
+The other data structures used by the algorithm are for maintaining edges. The layout is as shown in Figure~\ref{?}. All the edges in the RAG are stored in an edge vector (or array). The minimum spanning tree is represented as a list of pointers to edges in this array, sorting in ascending order of edge weight. An edge adjacency table is also necessary, to store lists of pointers to edges which are adjacenct to each of the various regions.
 
 \subsubsection{Step 1: Finding the Regional Minimum Edges}
 
-TODO
+A regional minimum edge (RME) of a graph G is a connected subgraph of G whose own edges have equal weight and whose adjacent edges in G have strictly higher weights (see Figure~\ref{?}).
 
-\subsubsection{Step 2: Edge Elision}
+In this instance, we are interested in finding the regional minimum edges in the minimum spanning tree (MST) of the region adjacency graph of an input partition (for example, the watershed result, or the output of a previous pass of the waterfall). To find all the regional minimum edges in the MST, we iterate over all the edges in the MST, flooding outwards from each one to determine (a) whether it's part of an RME and (b) the extent of the RME if so (see Listing~\ref{?}). We do this by maintaining three structures: an equal edges list, which holds all the edges that may form part of the current potential RME, an adjacenct edges queue, which holds all unprocessed edges which are adjacent to one of the aforementiond equal edges, and a pending edges queue, which holds all the edges we've reached whilst flooding outwards from the edge from which we started (this last queue is to allow their pending flags to be cleared before flooding again from a different edge). We process adjacent edges one at a time. If we see a lower edge, this isn't an RME. If we see an equal edge, we add it to the list of edges which may be in the RME and add its non-pending adjacent edges to the queue. If we see a higher edge, we ignore it. If we empty the adjacent edges queue without seeing a lower edge, we've found an RME, so we add it to the list, mark all the edges in it as being part of an RME (to avoid later duplication) and continue from the top with the next MST edge.
 
-TODO
+\subsubsection{Step 2: Eliding the Regional Minimum Edges}
+
+Having identified the regional minimum edges, the next step is to merge the regions they join: these merged regions will become marker regions from which we will flood out in Step 3.
+
+No actual relabelling of the regions is necessary; instead, the same effect is achieved by merging regions via the mechanism of eliding (i.e.~removing) edges in the RAG. The process of edge elision is slightly intricate because all the relevant data structures need to be updated. In particular, the disjoint set forest trees associated with the regions at either end of the edge must be unioned together, the edge adjacency lists need to be spliced together (thus adding the list of all the edges adjacent to one of the regions to that of the other) and various other bits of additional housekeeping need to be taken care of (see Listing~\ref{?}). It is also important to mark the edge as elided, so that it can be removed from the MST in Step 4 of the algorithm (see below).
 
 \subsubsection{Step 3: Marker Propagation}
 
-TODO
+Having `labelled' the marker regions by eliding all the RMEs connecting them, the next step is to propagate the markers to the rest of the MST using a flooding process, at each stage processing an adjacent edge with lowest cost. The ideal data structure for this is a priority queue. The algorithm (see Listing~\ref{?}) works as follows: we initialise the queue with any edges which are adjacent to RMEs and marks the regions joined by the RMEs as already processed. We then repeatedly pop the lowest cost edge from the queue and merge the regions it connects if one of them is unmarked; otherwise, we ignore it. If an edge is elided, its own adjacent edges are added to the queue, and the process continues until the queue is empty.
 
-\subsubsection{Step 4: Rebuilding the MST}
+\subsubsection{Step 4: Rebuilding the Minimum Spanning Tree}
 
-TODO
+The final step of the algorithm is to rebuild the MST so that it's ready for the next waterfall pass. This is a simple process of removing any elided edges from the list.
 
 \subsection{Nicholls' Algorithm}
 
