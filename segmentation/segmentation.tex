@@ -16,7 +16,7 @@ The IPF construction process described in the following sections uses the waters
 The grey-scale watershed transform is an image segmentation algorithm which takes a grey-scale image (whether 2D or 3D) as input and produces a partition of that image into regions, one for each local minimum in the image. It does this by simulating a process of flooding that starts with a pool of water at each local minimum. As the algorithm proceeds, these pools grow, until some of them are on the point of touching each other. At this point, watersheds (dams) are added to keep the pools apart: in segmentation terms, these will become region boundaries, which in turn will yield a partition of the original image into regions associated with its local minima.
 
 %---
-\stufigex{height=8cm}{segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a 3D terrain}{fig:segmentation-watershed-landscapeanalogy}{t}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a 3D terrain}{fig:segmentation-watershed-landscapeanalogy}{t}
 %---
 
 The process is most easily visualized in 2D. An image $I$ may be considered as a height map, or landscape, as shown in Figure~\ref{fig:segmentation-watershed-landscapeanalogy}: for every point $(x,y)$ in the domain of the image, there is an associated pixel value $I(x,y)$ which gives the height of the landscape at that point. In the 8-bit image shown, for instance, black pixels in the image correspond to a height of $0$ and white pixels correspond to a height of $255$. The watershed process involves metaphorically taking this surface, poking holes through its local minima and lowering it perpendicularly into a lake. As the water rises, the pools of water, or catchment basins, associated with the local minima grow (see Figure~\ref{fig:segmentation-watershed-construction}(a)). Eventually, these catchment basins will meet (Figure~\ref{fig:segmentation-watershed-construction}(b)) and a watershed will be constructed to keep them apart (Figure~\ref{fig:segmentation-watershed-construction}(c)). This process continues until the water has reached the top of the landscape, at which point the algorithm terminates. The watersheds generated during the process divide the landscape into the valleys associated with its local minima (see Figure~\ref{fig:segmentation-watershed-construction}(d)), which is equivalent to dividing the base image into regions.
@@ -24,13 +24,13 @@ The process is most easily visualized in 2D. An image $I$ may be considered as a
 %---
 \begin{figure}[t]
 \begin{center}
-	\subfigure[Beginning the flooding]{\includegraphics[height=6cm]{segmentation-watershed-construction1.png}}%
+	\subfigure[Beginning the flooding]{\includegraphics[height=6cm]{segmentation/segmentation-watershed-construction1.png}}%
 	\hspace{4mm}%
-	\subfigure[Two catchment basins meet]{\includegraphics[height=6cm]{segmentation-watershed-construction2.png}}%
+	\subfigure[Two catchment basins meet]{\includegraphics[height=6cm]{segmentation/segmentation-watershed-construction2.png}}%
 	\hspace{4mm}%
-	\subfigure[Building a watershed at the join point]{\includegraphics[height=6cm]{segmentation-watershed-construction3.png}}%
+	\subfigure[Building a watershed at the join point]{\includegraphics[height=6cm]{segmentation/segmentation-watershed-construction3.png}}%
 	\hspace{4mm}%
-	\subfigure[The final division into regions]{\includegraphics[height=6cm]{segmentation-watershed-construction4.png}}%
+	\subfigure[The final division into regions]{\includegraphics[height=6cm]{segmentation/segmentation-watershed-construction4.png}}%
 \end{center}
 \caption{The watershed construction process}
 \label{fig:segmentation-watershed-construction}
@@ -69,7 +69,7 @@ g_\sigma^2(x,y) = g_\sigma^1(x) \times g_\sigma^1(y) = \frac{1}{2\pi\sigma^2} \e
 The graph of the 1D Gaussian is the familiar bell curve; the 2D version is a bell-shaped surface (see Figure~\ref{fig:segmentation-watershed-gaussian2d}).
 
 %---
-\stufigex{height=8cm}{segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{t}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{t}
 %---
 
 Using this for image blurring involves forming a symmetric mask (see Figure~\ref{fig:segmentation-watershed-gaussianmask}) from the values of $g_\sigma^2(x,y)$ at discrete points in a grid centred at the origin (e.g.~for a 3x3 mask, we should calculate $g_\sigma^2$ at $(-1,-1), (0,-1), (1,-1), \ldots, (0,0), \ldots, (1,1)$). The mask then needs to be normalized by dividing by the sum of all the values in it (this is done to ensure that regions of uniform intensity in the image will be unaffected by smoothing). This procedure can be used to generate masks of any size.
@@ -154,7 +154,7 @@ y = \frac{8}{1 + \exp(106x/255 - 6)},
 a function which starts off at nearly $8$ when $x = 0$, then drops off rapidly to nearly zero at around $x = 30$ (see Figure~\ref{fig:segmentation-watershed-sigmoid}).
 
 %---
-\stufigex{height=10cm}{segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{t}
+\stufigex{height=10cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{t}
 %---
 
 SVGF produces good results when used in combination with normal Gaussian filtering: in particular, performing a small amount of Gaussian filtering followed by running the image through the spatially-variant filter works well. This is described further in \textbf{Constructing the Pre-Processing Pipeline}, below.
@@ -192,7 +192,7 @@ TODO
 Having described how the input image is pre-processed, we turn our attentions to the implementation of the watershed transform itself. We must first define a few terms, however. Formally, an image is considered to be a function $f: \Omega_{\subset \mathbb{Z}^n} \to \mathbb{Z}$ that maps elements of the domain $\Omega$ to integer grey values. (For instance, a $2$-dimensional $512 \times 512$ image could be defined to have domain $\Omega = \{(x,y) : 0 \le x,y < 512\}$.) A pixel $\mathbf{p} \in \Omega$ is defined to have height $f(\mathbf{p})$ and neighbour set $N(\mathbf{p})$, according to some implementation-defined notion of neighbourhood: usually neighbourhood is defined so that pixels are either 4- or 8-connected in 2D, and 6- or 26-connected in 3D (see Figure~\ref{fig:segmentation-watershed-connectedness}).
 
 %---
-\stufigex{height=5cm}{segmentation-watershed-connectedness.png}{4-connected pixels are only connected to their horizontal and vertical neighbours, whereas 8-connected ones are connected to their diagonal neighbours as well}{fig:segmentation-watershed-connectedness}{t}
+\stufigex{height=5cm}{segmentation/segmentation-watershed-connectedness.png}{4-connected pixels are only connected to their horizontal and vertical neighbours, whereas 8-connected ones are connected to their diagonal neighbours as well}{fig:segmentation-watershed-connectedness}{t}
 %---
 
 A \smgidx[singular minimum]{singular minimum} of an image is a point whose neighbours are all strictly higher than it. Formally, $\mathbf{p}$ is a singular minimum iff $\forall \mathbf{p'} \in N(\mathbf{p}) \cdot f(\mathbf{p'}) > f(\mathbf{p})$. A \smgidx[plateau]{plateau} of an image is a maximal set of two or more connected pixels of equal altitude. A \smgidx[plateau!minimal]{minimal plateau} is a plateau from which it is impossible to descend, and a \smgidx[plateau!non-minimal]{non-minimal plateau} is the opposite. Together, the singular minima and minimal plateaux of an image form the \smgidx[local minimum!of image]{local minima} of the image.
@@ -204,7 +204,7 @@ There are two main approaches to implementing the watershed: the flooding, or im
 The rainfalling method involves thinking of the valleys in the landscape as catchment basins. For each point on the landscape, we can picture what would happen if we dropped water on it from above: since water takes a path of least resistance, it will run downhill to a local minimum (the bottom of a valley) via a path of steepest descent (in the image, this corresponds to a path where each step involves moving to a lowest neighbour of the current point). The catchment basin of a particular local minimum can thus be viewed as all the points from which a path of steepest descent leads to the minimum in question. Evidently something has been left of this description, since a given point may have more than one path of steepest descent, leading to different local minima (see Figure~\ref{fig:segmentation-watershed-steepestdescent}): in this case, any consistent (i.e.~not random) choice of which path to choose is sufficient.
 
 %---
-\stufigex{height=7cm}{segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{t}
+\stufigex{height=7cm}{segmentation/segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{t}
 %---
 
 \subsubsection{Dealing with Non-Minimal Plateaux}
@@ -216,11 +216,11 @@ In essence, the idea is to raise all plateau pixels up by their distance from th
 %---
 \begin{figure}[t]
 \begin{center}
-	\subfigure[The `intuition' is to raise plateau pixels by their distance from the edge]{\includegraphics[width=.45\linewidth]{segmentation-watershed-plateau1.png}}%
+	\subfigure[The `intuition' is to raise plateau pixels by their distance from the edge]{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau1.png}}%
 	\hspace{4mm}%
-	\subfigure[Doing this na\"ively can change the height ordering of the pixels in the image]{\includegraphics[width=.45\linewidth]{segmentation-watershed-plateau2.png}}%
+	\subfigure[Doing this na\"ively can change the height ordering of the pixels in the image]{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau2.png}}%
 	\hspace{4mm}%
-	\subfigure[This can be fixed by spreading the landscape out prior to raising the pixels]{\includegraphics[width=.45\linewidth]{segmentation-watershed-plateau3.png}}%
+	\subfigure[This can be fixed by spreading the landscape out prior to raising the pixels]{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau3.png}}%
 \end{center}
 \caption{A solution to the non-minimal plateau problem}
 \label{fig:segmentation-watershed-plateau}
@@ -238,13 +238,13 @@ The implementation (see Listing~\ref{?}) uses Tarjan's disjoint-set forest data 
 %---
 \begin{figure}[t]
 \begin{center}
-	\subfigure[The original image]{\includegraphics[height=4cm]{segmentation-watershed-example1.png}}%
+	\subfigure[The original image]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example1.png}}%
 	\hspace{4mm}%
-	\subfigure[The lower-complete image]{\includegraphics[height=4cm]{segmentation-watershed-example2.png}}%
+	\subfigure[The lower-complete image]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example2.png}}%
 	\hspace{4mm}%
-	\subfigure[The arrows on each pixel]{\includegraphics[height=4cm]{segmentation-watershed-example3.png}}%
+	\subfigure[The arrows on each pixel]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example3.png}}%
 	\hspace{4mm}%
-	\subfigure[The final labelling]{\includegraphics[height=4cm]{segmentation-watershed-example4.png}}%
+	\subfigure[The final labelling]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example4.png}}%
 \end{center}
 \caption{Stages of the algorithm}
 \label{fig:segmentation-watershed-example}
@@ -267,13 +267,13 @@ TODO
 The waterfall transform is a multi-pass hierarchical segmentation algorithm. Each pass of the waterfall takes a partition of some original image as input, and produces a coarser partition of the same image (i.e.~one with fewer regions in it) by merging some adjacent regions in the input partition together (see Figure~\ref{fig:segmentation-waterfall-hierarchy}). The input partition for the first pass of the waterfall algorithm can theoretically be generated in any number of different ways, but the algorithm was originally designed to work on the oversegmented partition output by the watershed transform \cite{marcotegui05}.
 
 %---
-\stufigex{width=\linewidth}{segmentation-waterfall-hierarchy.jpg}{The waterfall transform produces a hierarchical sequence of partitions of an image, typically starting from the result of the watershed transform (far left). The final partition will eventually be a single region if the waterfall is run to completion, although this is not usually done.}{fig:segmentation-waterfall-hierarchy}{t}
+\stufigex{width=\linewidth}{segmentation/segmentation-waterfall-hierarchy.jpg}{The waterfall transform produces a hierarchical sequence of partitions of an image, typically starting from the result of the watershed transform (far left). The final partition will eventually be a single region if the waterfall is run to completion, although this is not usually done.}{fig:segmentation-waterfall-hierarchy}{t}
 %---
 
 A waterfall pass works on the region adjacency graph (RAG) of its input partition. This is an undirected graph with one vertex for each region in the partition, and weighted edges joining adjacent regions (see Figure~\ref{fig:segmentation-waterfall-rag}). (The weights on the edges affect how the waterfall proceeds: as will be described later, different methods for weighting the edges are possible and can be used to vary the results obtained.)
 
 %---
-\stufigex{height=7cm}{segmentation-waterfall-rag.jpg}{A set of regions (left) and their region adjacency graph (right) - note that edges to the surrounding region (in beige) are not shown to make things clearer.}{fig:segmentation-waterfall-rag}{t}
+\stufigex{height=7cm}{segmentation/segmentation-waterfall-rag.jpg}{A set of regions (left) and their region adjacency graph (right) - note that edges to the surrounding region (in beige) are not shown to make things clearer.}{fig:segmentation-waterfall-rag}{t}
 %---
 
 The idea is to do something very like a watershed transform\footnote{Technically speaking, it's analogous to a watershed-from-markers transform: e.g.~see \cite{meyer94}.} on this RAG: rather than finding the local minima of an image, and flooding out from them to segment the image into its watershed regions, here the approach is to find the regional minimum edges (defined more precisely in due course) of the graph and flood out from those. The output from the pass is a partition with one region for each regional minimum edge (RME) in the graph: this will be coarser than the input partition because the number of possible RMEs is necessarily smaller than the number of regions in the original graph.

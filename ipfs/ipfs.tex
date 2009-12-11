@@ -57,17 +57,17 @@ Let $T$ be a technique for generating image partition forests, and $\mbox{WFG}_T
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[Source image]{\includegraphics[height=6cm]{ipfs-example-image.png}}%
+	\subfigure[Source image]{\includegraphics[height=6cm]{ipfs/ipfs-example-image.png}}%
 	\hspace{4mm}%
-	\subfigure[Partition hierarchy: the red numbers indicate the number of pixels in each node, as an example property]{\includegraphics[height=6cm]{ipfs-example-hierarchy-coloured.png}}%
+	\subfigure[Partition hierarchy: the red numbers indicate the number of pixels in each node, as an example property]{\includegraphics[height=6cm]{ipfs/ipfs-example-hierarchy-coloured.png}}%
 	\hspace{4mm}%
-	\subfigure[RAG for layer 0 (the pixels of the image)]{\includegraphics[height=6cm]{ipfs-example-rag0.png}}%
+	\subfigure[RAG for layer 0 (the pixels of the image)]{\includegraphics[height=6cm]{ipfs/ipfs-example-rag0.png}}%
 	\hspace{4mm}%
-	\subfigure[RAG for layer 1]{\includegraphics[height=6cm]{ipfs-example-rag1.png}}%
+	\subfigure[RAG for layer 1]{\includegraphics[height=6cm]{ipfs/ipfs-example-rag1.png}}%
 	\hspace{4mm}%
-	\subfigure[RAG for layer 2]{\includegraphics[height=6cm]{ipfs-example-rag2.png}}%
+	\subfigure[RAG for layer 2]{\includegraphics[height=6cm]{ipfs/ipfs-example-rag2.png}}%
 	\hspace{4mm}%
-	\subfigure[RAG for layer 3]{\includegraphics[height=6cm]{ipfs-example-rag3.png}}%
+	\subfigure[RAG for layer 3]{\includegraphics[height=6cm]{ipfs/ipfs-example-rag3.png}}%
 \end{center}
 \caption{An example partition forest for a 3x3 2D image}
 \label{fig:ipfs-example}
@@ -90,9 +90,9 @@ New layers can be inserted anywhere in the hierarchy by cloning the layer above/
 %---
 \begin{figure}[H]
 \begin{center}
-	\subfigure[Before]{\includegraphics[width=8cm]{ipfs-layercreation-before.png}}%
+	\subfigure[Before]{\includegraphics[width=8cm]{ipfs/ipfs-layercreation-before.png}}%
 	\hspace{4mm}%
-	\subfigure[After cloning layer 0 to add a new layer between layers 0 and 1]{\includegraphics[width=8cm]{ipfs-layercreation-after.png}}%
+	\subfigure[After cloning layer 0 to add a new layer between layers 0 and 1]{\includegraphics[width=8cm]{ipfs/ipfs-layercreation-after.png}}%
 \end{center}
 \caption{Layer Creation Example}
 \label{fig:ipfs-layercreation}
@@ -106,9 +106,9 @@ Any IPF layer other than the lowest layer can be deleted from the hierarchy. Thi
 %---
 \begin{figure}[H]
 \begin{center}
-	\subfigure[Before]{\includegraphics[width=8cm]{ipfs-layerdeletion-before.png}}%
+	\subfigure[Before]{\includegraphics[width=8cm]{ipfs/ipfs-layerdeletion-before.png}}%
 	\hspace{4mm}%
-	\subfigure[After deleting layer 1]{\includegraphics[width=8cm]{ipfs-layerdeletion-after.png}}%
+	\subfigure[After deleting layer 1]{\includegraphics[width=8cm]{ipfs/ipfs-layerdeletion-after.png}}%
 \end{center}
 \caption{Layer Deletion Example}
 \label{fig:ipfs-layerdeletion}
@@ -135,17 +135,17 @@ Regions in any layer other than the lowest (containing the image pixels) can be 
 %---
 \begin{figure}[ht]
 \begin{center}
-	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs-example-hierarchy.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs/ipfs-example-hierarchy.png}}%
 	\hspace{4mm}%
-	\subfigure[Initial layer 1 RAG]{\includegraphics[height=6cm]{ipfs-example-rag1.png}}%
+	\subfigure[Initial layer 1 RAG]{\includegraphics[height=6cm]{ipfs/ipfs-example-rag1.png}}%
 	\hspace{4mm}%
-	\subfigure[Hierarchy after step 3]{\includegraphics[height=6cm]{ipfs-regionsplitting-step3.png}}%
+	\subfigure[Hierarchy after step 3]{\includegraphics[height=6cm]{ipfs/ipfs-regionsplitting-step3.png}}%
 	\hspace{4mm}%
-	\subfigure[Hierarchy after step 4]{\includegraphics[height=6cm]{ipfs-regionsplitting-step4.png}}%
+	\subfigure[Hierarchy after step 4]{\includegraphics[height=6cm]{ipfs/ipfs-regionsplitting-step4.png}}%
 	\hspace{4mm}%
-	\subfigure[Hierarchy after step 5]{\includegraphics[height=6cm]{ipfs-regionsplitting-step5.png}}%
+	\subfigure[Hierarchy after step 5]{\includegraphics[height=6cm]{ipfs/ipfs-regionsplitting-step5.png}}%
 	\hspace{4mm}%
-	\subfigure[Layer 1 RAG after step 6]{\includegraphics[height=6cm]{ipfs-regionsplitting-step6.png}}%
+	\subfigure[Layer 1 RAG after step 6]{\includegraphics[height=6cm]{ipfs/ipfs-regionsplitting-step6.png}}%
 \end{center}
 \caption{Region Splitting Example: Split (1,abde) into \{(0,a), (0,d)\} and \{(0,b), (0,e)\}}
 \label{fig:ipfs-regionsplitting}
@@ -172,17 +172,17 @@ Sibling regions (i.e. those with the same parent) in any region other than the l
 %---
 \begin{figure}[ht]
 \begin{center}
-	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs-siblingmerging-initialhierarchy.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs/ipfs-siblingmerging-initialhierarchy.png}}%
 	\hspace{4mm}%
-	\subfigure[Initial layer 1 RAG]{\includegraphics[height=6cm]{ipfs-siblingmerging-initialrag1.png}}%
+	\subfigure[Initial layer 1 RAG]{\includegraphics[height=6cm]{ipfs/ipfs-siblingmerging-initialrag1.png}}%
 	\hspace{4mm}%
-	\subfigure[Hierarchy after step 3]{\includegraphics[height=6cm]{ipfs-siblingmerging-step3.png}}%
+	\subfigure[Hierarchy after step 3]{\includegraphics[height=6cm]{ipfs/ipfs-siblingmerging-step3.png}}%
 	\hspace{4mm}%
-	\subfigure[Hierarchy after step 4]{\includegraphics[height=6cm]{ipfs-siblingmerging-step4.png}}%
+	\subfigure[Hierarchy after step 4]{\includegraphics[height=6cm]{ipfs/ipfs-siblingmerging-step4.png}}%
 	\hspace{4mm}%
-	\subfigure[Hierarchy after step 5]{\includegraphics[height=6cm]{ipfs-siblingmerging-step5.png}}%
+	\subfigure[Hierarchy after step 5]{\includegraphics[height=6cm]{ipfs/ipfs-siblingmerging-step5.png}}%
 	\hspace{4mm}%
-	\subfigure[Layer 1 RAG after step 6]{\includegraphics[height=6cm]{ipfs-siblingmerging-step6.png}}%
+	\subfigure[Layer 1 RAG after step 6]{\includegraphics[height=6cm]{ipfs/ipfs-siblingmerging-step6.png}}%
 \end{center}
 \caption{Sibling Region Merging Example: Merge (1,c), (1,f) and (1,i)}
 \label{fig:ipfs-siblingmerging}
@@ -216,13 +216,13 @@ A region in any layer of the hierarchy (including the lowest layer) can be unzip
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs-unzipping1-initialhierarchy.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping1-initialhierarchy.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 1 split]{\includegraphics[height=6cm]{ipfs-unzipping1-split1.png}}%
+	\subfigure[After layer 1 split]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping1-split1.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 2 split]{\includegraphics[height=6cm]{ipfs-unzipping1-split2.png}}%
+	\subfigure[After layer 2 split]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping1-split2.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 3 split]{\includegraphics[height=6cm]{ipfs-unzipping1-split3.png}}%
+	\subfigure[After layer 3 split]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping1-split3.png}}%
 \end{center}
 \caption{Unzipping Example \#1: Unzip (0,f) to layer 3}
 \label{fig:ipfs-unzipping1}
@@ -232,13 +232,13 @@ A region in any layer of the hierarchy (including the lowest layer) can be unzip
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs-unzipping1-split3.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping1-split3.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 1 split]{\includegraphics[height=6cm]{ipfs-unzipping2-split1.png}}%
+	\subfigure[After layer 1 split]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping2-split1.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 2 split]{\includegraphics[height=6cm]{ipfs-unzipping2-split2.png}}%
+	\subfigure[After layer 2 split]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping2-split2.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 3 split]{\includegraphics[height=6cm]{ipfs-unzipping2-split3.png}}%
+	\subfigure[After layer 3 split]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping2-split3.png}}%
 \end{center}
 \caption{Unzipping Example \#2: Unzip (0,e) to layer 3}
 \label{fig:ipfs-unzipping2}
@@ -282,13 +282,13 @@ For any given $h$ and $\ell$ (provided $\ell > 0$, since pixels cannot be merged
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs-unzipping2-split3.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs/ipfs-unzipping2-split3.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 3 merge]{\includegraphics[height=6cm]{ipfs-zipping-merge1.png}}%
+	\subfigure[After layer 3 merge]{\includegraphics[height=6cm]{ipfs/ipfs-zipping-merge1.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 2 merge]{\includegraphics[height=6cm]{ipfs-zipping-merge2.png}}%
+	\subfigure[After layer 2 merge]{\includegraphics[height=6cm]{ipfs/ipfs-zipping-merge2.png}}%
 	\hspace{4mm}%
-	\subfigure[After layer 1 merge]{\includegraphics[height=6cm]{ipfs-zipping-merge3.png}}%
+	\subfigure[After layer 1 merge]{\includegraphics[height=6cm]{ipfs/ipfs-zipping-merge3.png}}%
 \end{center}
 \caption{Zipping Example: Zipping [(3,e),(2,e),(1,e)] to [(3,f),(2,f),(1,f)]}
 \label{fig:ipfs-zipping}
@@ -315,11 +315,11 @@ An example of the process is shown in Figure~\ref{fig:ipfs-featureid}. Note that
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs-example-hierarchy.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs/ipfs-example-hierarchy.png}}%
 	\hspace{4mm}%
-	\subfigure[After step 1]{\includegraphics[height=6cm]{ipfs-featureid-step1.png}}%
+	\subfigure[After step 1]{\includegraphics[height=6cm]{ipfs/ipfs-featureid-step1.png}}%
 	\hspace{4mm}%
-	\subfigure[After step 2]{\includegraphics[height=6cm]{ipfs-featureid-step2.png}}%
+	\subfigure[After step 2]{\includegraphics[height=6cm]{ipfs/ipfs-featureid-step2.png}}%
 \end{center}
 \caption{Feature Identification Example: Identifying (1,gh) as `purple'}
 \label{fig:ipfs-featureid}
@@ -351,15 +351,15 @@ It is not just siblings in the same layer which can be merged: arbitrary regions
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs-arbitrarymerge1.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs/ipfs-arbitrarymerge1.png}}%
 	\hspace{4mm}%
-	\subfigure[After step 3b for first component]{\includegraphics[height=6cm]{ipfs-arbitrarymerge2.png}}%
+	\subfigure[After step 3b for first component]{\includegraphics[height=6cm]{ipfs/ipfs-arbitrarymerge2.png}}%
 	\hspace{4mm}%
-	\subfigure[After step 3c for first component]{\includegraphics[height=6cm]{ipfs-arbitrarymerge3.png}}%
+	\subfigure[After step 3c for first component]{\includegraphics[height=6cm]{ipfs/ipfs-arbitrarymerge3.png}}%
 	\hspace{4mm}%
-	\subfigure[After step 3b for second component]{\includegraphics[height=6cm]{ipfs-arbitrarymerge4.png}}%
+	\subfigure[After step 3b for second component]{\includegraphics[height=6cm]{ipfs/ipfs-arbitrarymerge4.png}}%
 	\hspace{4mm}%
-	\subfigure[After step 3c for second component (result)]{\includegraphics[height=6cm]{ipfs-arbitrarymerge5.png}}%
+	\subfigure[After step 3c for second component (result)]{\includegraphics[height=6cm]{ipfs/ipfs-arbitrarymerge5.png}}%
 \end{center}
 \caption{Arbitrary Region Merging Example: Merging (1,b), (1,c), (1,d) and (1,g)}
 \label{fig:ipfs-arbitrarymerge}
@@ -382,11 +382,11 @@ A node in any layer of the hierarchy except the highest can be moved from being 
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs-example-hierarchy.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[height=6cm]{ipfs/ipfs-example-hierarchy.png}}%
 	\hspace{4mm}%
-	\subfigure[After step 3]{\includegraphics[height=6cm]{ipfs-parentswitching1.png}}%
+	\subfigure[After step 3]{\includegraphics[height=6cm]{ipfs/ipfs-parentswitching1.png}}%
 	\hspace{4mm}%
-	\subfigure[After step 4]{\includegraphics[height=6cm]{ipfs-parentswitching2.png}}%
+	\subfigure[After step 4]{\includegraphics[height=6cm]{ipfs/ipfs-parentswitching2.png}}%
 \end{center}
 \caption{Parent Switching Example: Reparent (1,gh) to (2,cfi)}
 \label{fig:ipfs-parentswitching}
@@ -400,7 +400,7 @@ The ability to select nodes from multiple layers in an IPF is important because 
 Implementing this could be done na\"ively by storing all the nodes selected in every level of the tree, but that would be deeply inefficient. Instead, as described in \cite{gvcispa09}, we define a minimal node representation ($\acronym{MNR}$) for the selection and use that. We note that any selection of regions in an image is really just a selection of some (or all) of the image pixels. Letting $\mathbf{PS}(I)$ be the pixel set of image $I$, and the current selection be a set of pixels $S \subseteq \mathbf{PS}(I)$, we define $\acronym{MNR}(S)$ to be the smallest set of nodes that represents $S$. For example, in Figure~\ref{fig:ipfs-mnr}, consider the selection $S$ of the pixels $(0,d)$, $(0,g)$ and $(0,h)$: in this case $\acronym{MNR}(S) = \{(0,d),(1,\mathit{gh})\}$. If we then removed the pixel $(0,h)$ from the selection, $\acronym{MNR}(S)$ would become $\{(0,d),(0,g)\}$.
 
 %---
-\stufigex{height=6cm}{ipfs-mnr.png}{An example showing the minimal node representation (in grey) for the selection of the pixels $(0,d)$, $(0,g)$ and $(0,h)$}{fig:ipfs-mnr}{ht}
+\stufigex{height=6cm}{ipfs/ipfs-mnr.png}{An example showing the minimal node representation (in grey) for the selection of the pixels $(0,d)$, $(0,g)$ and $(0,h)$}{fig:ipfs-mnr}{ht}
 %---
 
 Having defined such a minimal node representation, there are three key operations we need to support on it: adding nodes, removing them, and viewing the selection at a particular layer in the hierarchy. Adding a node ensures that all the pixels in the region represented by the node are `in the selection'. Removing a node ensures that no pixel in the region remains in the selection. Viewing the selection at a given layer allows us to select a node in one layer of the hierarchy and then view it as its constituent sub-regions in the layers below. From an end-user perspective, it is helpful if changes to the selection are undoable: this can easily be accomplished by recording which node identifiers are added and removed from $\acronym{MNR}(S)$ by each operation.
@@ -426,17 +426,17 @@ If we added a node identifier (either of the latter two cases), we need to \emph
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[Initial selection]{\includegraphics[height=6cm]{ipfs-mnr-addnode1.png}}%
+	\subfigure[Initial selection]{\includegraphics[height=6cm]{ipfs/ipfs-mnr-addnode1.png}}%
 	\hspace{4mm}%
-	\subfigure[Add (0,d) itself]{\includegraphics[height=6cm]{ipfs-mnr-addnode2.png}}%
+	\subfigure[Add (0,d) itself]{\includegraphics[height=6cm]{ipfs/ipfs-mnr-addnode2.png}}%
 	\hspace{4mm}%
-	\subfigure[Consolidate (1,abde)]{\includegraphics[height=6cm]{ipfs-mnr-addnode3.png}}%
+	\subfigure[Consolidate (1,abde)]{\includegraphics[height=6cm]{ipfs/ipfs-mnr-addnode3.png}}%
 	\hspace{4mm}%
-	\subfigure[Consolidate (2,abde)]{\includegraphics[height=6cm]{ipfs-mnr-addnode4.png}}%
+	\subfigure[Consolidate (2,abde)]{\includegraphics[height=6cm]{ipfs/ipfs-mnr-addnode4.png}}%
 	\hspace{4mm}%
-	\subfigure[Consolidate (3,abdegh)]{\includegraphics[height=6cm]{ipfs-mnr-addnode5.png}}%
+	\subfigure[Consolidate (3,abdegh)]{\includegraphics[height=6cm]{ipfs/ipfs-mnr-addnode5.png}}%
 	\hspace{4mm}%
-	\subfigure[Consolidate (4,abcdefghi)]{\includegraphics[height=6cm]{ipfs-mnr-addnode6.png}}%
+	\subfigure[Consolidate (4,abcdefghi)]{\includegraphics[height=6cm]{ipfs/ipfs-mnr-addnode6.png}}%
 \end{center}
 \caption{Add to Selection Example: Adding (0,d) to an existing selection}
 \label{fig:ipfs-mnr-addnode}
@@ -483,9 +483,9 @@ An example is shown in Figure~\ref{fig:ipfs-mnr-viewatlayer}.
 %---
 \begin{figure}[p]
 \begin{center}
-	\subfigure[The MNR of the selection]{\includegraphics[height=6cm]{ipfs-mnr-viewatlayer1.png}}%
+	\subfigure[The MNR of the selection]{\includegraphics[height=6cm]{ipfs/ipfs-mnr-viewatlayer1.png}}%
 	\hspace{4mm}%
-	\subfigure[The view at layer 2]{\includegraphics[height=6cm]{ipfs-mnr-viewatlayer2.png}}%
+	\subfigure[The view at layer 2]{\includegraphics[height=6cm]{ipfs/ipfs-mnr-viewatlayer2.png}}%
 \end{center}
 \caption{View at Layer Example}
 \label{fig:ipfs-mnr-viewatlayer}

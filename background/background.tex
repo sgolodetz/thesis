@@ -199,7 +199,7 @@ In practice, to represent contour changes over time, we make $\phi$ a function o
 Consider a simple example, that of a circle, centred at the origin, which gradually expands outwards as the time increases (see Figure~\ref{fig:levelsets-circle}).
 
 %---
-\stufigex{height=7cm}{levelsets-circle.png}{A simple circular contour which gradually expands over time}{fig:levelsets-circle}{H}
+\stufigex{height=7cm}{background/levelsets-circle.png}{A simple circular contour which gradually expands over time}{fig:levelsets-circle}{H}
 %---
 
 In particular, suppose its radius is $t$ at time $t$. We represent this as:
@@ -212,7 +212,7 @@ In particular, suppose its radius is $t$ at time $t$. We represent this as:
 For a more complicated example, consider gradually changing the circle into an ellipse over time (see Figure~\ref{fig:levelsets-ellipse}).
 
 %---
-\stufigex{height=7cm}{levelsets-ellipse.png}{An example of a contour which changes its shape over time}{fig:levelsets-ellipse}{H}
+\stufigex{height=7cm}{background/levelsets-ellipse.png}{An example of a contour which changes its shape over time}{fig:levelsets-ellipse}{H}
 %---
 
 This could be achieved by writing the following:
@@ -241,9 +241,9 @@ How to numerically solve the above equation is beyond the scope of this report, 
 %---
 \begin{figure}[H]
 \begin{center}
-	\subfigure[]{\includegraphics[height=5cm]{levelsets-discrete1a.png}}%
+	\subfigure[]{\includegraphics[height=5cm]{background/levelsets-discrete1a.png}}%
 	\hspace{4mm}%
-	\subfigure[]{\includegraphics[height=5cm]{levelsets-discrete1b.png}}
+	\subfigure[]{\includegraphics[height=5cm]{background/levelsets-discrete1b.png}}
 \end{center}
 \caption{An example of level sets on a discrete grid}
 \label{fig:levelsets-discrete1}
@@ -255,9 +255,9 @@ Now, consider the further example shown in Figure~\ref{fig:levelsets-discrete2}(
 %---
 \begin{figure}[H]
 \begin{center}
-	\subfigure[]{\includegraphics[height=5cm]{levelsets-discrete2a.png}}%
+	\subfigure[]{\includegraphics[height=5cm]{background/levelsets-discrete2a.png}}%
 	\hspace{4mm}%
-	\subfigure[]{\includegraphics[height=5cm]{levelsets-discrete2b.png}}
+	\subfigure[]{\includegraphics[height=5cm]{background/levelsets-discrete2b.png}}
 \end{center}
 \caption{An example with more than one connected component}
 \label{fig:levelsets-discrete2}
@@ -311,7 +311,7 @@ The NN is initially trained by picking a suitable image from the middle of the v
 The results of the scheme are somewhat hard to evaluate since the images in this somewhat old paper (1994) have not really survived the ravages of time. However, they do seem to show that the authors have obtained something that looks reasonably like a liver, so the method has some merit.
 
 %---
-\stufigex{height=20cm}{neuralnets-tsai.png}{Schematic diagram of the neural-network-based boundary detection method used in \cite{tsai94} (borrowed from the paper in question)}{fig:neuralnets-tsai}{H}
+\stufigex{height=20cm}{background/neuralnets-tsai.png}{Schematic diagram of the neural-network-based boundary detection method used in \cite{tsai94} (borrowed from the paper in question)}{fig:neuralnets-tsai}{H}
 %---
 
 \clearpage
@@ -319,7 +319,7 @@ The results of the scheme are somewhat hard to evaluate since the images in this
 A more up-to-date (and more complicated) NN scheme can be found in \cite{lee03}. Here, the authors use a multi-module, recurrent neural network to segment multiple abdominal organs (see Figure~\ref{fig:neuralnets-lee}). There is a module associated with each label under consideration. Each node of a given module $k$ corresponds to a pixel in the image and encodes the probability that the pixel should be assigned label $k$. The weights of the network arcs are initially derived from (for example) a correlation matrix containing the likelihoods of various labels occurring next to each other. (For example, the liver might be quite likely to occur next to the right kidney, but definitely shouldn't occur next to the left kidney.) An iterative state evolution algorithm is used to determine the probabilities at each node in each of the modules of the NN. The initial probabilities are generated using something called the `Kohonen self-organizing algorithm' (see the paper for details) and the nodes are updated at each time step based on the current probability at a given node and the support it receives from its neighbours. (So, for instance, if a pixel was currently classified as part of the left kidney, but all its neighbours were liver, it would be very likely to change to liver over time.) The results of this method (after combining it with fuzzy spatial rules for organ identification) are quite good (though the authors admit that more work is needed).
 
 %---
-\stufigex{height=8cm}{neuralnets-lee.png}{The architecture of the contextual neural network used in \cite{lee03} (borrowed from the paper in question)}{fig:neuralnets-lee}{ht}
+\stufigex{height=8cm}{background/neuralnets-lee.png}{The architecture of the contextual neural network used in \cite{lee03} (borrowed from the paper in question)}{fig:neuralnets-lee}{ht}
 %---
 
 %\subsubsection{Statistical Methods}
@@ -333,7 +333,7 @@ A more up-to-date (and more complicated) NN scheme can be found in \cite{lee03}.
 It is often possible to achieve better results by combining a number of different segmentation methods than it is by using a single method on its own. A striking example of how successful this sort of technique can be is the work of Luc Soler's team in Strasbourg \cite{soler01} (see Figure~\ref{fig:soler} for a screenshot from their surgical tool).
 
 %---
-\stufigex{width=12cm}{soler.png}{An automatic 3D reconstruction of patients from medical images, as performed by the IRCAD surgical planning tools}{fig:soler}{t}
+\stufigex{width=12cm}{background/soler.png}{An automatic 3D reconstruction of patients from medical images, as performed by the IRCAD surgical planning tools}{fig:soler}{t}
 %---
 
 The cited paper represents only a small part of their work on a surgical tool, and focuses on automatically segmenting the liver. Their segmentation method first uses thresholding, morphological operators and distance maps to identify the skin, bones, lungs, kidneys and spleen. The second stage is then effectively a clever deformable model approach in which they embed a reference model of the liver into the image and automatically deform it to the liver contours. Later stages use Gaussian fitting on the image histogram to separate normal liver tissue from blood vessels and lesions (tumours), a result which is further refined by their own analytical methods. The final stage of their work makes use of higher-level medical knowledge to label the hepatic portal vein and segment the liver anatomically: these features are not visible from the scans alone. As the screenshot shows, the results of this extensively hybrid technique are excellent.
