@@ -131,21 +131,33 @@ tabsize=2
 % Stop the page numbers overlapping the text at the bottom of the page
 \addtolength{\footskip}{7mm}
 
-%\input{introduction}
-%\input{background}
-%\input{motivation}
-%\input{ipfs}
+\input{abstract}
+
+\part{Background}
+
+\input{introduction}
+\input{background}
+\input{motivation}
+
+\part{Image Partition Forests}
+
+\input{ipfs}
 \input{segmentation}
-%\input{featureid}
-%\input{criticalassessment}
-%\input{conclusions}
+\input{featureid}
+
+\part{Assessment}
+
+\input{criticalassessment}
+\input{conclusions}
 
 \appendix
 
 % Get rid of the unnecessary space before chapter titles (again)
 \dropchapter{-2cm}
 
-% TODO: Appendices here
+\part{Appendices}
+
+\input{datastructures}
 
 \printindex
 
