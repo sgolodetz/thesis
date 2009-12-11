@@ -1,0 +1,104 @@
+Constructing IPFs for Medical Images: A Segmentation Problem
+
+> Chapter Overview
+
+- Links to other chapters
+- High-level overview of IPF construction process
+
+> The Watershed Transform
+
+>> Idea
+
+- Start VERY general - the watershed is a transform which takes a landscape and divides it into valleys, or catchment basins.
+
+- There are two alternative ways of viewing the way it works - we can either consider immersing the landscape by lowering it into a pool of water, or dropping rain on it from above and seeing where the drops run down to. These correspond to two different implementation methods (flooding/rainfalling).
+
+- Describe how both approaches work - in the case of flooding, explain where the name watershed comes from.
+
+- When using a flooding approach, there is a variant called "watershed-from-markers", where we specify that only certain catchment basins are interesting - this is equivalent to only letting water through at the local minima we specify. The point is that we can constrain the watershed to produce an output with a certain number of regions in it, provided that we are prepared to e.g. manually input which catchment basins we're interested in. This is not a great solution when we're trying to do things automatically - but it is possible to automatically pick e.g. "the n deepest catchment basins". Unfortunately deepest doesn't always correspond to most semantically interesting.
+
+>> Segmenting Grey-Scale Images
+
+- We can treat a grey-scale image as a height map in order to apply the watershed to it (most easily visualized in 2D, although the algorithms work in 3D as well)
+
+- Describe the rainfalling implementation
+
+>> Segmenting Medical Images
+
+- The grey-scale watershed segmentation presented so far divides an image into its catchment basins, but how does that help us? We need a way of making the catchment basins correspond to the things we're actually interested in. The answer is domain-dependent!
+
+- Our goal in the case of medical images is to segment the image into regions which have some semantic meaning (i.e. at the very least, we want pieces of organs, if not the organs themselves) -> organs tend to be homogeneous -> lower gradient values within organ than at their edges (is the intuition) -> run the watershed on the gradient magnitude image
+
+- A further issue with medical images is that they tend not to be smooth -> large numbers of local minima (especially in the presence of noise) -> rubbish segmentation (far too many regions). We need to pre-process the image to get rid of the noise.
+
+>> Pre-Processing
+
+- Our goal in pre-processing the image is to remove the noise but to preserve the image detail (in particular, things like boundaries between regions). This is non-trivial.
+
+- Gaussian filtering is an approach used to remove noise in other contexts, but it fails here because it destroys edges. On the other hand, it is useful to see how it works, because the more sophisticated edge-preserving filters are based on it.
+
+>>> Gaussian Filtering
+
+- As already described (more or less)
+
+>>> Edge-Preserving Filters
+
+- The general idea is to blur more away from where we think edges are etc.
+
+>>>> SVGF
+
+>>>> Anisotropic Diffusion Filtering
+
+>>>> Comparison
+
+>>> Pipeline
+
+>> Watershed Results and IPF Leaf Layer
+
+> The Waterfall Transform
+
+>> Idea
+
+- The waterfall transform is a multi-pass hierarchical segmentation algorithm
+- It generates a sequence of partitions of a landscape, each coarser than the last
+- Each pass takes a partition as input, merges some of the regions together, and returns a coarser partition
+- The final partition (if we go that far, which is rare) would be the whole landscape
+
+<Good diagram like the watershed one>
+
+>> A Waterfall Pass
+
+- The watershed transform is very general - so far, we have only seen it run on images, but it can actually be run on anything that can be viewed as a landscape
+- In the waterfall transform, instead of running it on an image, we run it on a graph: specifically, each waterfall pass performs a watershed transform on the region adjacency graph of the partition it takes as input (see diagram)
+
+>>> Watershed for Graphs (High-Level Example)
+
+>>> How we weight the edges of the RAG
+
+>> Algorithms
+
+>>> Marcotegui's Algorithm
+
+- This follows the high-level intuition quite closely
+- It works on the minimum spanning tree of the graph (see original paper for why that's ok)
+- Each pass does the following:
+
+>>>> Finds the local minima in the graph
+>>>> Elides the edges which are part of any of the local minima (this is logically equivalent to merging the partition regions joined by the edges) - the minimal nodes thus formed become markers
+>>>> Propagates the markers to the rest of the graph by eliding remaining edges in ascending order of weight (skipping those which would join two markers)
+
+>>> Nicholls' Algorithm
+
+- This takes the view that finding the local minima in the graph is unnecessary - instead, we just have to make sure that we never merge all the highest edges between pairs of local minima
+- This makes a much simpler recursive tree algorithm possible
+- etc.
+
+>>> Comparison and Evaluation
+
+>> Generating the IPF Hierarchy
+
+- Each layer of the IPF is a region adjacency graph which can be used as input to a waterfall pass. For each pass of the waterfall, we clone the top-most layer of the IPF and run the waterfall pass on the clone.
+
+> Chapter Summary
+
+- Done
