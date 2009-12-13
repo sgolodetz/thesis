@@ -11,6 +11,70 @@ The IPF construction process described in the following sections uses the waters
 %---
 \section{The Watershed Transform}
 
+\subsection{Concept}
+
+At a conceptual level, the watershed transform is about dividing a landscape into its valleys, or (more precisely) catchment basins. A catchment basin is an area of the landscape from which water runs down to the same point (a local minimum of the landscape). A watershed (also known in some parts of the world as a drainage divide) is the boundary between adjacent catchment basins (see Figure~\ref{fig:segmentation-watershed-concept}).\footnote{The name watershed means `water divider', since shedding is an old term for splitting, or dividing -- e.g.~sheepdogs often have to `shed' specified sheep from a flock in competitions.}
+
+% TODO: fig:segmentation-watershed-concept
+
+The watershed transform conceptually takes a landscape as its input and produces either the set of the landscape's catchment basins, or the set of its watershed lines as output, depending on the particular algorithm. There are in fact two broad classes of watershed algorithms in use, based on two different ways of viewing the problem:
+%
+\begin{enumerate}
+
+\item Rainfalling methods (e.g.~\cite{meijster98,osma-ruiz06,stoev00}) view the problem as one of determining, for each point in the landscape, the local minimum to which water placed at that point would run down (see Figure~\ref{fig:segmentation-watershed-rainfallingconcept}). In practical terms, this generally involves finding a path of steepest descent from each point in the landscape and following it until a local minimum is found. Most of the difficulty involved in this approach is associated with how to handle non-minimal plateaux in the landscape (flat areas that are not the base of a catchment basin).
+
+\item Flooding (also known as immersion) methods (e.g.~\cite{bieniek00,rambabu07}) instead see the problem the other way round: they aim to determine the catchment basin for each local minimum in the landscape by simulating a process of flooding from all the local minima simultaneously and conceptually adding watersheds where the pools of water from adjacent catchment basins meet. The flooding process can be visualized as taking the landscape surface, poking holes through its local minima and lowering it perpendicularly into a body of water. As the water rises, the catchment basins associated with the local minima grow (see Figure~\ref{fig:segmentation-watershed-floodingconcept}(a)). Eventually, these catchment basins will meet (Figure~\ref{fig:segmentation-watershed-floodingconcept}(b)) and a watershed will be constructed to keep them apart (Figure~\ref{fig:segmentation-watershed-floodingconcept}(c)). This process continues until the water has reached the top of the landscape (i.e.~the height of the highest peak in the landscape), at which point the process terminates. The watersheds generated during the process divide the landscape into its catchment basins (see Figure~\ref{fig:segmentation-watershed-floodingconcept}(d)).
+
+\end{enumerate}
+
+% TODO: fig:segmentation-watershed-rainfallingconcept
+% TODO: fig:segmentation-watershed-floodingconcept
+
+\subsection{Grey-Scale Image Segmentation}
+
+TODO
+
+\subsection{Medical Image Segmentation}
+
+TODO
+
+\subsection{Pre-Processing}
+
+TODO
+
+\subsubsection{Gaussian Filtering}
+
+TODO
+
+\subsubsection{Edge-Preserving Filters}
+
+TODO
+
+\paragraph{Spatially-Variant Gaussian Filtering}
+
+TODO
+
+\paragraph{Anisotropic Diffusion Filtering}
+
+TODO
+
+\paragraph{Comparison}
+
+TODO
+
+\subsubsection{Pipeline}
+
+TODO
+
+\subsection{Watershed Results and IPF Leaf Layer}
+
+TODO
+
+\iffalse
+
+%---
+\section{The Watershed Transform}
+
 \subsection{Overview}
 
 The grey-scale watershed transform is an image segmentation algorithm which takes a grey-scale image (whether 2D or 3D) as input and produces a partition of that image into regions, one for each local minimum in the image. It does this by simulating a process of flooding that starts with a pool of water at each local minimum. As the algorithm proceeds, these pools grow, until some of them are on the point of touching each other. At this point, watersheds (dams) are added to keep the pools apart: in segmentation terms, these will become region boundaries, which in turn will yield a partition of the original image into regions associated with its local minima.
@@ -344,6 +408,8 @@ TODO
 \subsection{The IPF Hierarchy}
 
 TODO
+
+\fi
 
 %---
 \section{Chapter Summary}
