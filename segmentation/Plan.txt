@@ -93,6 +93,10 @@ Constructing IPFs for Medical Images: A Segmentation Problem
 - This makes a much simpler recursive tree algorithm possible
 - etc.
 
+>>> My Algorithm
+
+- This is the graph equivalent of a rainfalling algorithm
+
 >>> Comparison and Evaluation
 
 >> Generating the IPF Hierarchy

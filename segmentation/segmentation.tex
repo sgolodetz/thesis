@@ -17,7 +17,7 @@ At a conceptual level, the watershed transform is about dividing a landscape int
 
 % TODO: fig:segmentation-watershed-concept
 
-The watershed transform conceptually takes a landscape as its input and produces either the set of the landscape's catchment basins, or the set of its watershed lines as output, depending on the particular algorithm. There are in fact two broad classes of watershed algorithms in use, based on two different ways of viewing the problem:
+The watershed transform conceptually takes a landscape as its input and produces either the set of the landscape's catchment basins, or the set of its watershed lines, as output, depending on the particular algorithm. There are in fact two broad classes of watershed algorithms in use, based on two different ways of viewing the problem:
 %
 \begin{enumerate}
 
@@ -31,6 +31,10 @@ The watershed transform conceptually takes a landscape as its input and produces
 % TODO: fig:segmentation-watershed-floodingconcept
 
 \subsection{Grey-Scale Image Segmentation}
+
+The watershed transform is commonly thought of not in the abstract terms just described, but as an image segmentation method. In particular, it is often used to segment grey-scale images. This requires a conceptual mapping that lets us view grey-scale images as landscapes. For example, we can view a 2D, grey-scale image $I$ as a height map (see Figure~\ref{fig:segmentation-watershed-landscapeanalogy}), where the grey value of the image at coordinates $(x,y)$ gives us the height of the landscape at that point. An analogous conceptual mapping can be made in higher dimensions (and specifically in three dimensions), but this is significantly harder to visualize.
+
+% TODO: fig-segmentation-watershed-landscapeanalogy
 
 TODO
 
