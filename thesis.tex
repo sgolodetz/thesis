@@ -13,7 +13,7 @@
 \usepackage{setspace}
 \usepackage{subfigure}
 \usepackage{times}
-\usepackage[nottoc]{tocbibind}	% Include the bibliography in the table of contents
+\usepackage[notlof,nottoc]{tocbibind}	% Include the bibliography in the table of contents
 \usepackage{url}
 \usepackage{vmargin}
 
@@ -56,7 +56,7 @@
 \def\pdknf#1#2#3{\partial^#3 #1/\partial #2^#3}					% partial k'th derivative (no frac)
 
 % Define a shorter way to add index entries
-\newcommand{\smgidx}[2][\DefaultOpt]{\def\DefaultOpt{#2} \index{#1} \emph{#2}}
+\newcommand{\stuidx}[2][\DefaultOpt]{\def\DefaultOpt{#2} \index{#1} \emph{#2}}
 
 % Define a shorter way to include graphics.
 \newcommand{\stufig}[4]
@@ -99,17 +99,32 @@
 
 \definecolor{darkgreen}{rgb}{0, 0.6, 0}
 
-\lstset{
+\lstdefinelanguage{Pseudocode}{
+morekeywords={break,continue,each,else,for,function,if,not,ref,return,then,var,while},
+sensitive=true,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/}
+}
+
+\lstdefinestyle{Default}{
 abovecaptionskip=0.5cm,
 basicstyle=\scriptsize\ttfamily,
 belowcaptionskip=0.5cm,
 belowskip=0.5cm,
 commentstyle=\color{darkgreen},
-frame=lines,
-language=Java,
+language=Pseudocode,
+numbers=left,
+numbersep=5pt,
+numberstyle=\tiny,
+mathescape=true,
 showstringspaces=false,
-tabsize=2
+stepnumber=1,
+tabsize=4
 }
+
+\floatstyle{ruled}
+\newfloat{stulisting}{thp}{lop}[chapter]
+\floatname{stulisting}{Listing}
 
 % Define extra colours
 \definecolor{gold}{rgb}{0.75, 0.75, 0}
@@ -121,6 +136,8 @@ tabsize=2
 
 %%% Main Document %%%
 \tableofcontents
+\listoffigures
+\listof{stulisting}{List of Code Listings}
 
 % Get rid of the unnecessary space before chapter titles
 \dropchapter{-2cm}

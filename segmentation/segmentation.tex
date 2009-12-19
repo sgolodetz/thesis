@@ -62,9 +62,65 @@ A singular minimum of an image is a point whose neighbours are all strictly high
 
 The lower-complete transformation described in \cite{meijster98} essentially works by raising all plateau pixels by their distance from the edge of their plateau (see Figure~\ref{?}(a)). Doing this na\"ively doesn't work in the general case, because it can change the ordering of the plateau pixels with respect to the other pixels in the image (see Figure~\ref{?}(b)). The solution is to find the maximum amount by which a plateau pixel should be raised, and multiply all pixels by that before raising any plateau pixels: this has the effect of spreading the landscape heights out to accommodate the new altitudes in the middle (see Figure~\ref{?}(c)).
 
-The lower-complete transformation can be implemented straightforwardly using a breadth-first search (see Listing~\ref{?}). The results of the transformation are illustrated in Figure~\ref{fig:segmentation-watershed-example}: an example image is shown in (a), and the result of making it lower-complete is shown in (b).
+The lower-complete transformation can be implemented straightforwardly using a breadth-first search (see Listing~\ref{code:segmentation-watershed-lowercomplete}). The results of the transformation are illustrated in Figure~\ref{fig:segmentation-watershed-example}: an example image is shown in (a), and the result of making it lower-complete is shown in (b).
 
 % TODO: fig:segmentation-watershed-example
+
+%---
+\begin{stulisting}[t]
+\caption{The Lower-Complete Transformation}
+\label{code:segmentation-watershed-lowercomplete}
+\begin{lstlisting}[style=Default]
+function build_lower_complete
+: (image : Image<$\Omega,\mathbb{Z}^+$>) $\to$ Image<$\Omega,\mathbb{Z}^+$>
+
+	var lc : Image<$\Omega,\mathbb{Z}^+$>;
+	var queue : Queue<PixelCoords>;
+
+	// Initialise the queue with pixels that have a lower neighbour.
+	for each p : PixelCoords $\in$ N(p)
+		lc(p) := 0;
+		for each neighbour : PixelCoords $\in$ N(p)
+			if image(neighbour) < image(p) then
+				queue.push(p);
+				// To prevent it being queued twice.
+				lc(p) := -1;
+				break;
+
+	// Compute a function which indirectly indicates the amount by which
+	// we need to raise the plateau pixels (see the paper by Meijster and
+	// Roerdink for more details).
+	var p : PixelCoords;
+	var dist : int(1);
+	var marker : PixelCoords(-1,-1);
+	queue.push(marker);
+	while not queue.empty()
+		p := queue.pop();
+		if p = marker then
+			if not queue.empty()
+				queue.push(marker);
+				dist := dist + 1;
+		else
+			lc(p) := dist;
+			for each neighbour : PixelCoords $\in$ N(p)
+				// If the neighbouring pixel is at the
+				// same altitude and has not yet been
+				// processed.
+				if image(neighbour) = image(p) and lc(neighbour) = 0 then
+					queue.push(neighbour);
+					// To prevent it being queued twice.
+					lc(neighbour) := -1;
+	
+	// Compute the final lower-complete function. Note that at this point,
+	// dist holds the amount by which we want to multiply the base image.
+	for each p : PixelCoords $\in$ $\Omega$
+		if lc(p) $\ne$ 0 then
+			lc(p) := dist $\times$ image(p) + lc(p) - 1;
+
+	return lc;
+\end{lstlisting}
+\end{stulisting}
+%---
 
 \paragraph{Arrow Assignment}
 
@@ -78,11 +134,90 @@ The arrow assignment process works as follows. Firstly, one of the pixels in eac
 \item The arrow of any other pixel points to a lowest neighbour of that pixel.
 \end{enumerate}
 
-The implementation (see Listing~\ref{?}) uses Tarjan's disjoint-set forest data structure (see Appendix~\ref{?}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points of minimal plateaux during this phase of the process. The results of the arrow assignment are shown in Figure~\ref{fig:segmentation-watershed-example}(c).
+The implementation (see Listing~\ref{code:segmentation-watershed-arrowassignment}) uses Tarjan's disjoint-set forest data structure (see Appendix~\ref{?}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points of minimal plateaux during this phase of the process. The results of the arrow assignment are shown in Figure~\ref{fig:segmentation-watershed-example}(c).
+
+%---
+\begin{stulisting}[t]
+\caption{Arrow Assignment}
+\label{code:segmentation-watershed-arrowassignment}
+\begin{lstlisting}[style=Default]
+function construct_arrows
+: (lc : Image<$\Omega,\mathbb{Z}^+$>) $\to$ (Image<$\Omega$,PixelCoords>, Image<$\Omega,\mathbb{Z}^+$>)
+
+	var arrows : Image<$\Omega$,PixelCoords>;
+	var labels : Image<$\Omega,\mathbb{Z}^+$>;
+
+	// Add all the minimum points to a disjoint set forest.
+	var labelCount : int(0);
+	var minima : DisjointSetForest<PixelCoords>;
+	for each p : PixelCoords $\in \Omega$
+		if lc(p) = 0 then
+			labels(p) := labelCount;
+			labelCount := labelCount + 1;
+			minima.add_node(p);
+
+	for each p : PixelCoords $\in \Omega$
+		if lc(p) = 0 then
+			// Union any neighbouring minimum points into the same local minimum.
+			for each neighbour : PixelCoords $\in$ N(p)
+				if lc(neighbour) = 0 then
+					minima.union_nodes(labels(p), labels(neighbour));
+		else
+			// Find a lowest neighbour and make this point's arrow point to it.
+			var lowestNeighbour : PixelCoords(-1,-1);
+			var lowestNeighbourValue : int($\infty$)
+			for each neighbour : PixelCoords $\in$ N(p)
+				if lc(neighbour) < lowestNeighbourValue then
+					lowestNeighbour := neighbour;
+					lowestNeighbourValue := lc(neighbour);
+			// There will always be a lowest neighbour here since the function's lower-complete.
+			arrows(p) := lowestNeighbour;
+
+	// Assign new labels to the canonical points of the regional minima and make
+	// the arrows of the non-canonical points point to them.
+	labelCount := 1;
+	for each p : PixelCoords $\in \Omega$
+		if lc(p) $\ne$ 0 then continue
+		var root : int := minima.find_set(labels(p));
+		if root = labels(p) then
+			// This is a canonical point.
+			arrows(p) := p;
+			labels(p) := labelCount;
+			labelCount := labelCount + 1;
+		else
+			arrows(p) := minima.value_of(root);
+
+	return (arrows, labels);
+\end{lstlisting}
+\end{stulisting}
+%---
 
 \paragraph{Labelling}
 
-Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{?}). The process can be made more efficient by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint-set forests are implemented (see Appendix~\ref{?}). The output of Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
+Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{code:segmentation-watershed-labelling}). The process can be made more efficient by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint-set forests are implemented (see Appendix~\ref{?}). The output of Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
+
+%---
+\begin{stulisting}[t]
+\caption{Labelling}
+\label{code:segmentation-watershed-labelling}
+\begin{lstlisting}[style=Default]
+function resolve_all
+: (arrows : Image<$\Omega$,PixelCoords>; labels : ref Image<$\Omega,\mathbb{Z}^+$>) $\to \emptyset$
+
+	for each p : PixelCoords $\in \Omega$
+		resolve_pixel(p, arrows, labels)
+
+function resolve_pixel
+: (p : PixelCoords; arrows : Image<$\Omega$,PixelCoords>; labels : ref Image<$\Omega,\mathbb{Z}^+$) $\to$ PixelCoords
+
+	var parent : PixelCoords := arrows(p);
+	if parent $\ne$ p then
+		parent := resolve_pixel(parent, arrows, labels);
+		labels(p) := labels(parent);
+	return parent;
+\end{lstlisting}
+\end{stulisting}
+%---
 
 \subsection{Medical Image Segmentation}
 
@@ -243,9 +378,58 @@ where $k$ is simply a parameter used to affect the extent to which smoothing is 
 
 TODO
 
-\subsection{Watershed Results and IPF Leaf Layer}
+\begin{itemize}
+\item Compare the results of an SVGF pipeline with ADF (they're quite different)
+\item Show the results of running a watershed on an image pre-processed with each
+\item Mention that the impact they have on the output of the waterfall will be addressed after that has been described
+\end{itemize}
+
+\subsection{IPF Leaf Layer Construction}
+
+TODO: Collect all the techniques just described together and show how they can be used to generate the IPF leaf layer
+
+%---
+\section{The Waterfall Transform}
+
+\subsection{Concept}
 
 TODO
+
+\subsection{A Waterfall Pass}
+
+TODO
+
+\subsubsection{Watershed for Graphs}
+
+TODO
+
+\subsubsection{Edge Weight Assignment}
+
+TODO
+
+\subsection{Algorithms}
+
+TODO
+
+\subsubsection{Marcotegui's Algorithm}
+
+TODO
+
+\subsubsection{Nicholls' Algorithm}
+
+TODO
+
+\subsubsection{My Algorithm}
+
+TODO
+
+\subsubsection{Comparison and Evalulation}
+
+TODO
+
+\subsection{IPF Hierarchy Construction}
+
+TODO (don't forget to discuss the effects of using different pre-processing approaches)
 
 \iffalse
 

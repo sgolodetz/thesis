@@ -51,13 +51,11 @@ Constructing IPFs for Medical Images: A Segmentation Problem
 
 >>>> Comparison
 
->>> Pipeline
-
->> Watershed Results and IPF Leaf Layer
+>> IPF Leaf Layer Construction
 
 > The Waterfall Transform
 
->> Idea
+>> Concept
 
 - The waterfall transform is a multi-pass hierarchical segmentation algorithm
 - It generates a sequence of partitions of a landscape, each coarser than the last
@@ -99,7 +97,7 @@ Constructing IPFs for Medical Images: A Segmentation Problem
 
 >>> Comparison and Evaluation
 
->> Generating the IPF Hierarchy
+>> IPF Hierarchy Construction
 
 - Each layer of the IPF is a region adjacency graph which can be used as input to a waterfall pass. For each pass of the waterfall, we clone the top-most layer of the IPF and run the waterfall pass on the clone.
 
