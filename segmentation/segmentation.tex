@@ -13,7 +13,7 @@ The IPF construction process described in the following sections uses the waters
 
 \subsection{Concept}
 
-At a conceptual level, the watershed transform is about dividing a landscape into its valleys, or (more precisely) catchment basins. A catchment basin is an area of the landscape from which water runs down to the same point (a local minimum of the landscape). A watershed (also known in some parts of the world as a drainage divide) is the boundary between adjacent catchment basins (see Figure~\ref{fig:segmentation-watershed-concept}).\footnote{The name watershed means `water divider', since shedding is an old term for splitting, or dividing -- e.g.~sheepdogs often have to `shed' specified sheep from a flock in competitions.}
+At a conceptual level, the watershed transform is about dividing a landscape into its catchment basins. A catchment basin is an area of the landscape from which water runs down to the same point (a local minimum of the landscape). A watershed (also known in some parts of the world as a drainage divide) is the boundary between adjacent catchment basins (see Figure~\ref{fig:segmentation-watershed-concept}).\footnote{The name watershed means `water divider', since shedding is an old term for splitting, or dividing -- e.g.~sheepdogs often have to `shed' specified sheep from a flock in competitions.}
 
 % TODO: fig:segmentation-watershed-concept
 
@@ -27,8 +27,47 @@ The watershed transform conceptually takes a landscape as its input and produces
 
 \end{enumerate}
 
-% TODO: fig:segmentation-watershed-rainfallingconcept
-% TODO: fig:segmentation-watershed-floodingconcept
+%---
+\begin{figure}[t]
+\begin{center}
+	\subfigure[Finding a path of steepest descent from each point]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-rainfallingconcept-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The division into catchment basins]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-rainfallingconcept-b.png}}%
+\end{center}
+\caption{The rainfalling concept of the watershed transform}
+\label{fig:segmentation-watershed-rainfallingconcept}
+\end{figure}
+%---
+
+%---
+\begin{figure}[t]
+\begin{center}
+	\subfigure[Beginning the flooding]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Two catchment basins meet]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Building a watershed at the join point]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-c.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The division into catchment basins]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-d.png}}%
+\end{center}
+\caption{The flooding concept of the watershed transform}
+\label{fig:segmentation-watershed-floodingconcept}
+\end{figure}
+%---
 
 \subsection{Grey-Scale Image Segmentation}
 
