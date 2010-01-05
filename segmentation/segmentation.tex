@@ -28,7 +28,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 \end{enumerate}
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[Finding a path of steepest descent from each point]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-rainfallingconcept-a.png}}%
@@ -44,7 +44,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 %---
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[Beginning the flooding]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-a.png}}%
@@ -74,12 +74,12 @@ The watershed transform conceptually takes a landscape as its input and produces
 The watershed transform is commonly thought of not in the abstract terms just described, but as an image segmentation method. In particular, it is often used to segment grey-scale images. This requires a conceptual mapping that lets us view grey-scale images as landscapes. For example, we can view a 2D, grey-scale image $I$ as a height map (see Figure~\ref{fig:segmentation-watershed-landscapeanalogy}), where the grey value of the image at coordinates $(x,y)$ gives us the height of the landscape at that point. An analogous mapping can be made in higher dimensions (and specifically in three dimensions), although this is harder to visualize. The regions produced by applying an image algorithm for a watershed transform correspond to the catchment basins of the discrete landscape to which the image corresponds (see Figure~\ref{fig:segmentation-watershed-regionbasincorrespondence}).
 
 %---
-\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{t}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{p}
 %---
 
 % TODO: fig-segmentation-watershed-regionbasincorrespondence
 
-A variety of different watershed image algorithms are possible (e.g.~\cite{bieniek00,meijster98,osma-ruiz06,rambabu07,stoev00}), but I will focus on Meijster and Roerdink's rainfalling method described in \cite{meijster98}, not least because the ideas behind it translate across to my rainfalling algorithm for the waterfall transform described in \S\ref{?}.
+A variety of different watershed image algorithms are possible (e.g.~\cite{bieniek00,meijster98,osma-ruiz06,rambabu07,stoev00}), but I will focus on Meijster and Roerdink's rainfalling method described in \cite{meijster98}, not least because the ideas behind it translate across to my rainfalling algorithm for the waterfall transform described in \S\ref{subsubsec:segmentation-waterfall-myalgorithm}.
 
 \subsubsection{Meijster and Roerdink's Rainfalling Watershed Algorithm}
 
@@ -94,19 +94,60 @@ A singular minimum of an image is a point whose neighbours are all strictly high
 \paragraph{Overview} The approach taken by rainfalling algorithms for the watershed transform, as noted above, is to find a path of steepest descent from each point in the landscape to a local minimum in the landscape (the base of a catchment basin). This is complicated by the fact that there may be non-minimal plateaux (flat areas) in the image: if water were dropped on a pixel in the middle of a non-minimal plateau, the direction in which it would run off would be unclear. To circumvent this problem, the Meijster/Roerdink algorithm starts by transforming the image to make sure every non-minimal pixel has a lower neighbour, thus forming what is known as a lower-complete image. The rest of the algorithm is then split into two stages: in the first stage, each pixel is assigned an arrow pointing to one of its lowest neighbours, and in the second stage, these arrows are followed to find the local minimum associated with each pixel. Each local minimum has a catchment basin, which is defined as all the pixels whose paths of steepest descent lead to it. It is worth observing that points can have more than one path of steepest descent (see Figure~\ref{fig:segmentation-watershed-steepestdescent}): the decision of which one to follow for each point depends on how the arrows are assigned. Different choices lead to subtly different results, and it is important that arrows are at the very least assigned deterministically, so that the results don't vary from one run of the algorithm to the next.
 
 %---
-\stufigex{height=7cm}{segmentation/segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{t}
+\stufigex{height=7cm}{segmentation/segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{p}
 %---
 
 \paragraph{The Lower-Complete Transformation}
 
-The lower-complete transformation described in \cite{meijster98} essentially works by raising all plateau pixels by their distance from the edge of their plateau (see Figure~\ref{?}(a)). Doing this na\"ively doesn't work in the general case, because it can change the ordering of the plateau pixels with respect to the other pixels in the image (see Figure~\ref{?}(b)). The solution is to find the maximum amount by which a plateau pixel should be raised, and multiply all pixels by that before raising any plateau pixels: this has the effect of spreading the landscape heights out to accommodate the new altitudes in the middle (see Figure~\ref{?}(c)).
+The lower-complete transformation described in \cite{meijster98} essentially works by raising all plateau pixels by their distance from the edge of their plateau (see Figure~\ref{fig:segmentation-watershed-plateau}(a)). Doing this na\"ively doesn't work in the general case, because it can change the ordering of the plateau pixels with respect to the other pixels in the image (see Figure~\ref{fig:segmentation-watershed-plateau}(b)). The solution is to find the maximum amount by which a plateau pixel should be raised, and multiply all pixels by that before raising any plateau pixels: this has the effect of spreading the landscape heights out to accommodate the new altitudes in the middle (see Figure~\ref{fig:segmentation-watershed-plateau}(c)).
 
 The lower-complete transformation can be implemented straightforwardly using a breadth-first search (see Listing~\ref{code:segmentation-watershed-lowercomplete}). The results of the transformation are illustrated in Figure~\ref{fig:segmentation-watershed-example}: an example image is shown in (a), and the result of making it lower-complete is shown in (b).
 
-% TODO: fig:segmentation-watershed-example
+%---
+\begin{figure}[p]
+\begin{center}
+	\subfigure[The `intuition' is to raise plateau pixels by their distance from the edge]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Doing this na\"ively can change the height ordering of the pixels in the image]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[This can be fixed by spreading the landscape out prior to raising the pixels]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau-c.png}}%
+\end{center}
+\caption{A solution to the non-minimal plateau problem}
+\label{fig:segmentation-watershed-plateau}
+\end{figure}
+%---
 
 %---
-\begin{stulisting}[t]
+\begin{figure}[t]
+\begin{center}
+	\subfigure[The original image]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The lower-complete image]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The arrows on each pixel]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example-c.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The final labelling]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example-d.png}}%
+\end{center}
+\caption{An example illustrating the stages of the Meijster/Roerdink watershed algorithm}
+\label{fig:segmentation-watershed-example}
+\end{figure}
+%---
+
+%---
+\begin{stulisting}[p]
 \caption{The Lower-Complete Transformation}
 \label{code:segmentation-watershed-lowercomplete}
 \begin{lstlisting}[style=Default]
@@ -176,7 +217,7 @@ The arrow assignment process works as follows. Firstly, one of the pixels in eac
 The implementation (see Listing~\ref{code:segmentation-watershed-arrowassignment}) uses Tarjan's disjoint-set forest data structure (see Appendix~\ref{?}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points of minimal plateaux during this phase of the process. The results of the arrow assignment are shown in Figure~\ref{fig:segmentation-watershed-example}(c).
 
 %---
-\begin{stulisting}[t]
+\begin{stulisting}[p]
 \caption{Arrow Assignment}
 \label{code:segmentation-watershed-arrowassignment}
 \begin{lstlisting}[style=Default]
@@ -236,7 +277,7 @@ function construct_arrows
 Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{code:segmentation-watershed-labelling}). The process can be made more efficient by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint-set forests are implemented (see Appendix~\ref{?}). The output of Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
 
 %---
-\begin{stulisting}[t]
+\begin{stulisting}[p]
 \caption{Labelling}
 \label{code:segmentation-watershed-labelling}
 \begin{lstlisting}[style=Default]
@@ -264,9 +305,9 @@ function resolve_pixel
 
 Grey-scale image watershed algorithms like the one just described segment the image into regions which correspond to the catchment basins of the discrete landscape associated with the image, but it is unusual for these catchment basins to correspond directly to features of interest in our input image. For instance, if we're trying to segment a kidney in a medical image, there is no reason to suppose that the kidney will correspond to a catchment basin in the landscape: applying the algorithm just described directly, therefore, will not in general yield useful results.
 
-What we need is a way of transforming our input image into one where the features of interest correspond more directly to its catchment basins. Unfortunately there is no domain-independent solution to this (it depends on the type of image we are segmenting and the sort of features in which we're interested), but it is possible to come up with suitable transformations on a domain-by-domain basis. Our goal in the case of medical images is generally to segment things like organs. The grey value in the images tends to vary relatively slowly across individual organs and relatively quickly at their edges because of the tissue types involved (another way of saying this is that the organs tend to be homogeneous). The intuition is therefore that the value of the gradient magnitude is relatively low within organs, and relatively high at their edges (see Figure~\ref{?}), so by running the watershed on the gradient magnitude image instead of the original input we can get a much better correspondence between organs and catchment basins (i.e.~a much better segmentation result). It should be noted, however, that this scheme is of less use to us when our goal is to segment inhomogeneous features like tumours.
+What we need is a way of transforming our input image into one where the features of interest correspond more directly to its catchment basins. Unfortunately there is no domain-independent solution to this (it depends on the type of image we are segmenting and the sort of features in which we're interested), but it is possible to come up with suitable transformations on a domain-by-domain basis. Our goal in the case of medical images is generally to segment things like organs. The grey value in the images tends to vary relatively slowly across individual organs and relatively quickly at their edges because of the tissue types involved (another way of saying this is that the organs tend to be homogeneous). The intuition is therefore that the value of the gradient magnitude is relatively low within organs, and relatively high at their edges (see Figure~\ref{fig:segmentation-watershed-gradientmagnitude}), so by running the watershed on the gradient magnitude image instead of the original input we can get a much better correspondence between organs and catchment basins (i.e.~a much better segmentation result). It should be noted, however, that this scheme is of less use to us when our goal is to segment inhomogeneous features like tumours.
 
-% TODO: Figure here
+% TODO: fig:segmentation-watershed-gradientmagnitude
 
 \paragraph{Smoothness}
 
@@ -297,13 +338,13 @@ g_\sigma^2(x,y) = g_\sigma^1(x) \times g_\sigma^1(y) = \frac{1}{2\pi\sigma^2} \e
 The graph of the 1D Gaussian is the familiar bell curve; the 2D version is a bell-shaped surface (see Figure~\ref{fig:segmentation-watershed-gaussian2d}).
 
 %---
-\stufigex{height=8cm}{segmentation/segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{t}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{p}
 %---
 
 Using this for image blurring involves forming a symmetric mask (see Figure~\ref{fig:segmentation-watershed-gaussianmask}) from the values of $g_\sigma^2(x,y)$ at discrete points in a grid centred at the origin (e.g.~for a 3x3 mask, we should calculate $g_\sigma^2$ at $(-1,-1), (0,-1), (1,-1), \ldots, (0,0), \ldots, (1,1)$). The mask then needs to be normalized by dividing by the sum of all the values in it (this is done to ensure that regions of uniform intensity in the image will be unaffected by smoothing). This procedure can be used to generate masks of any size.
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
@@ -347,9 +388,9 @@ I'(0,1) = \frac{0.0751 \times (I(1,0) + I(1,2)) + 0.1238 \times (I(0,0) + I(0,2)
 
 \subsubsection{Edge-Preserving Filters}
 
-Gaussian filtering is very good at smoothing an image (see Figure~\ref{?}), but it isn't generally sufficient as the sole pre-processing filter for image segmentation because it uniformly blurs the image. This makes the image smoother, but if we smooth it enough to make it suitable for input to the watershed, we often end up destroying fine detail in which we're interested (e.g.~boundaries between organs, as mentioned previously). For any application, this would cause problems, but for medical applications it is unacceptable. The solution is to be selective about how much blurring we do in different parts of the image: specifically, we want to blur a lot in areas of little or no interest, and blur a minimal amount (or not at all) near features of interest, such as edges between organs. Each of the following two approaches described aims to accomplish this.
+Gaussian filtering is very good at smoothing an image (see Figure~\ref{fig:segmentation-watershed-smoothedimage}), but it isn't generally sufficient as the sole pre-processing filter for image segmentation because it uniformly blurs the image. This makes the image smoother, but if we smooth it enough to make it suitable for input to the watershed, we often end up destroying fine detail in which we're interested (e.g.~boundaries between organs, as mentioned previously). For any application, this would cause problems, but for medical applications it is unacceptable. The solution is to be selective about how much blurring we do in different parts of the image: specifically, we want to blur a lot in areas of little or no interest, and blur a minimal amount (or not at all) near features of interest, such as edges between organs. Each of the following two approaches described aims to accomplish this.
 
-% TODO: Figure here
+% TODO: fig:segmentation-watershed-smoothedimage
 
 \paragraph{Spatially-Variant Gaussian Filtering}
 
@@ -384,7 +425,7 @@ y = \frac{8}{1 + \exp(106x/255 - 6)},
 a function which starts off at nearly $8$ when $x = 0$, then drops off rapidly to nearly zero at around $x = 30$ (see Figure~\ref{fig:segmentation-watershed-sigmoid}).
 
 %---
-\stufigex{height=10cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{t}
+\stufigex{height=10cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{p}
 %---
 
 SVGF works well when applied to images as part of a pipeline (see Figure~\ref{fig:segmentation-watershed-svgfpipeline}). In particular, we perform a small amount of Gaussian filtering on the image first: this blurs the image enough to remove some of the noise, but not enough to blur the important edges. The SVGF filter can then be used as a finer filter which carefully removes some of the noise remaining after applying the Gaussian.
@@ -461,6 +502,7 @@ TODO
 TODO
 
 \subsubsection{My Algorithm}
+\label{subsubsec:segmentation-waterfall-myalgorithm}
 
 TODO
 
