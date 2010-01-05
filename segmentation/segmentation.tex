@@ -393,7 +393,9 @@ TODO: Collect all the techniques just described together and show how they can b
 
 \subsection{Concept}
 
-TODO
+As mentioned earlier, the watershed transform on its own does not cope well with non-smooth landscapes in which there are many different catchment basins. Pre-processing the landscape with an edge-preserving filter helps alleviate the worst of the problem, but the results still tend to be significantly oversegmented.
+
+Another watershed-based transform, called the waterfall, gives us a way to deal with this difficulty. The waterfall transform is a multi-pass hierarchical segmentation technique. Each pass takes a partition of the image as its input, applies a watershed transform to the region adjacency graph of that input, and outputs a coarser partition of the image as its output (see Figure~\ref{?}). TODO
 
 \subsection{A Waterfall Pass}
 
