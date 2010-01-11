@@ -28,7 +28,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 \end{enumerate}
 
 %---
-\begin{figure}[p]
+\begin{figure}[t]
 \begin{center}
 	\subfigure[Finding a path of steepest descent from each point]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-rainfallingconcept-a.png}}%
@@ -44,7 +44,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 %---
 
 %---
-\begin{figure}[p]
+\begin{figure}[t]
 \begin{center}
 	\subfigure[Beginning the flooding]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-a.png}}%
@@ -70,11 +70,12 @@ The watershed transform conceptually takes a landscape as its input and produces
 %---
 
 \subsection{Grey-Scale Image Segmentation}
+\label{subsec:segmentation-watershed-greyscale}
 
 The watershed transform is commonly thought of not in the abstract terms just described, but as an image segmentation method. In particular, it is often used to segment grey-scale images. This requires a conceptual mapping that lets us view grey-scale images as landscapes. For example, we can view a 2D, grey-scale image $I$ as a height map (see Figure~\ref{fig:segmentation-watershed-landscapeanalogy}), where the grey value of the image at coordinates $(x,y)$ gives us the height of the landscape at that point. An analogous mapping can be made in higher dimensions (and specifically in three dimensions), although this is harder to visualize. The regions produced by applying an image algorithm for a watershed transform correspond to the catchment basins of the discrete landscape to which the image corresponds (see Figure~\ref{fig:segmentation-watershed-regionbasincorrespondence}).
 
 %---
-\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{p}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{t}
 %---
 
 % TODO: fig-segmentation-watershed-regionbasincorrespondence
@@ -94,7 +95,7 @@ A singular minimum of an image is a point whose neighbours are all strictly high
 \paragraph{Overview} The approach taken by rainfalling algorithms for the watershed transform, as noted above, is to find a path of steepest descent from each point in the landscape to a local minimum in the landscape (the base of a catchment basin). This is complicated by the fact that there may be non-minimal plateaux (flat areas) in the image: if water were dropped on a pixel in the middle of a non-minimal plateau, the direction in which it would run off would be unclear. To circumvent this problem, the Meijster/Roerdink algorithm starts by transforming the image to make sure every non-minimal pixel has a lower neighbour, thus forming what is known as a lower-complete image. The rest of the algorithm is then split into two stages: in the first stage, each pixel is assigned an arrow pointing to one of its lowest neighbours, and in the second stage, these arrows are followed to find the local minimum associated with each pixel. Each local minimum has a catchment basin, which is defined as all the pixels whose paths of steepest descent lead to it. It is worth observing that points can have more than one path of steepest descent (see Figure~\ref{fig:segmentation-watershed-steepestdescent}): the decision of which one to follow for each point depends on how the arrows are assigned. Different choices lead to subtly different results, and it is important that arrows are at the very least assigned deterministically, so that the results don't vary from one run of the algorithm to the next.
 
 %---
-\stufigex{height=7cm}{segmentation/segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{p}
+\stufigex{height=7cm}{segmentation/segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{t}
 %---
 
 \paragraph{The Lower-Complete Transformation}
@@ -104,7 +105,7 @@ The lower-complete transformation described in \cite{meijster98} essentially wor
 The lower-complete transformation can be implemented straightforwardly using a breadth-first search (see Listing~\ref{code:segmentation-watershed-lowercomplete}). The results of the transformation are illustrated in Figure~\ref{fig:segmentation-watershed-example}: an example image is shown in (a), and the result of making it lower-complete is shown in (b).
 
 %---
-\begin{figure}[p]
+\begin{figure}[t]
 \begin{center}
 	\subfigure[The `intuition' is to raise plateau pixels by their distance from the edge]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau-a.png}}%
@@ -147,7 +148,7 @@ The lower-complete transformation can be implemented straightforwardly using a b
 %---
 
 %---
-\begin{stulisting}[p]
+\begin{stulisting}[t]
 \caption{The Lower-Complete Transformation}
 \label{code:segmentation-watershed-lowercomplete}
 \begin{lstlisting}[style=Default]
@@ -217,7 +218,7 @@ The arrow assignment process works as follows. Firstly, one of the pixels in eac
 The implementation (see Listing~\ref{code:segmentation-watershed-arrowassignment}) uses Tarjan's disjoint-set forest data structure (see Appendix~\ref{?}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points of minimal plateaux during this phase of the process. The results of the arrow assignment are shown in Figure~\ref{fig:segmentation-watershed-example}(c).
 
 %---
-\begin{stulisting}[p]
+\begin{stulisting}[t]
 \caption{Arrow Assignment}
 \label{code:segmentation-watershed-arrowassignment}
 \begin{lstlisting}[style=Default]
@@ -277,7 +278,7 @@ function construct_arrows
 Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{code:segmentation-watershed-labelling}). The process can be made more efficient by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint-set forests are implemented (see Appendix~\ref{?}). The output of Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
 
 %---
-\begin{stulisting}[p]
+\begin{stulisting}[t]
 \caption{Labelling}
 \label{code:segmentation-watershed-labelling}
 \begin{lstlisting}[style=Default]
@@ -301,7 +302,7 @@ function resolve_pixel
 
 \subsection{Medical Image Segmentation}
 
-\paragraph{Features vs. Catchment Basins}
+\subsubsection{Features vs. Catchment Basins}
 
 Grey-scale image watershed algorithms like the one just described segment the image into regions which correspond to the catchment basins of the discrete landscape associated with the image, but it is unusual for these catchment basins to correspond directly to features of interest in our input image. For instance, if we're trying to segment a kidney in a medical image, there is no reason to suppose that the kidney will correspond to a catchment basin in the landscape: applying the algorithm just described directly, therefore, will not in general yield useful results.
 
@@ -309,7 +310,7 @@ What we need is a way of transforming our input image into one where the feature
 
 % TODO: fig:segmentation-watershed-gradientmagnitude
 
-\paragraph{Smoothness}
+\subsubsection{Smoothness}
 
 A further issue which arises when applying the watershed to medical images is their lack of smoothness (especially in the presence of noise). The images have many local minima, most of them spurious: this is analogous to working with a highly pock-marked landscape (see Figure~\ref{?}). Such a landscape will have many catchment basins; running a watershed algorithm on a non-smooth image will thus greatly over-segment it (each minor dimple in the landscape gets treated as a separate catchment basin).
 
@@ -338,13 +339,13 @@ g_\sigma^2(x,y) = g_\sigma^1(x) \times g_\sigma^1(y) = \frac{1}{2\pi\sigma^2} \e
 The graph of the 1D Gaussian is the familiar bell curve; the 2D version is a bell-shaped surface (see Figure~\ref{fig:segmentation-watershed-gaussian2d}).
 
 %---
-\stufigex{height=8cm}{segmentation/segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{p}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{t}
 %---
 
 Using this for image blurring involves forming a symmetric mask (see Figure~\ref{fig:segmentation-watershed-gaussianmask}) from the values of $g_\sigma^2(x,y)$ at discrete points in a grid centred at the origin (e.g.~for a 3x3 mask, we should calculate $g_\sigma^2$ at $(-1,-1), (0,-1), (1,-1), \ldots, (0,0), \ldots, (1,1)$). The mask then needs to be normalized by dividing by the sum of all the values in it (this is done to ensure that regions of uniform intensity in the image will be unaffected by smoothing). This procedure can be used to generate masks of any size.
 
 %---
-\begin{figure}[p]
+\begin{figure}[t]
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
@@ -425,7 +426,7 @@ y = \frac{8}{1 + \exp(106x/255 - 6)},
 a function which starts off at nearly $8$ when $x = 0$, then drops off rapidly to nearly zero at around $x = 30$ (see Figure~\ref{fig:segmentation-watershed-sigmoid}).
 
 %---
-\stufigex{height=10cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{p}
+\stufigex{height=10cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{t}
 %---
 
 SVGF works well when applied to images as part of a pipeline (see Figure~\ref{fig:segmentation-watershed-svgfpipeline}). In particular, we perform a small amount of Gaussian filtering on the image first: this blurs the image enough to remove some of the noise, but not enough to blur the important edges. The SVGF filter can then be used as a finer filter which carefully removes some of the noise remaining after applying the Gaussian.
@@ -471,19 +472,31 @@ TODO: Collect all the techniques just described together and show how they can b
 %---
 \section{The Waterfall Transform}
 
-\subsection{Concept}
+\subsection{Overview}
 
-As mentioned earlier, the watershed transform on its own does not cope well with non-smooth landscapes in which there are many different catchment basins. Pre-processing the landscape with an edge-preserving filter helps alleviate the worst of the problem, but the results still tend to be significantly oversegmented.
+As mentioned earlier, the watershed transform on its own does not cope well with non-smooth images whose corresponding landscapes have many different catchment basins. Pre-processing the image with an edge-preserving filter helps alleviate the worst of the problem, but the results still tend to be significantly oversegmented.
 
-Another watershed-based transform, called the waterfall, gives us a way to deal with this difficulty. The waterfall transform is a multi-pass hierarchical segmentation technique. Each pass takes a partition of the image as its input, applies a watershed transform to the region adjacency graph of that input, and outputs a coarser partition of the image as its output (see Figure~\ref{?}). TODO
+Another watershed-based transform, called the waterfall, gives us a way to deal with this difficulty. The waterfall transform is a multi-pass hierarchical segmentation technique. Each pass takes a partition of the image as its input, merges some of the regions in the partition together, and produces a strictly coarser partition of the image as its output (see Figure~\ref{fig:segmentation-waterfall-pass}).
+
+% TODO: fig:segmentation-waterfall-pass
+
+The transform as a whole is initialised with the initial partition of the image generated by the watershed algorithm, and generates a sequence of ever-coarser partitions of the image (see Figure~\ref{fig:segmentation-waterfall-overview}). Since the number of regions strictly decreases in each pass, the transform will ultimately be over when there is only one region (the whole image) left in the most recent partition produced. In practice, however, the coarsest partitions tend to be of little interest for most applications (large regions which cover much of the image generally have little semantic meaning), so the process can often be terminated early.
+
+% TODO: fig:segmentation-waterfall-overview
 
 \subsection{A Waterfall Pass}
 
-TODO
+Thus far, the description given of the waterfall transform could equally describe any multi-pass merging process which produces a sequence of ever-coarser partitions of the image. The distinguishing feature of the waterfall is that it decides which regions to merge by performing a watershed transform on the region adjacency graph of its input partition (see Figure~\ref{fig:segmentation-waterfall-rag}).
+
+% TODO: fig:segmentation-waterfall-rag
 
 \subsubsection{Watershed for Graphs}
 
-TODO
+We have seen (\S\ref{subsec:segmentation-watershed-greyscale}) how the watershed transform can be applied to greyscale images by introducing a conceptual mapping between greyscale images and landscapes. A similar mapping can be used to allow the watershed to be applied to undirected, weighted graphs: specifically, the weights on the edges can be treated as `heights' (see Figure~\ref{fig:segmentation-waterfall-graphconceptualmapping}). The idea is that water will flow down paths of steepest descent from higher-weighted edges to lower-weighted ones.
+
+% TODO: fig:segmentation-waterfall-graphconceptualmapping
+
+%In the context of a waterfall pass, the goal of a graph watershed algorithm is ultimately to identify which regions in the input partition need to be merged in this pass. This is equivalent to 
 
 \subsubsection{Edge Weight Assignment}
 
