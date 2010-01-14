@@ -53,47 +53,59 @@ Constructing IPFs for Medical Images: A Segmentation Problem
 
 >> IPF Leaf Layer Construction
 
+###
+
 > The Waterfall Transform
+
+>> Motivation
+
+- As mentioned previously, the watershed transform tends to oversegment a landscape because it floods out from every local minimum and creates a catchment basin from each (see diagram). In the context of images, this means they get divided up into lots of tiny regions, yielding an undesirable resulting segmentation.
+- We have seen that in an image context, pre-processing the image with an edge-preserving filter helps alleviate the problem somewhat, but fails to solve it.
+- An alternative approach is to replace our watershed segmentation with a variant called "watershed-from-markers", where we specify a priori that only certain local minima are "interesting". Conceptually, we can do this by "filling in" non-interesting minima (see diagram), although for implementation purposes there are often easier approaches. We can thus constrain the watershed to produce an output with a certain number of regions in it, provided that we can determine which local minima we're interested in. We can input the markers manually (which is a time-consuming and somewhat non-intuitive process), or we can try and determine them automatically - for instance, by picking "the n deepest catchment basins". This tends to be a sticking point, in practice, which makes watershed-from-markers more useful for interactive systems than ones which are attempting to automate the process.
+- A more usable approach for our purposes is to stick with pre-processing the image as described, but post-process it afterwards to deal with the oversegmentation. In particular, the algorithm we will use is a hierarchical watershed-based transform, known as the waterfall.
 
 >> Concept
 
 - The waterfall transform is a multi-pass hierarchical segmentation algorithm
 - It generates a sequence of partitions of a landscape, each coarser than the last
-- Each pass takes a partition as input, merges some of the regions together, and returns a coarser partition
+- Each pass takes a partition as input, merges some of the catchment basins together, and returns a coarser partition
+- The input partition to the first pass is the output of an initial watershed transform on the landscape
 - The final partition (if we go that far, which is rare) would be the whole landscape
+- In image terms, the way in which this helps the ultimate goal (solving the oversegmentation) is that it iteratively merges some of the regions together in a sensible way, so regions in subsequent partitions tend to both be larger, and correspond to semantically interesting features in our image - we can then search through all the partitions to find interesting regions (as we will see in the following chapter)
 
-<Good diagram like the watershed one>
+>>> A Waterfall Pass
 
->> A Waterfall Pass
+- Conceptually, each pass of the waterfall takes its input partition and first transforms it as shown in the diagram - by created a "stepped" landscape where there is a step corresponding to each watershed boundary with the height of the lowest pass point along that boundary
+- It then performs a watershed transform on this stepped landscape and outputs a coarser partition of the landscape as its result (see diagram)
+- This process can be repeated as long as the latest partition has more than one catchment basin (see diagram)
 
-- The watershed transform is very general - so far, we have only seen it run on images, but it can actually be run on anything that can be viewed as a landscape
-- In the waterfall transform, instead of running it on an image, we run it on a graph: specifically, each waterfall pass performs a watershed transform on the region adjacency graph of the partition it takes as input (see diagram)
+>> Practical Waterfall Algorithms
 
->>> Watershed for Graphs (High-Level Example)
+>>> MST-Based Flooding Approach
 
->>> How we weight the edges of the RAG
+- In practice, transforming a landscape for each waterfall pass would be a slow process. Instead, it is possible to work on a graph, where the edges of the graph correspond to the watershed boundaries and the nodes correspond to regions in the input partition (this graph is known as the region adjacency graph of the input partition). In fact, as shown in \cite{marcotegui05}, it actually suffices to work just on a minimum spanning tree of such a graph. Each waterfall pass then takes such an MST as its input and elides some of the edges in it (this is logically equivalent to merging the partition regions joined by the edges).
 
->> Algorithms
+The weights on the graph edges, in correspondence with the scheme above, are the heights of the lowest pass points along the corresponding boundaries, although other approaches are possible \cite{marcotegui05,?} (they generate different, non-waterfall, hierarchies). The algorithm described in \cite{marcotegui05} is a flooding-based watershed method on MSTs, where each pass does the following:
 
->>> Marcotegui's Algorithm
-
-- This follows the high-level intuition quite closely
-- It works on the minimum spanning tree of the graph (see original paper for why that's ok)
-- Each pass does the following:
-
->>>> Finds the local minima in the graph
->>>> Elides the edges which are part of any of the local minima (this is logically equivalent to merging the partition regions joined by the edges) - the minimal nodes thus formed become markers
->>>> Propagates the markers to the rest of the graph by eliding remaining edges in ascending order of weight (skipping those which would join two markers)
+>>>> Finds the local minima in the MST
+>>>> Elides the edges which are part of any of the local minima - the minimal nodes thus formed become markers
+>>>> Propagates the markers to the rest of the MST by eliding remaining edges in ascending order of weight (skipping those which would join two markers)
 
 >>> Nicholls' Algorithm
 
-- This takes the view that finding the local minima in the graph is unnecessary - instead, we just have to make sure that we never merge all the highest edges between pairs of local minima
-- This makes a much simpler recursive tree algorithm possible
+- The flooding approach just described is quite fast, but (from my own experience) somewhat intricate to code
+- Chris Nicholls' insight was that finding the local minima in the MST explicitly is unnecessary - instead, we just have to make sure that we never merge all the highest edges between pairs of local minima
+- This makes a much simpler recursive algorithm possible (it's also faster than that in \cite{marcotegui05}).
+- Essentially this is a rainfalling watershed tree algorithm, which makes local decisions about which edges to merge
 - etc.
 
 >>> My Algorithm
 
-- This is the graph equivalent of a rainfalling algorithm
+- As we saw in the original watershed discussion above, dealing with non-minimal plateaux and points of ambiguous flow in a landscape are key difficulties associated with watershed methods - this is just as true when applying watershed methods to graphs as when applying them to images, and affects the results
+- There is a genuine choice to be made about what to do in such situations. Unfortunately, \cite{marcotegui05} carefully avoids the issue, saying only that "In order to obtain the final partition, markers are propagated following edges of the MST in increasing order of their valuation.", which is ambiguous when there are edges of equal weight which could be chosen (in practice, my implementation ended up merging the edge which was at the front of a priority queue, which fundamentally depends on how that data structure is implemented). Nicholls' algorithm, by contrast, is forced into making a specific choice of which edge to merge, with the outcome being that it yields different results depending on where you root the MST.
+- In an attempt to deal with the issue in a more robust fashion, I have developed a new rainfalling method for the waterfall which is based on similar principles to the Meijster/Roerdink image watershed method described earlier. Like Nicholl's algorithm, it can be implemented as a recursive tree algorithm, but it requires two recursive passes instead of one. Unlike either algorithm, the MST edges to be kept/merged are well-defined, and do not depend on data structure implementations or the orientation of the MST.
+
+TODO
 
 >>> Comparison and Evaluation
 
