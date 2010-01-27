@@ -472,6 +472,60 @@ TODO: Collect all the techniques just described together and show how they can b
 %---
 \section{The Waterfall Transform}
 
+\subsection{Motivation}
+
+The watershed transform segments a landscape into its catchment basins, but, as we have seen, this often produces a segmentation that contains far too many regions to be useful for the specific application in which we're interested (segmenting medical images, for example). In the specific context of images, pre-processing the image with an edge-preserving filter helps alleviate the problem somewhat, but fails to solve it.
+
+One method that seeks to solve this problem is the so-called `watershed-from-markers' approach \cite{?}. The idea behind this is to specify a priori that only certain local minima in the landscape are semantically interesting. Conceptually, we can do this by filling in all the non-interesting minima and keeping only the interesting ones (see Figure~\ref{fig:segmentation-waterfall-watershedfrommarkers}), although this is not how the approach tends to be implemented in practice \cite{?}. We can thus constrain the watershed to produce an output with a certain number of regions in it (solving the problem of oversegmentation), provided that we can determine the local minima in which we're interested (the markers) in advance.
+
+Marker determination can be either manual or automatic, but both approaches have their problems. In the manual approach, the user simply clicks the interesting local minima and then runs the segmentation. The downside is that the process is not only time-consuming, but non-intuitive: obtaining a desirable segmentation by selecting markers tends to involve a lot of trial-and-error. Automatic approaches are more promising: for example, we could pick the local minima associated with `the n deepest catchment basins' as our markers. The disadvantage in this case is that the results are `all or nothing': a specific automatic marker approach is unlikely to work well for all possible images, and if we get a bad result on a particular image then we have nothing to work with (we are left with a poor segmentation and no obvious way to edit it).
+
+Whilst watershed-from-markers has been used successfully in a variety of situations \cite{?}, the issues just mentioned make it an undesirable approach to use in the context of trying to minimise the amount of user interaction necessary whilst maximising the amount possible (see Chapter~\ref{chap:motivation}). A more usable approach for our purposes is to stick with pre-processing the image as described earlier, but to post-process it afterwards to deal with the oversegmentation. This post-processing comes in the form of a hierarchical watershed-based transform, known as the waterfall.
+
+\subsection{Concept}
+
+The waterfall transform is a multi-pass, hierarchical segmentation method. It generates a sequence of partitions of a landscape, each coarser (i.e.~containing fewer regions) than the one preceding it. An illustration of this is Figure~\ref{fig:segmentation-waterfall-partitionsequence}, which shows the result of applying a waterfall algorithm to an example image.
+
+% TODO: fig: segmentation-waterfall-partitionsequence
+
+Each waterfall pass takes a partition of the landscape as input, merges some of the adjacent catchment basins together, and returns a coarser partition as its result. The input partition to the first pass is the output of an initial watershed transform on the landscape. The final partition (if we go that far) would be the whole landscape, but for most applications the regions contained in the coarsest few partitions are of little semantic interest, so the process is often terminated early.
+
+In image terms, the waterfall helps solve the problem of oversegmentation by iteratively merging some of the regions together in a sensible way, so that regions in subsequent partitions tend to both be larger, and correspond to semantically interesting features in the image. (This will allow us to search through all the partitions to find interesting regions, as we will see in Chapter~\ref{chap:featureid}.)
+
+\subsubsection{A Waterfall Pass}
+
+Conceptually, each pass of the waterfall takes its input partition and first transforms it as shown in Figure~\ref{fig:segmentation-waterfall-passconcept}(a): by creating a `stepped' landscape, where there is a step corresponding to each watershed boundary, with the height of the lowest pass point along that boundary. It then performs a watershed transform on this stepped landscape and outputs a coarser partition of the landscape as its result (see Figure~\ref{fig:segmentation-waterfall-passconcept}(b)). This process can be repeated as long as the most recent partition has more than one catchment basin (see Figure~\ref{fig:segmentation-waterfall-passconcept}(c)).
+
+% TODO: fig:segmentation-waterfall-passconcept
+
+\subsection{Practical Waterfall Algorithms}
+
+\subsubsection{MST-Based Flooding Approach}
+
+TODO
+
+\subsubsection{Nicholls' Algorithm}
+
+TODO
+
+\subsubsection{My Algorithm}
+\label{subsubsec:segmentation-waterfall-myalgorithm}
+
+TODO
+
+\subsubsection{Comparison and Evaluation}
+
+TODO
+
+\subsection{IPF Hierarchy Construction}
+
+TODO (don't forget to discuss the effects of using different pre-processing approaches)
+
+\iffalse
+
+%---
+\section{The Waterfall Transform}
+
 \subsection{Overview}
 
 As mentioned earlier, the watershed transform on its own does not cope well with non-smooth images whose corresponding landscapes have many different catchment basins. Pre-processing the image with an edge-preserving filter helps alleviate the worst of the problem, but the results still tend to be significantly oversegmented.
@@ -526,6 +580,8 @@ TODO
 \subsection{IPF Hierarchy Construction}
 
 TODO (don't forget to discuss the effects of using different pre-processing approaches)
+
+\fi
 
 \iffalse
 

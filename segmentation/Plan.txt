@@ -75,7 +75,7 @@ Constructing IPFs for Medical Images: A Segmentation Problem
 
 >>> A Waterfall Pass
 
-- Conceptually, each pass of the waterfall takes its input partition and first transforms it as shown in the diagram - by created a "stepped" landscape where there is a step corresponding to each watershed boundary with the height of the lowest pass point along that boundary
+- Conceptually, each pass of the waterfall takes its input partition and first transforms it as shown in the diagram - by creating a "stepped" landscape where there is a step corresponding to each watershed boundary with the height of the lowest pass point along that boundary
 - It then performs a watershed transform on this stepped landscape and outputs a coarser partition of the landscape as its result (see diagram)
 - This process can be repeated as long as the latest partition has more than one catchment basin (see diagram)
 
