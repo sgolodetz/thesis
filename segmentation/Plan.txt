@@ -81,11 +81,13 @@ Constructing IPFs for Medical Images: A Segmentation Problem
 
 >> Practical Waterfall Algorithms
 
->>> MST-Based Flooding Approach
-
 - In practice, transforming a landscape for each waterfall pass would be a slow process. Instead, it is possible to work on a graph, where the edges of the graph correspond to the watershed boundaries and the nodes correspond to regions in the input partition (this graph is known as the region adjacency graph of the input partition). In fact, as shown in \cite{marcotegui05}, it actually suffices to work just on a minimum spanning tree of such a graph. Each waterfall pass then takes such an MST as its input and elides some of the edges in it (this is logically equivalent to merging the partition regions joined by the edges).
 
-The weights on the graph edges, in correspondence with the scheme above, are the heights of the lowest pass points along the corresponding boundaries, although other approaches are possible \cite{marcotegui05,?} (they generate different, non-waterfall, hierarchies). The algorithm described in \cite{marcotegui05} is a flooding-based watershed method on MSTs, where each pass does the following:
+The weights on the graph edges, in correspondence with the scheme above, are the heights of the lowest pass points along the corresponding boundaries, although other approaches are possible \cite{marcotegui05,?} (they generate different, non-waterfall, hierarchies).
+
+>>> Marcotegui's Algorithm
+
+The algorithm described in \cite{marcotegui05} is a flooding-based watershed method on MSTs, where each pass does the following:
 
 >>>> Finds the local minima in the MST
 >>>> Elides the edges which are part of any of the local minima - the minimal nodes thus formed become markers

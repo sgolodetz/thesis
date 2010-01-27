@@ -500,9 +500,33 @@ Conceptually, each pass of the waterfall takes its input partition and first tra
 
 \subsection{Practical Waterfall Algorithms}
 
-\subsubsection{MST-Based Flooding Approach}
+In practice, actually transforming the landscape for each waterfall pass would be a slow process and is better avoided. More practical implementations of the waterfall are possible which work on a graph whose edges correspond to watershed boundaries and whose nodes correspond to regions in the input partition (in other words, the region adjacency graph of the input partition: this is illustrated in Figure~\ref{fig:segmentation-waterfall-rag}).
 
-TODO
+% TODO: fig:segmentation-waterfall-rag
+
+In fact, as shown in \cite{marcotegui05}, it actually suffices to work just on a minimum spanning tree (MST) of such a graph (see Appendix~\ref{chap:datastructures}). Each waterfall pass then takes such an MST as its input and elides appropriate edges in it (eliding an edge means combining the nodes at either end of the edge and removing the edge itself from the MST). This has the effect of merging the partition regions joined by the edges (since the nodes which are combined actually represent regions in the partition). It is worth observing in passing (because it sheds some insight on the development of the algorithms which follow) that the goal of a MST-based waterfall algorithm is only to decide which edges in the MST need to be elided: if concerns are properly separated at a code level, the issue of how this elision process takes place can be entirely ignored for the purposes of the waterfall, and different implementations can be substituted for each other with relative impunity.
+
+The weights on the graph edges, in correspondence with the conceptual description of the algorithm given above, are the heights of the lowest pass points along the corresponding watershed boundaries. There is, however, no reason why other valuations for the graph edges cannot be used (indeed, examples are given in \cite{marcotegui05}): these generate different, non-waterfall partition hierarchies.
+
+\subsubsection{Marcotegui's Algorithm}
+
+Since each waterfall pass is effectively just a graph-based waterfall transform, it can be implemented using either a flooding or a rainfalling approach. The algorithm described in \cite{marcotegui05} is an example of the former. Each pass performs a flooding-based watershed transform on MSTs, consisting of the following three steps:
+
+\begin{enumerate}
+
+\item \emph{Determination of Local Minima}. We define a local minimum of a weighted graph G to be a connected subgraph of G whose own edges have equal weight and whose adjacent edges in G have strictly higher weights. Figure~\ref{fig:segmentation-waterfall-marcotegui-graphlocalminimum} shows an example graph and its local minima (drawn as triple edges). Note that the two edges with a weight of $1$ are part of the same local minimum. The first step of the algorithm consists of determining the local minima of the MST. To do this, we iterate over all the edges in the MST and flood outwards from each one to determine (a) whether it's part of a local minimum and (b) the extent of the local minimum if so.
+
+% TODO: fig:segmentation-waterfall-marcotegui-graphlocalminimum
+
+\item \emph{Elision of Local Minima}. Having determined the local minima of the MST, we next elide all the edges in them: this is equivalent to merging minimal plateaux in a landscape into single points to which water can be considered to run down (see Figure~\ref{fig:segmentation-waterfall-marcotegui-localminimaelision}). In the original paper, the nodes at the ends of an edge are assigned the same numeric label, rather than the edge itself being elided, but the end result is the same.
+
+% TODO: fig:segmentation-waterfall-marcotegui-localminimaelision
+
+\item \emph{Propagation}. Finally, we flood out from the nodes which now represent the local minima (so-called `marker nodes') along the edges, in non-decreasing order of edge weight, starting from the edges directly adjacent to the marker nodes. (Depending on how the MST was constructed, it may not be necessary to actually sort the edges here -- in particular, they may already be sorted if Kruskal's algorithm was used.) Each edge considered will either join a marker node to another marker node, in which case it should be ignored (since eliding it would mean merging two catchment basins in the MST), or it will join a marker to a non-marker, in which case it should be elided. An illustration of the process is shown in Figure~\ref{fig:segmentation-waterfall-marcotegui-propagation}.
+
+\end{enumerate}
+
+\noindent A more implementation-focused description of the algorithm, including code, can be found in \cite{golodetz08}.
 
 \subsubsection{Nicholls' Algorithm}
 
