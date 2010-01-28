@@ -552,11 +552,9 @@ Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterf
 %--
 \begin{enumerate}
 
-\item A child edge with minimum value is chosen (if one or more of the children with minimum value is a guard edge, one of those is chosen in preference to a non-guard). This is then referred to as the `lowest child'. The value on the current edge is compared to the value on the lowest child. If its value is less than that of the lowest child, it is marked as a non-guard edge; otherwise it is marked as a guard.
+\item A child edge with minimum value is chosen (if one or more of the children with minimum value is a guard edge, one of those is chosen in preference to a non-guard). This is then referred to as the `lowest child'. The value on the current edge is compared to the value on the lowest child. If its value is less than that of the lowest child, it is marked as a non-guard edge; otherwise it is marked as a guard and the lowest child is marked as a non-guard.
 
-\item If the current edge has been marked as a guard, then the lowest child is elided, regardless of its guard status.
-
-\item All non-guard children (including the lowest child, if it wasn't elided in the step above) are now elided.
+\item All non-guard children are now elided.
 
 \end{enumerate}
 %--
@@ -566,7 +564,17 @@ Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterf
 
 A case analysis of what is going on should prove illuminating. There are in fact only two cases to consider: either the current edge (the parent edge) isn't strictly the lowest leading out of a node, in which case at least part of the implied flow from the node is along the lowest child (see Figure~\ref{fig:segmentation-waterfall-nichollscases}(a)), or it is, in which case the implied flow from the node is entirely along the parent (see Figure~\ref{fig:segmentation-waterfall-nichollscases}(b)). In the first case, the algorithm arbitrarily assumes that all the implied flow is along the lowest child. In both cases, the various child edges are then elided (or not) accordingly.
 
-% TODO: fig:segmentation-waterfall-nichollscases
+%---
+\begin{figure}[t]
+\begin{center}
+	\subfigure[The edge under consideration is not the unique lowest edge]{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-nichollscases-a.png}}%
+	\hspace{4mm}%
+	\subfigure[The edge under consideration is the unique lowest edge]{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-nichollscases-b.png}}%
+\end{center}
+\caption{Case analysis for the recursive step of Nicholls' algorithm: black edges are non-guards, red edges are guards, blue edges are those which have been elided and the green edge is the one under active consideration. The arrow (on the node) indicates the direction in which the algorithm presumes water to flow.}
+\label{fig:segmentation-waterfall-nichollscases}
+\end{figure}
+%---
 
 The arbitrary assumption that all the implied flow is along the lowest child in the first case is this algorithm's way of dealing with non-minimal plateaux in the MST. It is a valid way of dealing with the problem (in that any choice here is arguably valid), but it is not robust: in particular, the selected direction of implied flow from a particular node depends on both where the MST is rooted, and the specific method used to choose the lowest child. It also ignores the possibility that part of the implied flow is along the parent. All of this fundamentally affects which edges are elided, and hence the result of the segmentation. In the following subsection, I will present an alternative tree-based algorithm which deals with this issue in a more robust manner.
 
