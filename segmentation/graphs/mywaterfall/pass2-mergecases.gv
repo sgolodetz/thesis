@@ -1,0 +1,184 @@
+digraph
+{
+	compound = true;
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	/* AaXI, where A = no. of ends ambiguous with flow along the edge, a = no. of ends ambiguous with flow not along the edge,
+	   X = no. of ends non-escapable (no outflow), I = no. of inward-pointing arrows
+
+	   Note that A + a + X <= 2 and a + X + I <= 2
+	   Furthermore, note that I >= A
+	   Also, some of the cases cannot occur in practice */
+
+	subgraph cluster0 /* A0a0X0I0 */
+	{
+		n0g -> n0p [arrowhead=inv];
+		n0p -> n0n [color=red];
+		n0n -> n0c [arrowtail=inv];
+
+		n0g [style=invisible];
+		n0c [style=invisible];
+	}
+
+	subgraph cluster1 /* A0a0X0I1 */
+	{
+		n1g -> n1p;
+		n1p -> n1n [color=blue, arrowtail=inv];
+		n1n -> n1c [arrowtail=inv];
+
+		n1g [style=invisible];
+		n1c [style=invisible];
+	}
+
+	subgraph cluster2 /* A0a0X0I2 */
+	{
+		n2g -> n2p;
+		n2p -> n2n [color=blue, arrowtail=inv, arrowhead=inv];
+		n2n -> n2c;
+
+		n2g [style=invisible];
+		n2c [style=invisible];
+	}
+
+	subgraph cluster3 /* A0a0X1I0 */
+	{
+		n3g -> n3p [arrowhead=inv];
+		n3p -> n3n [color=red];
+		n3n -> n3c0 [arrowhead=inv];
+		n3n -> n3c1 [arrowhead=inv];
+
+		n3g [style=invisible];
+		n3n [style=solid, label="&infin;"];
+		n3c0 [style=invisible];
+		n3c1 [style=invisible];
+	}
+
+	subgraph cluster4 /* A0a0X1I1 */
+	{
+		n4g -> n4p;
+		n4p -> n4n [color=blue, arrowtail=inv];
+		n4n -> n4c0 [arrowhead=inv];
+		n4n -> n4c1 [arrowhead=inv];
+
+		n4g [style=invisible];
+		n4n [style=solid, label="&infin;"];
+		n4c0 [style=invisible];
+		n4c1 [style=invisible];
+	}
+
+	subgraph cluster5 /* A0a0X2I0 */
+	{
+		n5g -> n5p [arrowtail=inv];
+		n5p -> n5n [color=blue];
+		n5p -> n5s [arrowhead=inv];
+		n5n -> n5c0 [arrowhead=inv];
+		n5n -> n5c1 [arrowhead=inv];
+
+		n5g [style=invisible];
+		n5p [style=solid, label="&infin;"];
+		n5n [style=solid, label="&infin;"];
+		n5s [style=invisible];
+		n5c0 [style=invisible];
+		n5c1 [style=invisible];
+	}
+
+	subgraph cluster6 /* A0a1X0I0 */
+	{
+		n6g -> n6p [arrowhead=inv];
+		n6p -> n6n [color=red];
+		n6n -> n6c0 [arrowtail=inv];
+		n6n -> n6c1 [arrowtail=inv];
+
+		n6g [style=invisible];
+		n6n [style=solid];
+		n6c0 [style=invisible];
+		n6c1 [style=invisible];
+	}
+
+	subgraph cluster7 /* A0a1X0I1 */
+	{
+		n7g -> n7p;
+		n7p -> n7n [color=blue, arrowtail=inv];
+		n7n -> n7c0 [arrowtail=inv];
+		n7n -> n7c1 [arrowtail=inv];
+
+		n7g [style=invisible];
+		n7n [style=solid];
+		n7c0 [style=invisible];
+		n7c1 [style=invisible];
+	}
+
+	subgraph cluster8 /* A0a1X1I0 */
+	{
+		n8g -> n8p;
+		n8p -> n8n [color=red];
+		n8n -> n8c0 [arrowtail=inv];
+		n8n -> n8c1 [arrowtail=inv];
+
+		n8g [style=invisible];
+		n8p [style=solid, label="&infin;"];
+		n8n [style=solid];
+		n8c0 [style=invisible];
+		n8c1 [style=invisible];
+	}
+
+	subgraph cluster9 /* A0a2X0I0 */
+	{
+		n9g -> n9p [arrowhead=inv];
+		n9p -> n9n [color=red];
+		n9p -> n9s [arrowtail=inv];
+		n9n -> n9c0 [arrowtail=inv];
+		n9n -> n9c1 [arrowtail=inv];
+
+		n9g [style=invisible];
+		n9p [style=solid];
+		n9n [style=solid];
+		n9s [style=invisible];
+		n9c0 [style=invisible];
+		n9c1 [style=invisible];
+	}
+
+	subgraph cluster10 /* A1a0X0I1 */
+	{
+		n10g -> n10p [arrowhead=inv];
+		n10p -> n10n [color=red, arrowhead=inv];
+		n10n -> n10c0 [arrowtail=inv];
+		n10n -> n10c1;
+
+		n10g [style=invisible];
+		n10n [style=solid];
+		n10c0 [style=invisible];
+		n10c1 [style=invisible];
+	}
+
+	subgraph cluster11 /* A1a0X1I1 */
+	{
+		n11g -> n11p;
+		n11p -> n11n [color=red, arrowhead=inv];
+		n11n -> n11c0 [arrowtail=inv];
+		n11n -> n11c1;
+
+		n11g [style=invisible];
+		n11p [style=solid, label="&infin;"];
+		n11n [style=solid];
+		n11c0 [style=invisible];
+		n11c1 [style=invisible];
+	}
+
+	subgraph cluster12 /* A1a1X0I1 */
+	{
+		n12g -> n12p [label=4, arrowhead=inv];
+		n12p -> n12n [label=5, color=red, arrowhead=inv];
+		n12p -> n12s [label=4, arrowtail=inv];
+		n12n -> n12c0 [label=5, arrowtail=inv];
+		n12n -> n12c1 [label=6];
+
+		n12g [style=invisible];
+		n12p [style=solid];
+		n12n [style=solid];
+		n12s [style=invisible];
+		n12c0 [style=invisible];
+		n12c1 [style=invisible];
+	}
+}

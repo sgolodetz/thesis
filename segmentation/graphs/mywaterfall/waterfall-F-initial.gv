@@ -1,0 +1,16 @@
+digraph
+{
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	n00 -> n10 [label=1];
+	n10 -> n20 [label=4];
+	n20 -> n30 [label=4];
+	n20 -> n31 [label=5];
+	n30 -> n40 [label=4];
+	n31 -> n41 [label=1];
+	n40 -> n50 [label=1];
+
+	n20 [style=solid];
+	n30 [style=solid];
+}

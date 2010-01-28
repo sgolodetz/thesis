@@ -1,0 +1,81 @@
+digraph
+{
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	subgraph cluster0 /* non-plateau, child lowest */
+	{
+		n0p -> n0n [label=5];
+		n0n -> n0c0 [label=4, arrowhead=oinv];
+		n0n -> n0c1 [label=3, arrowtail=inv];
+		n0n -> n0c2 [label=4];
+
+		n0p [style=invisible];
+		n0n [shape=doublecircle];
+		n0c0 [style=solid, label=2];
+	}
+
+	subgraph cluster1 /* non-plateau, parent lowest */
+	{
+		n1p -> n1n [label=2, arrowhead=inv];
+		n1n -> n1c0 [label=6];
+		n1n -> n1c1 [label=5];
+		n1n -> n1c2 [label=4, arrowhead=inv];
+
+		n1p [style=invisible];
+		n1n [shape=doublecircle];
+		n1c1 [style=solid, label=1];
+	}
+
+	subgraph cluster2 /* plateau, not including parent */
+	{
+		n2p -> n2n [label=3];
+		n2n -> n2c0 [label=2, arrowhead=inv];
+		n2n -> n2c1 [label=2, arrowhead=oinv];
+		n2n -> n2c2 [label=2, arrowtail=inv];
+		n2n -> n2c3 [label=4];
+		n2n -> n2c4 [label=2];
+		n2n -> n2c5 [label=2, arrowtail=inv];
+
+		n2p [style=invisible];
+		n2n [shape=doublecircle, style=solid, label=1];
+		n2c1 [style=solid, label="&infin;"];
+		n2c4 [style=solid, label=1];
+	}
+
+	subgraph cluster3 /* plateau, including parent */
+	{
+		n3p -> n3n [label=4, arrowhead=oinv];
+		n3n -> n3c0 [label=5];
+		n3n -> n3c1 [label=4, arrowtail=inv, arrowhead=oinv];
+		n3n -> n3c2 [label=6, arrowhead=oinv];
+		n3n -> n3c3 [label=4, arrowhead=inv];
+		n3n -> n3c4 [label=4, arrowtail=inv];
+
+		n3p [style=invisible];
+		n3n [shape=doublecircle, style=solid, label=2];
+		n3c1 [style=solid, label=1];
+		n3c2 [style=solid, label=2];
+		n3c4 [style=solid, label=1];
+	}
+
+	subgraph cluster4 /* plateau, no exits */
+	{
+		n4p -> n4n [label=5];
+		n4n -> n4c0 [label=4, arrowhead=inv];
+		n4n -> n4c1 [label=4, arrowhead=inv];
+
+		n4p [style=invisible];
+		n4n [shape=doublecircle, style=solid, label="&infin;"];
+	}
+
+	subgraph cluster5 /* plateau, no downward exits */
+	{
+		n5p -> n5n [label=4, arrowhead=oinv];
+		n5n -> n5c0 [label=4, arrowhead=inv];
+		n5n -> n5c1 [label=4, arrowhead=inv];
+
+		n5p [style=invisible];
+		n5n [shape=doublecircle, style=solid, label="&infin;"];
+	}
+}

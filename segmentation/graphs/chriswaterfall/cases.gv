@@ -1,0 +1,62 @@
+digraph
+{
+	compound = true;
+	node [shape=circle, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	subgraph cluster1before
+	{
+		n1g -> n1p [label=4, color=green, penwidth=3];
+		n1p -> n1c0 [label=3, color=red];
+		n1p -> n1c1 [label=3];
+		n1p -> n1c2 [label=2];
+		n1p -> n1c3 [label=2, color=red];
+		n1p -> n1c4 [label=2, color=red];
+		n1c0 -> n1d0 [label=1, color=blue];
+		n1c3 -> n1d3 [label=1, color=blue];
+		n1c4 -> n1d4 [label=1, color=blue];
+	}
+
+	subgraph cluster1after
+	{
+		n1g_ -> n1p_ [label=4, color=red, penwidth=3];
+		n1p_ -> n1c0_ [label=3, color=red];
+		n1p_ -> n1c1_ [label=3, color=blue];
+		n1p_ -> n1c2_ [label=2, color=blue];
+		n1p_ -> n1c3_ [label=2, color=blue, arrowtail=inv];
+		n1p_ -> n1c4_ [label=2, color=red];
+		n1c0_ -> n1d0_ [label=1, color=blue];
+		n1c3_ -> n1d3_ [label=1, color=blue];
+		n1c4_ -> n1d4_ [label=1, color=blue];
+	}
+
+	n1p -> n1p_ [arrowhead=normal, color=red, ltail=cluster1before, lhead=cluster1after, constraint=false];
+
+	subgraph cluster2before
+	{
+		n2g -> n2p [label=1, color=green, penwidth=3];
+		n2p -> n2c0 [label=3, color=red];
+		n2p -> n2c1 [label=3];
+		n2p -> n2c2 [label=2];
+		n2p -> n2c3 [label=2, color=red];
+		n2p -> n2c4 [label=2, color=red];
+		n2c0 -> n2d0 [label=1, color=blue];
+		n2c3 -> n2d3 [label=1, color=blue];
+		n2c4 -> n2d4 [label=1, color=blue];
+	}
+
+	subgraph cluster2after
+	{
+		n2g_ -> n2p_ [label=1, penwidth=3, arrowhead=inv];
+		n2p_ -> n2c0_ [label=3, color=red];
+		n2p_ -> n2c1_ [label=3, color=blue];
+		n2p_ -> n2c2_ [label=2, color=blue];
+		n2p_ -> n2c3_ [label=2, color=red];
+		n2p_ -> n2c4_ [label=2, color=red];
+		n2c0_ -> n2d0_ [label=1, color=blue];
+		n2c3_ -> n2d3_ [label=1, color=blue];
+		n2c4_ -> n2d4_ [label=1, color=blue];
+	}
+
+	n2p -> n2p_ [arrowhead=normal, color=red, ltail=cluster2before, lhead=cluster2after, constraint=false];
+}

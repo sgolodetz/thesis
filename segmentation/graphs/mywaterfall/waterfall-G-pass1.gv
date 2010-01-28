@@ -1,0 +1,16 @@
+digraph
+{
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	n00 -> n10 [label=4, arrowhead=oinv];
+	n00 -> n11 [label=4, arrowhead=inv];
+	n10 -> n20 [label=4, arrowhead=inv];
+	n10 -> n21 [label=4, arrowhead=oinv];
+	n21 -> n30 [label=4, arrowhead=inv];
+	n21 -> n31 [label=4, arrowhead=inv];
+
+	n00 [style=solid, label="&infin;"];
+	n10 [style=solid, label="&infin;"];
+	n21 [style=solid, label="&infin;"];
+}

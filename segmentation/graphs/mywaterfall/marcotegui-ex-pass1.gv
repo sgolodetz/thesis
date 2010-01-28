@@ -1,0 +1,33 @@
+digraph
+{
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	n00 -> n10 [label=3, arrowhead=inv];
+	n00 -> n11 [label=20];
+	n00 -> n12 [label=2, arrowtail=inv, arrowhead=inv];
+	n11 -> n20 [label=4, arrowtail=inv];
+	n11 -> n21 [label=10];
+	n20 -> n30 [label=2, arrowtail=inv, arrowhead=inv];
+	n21 -> n31 [label=5, arrowtail=inv, arrowhead=oinv];
+	n31 -> n40 [label=5, arrowhead=oinv];
+	n31 -> n41 [label=5, arrowtail=inv];
+	n40 -> n50 [label=5, arrowtail=inv, arrowhead=oinv];
+	n41 -> n51 [label=2, arrowtail=inv, arrowhead=inv];
+	n41 -> n52 [label=20];
+	n50 -> n60 [label=5, arrowtail=inv];
+	n52 -> n61 [label=4, arrowhead=inv];
+	n52 -> n62 [label=4, arrowhead=inv];
+	n60 -> n70 [label=1, arrowtail=inv, arrowhead=inv];
+	n60 -> n71 [label=4];
+	n71 -> n80 [label=3, arrowtail=inv];
+	n71 -> n81 [label=3, arrowtail=inv];
+	n80 -> n90 [label=1, arrowtail=inv, arrowhead=inv];
+	n81 -> n91 [label=1, arrowtail=inv, arrowhead=inv];
+
+	n31 [style=solid, label=1];
+	n40 [style=solid, label=2];
+	n50 [style=solid, label=1];
+	n52 [style=solid, label="&infin;"];
+	n71 [style=solid, label=1];
+}

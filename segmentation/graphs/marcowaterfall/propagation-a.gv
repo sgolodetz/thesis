@@ -1,0 +1,30 @@
+digraph
+{
+	compound = true;
+	node [shape=circle, style=filled, color=black, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	n0 -> n1 [label=3, color=green];
+	n1 -> n2 [label=2, color=blue];
+	n1 -> n3 [label=20, color=green];
+	n3 -> n4 [label=4, color=green];
+	n3 -> n5 [label=10];
+	n4 -> n6 [label=2, color=blue];
+	n5 -> n7 [label=5];
+	n7 -> n8 [label=5, color=green];
+	n8 -> n9 [label=4, color=green];
+	n8 -> n10 [label=2, color=blue];
+	n8 -> n11 [label=20, color=green];
+	n11 -> n12 [label=4, color=blue];
+	n11 -> n13 [label=4, color=blue];
+
+	n1 [color=purple];
+	n2 [color=purple];
+	n4 [color=yellow];
+	n6 [color=yellow];
+	n8 [color=cyan];
+	n10 [color=cyan];
+	n11 [color=pink];
+	n12 [color=pink];
+	n13 [color=pink];
+}

@@ -1,0 +1,20 @@
+digraph
+{
+	compound = true;
+	node [shape=point, color=black, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	n0 -> n1 [label=3];
+	n1 -> n2 [label=2, color=red, penwidth=3];
+	n1 -> n3 [label=20];
+	n3 -> n4 [label=4];
+	n3 -> n5 [label=10];
+	n4 -> n6 [label=2, color=red, penwidth=3];
+	n5 -> n7 [label=5];
+	n7 -> n8 [label=5];
+	n8 -> n9 [label=4];
+	n8 -> n10 [label=2, color=red, penwidth=3];
+	n8 -> n11 [label=20];
+	n11 -> n12 [label=4, color=red, penwidth=3];
+	n11 -> n13 [label=4, color=red, penwidth=3];
+}
