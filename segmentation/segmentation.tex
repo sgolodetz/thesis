@@ -609,7 +609,49 @@ The arbitrary assumption that all the implied flow is along the lowest child in 
 \subsubsection{My Algorithm}
 \label{subsubsec:segmentation-waterfall-myalgorithm}
 
-TODO
+Referring back to Meijster and Roerdink's image watershed algorithm in \S\ref{subsec:segmentation-watershed-greyscale}, we observe that one robust way of dealing with the problem of non-minimal plateaux in a landscape is to first transform the image to make it lower-complete: that is, we transform it into an image where every pixel that is not within a local minimum has a lower neighbour. The method for making the image lower-complete described in \cite{meijster98} has the effect of treating pixels which are further from the border of a plateau as being in some sense `higher' than those on the boundary. The same sort of idea can be applied in the context of a waterfall pass (although it is not necessary to actually transform the MST to make it lower-complete): where there are non-minimal plateaux in the MST, we can arrange to treat the nodes further from the border of the plateaux as being `higher' than their boundary counterparts. As we will see, this enables a robust decision to be made about which edges should be elided.
+
+The proposed algorithm is tree-based, and works in two recursive passes. The first pass works up the tree from the leaf nodes, marking initial path(s) of steepest descent from each node whilst allowing for the fact that they may need to be refined later. The second pass works down the tree from the root, updating the path(s) for each node to take account of routes via parent edges and eliding edges as necessary. The MST can be rooted anywhere in order to form the input tree -- the results are the same for any choice of root. In detail, the algorithm works as follows:
+
+%-
+\begin{enumerate}
+
+\item \emph{Up Pass}. For each node, starting from the root:
+
+%--
+\begin{enumerate}
+
+\item Recursively process any children (the fact that the children are processed first is the reason for this being called an `up' pass).
+
+\item If this node has a unique edge of steepest descent (i.e.~a unique lowest-valued edge leading out of it, which can be the parent edge), add an arrow on the node pointing along the edge.
+
+\item Otherwise, consider all the lowest-valued child edges (i.e.~ignore the parent for now, even if it is also a lowest-valued edge) which satisfy the condition that there is no arrow on the node at the other end of the edge pointing along the edge towards this node. If there are no such child edges, then this node is unescapable along a child edge and should be given a distance value of $\infty$. Otherwise, each of these child edges can be assigned a distance value equal to $1$ greater than the value on the node at the other end of the edge: this value on the node will be $0$ for nodes from which there is a unique path of steepest descent, and non-zero otherwise. Pick all the child edges whose distance value is minimal and add arrows to this node pointing along them (these indicate the initial paths of steepest descent from this node). Store the minimum distance value as this node's value.
+
+\item Now consider the parent edge: if it was a lowest-valued edge, mark it as a potential path of steepest descent to avoid the need to check again in the second pass (in the diagram, an open-headed arrow is used to mark a parent edge for later processing).
+
+\end{enumerate}
+%--
+
+\item \emph{Down Pass}. For each node, starting from the root:
+
+%--
+\begin{enumerate}
+
+\item \emph{Check upwards route}. If a node was marked as having a potential upwards path of steepest descent, first check to make sure that there is no arrow on the parent node pointing down the edge to this node. If not, there is a possible route upwards whose distance value is $1$ greater than the value on the parent node. This is compared to any existing routes downwards via child edges. If the upwards route is strictly better, the downwards arrows are removed, the upwards route is marked and the distance value on the node is updated to reflect the better route. If the upwards route is equally good, the parent edge is marked but no other changes are made. If the upwards route is worse, it is simply ignored.
+
+\item \emph{Check whether parent edge (if any) should be elided}. The decision on whether or not to elide an edge is based on a classification of its two end nodes with respect to the edge itself (this is why it can only be done at this point in the algorithm). Nodes can be classified into one of five types with respect to the edge: unambiguous in (the flow from the node goes only along this edge), ambiguous in (part, but not all, of the flow from the node goes along this edge), unambiguous out (the flow from the node goes along precisely one of the other edges leading out of it), ambiguous out (the flow from the node goes along at least two of the other edges leading out of it) and no flow (there is no flow from the node at all). Based on these classifications, the parent edge is either elided or not according to the case analysis shown in Figure~\ref{fig:segmentation-waterfall-smg-mergecases}. Note that there are only $13$ cases possible, rather than the expected $15$: \{ambiguous in, ambiguous in\} and \{ambiguous in, unambiguous in\} can never occur due to the way the algorithm works.
+
+\item \emph{Recurse on any children}.
+
+\end{enumerate}
+%--
+
+\end{enumerate}
+%-
+
+% TODO: fig:segmentation-waterfall-smg-mergecases
+
+
 
 \subsubsection{Comparison and Evaluation}
 
