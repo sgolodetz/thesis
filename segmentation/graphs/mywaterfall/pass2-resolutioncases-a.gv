@@ -1,0 +1,32 @@
+digraph
+{
+	compound = true;
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	subgraph clusterBefore /* arrow from parent points towards us */
+	{
+		g -> p [label=3, arrowtail=inv];
+		p -> n [label=3, arrowtail=inv, arrowhead=oinv];
+		p -> s [label=4];
+
+		g [style=invisible];
+		p [style=solid, label=2];
+		n [shape=doublecircle, style=solid, label=1];
+		s [style=invisible];
+	}
+
+	subgraph clusterAfter
+	{
+		g_ -> p_ [label=3, arrowtail=inv];
+		p_ -> n_ [label=3, arrowtail=inv];
+		p_ -> s_ [label=4];
+
+		g_ [style=invisible];
+		p_ [style=solid, label=2];
+		n_ [shape=doublecircle, style=solid, label=1];
+		s_ [style=invisible];
+	}
+
+	p -> p_ [arrowhead=normal, color=red, ltail=clusterBefore, lhead=clusterAfter, constraint=false];
+}

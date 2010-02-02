@@ -1,0 +1,18 @@
+digraph
+{
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	p -> n [label=3];
+	n -> c0 [label=2, arrowhead=inv];
+	n -> c1 [label=2, arrowhead=oinv];
+	n -> c2 [label=2, arrowtail=inv];
+	n -> c3 [label=4];
+	n -> c4 [label=2];
+	n -> c5 [label=2, arrowtail=inv];
+
+	p [style=invisible];
+	n [shape=doublecircle, style=solid, label=1];
+	c1 [style=solid, label="&infin;"];
+	c4 [style=solid, label=1];
+}

@@ -1,0 +1,38 @@
+digraph
+{
+	compound = true;
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	subgraph clusterBefore /* arrow points away, parent escapable, value = 1 + parent value */
+	{
+		p -> n [label=3, arrowhead=oinv];
+		p -> s [label=1, arrowtail=inv, arrowhead=inv];
+		n -> c0 [label=3, arrowtail=inv];
+		n -> c1 [label=4];
+		n -> c2 [label=3, arrowtail=inv];
+
+		n [shape=doublecircle, style=solid, label=1];
+		s [style=invisible];
+		c0 [style=invisible];
+		c1 [style=invisible];
+		c2 [style=invisible];
+	}
+
+	subgraph clusterAfter
+	{
+		p_ -> n_ [label=3, arrowhead=inv];
+		p_ -> s_ [label=1, arrowtail=inv, arrowhead=inv];
+		n_ -> c0_ [label=3, arrowtail=inv];
+		n_ -> c1_ [label=4];
+		n_ -> c2_ [label=3, arrowtail=inv];
+
+		n_ [shape=doublecircle, style=solid, label=1];
+		s_ [style=invisible];
+		c0_ [style=invisible];
+		c1_ [style=invisible];
+		c2_ [style=invisible];
+	}
+
+	p -> p_ [arrowhead=normal, color=red, ltail=clusterBefore, lhead=clusterAfter, constraint=false];
+}

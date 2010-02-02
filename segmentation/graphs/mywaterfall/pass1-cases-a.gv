@@ -1,0 +1,14 @@
+digraph
+{
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	p -> n [label=5];
+	n -> c0 [label=4, arrowhead=oinv];
+	n -> c1 [label=3, arrowtail=inv];
+	n -> c2 [label=4];
+
+	p [style=invisible];
+	n [shape=doublecircle];
+	c0 [style=solid, label=2];
+}
