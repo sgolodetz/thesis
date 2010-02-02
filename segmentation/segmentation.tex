@@ -75,7 +75,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 The watershed transform is commonly thought of not in the abstract terms just described, but as an image segmentation method. In particular, it is often used to segment grey-scale images. This requires a conceptual mapping that lets us view grey-scale images as landscapes. For example, we can view a 2D, grey-scale image $I$ as a height map (see Figure~\ref{fig:segmentation-watershed-landscapeanalogy}), where the grey value of the image at coordinates $(x,y)$ gives us the height of the landscape at that point. An analogous mapping can be made in higher dimensions (and specifically in three dimensions), although this is harder to visualize. The regions produced by applying an image algorithm for a watershed transform correspond to the catchment basins of the discrete landscape to which the image corresponds (see Figure~\ref{fig:segmentation-watershed-regionbasincorrespondence}).
 
 %---
-\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy: Viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{t}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy -- viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{t}
 %---
 
 % TODO: fig-segmentation-watershed-regionbasincorrespondence
@@ -148,7 +148,7 @@ The lower-complete transformation can be implemented straightforwardly using a b
 %---
 
 %---
-\begin{stulisting}[t]
+\begin{stulisting}[p]
 \caption{The Lower-Complete Transformation}
 \label{code:segmentation-watershed-lowercomplete}
 \begin{lstlisting}[style=Default]
@@ -218,7 +218,7 @@ The arrow assignment process works as follows. Firstly, one of the pixels in eac
 The implementation (see Listing~\ref{code:segmentation-watershed-arrowassignment}) uses Tarjan's disjoint-set forest data structure (see Appendix~\ref{?}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points of minimal plateaux during this phase of the process. The results of the arrow assignment are shown in Figure~\ref{fig:segmentation-watershed-example}(c).
 
 %---
-\begin{stulisting}[t]
+\begin{stulisting}[p]
 \caption{Arrow Assignment}
 \label{code:segmentation-watershed-arrowassignment}
 \begin{lstlisting}[style=Default]
@@ -278,7 +278,7 @@ function construct_arrows
 Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{code:segmentation-watershed-labelling}). The process can be made more efficient by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint-set forests are implemented (see Appendix~\ref{?}). The output of Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
 
 %---
-\begin{stulisting}[t]
+\begin{stulisting}[p]
 \caption{Labelling}
 \label{code:segmentation-watershed-labelling}
 \begin{lstlisting}[style=Default]
