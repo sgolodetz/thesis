@@ -308,7 +308,21 @@ Grey-scale image watershed algorithms like the one just described segment the im
 
 What we need is a way of transforming our input image into one where the features of interest correspond more directly to its catchment basins. Unfortunately there is no domain-independent solution to this (it depends on the type of image we are segmenting and the sort of features in which we're interested), but it is possible to come up with suitable transformations on a domain-by-domain basis. Our goal in the case of medical images is generally to segment things like organs. The grey value in the images tends to vary relatively slowly across individual organs and relatively quickly at their edges because of the tissue types involved (another way of saying this is that the organs tend to be homogeneous). The intuition is therefore that the value of the gradient magnitude is relatively low within organs, and relatively high at their edges (see Figure~\ref{fig:segmentation-watershed-gradientmagnitude}), so by running the watershed on the gradient magnitude image instead of the original input we can get a much better correspondence between organs and catchment basins (i.e.~a much better segmentation result). It should be noted, however, that this scheme is of less use to us when our goal is to segment inhomogeneous features like tumours.
 
-% TODO: fig:segmentation-watershed-gradientmagnitude
+%---
+\begin{figure}[t]
+\begin{center}
+	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-medicalimage.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The corresponding gradient magnitude image]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-gradientmagnitudemedicalimage.png}}%
+\end{center}
+\caption{To a first approximation, the value of the gradient magnitude image is relatively low within organs, and relatively high at their edges}
+\label{fig:segmentation-watershed-gradientmagnitude}
+\end{figure}
+%---
 
 \subsubsection{Smoothness}
 
@@ -465,7 +479,8 @@ TODO
 \item Mention that the impact they have on the output of the waterfall will be addressed after that has been described
 \end{itemize}
 
-\subsection{IPF Leaf Layer Construction}
+%---
+\section{IPF Leaf Layer Construction}
 
 TODO: Collect all the techniques just described together and show how they can be used to generate the IPF leaf layer
 
@@ -717,7 +732,8 @@ It is possible to perform a case analysis for the first pass and the route resol
 
 TODO
 
-\subsection{IPF Hierarchy Construction}
+%---
+\section{IPF Hierarchy Construction}
 
 TODO (don't forget to discuss the effects of using different pre-processing approaches)
 
