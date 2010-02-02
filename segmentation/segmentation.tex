@@ -649,7 +649,9 @@ The proposed algorithm is a tree-based rainfalling method, and works in two recu
 \end{enumerate}
 %-
 
-% TODO: fig:segmentation-waterfall-smg-mergecases
+%---
+\stufigex{width=.95\linewidth}{segmentation/segmentation-waterfall-smg-mergecases.png}{Case analysis for the edge elision step of my waterfall algorithm}{fig:segmentation-waterfall-smg-mergecases}{t}
+%---
 
 It is possible to perform a case analysis for the first pass and the route resolution step 2(a) as well (see Figures~\ref{fig:segmentation-waterfall-smg-pass1cases} and \ref{fig:segmentation-waterfall-smg-resolutioncases}), and this is helpful to clarify how the algorithm works. As illustrated in the diagram, there are six cases for the first pass: (a) the node has a unique path of steepest descent down a child edge; (b) the node has a unique path of steepest descent up the parent edge; (c) the node has more than one path of steepest descent (and the parent edge is not a possible path of steepest descent); (d) the node has more than one \emph{downwards} path of steepest descent (but the parent edge still needs to be considered); (e) there is no flow out of the node and (f) there is no downwards flow out of the node (but the parent edge still needs to be considered). For the resolution step, there are four cases: (a) the arrow from the parent node points towards us; (b) there is no flow from the parent node; (c) there is an equally good route via the parent node and (d) there is a better route via the parent node.
 
