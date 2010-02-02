@@ -53,6 +53,9 @@ Constructing IPFs for Medical Images: A Segmentation Problem
 
 >> IPF Leaf Layer Construction
 
+- We have seen, then, that in order to use the watershed transform to segment medical images, we must first smooth the image using edge-preserving filtering to reduce the number of spurious local minima which make the watershed oversegment the image, and then take the gradient magnitude of this smoothed image in an attempt to make interesting features in the image correspond to catchment basins in the image's associated landscape. This smoothed, gradient magnitude image can then be processed using an image watershed algorithm: in the case of the watershed algorithm used here, that yields an image of numeric labels as its output, where the labels indicate which regions the various pixels are in (see diagram).
+- TODO
+
 ###
 
 > The Waterfall Transform
