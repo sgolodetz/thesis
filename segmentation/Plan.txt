@@ -51,10 +51,7 @@ Constructing IPFs for Medical Images: A Segmentation Problem
 
 >>>> Comparison
 
->> IPF Leaf Layer Construction
-
-- We have seen, then, that in order to use the watershed transform to segment medical images, we must first smooth the image using edge-preserving filtering to reduce the number of spurious local minima which make the watershed oversegment the image, and then take the gradient magnitude of this smoothed image in an attempt to make interesting features in the image correspond to catchment basins in the image's associated landscape. This smoothed, gradient magnitude image can then be processed using an image watershed algorithm: in the case of the watershed algorithm used here, that yields an image of numeric labels as its output, where the labels indicate which regions the various pixels are in (see diagram).
-- TODO
+>>> Summary
 
 ###
 
@@ -114,9 +111,53 @@ TODO
 
 >>> Comparison and Evaluation
 
->> IPF Hierarchy Construction
+> IPF Construction
 
-- Each layer of the IPF is a region adjacency graph which can be used as input to a waterfall pass. For each pass of the waterfall, we clone the top-most layer of the IPF and run the waterfall pass on the clone.
+(- Each layer of the IPF is a region adjacency graph which can be used as input to a waterfall pass. For each pass of the waterfall, we clone the top-most layer of the IPF and run the waterfall pass on the clone.)
+
+>> Overview
+
+- Having seen how the watershed and waterfall transforms can be implemented, it remains to demonstrate how they can be used to construct an image partition forest as defined in the previous chapter.
+- The first step is illustrate the sort of IPF we want to create (see diagram). The leaf layer corresponds directly to the original image, in that each node in it corresponds to a pixel in the image. The branch layers represent partitions of the image that become increasingly coarse as we ascend the forest. (Of course, the leaf layer is itself a partition of the image, if a trivial one.)
+- We observe that the watershed process described produces an initial (relatively fine) partition of the image, which is then iteratively refined by the waterfall to give a sequence of ever coarser partitions. The idea is therefore that the lowest branch layer of the forest will correspond to the initial partition of the image output by the watershed, with higher branch layers being created by the waterfall.
+
+>>> Region Properties
+
+>>>> Discussion
+
+- As per the description of IPFs in the previous chapter, it is possible to associate properties with forest nodes that -- when IPFs are used with images -- in some way describe the image regions they represent. This can be used to provide necessary information to feature identification algorithms, in particular those that will be described in the next chapter. (As a simple example, such algorithms might look for regions whose mean grey value was greater than a certain threshold.)
+- The decision about which properties to provide evidently depends on the feature identification algorithms in use. For the IPF algorithms to work, however, it must be possible to calculate the set of properties for a particular node from the properties of its children. We will see that for certain properties (such as elongatedness), it may be necessary to augment the set of properties chosen in order to provide sufficient information in the properties of the children for this to be possible.
+- It is not necessary, however, for nodes in every layer to have the same set of properties: the ability to combine the properties of the various children of a node to obtain the properties of the node itself is sufficient. This allows us to make a space optimization for the leaf layer, whose many nodes represent individual pixels in the image. For these nodes, there is no need to store e.g.~properties such as the area of the represented region, since it is trivially 1 for every node in the layer. When calculating the properties of the lowest branch layer from its children in the leaf layer, it is easy enough to treat the children as having an area of 1, without needing to explicitly store it anywhere.
+
+>>>> Chosen Property Sets
+
+- For the feature identification algorithms in the following chapter, the properties needed for leaf nodes are:
+
+* Feature ID
+* Grey Value
+
+- For branch nodes, the necessary properties are:
+
+* Area
+* Central Moments
+* Centroid
+* Elongatedness
+* Feature ID
+* Grey Value Max
+* Grey Value Mean
+* Grey Value Variance
+
+- It remains to show two things: that properties for several leaf nodes can be combined to determine the properties of their (branch node) parent, and that properties of several branch nodes can likewise be combined.
+
+- In the first case, TODO
+
+>> Constructing the lowest two layers using the watershed
+
+- With this in mind, TODO
+
+>> Constructing the higher layers using the waterfall
+
+TODO
 
 > Chapter Summary
 

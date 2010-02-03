@@ -733,6 +733,66 @@ TODO
 
 TODO (don't forget to discuss the effects of using different pre-processing approaches)
 
+\subsection{Overview}
+
+Having now seen how the watershed and waterfall transforms can be implemented, it remains to demonstrate how they can be used to construct an image partition forest as defined in the previous chapter. The first step is illustrate the sort of IPF we want to create (see Figure~\ref{fig:segmentation-ipfconstruction-goal}). The leaf layer corresponds directly to the original image, in that each node in it corresponds to a pixel in the image. The branch layers represent partitions of the image that become increasingly coarse as we ascend the forest. (Of course, the leaf layer is itself a partition of the image, if a trivial one.)
+
+% TODO: fig:segmentation-ipfconstruction-goal
+
+We observe that the watershed process described produces an initial (relatively fine) partition of the image, which is then iteratively refined by the waterfall to give a sequence of ever coarser partitions. The idea, therefore, is that the lowest branch layer of the forest will correspond to the initial partition of the image output by the watershed, with higher branch layers being created by the waterfall.
+
+\subsubsection{Region Properties}
+
+\paragraph{Discussion}
+
+As per the description of IPFs in the previous chapter, it is possible to associate properties with forest nodes that in some way describe the regions they represent. We can use this to provide necessary information to feature identification algorithms, in particular those that will be described in the next chapter. (As a simple example, such algorithms might look for regions whose mean grey value was greater than a certain threshold, and we might arrange for a mean grey value property to be calculated for each region to support this.)
+
+The decision about which properties to provide evidently depends on the feature identification algorithms in use. For the IPF algorithms to work, however, we have to bear in mind that it must be possible to calculate the set of properties for a particular node from the properties of its children. We will see that for certain properties (such as elongatedness), it may be necessary to augment the set of properties chosen in order to provide sufficient information in the properties of the children for this to be possible.
+
+It is not necessary, however, for nodes in every layer to have the same set of properties: the ability to combine the properties of the various children of a node to obtain the properties of the node itself is sufficient. For our application, this allows us to make a space optimization for the leaf layer, whose many nodes represent individual pixels in the image. For these nodes, there is no need to store e.g.~properties such as the area of the represented region, since it is trivially $1$ for every node in the layer. When calculating the properties of the lowest branch layer from its children in the leaf layer, it is easy enough to treat the children as having an area of $1$, without needing to explicitly store it anywhere.
+
+\paragraph{Chosen Property Sets}
+
+For the feature identification algorithms in Chapter~\ref{chap:featureid}, at least, the properties needed for leaf nodes are:
+
+\begin{itemize}
+
+\item \emph{Feature ID}. One of an application-specific set of possible labels. The set used here is: \{None, Aorta, Inferior Vena Cava, Left Kidney, Liver, Other Artery, Other Vein, Rib, Right Kidney, Spinal Cord, Spine, Spleen, Tumour (Necrotic), Tumour (Normal)\}. Initially set to `None', prior to identifying any image features.
+
+\item \emph{Grey Value}. The value of the pixel in the grey value image that results from applying a CT windowing transformation to the original Hounsfield image.
+
+\item \emph{Hounsfield Value}. The original Hounsfield Unit (HU) value of the pixel.
+
+\end{itemize}
+
+\noindent For branch nodes, the necessary properties are:
+
+\begin{itemize}
+\item \emph{Area}. The area of the region, in pixels.
+\item \emph{Central Moments}. TODO
+\item \emph{Centroid}. The centre of the region, as a vector $\in \mathbb{R}^3$.
+\item \emph{Elongatedness}. TODO
+\item \emph{Feature ID}. As above.
+\item \emph{Grey Value Max}. The maximum grey value of a pixel in the region.
+\item \emph{Grey Value Mean}. The mean grey value of a pixel in the region, as a scalar $\in \mathbb{R}$.
+\item \emph{Grey Value Variance}. The variance of the distribution of grey values for all pixels in the region.
+\item \emph{Hounsfield Value Max}. The maximum HU value of a pixel in the region.
+\item \emph{Hounsfield Value Mean}. The mean HU value of a pixel in the region.
+\item \emph{Hounsfield Value Variance}. The variance of the HU distribution for all pixels in the region.
+\end{itemize}
+
+\noindent It is necessary to show how properties for several leaf nodes can be combined to determine the properties of their (branch node) parent, and how properties of several branch nodes can likewise be combined.
+
+TODO
+
+\subsection{Constructing the Lowest Two Layers}
+
+TODO
+
+\subsection{Constructing the Higher Layers}
+
+TODO
+
 %---
 \section{Chapter Summary}
 
