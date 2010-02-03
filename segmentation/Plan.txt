@@ -162,3 +162,7 @@ TODO
 > Chapter Summary
 
 - Done
+
+...
+
+NOTE: CT Windowing Transform!! -> put something about this under Segmenting Medical Images
