@@ -28,7 +28,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 \end{enumerate}
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[Finding a path of steepest descent from each point]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-rainfallingconcept-a.png}}%
@@ -44,7 +44,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 %---
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[Beginning the flooding]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-a.png}}%
@@ -75,7 +75,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 The watershed transform is commonly thought of not in the abstract terms just described, but as an image segmentation method. In particular, it is often used to segment grey-scale images. This requires a conceptual mapping that lets us view grey-scale images as landscapes. For example, we can view a 2D, grey-scale image $I$ as a height map (see Figure~\ref{fig:segmentation-watershed-landscapeanalogy}), where the grey value of the image at coordinates $(x,y)$ gives us the height of the landscape at that point. An analogous mapping can be made in higher dimensions (and specifically in three dimensions), although this is harder to visualize. The regions produced by applying an image algorithm for a watershed transform correspond to the catchment basins of the discrete landscape to which the image corresponds (see Figure~\ref{fig:segmentation-watershed-regionbasincorrespondence}).
 
 %---
-\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy -- viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{t}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy -- viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{p}
 %---
 
 % TODO: fig-segmentation-watershed-regionbasincorrespondence
@@ -95,7 +95,7 @@ A singular minimum of an image is a point whose neighbours are all strictly high
 \paragraph{Overview} The approach taken by rainfalling algorithms for the watershed transform, as noted above, is to find a path of steepest descent from each point in the landscape to a local minimum in the landscape (the base of a catchment basin). This is complicated by the fact that there may be non-minimal plateaux (flat areas) in the image: if water were dropped on a pixel in the middle of a non-minimal plateau, the direction in which it would run off would be unclear. To circumvent this problem, the Meijster/Roerdink algorithm starts by transforming the image to make sure every non-minimal pixel has a lower neighbour, thus forming what is known as a lower-complete image. The rest of the algorithm is then split into two stages: in the first stage, each pixel is assigned an arrow pointing to one of its lowest neighbours, and in the second stage, these arrows are followed to find the local minimum associated with each pixel. Each local minimum has a catchment basin, which is defined as all the pixels whose paths of steepest descent lead to it. It is worth observing that points can have more than one path of steepest descent (see Figure~\ref{fig:segmentation-watershed-steepestdescent}): the decision of which one to follow for each point depends on how the arrows are assigned. Different choices lead to subtly different results, and it is important that arrows are at the very least assigned deterministically, so that the results don't vary from one run of the algorithm to the next.
 
 %---
-\stufigex{height=7cm}{segmentation/segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{t}
+\stufigex{height=7cm}{segmentation/segmentation-watershed-steepestdescent.png}{The flow direction at a point is ambiguous if it has more than one path of steepest descent}{fig:segmentation-watershed-steepestdescent}{p}
 %---
 
 \paragraph{The Lower-Complete Transformation}
@@ -105,7 +105,7 @@ The lower-complete transformation described in \cite{meijster98} essentially wor
 The lower-complete transformation can be implemented straightforwardly using a breadth-first search (see Listing~\ref{code:segmentation-watershed-lowercomplete}). The results of the transformation are illustrated in Figure~\ref{fig:segmentation-watershed-example}: an example image is shown in (a), and the result of making it lower-complete is shown in (b).
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[The `intuition' is to raise plateau pixels by their distance from the edge]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau-a.png}}%
@@ -126,7 +126,7 @@ The lower-complete transformation can be implemented straightforwardly using a b
 %---
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[The original image]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example-a.png}}%
 	%
@@ -309,7 +309,7 @@ Grey-scale image watershed algorithms like the one just described segment the im
 What we need is a way of transforming our input image into one where the features of interest correspond more directly to its catchment basins. Unfortunately there is no domain-independent solution to this (it depends on the type of image we are segmenting and the sort of features in which we're interested), but it is possible to come up with suitable transformations on a domain-by-domain basis. Our goal in the case of medical images is generally to segment things like organs. The grey value in the images tends to vary relatively slowly across individual organs and relatively quickly at their edges because of the tissue types involved (another way of saying this is that the organs tend to be homogeneous). The intuition is therefore that the value of the gradient magnitude is relatively low within organs, and relatively high at their edges (see Figure~\ref{fig:segmentation-watershed-gradientmagnitude}), so by running the watershed on the gradient magnitude image instead of the original input we can get a much better correspondence between organs and catchment basins (i.e.~a much better segmentation result). It should be noted, however, that this scheme is of less use to us when our goal is to segment inhomogeneous features like tumours.
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-medicalimage.png}}%
@@ -326,9 +326,9 @@ What we need is a way of transforming our input image into one where the feature
 
 \subsubsection{Smoothness}
 
-A further issue which arises when applying the watershed to medical images is their lack of smoothness (especially in the presence of noise). The images have many local minima, most of them spurious: this is analogous to working with a highly pock-marked landscape (see Figure~\ref{?}). Such a landscape will have many catchment basins; running a watershed algorithm on a non-smooth image will thus greatly over-segment it (each minor dimple in the landscape gets treated as a separate catchment basin).
+A further issue which arises when applying the watershed to medical images is their lack of smoothness (especially in the presence of noise). The images have many local minima, most of them spurious: this is analogous to working with a highly pock-marked landscape (see Figure~\ref{fig:segmentation-watershed-pockmarkedlandscape}). Such a landscape will have many catchment basins; running a watershed algorithm on a non-smooth image will thus greatly over-segment it (each minor dimple in the landscape gets treated as a separate catchment basin).
 
-% TODO: Figure here
+% TODO: fig:segmentation-watershed-pockmarkedlandscape
 
 The solution lies partly in smoothing the original image (a pre-processing step), and partly in merging the large number of small regions generated by the watershed algorithm together into larger regions with more semantic meaning (a post-processing step for which we use the waterfall transform, described later). The goal in smoothing the watershed input is to remove spurious local minima whilst preserving important semantic information in the image. In particular, it is important to try and preserve boundaries between adjacent features, which may not be as pronounced as we would prefer even at the best of times. The canonical smoothing approach for images where semantic information is less important is to pass the image through a Gaussian filter: this is not appropriate in this instance, because it uniformly blurs the image (including the boundaries in which we are interested), but more appropriate edge-preserving filters described later in this section are fundamentally adaptations of a Gaussian filter, so the Gaussian is described first.
 
@@ -349,13 +349,13 @@ g_\sigma^2(x,y) = g_\sigma^1(x) \times g_\sigma^1(y) = \frac{1}{2\pi\sigma^2} \e
 The graph of the 1D Gaussian is the familiar bell curve; the 2D version is a bell-shaped surface (see Figure~\ref{fig:segmentation-watershed-gaussian2d}).
 
 %---
-\stufigex{height=8cm}{segmentation/segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{t}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-gaussian2d.png}{The 2D Gaussian is a bell-shaped surface}{fig:segmentation-watershed-gaussian2d}{p}
 %---
 
 Using this for image blurring involves forming a symmetric mask (see Figure~\ref{fig:segmentation-watershed-gaussianmask}) from the values of $g_\sigma^2(x,y)$ at discrete points in a grid centred at the origin (e.g.~for a 3x3 mask, we should calculate $g_\sigma^2$ at $(-1,-1), (0,-1), (1,-1), \ldots, (0,0), \ldots, (1,1)$). The mask then needs to be normalized by dividing by the sum of all the values in it (this is done to ensure that regions of uniform intensity in the image will be unaffected by smoothing). This procedure can be used to generate masks of any size.
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 \begin{tabular}{|c|c|c|}
 \hline
@@ -407,9 +407,7 @@ Gaussian filtering is very good at smoothing an image (see Figure~\ref{fig:segme
 
 Spatially-variant Gaussian filtering (SVGF) is a simple technique I developed to perform non-uniform Gaussian blurring. The essence of the idea is to use a Gaussian filter whose standard deviation varies with its location in the image. High standard deviations cause greater smoothing, whilst a filter with a low standard deviation smoothes less strongly. The key is to ensure that the filter has a high standard deviation away from suspected edges, and a low standard deviation when near to them. This requires two things: an estimate of where the interesting edges in the image lie (obviously we don't know where they are exactly: this is effectively what we're trying to determine when segmenting the image) and a mapping from the edge estimate image to the space of standard deviations (i.e.~$\mathbb{R}^+$). The gradient magnitude of the original image (after initial smoothing with a simple Gaussian filter as described above) provides a suitable edge estimate, but the mapping requires a bit more thought.
 
-A suitable mapping function must map high values in the edge estimate image (representing the higher estimated likelihood of an edge at that location) to a low standard deviation (thus avoiding blurring the edges) and low values to a high standard deviation (thus maximising the blurring away from the edges). In practice, we want to avoid blurring if the edge estimate for a pixel is anything other than negligible: there needs to be a sharp falloff as the edge estimate for a pixel gets bigger, so a linear decrease in $\sigma$ values won't suffice (see Figure~\ref{?}).
-
-% TODO: Figure here
+A suitable mapping function must map high values in the edge estimate image (representing the higher estimated likelihood of an edge at that location) to a low standard deviation (thus avoiding blurring the edges) and low values to a high standard deviation (thus maximising the blurring away from the edges). In practice, we want to avoid blurring if the edge estimate for a pixel is anything other than negligible: there needs to be a sharp falloff as the edge estimate for a pixel gets bigger, so a linear decrease in $\sigma$ values won't suffice.
 
 This still gives us a wide choice of mapping functions, but experiments showed that a sigmoid function works well in practice. For example, consider an 8-bit edge estimate image whose values range from $0$ (minimal likelihood of an edge) to $255$ (maximal likelihood). The canonical sigmoid function is given by:
 %
@@ -436,12 +434,14 @@ y = \frac{8}{1 + \exp(106x/255 - 6)},
 a function which starts off at nearly $8$ when $x = 0$, then drops off rapidly to nearly zero at around $x = 30$ (see Figure~\ref{fig:segmentation-watershed-sigmoid}).
 
 %---
-\stufigex{height=10cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{t}
+\stufigex{height=10cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{p}
 %---
 
 SVGF works well when applied to images as part of a pipeline (see Figure~\ref{fig:segmentation-watershed-svgfpipeline}). In particular, we perform a small amount of Gaussian filtering on the image first: this blurs the image enough to remove some of the noise, but not enough to blur the important edges. The SVGF filter can then be used as a finer filter which carefully removes some of the noise remaining after applying the Gaussian.
 
-% TODO: fig:segmentation-watershed-svgfpipeline
+%---
+\stufigex{height=12cm}{segmentation/segmentation-watershed-svgfpipeline.png}{The SVGF pipeline}{fig:segmentation-watershed-svgfpipeline}{p}
+%---
 
 \subparagraph{Anisotropic Diffusion Filtering}
 
@@ -513,7 +513,7 @@ Conceptually, each pass of the waterfall takes its input partition and first tra
 In practice, actually transforming the landscape for each waterfall pass would be a slow process and is better avoided. More practical implementations of the waterfall are possible which work on a weighted graph whose edges correspond to watershed boundaries and whose nodes correspond to regions in the input partition (in other words, the region adjacency graph of the input partition: this is illustrated in Figure~\ref{fig:segmentation-waterfall-rag}).
 
 %---
-\stufigex{height=6cm}{segmentation/segmentation-waterfall-rag.jpg}{An example image partition and its region adjacency graph. Note that this is an abstract diagram designed for explication purposes only: regions have been given arbitrary colours, and edges to the surrounding (beige) region and weights on all other edges have been omitted, in order to reduce unnecessary clutter in the image.}{fig:segmentation-waterfall-rag}{t}
+\stufigex{height=6cm}{segmentation/segmentation-waterfall-rag.jpg}{An example image partition and its region adjacency graph. Note that this is an abstract diagram designed for explication purposes only: regions have been given arbitrary colours, and edges to the surrounding (beige) region and weights on all other edges have been omitted, in order to reduce unnecessary clutter in the image.}{fig:segmentation-waterfall-rag}{p}
 %---
 
 In fact, as shown in \cite{marcotegui05}, it actually suffices to work just on a minimum spanning tree (MST) of such a graph (see Appendix~\ref{chap:datastructures}). Each waterfall pass then takes such an MST as its input and elides appropriate edges in it (eliding an edge means combining the nodes at either end of the edge and removing the edge itself from the MST). This has the effect of merging the partition regions joined by the edges (since the nodes which are combined actually represent regions in the partition). It is worth observing in passing (because it sheds some insight on the development of the algorithms which follow) that the goal of a MST-based waterfall algorithm is only to decide which edges in the MST need to be elided: if concerns are properly separated at a code level, the issue of how this elision process takes place can be entirely ignored for the purposes of the waterfall, and different implementations can be substituted for each other with relative impunity.
@@ -529,13 +529,13 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 \item \emph{Determination of Local Minima}. We define a local minimum of a weighted graph G to be a connected subgraph of G whose own edges have equal weight and whose adjacent edges in G have strictly higher weights. Figure~\ref{fig:segmentation-waterfall-marcotegui-graphlocalminima} shows an example graph and its local minima. Note that the two edges with a weight of $1$ are part of the same local minimum. The first step of the algorithm consists of determining the local minima of the MST. To do this, we iterate over all the edges in the MST and flood outwards from each one to determine (a) whether it's part of a local minimum and (b) the extent of the local minimum if so.
 
 %---
-\stufigex{height=6cm}{segmentation/segmentation-waterfall-marcotegui-graphlocalminima.png}{An example graph and its local minima (drawn in red)}{fig:segmentation-waterfall-marcotegui-graphlocalminima}{t}
+\stufigex{height=6cm}{segmentation/segmentation-waterfall-marcotegui-graphlocalminima.png}{An example graph and its local minima (drawn in red)}{fig:segmentation-waterfall-marcotegui-graphlocalminima}{p}
 %---
 
 \item \emph{Elision of Local Minima}. Having determined the local minima of the MST, we next elide all the edges in them: this is equivalent to merging minimal plateaux in a landscape into single points to which water can be considered to run down. In the original paper (and in the diagrams, for reasons of clarity), the nodes at the ends of an edge are assigned the same label, rather than the edge itself being elided, but the end result is the same. See Figure~\ref{fig:segmentation-waterfall-marcotegui-localminimaelision} for an illustration.
 
 %---
-\stufigex{height=6cm}{segmentation/segmentation-waterfall-marcotegui-localminimaelision.png}{Eliding/labelling the local minima (the edges to be elided are drawn in blue)}{fig:segmentation-waterfall-marcotegui-localminimaelision}{t}
+\stufigex{height=6cm}{segmentation/segmentation-waterfall-marcotegui-localminimaelision.png}{Eliding/labelling the local minima (the edges to be elided are drawn in blue)}{fig:segmentation-waterfall-marcotegui-localminimaelision}{p}
 %---
 
 \item \emph{Propagation}. Finally, we flood out from the nodes which now represent the local minima (so-called `marker nodes') along the edges, in non-decreasing order of edge weight, starting from the edges directly adjacent to the marker nodes. Each edge considered will either join a marker node to another marker node, in which case it should be ignored (since eliding it would mean merging two catchment basins in the MST), or it will join a marker to a non-marker, in which case it should be elided. An illustration of the process is shown in Figure~\ref{fig:segmentation-waterfall-marcotegui-propagation}.
@@ -603,7 +603,7 @@ Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterf
 A case analysis of what is going on should prove illuminating. There are in fact only two cases to consider: either the current edge (the parent edge) isn't strictly the lowest leading out of a node, in which case at least part of the implied flow from the node is along the lowest child (see Figure~\ref{fig:segmentation-waterfall-nicholls-cases}(a)), or it is, in which case the implied flow from the node is entirely along the parent (see Figure~\ref{fig:segmentation-waterfall-nicholls-cases}(b)). In the first case, the algorithm arbitrarily assumes that all the implied flow is along the lowest child. In both cases, the various child edges are then elided (or not) accordingly.
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[The edge under consideration is not the unique lowest edge]{\includegraphics[height=7cm]{segmentation/segmentation-waterfall-nicholls-cases-a.png}}%
 	\hspace{4mm}%
@@ -660,13 +660,13 @@ The proposed algorithm is a tree-based rainfalling method, and works in two recu
 %-
 
 %---
-\stufigex{width=.95\linewidth}{segmentation/segmentation-waterfall-smg-mergecases.png}{Case analysis for the edge elision step of my waterfall algorithm}{fig:segmentation-waterfall-smg-mergecases}{t}
+\stufigex{width=.95\linewidth}{segmentation/segmentation-waterfall-smg-mergecases.png}{Case analysis for the edge elision step of my waterfall algorithm}{fig:segmentation-waterfall-smg-mergecases}{p}
 %---
 
 It is possible to perform a case analysis for the first pass and the route resolution step 2(a) as well (see Figures~\ref{fig:segmentation-waterfall-smg-pass1cases} and \ref{fig:segmentation-waterfall-smg-resolutioncases}), and this is helpful to clarify how the algorithm works. As illustrated in the diagram, there are six cases for the first pass: (a) the node has a unique path of steepest descent down a child edge; (b) the node has a unique path of steepest descent up the parent edge; (c) the node has more than one path of steepest descent (and the parent edge is not a possible path of steepest descent); (d) the node has more than one \emph{downwards} path of steepest descent (but the parent edge still needs to be considered); (e) there is no flow out of the node and (f) there is no downwards flow out of the node (but the parent edge still needs to be considered). For the resolution step, there are four cases: (a) the arrow from the parent node points towards us; (b) there is no flow from the parent node; (c) there is an equally good route via the parent node and (d) there is a better route via the parent node.
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[The node has a unique path of steepest descent down a child edge]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-a.png}}%
@@ -702,7 +702,7 @@ It is possible to perform a case analysis for the first pass and the route resol
 %---
 
 %---
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
 	\subfigure[The arrow from the parent node points towards us]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-resolutioncases-a.png}}%
 	%
