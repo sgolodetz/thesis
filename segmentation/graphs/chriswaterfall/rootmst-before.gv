@@ -1,0 +1,11 @@
+digraph
+{
+	node [shape=circle];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	a -> b [label=2];
+	a -> c [label=3];
+	b -> d [label=5];
+	b -> e [label=3];
+	d -> f [label=1];
+}

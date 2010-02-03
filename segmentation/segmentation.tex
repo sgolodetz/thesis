@@ -576,7 +576,21 @@ Marcotegui's waterfall method is fast and effective, but there are at least two 
 
 This latter problem was the motivation behind the development of a simpler, tree-based waterfall algorithm by (my colleague) Chris Nicholls \cite{nicholls09}. His observation is that if an edge is not elided by a waterfall pass, it is because it is a highest edge separating two adjacent catchment basins (an alternative phrasing is that it is a highest edge on the MST path between two adjacent local minima in the MST). Instead of explicitly finding the local minima in the graph and flooding out from them, therefore, it suffices to root the MST somewhere and then work recursively up from the bottom of the tree, carefully maintaining a highest edge (a `guard' edge) guarding each local minimum encountered as we go.
 
-% TODO: fig:segmentation-waterfall-nicholls-root
+%---
+\begin{figure}[p]
+\begin{center}
+	\subfigure[Before rooting the MST]
+	{\includegraphics[height=8cm]{segmentation/segmentation-waterfall-nicholls-root-before.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After rooting it: note the dummy root edge that gets added above the chosen root]
+	{\includegraphics[height=8cm]{segmentation/segmentation-waterfall-nicholls-root-after.png}}%
+\end{center}
+\caption{Nicholls' algorithm starts by picking a node at which to root the MST and adding a dummy root edge}
+\label{fig:segmentation-waterfall-nicholls-root}
+\end{figure}
+%---
 
 Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterfall-nicholls-root}), adding a dummy `root edge' with a value strictly greater than the values of the edges descending from the root node (I will henceforth -- and without ambiguity -- call edges descending from a node children of the edge ascending from that node). The value chosen is unimportant, but $\infty$ or $1$ greater than the maximum value on a child edge are sensible choices. Each pass of the algorithm is then invoked on the root edge, and proceeds recursively as follows:
 
