@@ -28,8 +28,7 @@ The watershed transform conceptually takes a landscape as its input and produces
 \end{enumerate}
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[Finding a path of steepest descent from each point]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-rainfallingconcept-a.png}}%
 	%
@@ -37,15 +36,13 @@ The watershed transform conceptually takes a landscape as its input and produces
 	%
 	\subfigure[The division into catchment basins]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-rainfallingconcept-b.png}}%
-\end{center}
 \caption{The rainfalling concept of the watershed transform}
 \label{fig:segmentation-watershed-rainfallingconcept}
-\end{figure}
+\end{stusubfig}
 %---
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[Beginning the flooding]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-a.png}}%
 	%
@@ -63,10 +60,9 @@ The watershed transform conceptually takes a landscape as its input and produces
 	%
 	\subfigure[The division into catchment basins]
 	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-floodingconcept-d.png}}%
-\end{center}
 \caption{The flooding concept of the watershed transform}
 \label{fig:segmentation-watershed-floodingconcept}
-\end{figure}
+\end{stusubfig}
 %---
 
 \subsection{Segmenting Grey-Scale Images}
@@ -105,9 +101,8 @@ The lower-complete transformation described in \cite{meijster98} essentially wor
 The lower-complete transformation can be implemented straightforwardly using a breadth-first search (see Listing~\ref{code:segmentation-watershed-lowercomplete}). The results of the transformation are illustrated in Figure~\ref{fig:segmentation-watershed-example}: an example image is shown in (a), and the result of making it lower-complete is shown in (b).
 
 %---
-\begin{figure}[p]
-\begin{center}
-	\subfigure[The `intuition' is to raise plateau pixels by their distance from the edge]
+\begin{stusubfig}{p}
+\subfigure[The `intuition' is to raise plateau pixels by their distance from the edge]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau-a.png}}%
 	%
 	\hspace{4mm}%
@@ -119,15 +114,13 @@ The lower-complete transformation can be implemented straightforwardly using a b
 	%
 	\subfigure[This can be fixed by spreading the landscape out prior to raising the pixels]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-plateau-c.png}}%
-\end{center}
 \caption{A solution to the non-minimal plateau problem}
 \label{fig:segmentation-watershed-plateau}
-\end{figure}
+\end{stusubfig}
 %---
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[The original image]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example-a.png}}%
 	%
 	\hspace{4mm}%
@@ -141,10 +134,9 @@ The lower-complete transformation can be implemented straightforwardly using a b
 	\hspace{4mm}%
 	%
 	\subfigure[The final labelling]{\includegraphics[height=4cm]{segmentation/segmentation-watershed-example-d.png}}%
-\end{center}
 \caption{An example illustrating the stages of the Meijster/Roerdink watershed algorithm}
 \label{fig:segmentation-watershed-example}
-\end{figure}
+\end{stusubfig}
 %---
 
 %---
@@ -309,8 +301,7 @@ Grey-scale image watershed algorithms like the one just described segment the im
 What we need is a way of transforming our input image into one where the features of interest correspond more directly to its catchment basins. Unfortunately there is no domain-independent solution to this (it depends on the type of image we are segmenting and the sort of features in which we're interested), but it is possible to come up with suitable transformations on a domain-by-domain basis. Our goal in the case of medical images is generally to segment things like organs. The grey value in the images tends to vary relatively slowly across individual organs and relatively quickly at their edges because of the tissue types involved (another way of saying this is that the organs tend to be homogeneous). The intuition is therefore that the value of the gradient magnitude is relatively low within organs, and relatively high at their edges (see Figure~\ref{fig:segmentation-watershed-gradientmagnitude}), so by running the watershed on the gradient magnitude image instead of the original input we can get a much better correspondence between organs and catchment basins (i.e.~a much better segmentation result). It should be noted, however, that this scheme is of less use to us when our goal is to segment inhomogeneous features like tumours.
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-medicalimage.png}}%
 	%
@@ -318,10 +309,9 @@ What we need is a way of transforming our input image into one where the feature
 	%
 	\subfigure[The corresponding gradient magnitude image]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-gradientmagnitudemedicalimage.png}}%
-\end{center}
 \caption{To a first approximation, the value of the gradient magnitude image is relatively low within organs, and relatively high at their edges}
 \label{fig:segmentation-watershed-gradientmagnitude}
-\end{figure}
+\end{stusubfig}
 %---
 
 \subsubsection{Smoothness}
@@ -504,9 +494,38 @@ In image terms, the waterfall helps solve the problem of oversegmentation by ite
 
 \subsubsection{A Waterfall Pass}
 
-Conceptually, each pass of the waterfall takes its input partition and first transforms it as shown in Figure~\ref{fig:segmentation-waterfall-passconcept}(a): by creating a `stepped' landscape, where there is a step corresponding to each watershed boundary, with the height of the lowest pass point along that boundary. It then performs a watershed transform on this stepped landscape and outputs a coarser partition of the landscape as its result (see Figure~\ref{fig:segmentation-waterfall-passconcept}(b)). This process can be repeated as long as the most recent partition has more than one catchment basin (see Figure~\ref{fig:segmentation-waterfall-passconcept}(c)).
+%Conceptually, each pass of the waterfall takes its input partition and first transforms it as shown in Figure~\ref{fig:segmentation-waterfall-passconcept}(a): by creating a `stepped' landscape, where there is a step corresponding to each watershed boundary, with the height of the lowest pass point along that boundary. It then performs a watershed transform on this stepped landscape and outputs a coarser partition of the landscape as its result (see Figure~\ref{fig:segmentation-waterfall-passconcept}(b)). This process can be repeated as long as the most recent partition has more than one catchment basin (see Figure~\ref{fig:segmentation-waterfall-passconcept}(c)).
 
-% TODO: fig:segmentation-waterfall-passconcept
+Conceptually, each pass of the waterfall takes its input partition (Figure~\ref{fig:segmentation-waterfall-passconcept}(a)) and transforms it into a `stepped' landscape, where there is a step corresponding to each watershed boundary, with the height of the lowest pass point along that boundary (Figure~\ref{fig:segmentation-waterfall-passconcept}(b)). It then performs a watershed transform on this stepped landscape and outputs a coarser partition of the landscape as its result (Figure~\ref{fig:segmentation-waterfall-passconcept}(c)). This process can be repeated as long as the most recent partition has more than one catchment basin (Figures~\ref{fig:segmentation-waterfall-passconcept}(d) and (e)).
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial partition output by the watershed]
+	{\includegraphics[width=.6\linewidth]{segmentation/segmentation-waterfall-passconcept-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After transforming it into a stepped landscape]
+	{\includegraphics[width=.6\linewidth]{segmentation/segmentation-waterfall-passconcept-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After performing a watershed transform on the stepped landscape]
+	{\includegraphics[width=.6\linewidth]{segmentation/segmentation-waterfall-passconcept-c.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After the second step transformation]
+	{\includegraphics[width=.6\linewidth]{segmentation/segmentation-waterfall-passconcept-d.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After performing another watershed transform]
+	{\includegraphics[width=.6\linewidth]{segmentation/segmentation-waterfall-passconcept-e.png}}%
+\caption{A conceptual view of the waterfall transform}
+\label{fig:segmentation-waterfall-passconcept}
+\end{stusubfig}
+%---
 
 \subsection{Practical Waterfall Algorithms}
 
@@ -541,8 +560,7 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 \item \emph{Propagation}. Finally, we flood out from the nodes which now represent the local minima (so-called `marker nodes') along the edges, in non-decreasing order of edge weight, starting from the edges directly adjacent to the marker nodes. Each edge considered will either join a marker node to another marker node, in which case it should be ignored (since eliding it would mean merging two catchment basins in the MST), or it will join a marker to a non-marker, in which case it should be elided. An illustration of the process is shown in Figure~\ref{fig:segmentation-waterfall-marcotegui-propagation}.
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[The start of the propagation]{\includegraphics[width=.3\linewidth]
 	{segmentation/segmentation-waterfall-marcotegui-propagation-a.png}}%
 	\hspace{4mm}%
@@ -560,10 +578,9 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 	\hspace{4mm}%
 	\subfigure[The other 5 edge is lowest (and elidable), so elide it; all remaining edges will be considered in order but not elided because they are not elidable]{\includegraphics[width=.3\linewidth]
 	{segmentation/segmentation-waterfall-marcotegui-propagation-f.png}}%
-\end{center}
 \caption{The propagation step of Marcotegui's waterfall algorithm, illustrated on the graph in \cite{marcotegui05}: blue edges are those that have already been elided, green edges are the ones currently under consideration, and red edges are those that will not be elided.}
 \label{fig:segmentation-waterfall-marcotegui-propagation}
-\end{figure}
+\end{stusubfig}
 %---
 
 \end{enumerate}
@@ -577,8 +594,7 @@ Marcotegui's waterfall method is fast and effective, but there are at least two 
 This latter problem was the motivation behind the development of a simpler, tree-based waterfall algorithm by (my colleague) Chris Nicholls \cite{nicholls09}. His observation is that if an edge is not elided by a waterfall pass, it is because it is a highest edge separating two adjacent catchment basins (an alternative phrasing is that it is a highest edge on the MST path between two adjacent local minima in the MST). Instead of explicitly finding the local minima in the graph and flooding out from them, therefore, it suffices to root the MST somewhere and then work recursively up from the bottom of the tree, carefully maintaining a highest edge (a `guard' edge) guarding each local minimum encountered as we go.
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[Before rooting the MST]
 	{\includegraphics[height=8cm]{segmentation/segmentation-waterfall-nicholls-root-before.png}}%
 	%
@@ -586,10 +602,9 @@ This latter problem was the motivation behind the development of a simpler, tree
 	%
 	\subfigure[After rooting it: note the dummy root edge that gets added above the chosen root]
 	{\includegraphics[height=8cm]{segmentation/segmentation-waterfall-nicholls-root-after.png}}%
-\end{center}
 \caption{Nicholls' algorithm starts by picking a node at which to root the MST and adding a dummy root edge}
 \label{fig:segmentation-waterfall-nicholls-root}
-\end{figure}
+\end{stusubfig}
 %---
 
 Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterfall-nicholls-root}), adding a dummy `root edge' with a value strictly greater than the values of the edges descending from the root node (I will henceforth -- and without ambiguity -- call edges descending from a node children of the edge ascending from that node). The value chosen is unimportant, but $\infty$ or $1$ greater than the maximum value on a child edge are sensible choices. Each pass of the algorithm is then invoked on the root edge, and proceeds recursively as follows:
@@ -617,15 +632,13 @@ Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterf
 A case analysis of what is going on should prove illuminating. There are in fact only two cases to consider: either the current edge (the parent edge) isn't strictly the lowest leading out of a node, in which case at least part of the implied flow from the node is along the lowest child (see Figure~\ref{fig:segmentation-waterfall-nicholls-cases}(a)), or it is, in which case the implied flow from the node is entirely along the parent (see Figure~\ref{fig:segmentation-waterfall-nicholls-cases}(b)). In the first case, the algorithm arbitrarily assumes that all the implied flow is along the lowest child. In both cases, the various child edges are then elided (or not) accordingly.
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[The edge under consideration is not the unique lowest edge]{\includegraphics[height=7cm]{segmentation/segmentation-waterfall-nicholls-cases-a.png}}%
 	\hspace{4mm}%
 	\subfigure[The edge under consideration is the unique lowest edge]{\includegraphics[height=7cm]{segmentation/segmentation-waterfall-nicholls-cases-b.png}}%
-\end{center}
 \caption{Case analysis for the recursive step of Nicholls' algorithm: black edges are non-guards, red edges are guards, blue edges are those which have been elided and the green edge is the one under active consideration. The arrow (on the node) indicates the direction in which the algorithm presumes water to flow.}
 \label{fig:segmentation-waterfall-nicholls-cases}
-\end{figure}
+\end{stusubfig}
 %---
 
 The arbitrary assumption that all the implied flow is along the lowest child in the first case is this algorithm's way of dealing with non-minimal plateaux in the MST. It is a valid way of dealing with the problem (in that any choice here is arguably valid), but it is not robust: in particular, the selected direction of implied flow from a particular node depends on both where the MST is rooted, and the specific method used to choose the lowest child. It also ignores the possibility that part of the implied flow is along the parent. All of this fundamentally affects which edges are elided, and hence the result of the segmentation. In the following subsection, I will present an alternative tree-based algorithm which deals with this issue in a more robust manner.
@@ -680,8 +693,7 @@ The proposed algorithm is a tree-based rainfalling method, and works in two recu
 It is possible to perform a case analysis for the first pass and the route resolution step 2(a) as well (see Figures~\ref{fig:segmentation-waterfall-smg-pass1cases} and \ref{fig:segmentation-waterfall-smg-resolutioncases}), and this is helpful to clarify how the algorithm works. As illustrated in the diagram, there are six cases for the first pass: (a) the node has a unique path of steepest descent down a child edge; (b) the node has a unique path of steepest descent up the parent edge; (c) the node has more than one path of steepest descent (and the parent edge is not a possible path of steepest descent); (d) the node has more than one \emph{downwards} path of steepest descent (but the parent edge still needs to be considered); (e) there is no flow out of the node and (f) there is no downwards flow out of the node (but the parent edge still needs to be considered). For the resolution step, there are four cases: (a) the arrow from the parent node points towards us; (b) there is no flow from the parent node; (c) there is an equally good route via the parent node and (d) there is a better route via the parent node.
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[The node has a unique path of steepest descent down a child edge]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-a.png}}%
 	%
@@ -709,15 +721,13 @@ It is possible to perform a case analysis for the first pass and the route resol
 	%
 	\subfigure[There is no downwards flow out of the node (but the parent edge still needs to be considered)]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-f.png}}%
-\end{center}
 \caption{Case analysis for the first pass of my waterfall algorithm}
 \label{fig:segmentation-waterfall-smg-pass1cases}
-\end{figure}
+\end{stusubfig}
 %---
 
 %---
-\begin{figure}[p]
-\begin{center}
+\begin{stusubfig}{p}
 	\subfigure[The arrow from the parent node points towards us]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-resolutioncases-a.png}}%
 	%
 	\hspace{4mm}%
@@ -731,10 +741,9 @@ It is possible to perform a case analysis for the first pass and the route resol
 	\hspace{4mm}%
 	%
 	\subfigure[There is a better route via the parent node]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-resolutioncases-d.png}}%
-\end{center}
 \caption{Case analysis for the resolution step of my waterfall algorithm}
 \label{fig:segmentation-waterfall-smg-resolutioncases}
-\end{figure}
+\end{stusubfig}
 %---
 
 \subsubsection{Comparison and Evaluation}
