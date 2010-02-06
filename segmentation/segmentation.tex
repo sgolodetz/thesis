@@ -476,7 +476,26 @@ To segment a medical image using the watershed transform, then, we first smooth 
 
 The watershed transform segments a landscape into its catchment basins, but, as we have seen, this often produces a segmentation that contains far too many regions to be useful for the specific application in which we're interested (segmenting medical images, for example). In the specific context of images, pre-processing the image with an edge-preserving filter helps alleviate the problem somewhat, but fails to solve it.
 
-One method that seeks to solve this problem is the so-called `watershed-from-markers' approach \cite{?}. The idea behind this is to specify a priori that only certain local minima in the landscape are semantically interesting. Conceptually, we can do this by filling in all the non-interesting minima and keeping only the interesting ones (see Figure~\ref{fig:segmentation-waterfall-watershedfrommarkers}), although this is not how the approach tends to be implemented in practice (see e.g.~\cite{felkel01}). We can thus constrain the watershed to produce an output with a certain number of regions in it (solving the problem of oversegmentation), provided that we can determine the local minima in which we're interested (the markers) in advance.
+One method that seeks to solve this problem is the so-called `watershed-from-markers' approach \cite{?}. The idea behind this is to specify a priori that only certain local minima in the landscape are semantically interesting. Conceptually, we can do this by filling in all the non-interesting minima and keeping only the interesting ones (see Figure~\ref{fig:segmentation-waterfall-watershedfrommarkers}), although this is not how the approach tends to be implemented in practice. An example approach can be found in e.g.~\cite{felkel01}. (Alternatively, consider an approach whereby we flood the landscape from the local minima and only add watersheds when two \emph{marked} catchment basins would otherwise meet.) We can thus constrain the watershed to produce an output with a certain number of regions in it (solving the problem of oversegmentation), provided that we can determine the local minima in which we're interested (the markers) in advance.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Placement of markers (the blue dots)]
+	{\includegraphics[width=.6\linewidth]{segmentation/segmentation-waterfall-watershedfrommarkers-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After filling in the non-interesting minima]
+	{\includegraphics[width=.6\linewidth]{segmentation/segmentation-waterfall-watershedfrommarkers-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After performing a watershed on the filled landscape]
+	{\includegraphics[width=.6\linewidth]{segmentation/segmentation-waterfall-watershedfrommarkers-c.png}}%
+\caption{A conceptual view of the watershed-from-markers approach}
+\label{fig:segmentation-waterfall-watershedfrommarkers}
+\end{stusubfig}
+%---
 
 Marker determination can be either manual or automatic, but both approaches have their problems. In the manual approach, the user simply clicks the interesting local minima and then runs the segmentation. The downside is that the process is not only time-consuming, but non-intuitive: obtaining a desirable segmentation by selecting markers tends to involve a lot of trial-and-error. Automatic approaches are more promising: for example, we could pick the local minima associated with `the n deepest catchment basins' as our markers. The disadvantage in this case is that the results are `all or nothing': a specific automatic marker approach is unlikely to work well for all possible images, and if we get a bad result on a particular image then we have nothing to work with (we are left with a poor segmentation and no obvious way to edit it).
 
@@ -493,8 +512,6 @@ Each waterfall pass takes a partition of the landscape as input, merges some of 
 In image terms, the waterfall helps solve the problem of oversegmentation by iteratively merging some of the regions together in a sensible way, so that regions in subsequent partitions tend to both be larger, and correspond to semantically interesting features in the image. (This will allow us to search through all the partitions to find interesting regions, as we will see in Chapter~\ref{chap:featureid}.)
 
 \subsubsection{A Waterfall Pass}
-
-%Conceptually, each pass of the waterfall takes its input partition and first transforms it as shown in Figure~\ref{fig:segmentation-waterfall-passconcept}(a): by creating a `stepped' landscape, where there is a step corresponding to each watershed boundary, with the height of the lowest pass point along that boundary. It then performs a watershed transform on this stepped landscape and outputs a coarser partition of the landscape as its result (see Figure~\ref{fig:segmentation-waterfall-passconcept}(b)). This process can be repeated as long as the most recent partition has more than one catchment basin (see Figure~\ref{fig:segmentation-waterfall-passconcept}(c)).
 
 Conceptually, each pass of the waterfall takes its input partition (Figure~\ref{fig:segmentation-waterfall-passconcept}(a)) and transforms it into a `stepped' landscape, where there is a step corresponding to each watershed boundary, with the height of the lowest pass point along that boundary (Figure~\ref{fig:segmentation-waterfall-passconcept}(b)). It then performs a watershed transform on this stepped landscape and outputs a coarser partition of the landscape as its result (Figure~\ref{fig:segmentation-waterfall-passconcept}(c)). This process can be repeated as long as the most recent partition has more than one catchment basin (Figures~\ref{fig:segmentation-waterfall-passconcept}(d) and (e)).
 
