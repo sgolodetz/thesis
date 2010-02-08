@@ -1,10 +1,10 @@
-\chapter[Constructing IPFs for Medical Images: A Segmentation Problem]{Constructing IPFs for Medical Images:\\A Segmentation Problem}
+\chapter[Constructing IPFs for CT Images: A Segmentation Problem]{Constructing IPFs for CT Images:\\A Segmentation Problem}
 \label{chap:segmentation}
 
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:ipfs}, the image partition forest (IPF) data structure was introduced, together with an accompanying set of algorithms. This chapter looks at how IPFs can be constructed from medical image slices (2D) or volumes (3D) by adapting the morphological watershed and waterfall transforms \cite{beucher94,marcotegui05}. This forms the backdrop for Chapter~\ref{chap:featureid}, which describes IPF algorithms for performing automatic feature identification.
+In Chapter~\ref{chap:ipfs}, the image partition forest (IPF) data structure was introduced, together with an accompanying set of algorithms. This chapter looks at how IPFs can be constructed from computerised tomography (CT) image slices (2D) or volumes (3D) by adapting the morphological watershed and waterfall transforms \cite{beucher94,marcotegui05}. This forms the backdrop for Chapter~\ref{chap:featureid}, which describes IPF algorithms for performing automatic feature identification.
 
 The IPF construction process described in the following sections uses the watershed transform to generate the lowest (leaf) layer of the IPF (the finest partition of the image). The waterfall transform is then used to generate the higher layers of the IPF: in particular, each non-leaf layer of the IPF is the result of running a pass of the waterfall transform on the layer immediately below it.
 
@@ -292,31 +292,13 @@ function resolve_pixel
 \end{stulisting}
 %---
 
-\subsection{Segmenting Medical Images}
+\subsection{Segmenting CT Images}
 
-\subsubsection{Features vs. Catchment Basins}
-
-Grey-scale image watershed algorithms like the one just described segment the image into regions which correspond to the catchment basins of the discrete landscape associated with the image, but it is unusual for these catchment basins to correspond directly to features of interest in our input image. For instance, if we're trying to segment a kidney in a medical image, there is no reason to suppose that the kidney will correspond to a catchment basin in the landscape: applying the algorithm just described directly, therefore, will not in general yield useful results.
-
-What we need is a way of transforming our input image into one where the features of interest correspond more directly to its catchment basins. Unfortunately there is no domain-independent solution to this (it depends on the type of image we are segmenting and the sort of features in which we're interested), but it is possible to come up with suitable transformations on a domain-by-domain basis. Our goal in the case of medical images is generally to segment things like organs. The grey value in the images tends to vary relatively slowly across individual organs and relatively quickly at their edges because of the tissue types involved (another way of saying this is that the organs tend to be homogeneous). The intuition is therefore that the value of the gradient magnitude is relatively low within organs, and relatively high at their edges (see Figure~\ref{fig:segmentation-watershed-gradientmagnitude}), so by running the watershed on the gradient magnitude image instead of the original input we can get a much better correspondence between organs and catchment basins (i.e.~a much better segmentation result). It should be noted, however, that this scheme is of less use to us when our goal is to segment inhomogeneous features like tumours.
-
-%---
-\begin{stusubfig}{p}
-	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-medicalimage.png}}%
-	%
-	\hspace{4mm}%
-	%
-	\subfigure[The corresponding gradient magnitude image]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-gradientmagnitudemedicalimage.png}}%
-\caption{To a first approximation, the value of the gradient magnitude image is relatively low within organs, and relatively high at their edges}
-\label{fig:segmentation-watershed-gradientmagnitude}
-\end{stusubfig}
-%---
+Computerised tomography (CT) is (as of the time of writing) a widely-used medical imaging modality that provides doctors with a non-invasive way to see inside their patients without needing to resort to exploratory surgery \cite{?}. CT images can be segmented using the type of grey-scale image watershed algorithm just described, but a number of issues must first be tackled in order to obtain desirable results.
 
 \subsubsection{Smoothness}
 
-A further issue which arises when applying the watershed to medical images is their lack of smoothness (especially in the presence of noise). The images have many local minima, most of them spurious: this is analogous to working with a highly pock-marked landscape (see Figure~\ref{fig:segmentation-watershed-pockmarkedlandscape}). Such a landscape will have many catchment basins; running a watershed algorithm on a non-smooth image will thus greatly over-segment it (each minor dimple in the landscape gets treated as a separate catchment basin).
+A key issue which arises when applying the watershed to CT images is their lack of smoothness (especially in the presence of noise). The images have many local minima, most of them spurious: this is analogous to working with a highly pock-marked landscape (see Figure~\ref{fig:segmentation-watershed-pockmarkedlandscape}). Such a landscape will have many catchment basins; running a watershed algorithm on a non-smooth image will thus greatly over-segment it (each minor dimple in the landscape gets treated as a separate catchment basin).
 
 % TODO: fig:segmentation-watershed-pockmarkedlandscape
 
@@ -465,9 +447,49 @@ TODO
 \item Mention that the impact they have on the output of the waterfall will be addressed after that has been described
 \end{itemize}
 
+\subsubsection{Features vs. Catchment Basins}
+
+A further issue when dealing with CT images is that whilst grey-scale image watershed algorithms like the one described earlier segment the image into regions which correspond to the catchment basins of the discrete landscape associated with the image, it is unusual for these catchment basins to correspond directly to features of interest in our input image. For instance, if we're trying to segment a kidney in a CT image, there is no reason to suppose that the kidney will correspond to a catchment basin in the landscape: applying a watershed algorithm directly, therefore, will not in general yield useful results.
+
+What we need is a way of transforming our input image into one where the features of interest correspond more directly to its catchment basins. Unfortunately there is no domain-independent solution to this (it depends on the type of image we are segmenting and the sort of features in which we're interested), but it is possible to come up with suitable transformations on a domain-by-domain basis. Our goal in the case of CT images is generally to segment things like organs. The grey value in the images tends to vary relatively slowly across individual organs and relatively quickly at their edges because of the tissue types involved (another way of saying this is that the organs tend to be homogeneous). The intuition is therefore that the value of the gradient magnitude is relatively low within organs, and relatively high at their edges (see Figure~\ref{fig:segmentation-watershed-gradientmagnitude}), so by running the watershed on the gradient magnitude image instead of the original input we can get a much better correspondence between organs and catchment basins (i.e.~a much better segmentation result). It should be noted, however, that this scheme is of less use to us when our goal is to segment inhomogeneous features like tumours.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-medicalimage.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The corresponding gradient magnitude image]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-gradientmagnitudemedicalimage.png}}%
+\caption{To a first approximation, the value of the gradient magnitude image is relatively low within organs, and relatively high at their edges}
+\label{fig:segmentation-watershed-gradientmagnitude}
+\end{stusubfig}
+%---
+
+\subsubsection{Hounsfield Units and Windowing}
+
+A final issue to contend with when working with CT images concerns the scale used for their pixel values. The images produced by CT scanners are called Hounsfield images: these are scalar images (i.e.~each pixel value is a scalar), so all the algorithms previously described can be applied to them, but their pixel values are calibrated to a special scale, known as the Hounsfield scale (after Sir Godfrey Hounsfield, one of the pioneers of CT technology). The values, measured in Hounsfield Units (HU), are based on the radiodensity of materials with respect to water, and range from $-1024$ to $3071$. Materials which have a lower radiodensity than water have negative Hounsfield values; conversely, those with a greater radiodensity than water have positive values. On this scale, for example, air is at $-1000$ HU, whereas bone appears at $400$ HU or more. The scale is calibrated so that water itself is at $0$ HU.
+
+Having the scanners calibrated to produce images on a fixed scale with real-world meaning is extremely helpful, but in order to diagnose patients, radiologists need to be able to clearly distinguish between different types of tissue on a viewable image. Unfortunately, there is a limit to how many grey values can be distinguished by the human visual system, and the Hounsfield range is too wide ($> 4000$ distinct values) for Hounsfield images to be directly used for diagnostic purposes. (Looking at things another way, viewing a Hounsfield image directly would be equivalent to looking at an image with extremely low contrast.) For this reason, Hounsfield images are subjected to a process known as windowing before being viewed by a radiologist.
+
+% TODO: fig:segmentation-watershed-windowing
+
+Windowing is essentially a way of changing the brightness and contrast of the image (in particular, in a way that makes practical sense to radiologists). Rather than viewing the entire Hounsfield scale, the radiologist can select a window on the scale which is mapped to the available grey values (see Figure~\ref{fig:segmentation-watershed-windowing}). The position and size of the window are controlled by two parameters, known respectively as the \emph{window level} (L) and \emph{window width} (W). With the window set, the Hounsfield image can then be transformed into a human-viewable grey-scale image. For example, if we were working with 8-bit greyscale images (with $0$ being black and $2^8 - 1 = 255$ being white), then pixels with value $\le L - W/2$ would be mapped to $0$ and those with value $\ge L + W/2$ would be mapped to $255$, with pixel values in between being mapped using the formula:
+%
+\[
+\mbox{Out} = \mbox{Round}\left( (\mbox{In} - L) \times \frac{255}{W} + 127.5 \right)
+\]
+%
+The reason windowing is a sensible way for radiologists to control the brightness and contrast of an image (rather than just adjusting them directly) is that it allows them to focus on an interesting part of the scale. When diagnosing kidney tumours it it is common to use a window level of $40$ and a window width of $400$ in order to focus on organs made of soft tissue (like the kidneys). A window like $40/400$ would thus be referred to as a soft tissue window. Different windows are used for other types of investigation (e.g.~when looking at lung images), and it is common for appropriate window settings chosen by a radiologist to be stored with each image as meta-data.
+
+Windowing makes a practical difference for the purposes of segmentation. In particular, it is possible to work with either the original Hounsfield image or a windowed version of it, and these yield different results. Segmenting a windowed image (using an appropriately chosen window, such as the one stored with the image) tends to work better in practice, in that it produces a less pronounced oversegmentation of the image (see Figure~\ref{fig:segmentation-watershed-hounsfieldvswindowed}). This may seem surprising, since there is effectively less information in the windowed image than the original, but there is a logical explanation. When the width of window chosen is greater than the width of the greyscale range, the process of windowing will map more than one Hounsfield value to the same grey-scale output (one reason why there is a loss of information involved). This has the effect of removing some of the spurious local minima in the image, which improves the resulting watershed segmentation. In short, whilst we are losing some of the information from the original Hounsfield image, the information we are losing was actually hindering the segmentation rather than helping it.
+
+% TODO: fig:segmentation-watershed-hounsfieldvswindowed
+
 \subsubsection{Summary}
 
-To segment a medical image using the watershed transform, then, we first smooth it using an edge-preserving filter (as we have seen, anisotropic diffusion filtering is preferred for this step) and then pass it through a gradient magnitude filter to try and establish a reasonable correspondence between features of interest in the image and catchment basins in the discrete landscape associated with it. Finally, we run an image watershed algorithm on this smoothed, gradient magnitude image: in our case, we use the Meijster/Roerdink algorithm, which produces an image of numeric labels. As we will see in \S\ref{sec:segmentation-ipfconstruction}, this labelled image is what we need to construct the leaf layer and lowest branch layer of an IPF for the image. The remainder of the IPF will be constructed using the waterfall transform, which will now be introduced.
+To segment a CT image using the watershed transform, then, we first window it using appropriate window settings (generally speaking, the ones stored with the image by a radiologist) in order to obtain a more conventional grey-scale image. We next smooth it using an edge-preserving filter (as we have seen, anisotropic diffusion filtering is preferred for this step) and then pass it through a gradient magnitude filter to try and establish a reasonable correspondence between features of interest in the image and catchment basins in the discrete landscape associated with it. Finally, we run an image watershed algorithm on this smoothed, gradient magnitude image: in our case, we use the Meijster/Roerdink algorithm, which produces an image of numeric labels. As we will see in \S\ref{sec:segmentation-ipfconstruction}, this labelled image is what we need to construct the leaf layer and lowest branch layer of an IPF for the image. The remainder of the IPF will be constructed using the waterfall transform, which will now be introduced.
 
 %---
 \section{The Waterfall Transform}
