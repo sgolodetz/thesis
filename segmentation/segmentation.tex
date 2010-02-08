@@ -170,7 +170,7 @@ function build_lower_complete
 	while not queue.empty()
 		p := queue.pop();
 		if p = marker then
-			if not queue.empty()
+			if not queue.empty() then
 				queue.push(marker);
 				dist := dist + 1;
 		else
