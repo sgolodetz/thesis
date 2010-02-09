@@ -628,6 +628,8 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 
 A more implementation-focused description of the algorithm, including code, can be found in \cite{golodetz08}. It is important to note that the order in which edges should be processed during the propagation step is not in general well-defined (note that I wrote `non-decreasing' rather than `increasing' order of edge weight above, since multiple edges under consideration can have the same weight). The `obvious' implementation of the propagation step uses a priority queue and pops a lowest adjacent edge for consideration each time: thus the next edge to be considered ends up depending fundamentally on the way the priority queue is implemented. This has significant consequences: as mentioned previously, the issue of how to handle non-minimal plateaux in a landscape is possibly the key problem to be faced when implementing a watershed-based method. Whilst it can be argued that the quality of the resulting segmentation is what is most important (in other words, as long as the end result is semantically interesting, the choice made about handling non-minimal plateaux can be somewhat arbitrary), it is nevertheless undesirable to have the segmentation output depend closely on the implementation of an internal data structure which may in principle be subject to change. I will return to this issue in the following subsections.
 
+\afterpage{\clearpage}
+
 \subsubsection{Nicholls' Algorithm}
 
 Marcotegui's waterfall method is fast and effective, but there are at least two aspects of it that are worth looking at. The first has just been mentioned -- the algorithm does not well-specify which edges should be elided when there are non-minimal plateaux in the MST, essentially leaving it to the implementor to make a sensible choice. I address this robustly in my algorithm below. The second is that the algorithm as defined is a general graph algorithm, even though it is actually operating on a tree: this makes implementing the waterfall a somewhat more intricate procedure than is strictly necessary and makes the code harder to understand.
@@ -705,6 +707,8 @@ A case analysis of what is going on should prove illuminating. There are in fact
 %---
 
 The arbitrary assumption that all the implied flow is along the lowest child in the first case is this algorithm's way of dealing with non-minimal plateaux in the MST. It is a valid way of dealing with the problem (in that any choice here is arguably valid), but it is not robust: in particular, the selected direction of implied flow from a particular node depends on both where the MST is rooted, and the specific method used to choose the lowest child. It also ignores the possibility that part of the implied flow is along the parent. All of this fundamentally affects which edges are elided, and hence the result of the segmentation. In the following subsection, I will present an alternative tree-based algorithm which deals with this issue in a more robust manner.
+
+\afterpage{\clearpage}
 
 \subsubsection{My Algorithm}
 \label{subsubsec:segmentation-waterfall-myalgorithm}
@@ -810,12 +814,22 @@ It is possible to perform a case analysis for the first pass and the route resol
 %---
 
 %---
-% TODO: fig:segmentation-waterfall-smg-example
+\begin{stusubfig}{p}
+	\subfigure[The initial tree]{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-smg-example-initial.png}}%
+	\hspace{4mm}%
+	\subfigure[After the first pass]{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-smg-example-pass1.png}}%
+	\hspace{4mm}%
+	\subfigure[The final result]{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-smg-example-pass2.png}}%
+\caption{My waterfall algorithm running on a real example: the arrows on the nodes indicate the flow direction, blue edges are those that are elided and red edges are those that aren't.}
+\label{fig:segmentation-waterfall-smg-example}
+\end{stusubfig}
 %---
 
 \subsubsection{Comparison and Evaluation}
 
 TODO
+
+\afterpage{\clearpage}
 
 %---
 \section{IPF Construction}

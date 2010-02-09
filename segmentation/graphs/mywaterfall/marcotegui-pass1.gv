@@ -1,0 +1,22 @@
+digraph
+{
+	node [shape=circle, style=filled, label=""];
+	edge [dir=both, arrowtail=none, arrowhead=none];
+
+	n00 -> n10 [label=3, arrowhead=inv];
+	n00 -> n11 [label=20];
+	n00 -> n12 [label=2, arrowtail=inv, arrowhead=inv];
+	n11 -> n20 [label=4, arrowtail=inv];
+	n11 -> n21 [label=10];
+	n20 -> n30 [label=2, arrowtail=inv, arrowhead=inv];
+	n21 -> n31 [label=5, arrowtail=inv, arrowhead=oinv];
+	n31 -> n40 [label=5, arrowtail=inv];
+	n40 -> n50 [label=4, arrowhead=inv];
+	n40 -> n51 [label=2, arrowtail=inv, arrowhead=inv];
+	n40 -> n52 [label=20];
+	n52 -> n60 [label=4, arrowhead=inv];
+	n52 -> n61 [label=4, arrowhead=inv];
+
+	n31 [style=solid, label=1];
+	n52 [style=solid, label="&infin;"];
+}
