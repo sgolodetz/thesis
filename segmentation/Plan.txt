@@ -111,6 +111,36 @@ TODO
 
 >>> Comparison and Evaluation
 
+Marcotegui's algorithm:
+
+Complexity - ?
+Ease of implementation - Medium (graph-based algorithm)
+Results - All regions assigned to one of the local minima in the graph (in some cases arbitrarily so)
+Robustness - Results depend on priority queue implementation
+Type - Flooding
+
+Choose when - adherence to the original description of the waterfall is important; a flooding approach is preferred; it doesn't matter that the results depend on the implementation; you want the number of regions resulting from a pass to equal the number of local minima in the MST at the start of the pass
+
+Nicholls' algorithm:
+
+Complexity - ?
+Ease of implementation - Very Easy (one-pass recursive tree algorithm)
+Results - All regions assigned to one of the local minima in the graph (in some cases arbitrarily so)
+Robustness - Results depend on where the tree is rooted, and how the child nodes are ordered
+Type - Unique
+
+Choose when - you want to implement a waterfall approach in the simplest possible way; you're writing code in a functional language (or style); it doesn't matter that the results depend on the implementation; you want the number of regions resulting from a pass to equal the number of local minima in the MST at the start of the pass
+
+My algorithm:
+
+Complexity - ?
+Ease of implementation - Easy (two-pass recursive tree algorithm)
+Results - Most regions assigned to one of the local minima in the graph; where it's impossible to decide which local minimum a region should be associated with, it's left alone
+Robustness - Results independent of implementation details
+Type - Rainfalling
+
+Choose when - you want an approach which handles non-minimal plateaux consistently; you want a relatively simple implementation task; you'd rather leave regions unmerged than merge them arbitrarily to one of their neighbours or another when there's a choice
+
 > IPF Construction
 
 (- Each layer of the IPF is a region adjacency graph which can be used as input to a waterfall pass. For each pass of the waterfall, we clone the top-most layer of the IPF and run the waterfall pass on the clone.)
@@ -165,4 +195,3 @@ TODO
 
 ...
 
-NOTE: CT Windowing Transform!! -> put something about this under Segmenting Medical Images

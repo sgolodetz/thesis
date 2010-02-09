@@ -825,11 +825,49 @@ It is possible to perform a case analysis for the first pass and the route resol
 \end{stusubfig}
 %---
 
+\afterpage{\clearpage}
+
 \subsubsection{Comparison and Evaluation}
+
+Each of the three waterfall algorithms just described has different properties which may make it more or less suitable to use for a given application. The key issues to consider for each algorithm are: (a) the complexity of the algorithm, (b) how easy the algorithm is to implement and (c) the nature of the resulting output, in particular regarding the robustness of the algorithm with respect to changes in implementation details. A comparison of the algorithms is presented for each of these factors.
+
+\paragraph{Complexity}
+
+The complexity of all three algorithms is dominated by the construction of a minimum spanning tree for the region adjacency graph of the initial partition. As of the time of writing, the fastest known algorithm for constructing a minimum spanning tree is Chazelle's algorithm \cite{?}, which is $O(E \; \alpha(E,V))$ (where $E$ is the number of edges in the graph, $V$ is the number of vertices and $\alpha$ is the functional inverse of the Ackermann function, which grows incredibly slowly). Most normal implementations, however, are likely to either use Kruskal's algorithm ($O(E \log V)$ as most commonly implemented) or Prim's algorithm ($O(E + V \log V)$ using a Fibonnaci heap).
+
+\subparagraph{Marcotegui's Algorithm}
 
 TODO
 
-\afterpage{\clearpage}
+\subparagraph{Nicholls' Algorithm}
+
+Once the MST has been constructed, each recursive pass of Nicholls' algorithm is $O(Vd)$, where $d$ is the maximum degree of a vertex (i.e.~the maximum number of edges adjacent to any vertex in the MST). To see this, consider that the algorithm visits each vertex in the MST precisely once (the factor of $V$), and that for each vertex it finds a minimally-valued child edge ($O(d)$), does some constant-time comparison and remarking work and then elides all the non-guard child edges (also $O(d)$).
+
+\subparagraph{My Algorithm}
+
+TODO
+
+\paragraph{Ease of Implementation}
+
+\subparagraph{Marcotegui's Algorithm}
+
+Medium: Whilst not being notably difficult to code (particularly in a language with good standard libraries), Marcotegui's algorithm is still somewhat trickier to implement than the other two algorithms. Determining the local minima explicitly takes some work, and the propagation step uses a priority queue.
+
+\subparagraph{Nicholls' Algorithm}
+
+Very Easy: Once the MST has been constructed, Nicholls' algorithm is a one-pass, recursive, tree-based algorithm, and can be implemented in a very small amount of code.
+
+\subparagraph{My Algorithm}
+
+Easy: Once the MST has been constructed, my algorithm is a two-pass, recursive, tree-based algorithm and can be implemented very simply.
+
+\paragraph{Nature of Output}
+
+TODO
+
+\paragraph{Summary}
+
+TODO
 
 %---
 \section{IPF Construction}
