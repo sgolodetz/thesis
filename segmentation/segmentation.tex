@@ -683,7 +683,25 @@ A case analysis of what is going on should prove illuminating. There are in fact
 %---
 
 %---
-% TODO: fig:segmentation-waterfall-nicholls-example
+\begin{stusubfig}{p}
+	\subfigure[Level 7]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-a.png}}%
+	\hspace{4mm}%
+	\subfigure[Level 6]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-b.png}}%
+	\hspace{4mm}%
+	\subfigure[Level 5]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-c.png}}%
+	\hspace{4mm}%
+	\subfigure[Level 4]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-d.png}}%
+	\hspace{4mm}%
+	\subfigure[Level 3]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-e.png}}%
+	\hspace{4mm}%
+	\subfigure[Level 2]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-f.png}}%
+	\hspace{4mm}%
+	\subfigure[Level 1]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-g.png}}%
+	\hspace{4mm}%
+	\subfigure[Result]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-h.png}}%
+\caption{Nicholls' algorithm in action (considering all the edges in each level at a time for space reasons): black edges are non-guards, red edges are guards, blue edges are those which have been elided and green edges are ones under active consideration.}
+\label{fig:segmentation-waterfall-nicholls-example}
+\end{stusubfig}
 %---
 
 The arbitrary assumption that all the implied flow is along the lowest child in the first case is this algorithm's way of dealing with non-minimal plateaux in the MST. It is a valid way of dealing with the problem (in that any choice here is arguably valid), but it is not robust: in particular, the selected direction of implied flow from a particular node depends on both where the MST is rooted, and the specific method used to choose the lowest child. It also ignores the possibility that part of the implied flow is along the parent. All of this fundamentally affects which edges are elided, and hence the result of the segmentation. In the following subsection, I will present an alternative tree-based algorithm which deals with this issue in a more robust manner.
@@ -732,7 +750,7 @@ The proposed algorithm is a tree-based rainfalling method, and works in two recu
 %-
 
 %---
-\stufigex{width=.95\linewidth}{segmentation/segmentation-waterfall-smg-mergecases.png}{Case analysis for the edge elision step of my waterfall algorithm}{fig:segmentation-waterfall-smg-mergecases}{p}
+\stufigex{width=.95\linewidth}{segmentation/segmentation-waterfall-smg-mergecases.png}{Case analysis for the edge elision step of my waterfall algorithm (a blue edge indicates that the edge would be elided; a red edge indicates that it wouldn't)}{fig:segmentation-waterfall-smg-mergecases}{p}
 %---
 
 It is possible to perform a case analysis for the first pass and the route resolution step 2(a) as well (see Figures~\ref{fig:segmentation-waterfall-smg-pass1cases} and \ref{fig:segmentation-waterfall-smg-resolutioncases}), and this is helpful to clarify the workings of the algorithm. As illustrated in the diagram, there are six cases for the first pass: (a) the node has a unique path of steepest descent down a child edge; (b) the node has a unique path of steepest descent up the parent edge; (c) the node has more than one path of steepest descent (and the parent edge is not a possible path of steepest descent); (d) the node has more than one \emph{downwards} path of steepest descent (but the parent edge still needs to be considered); (e) there is no flow out of the node and (f) there is no downwards flow out of the node (but the parent edge still needs to be considered). For the resolution step, there are four cases: (a) the arrow from the parent node points towards us; (b) there is no flow from the parent node; (c) there is an equally good route via the parent node and (d) there is a better route via the parent node. Figure~\ref{fig:segmentation-waterfall-smg-example} illustrates how the algorithm works on the now familiar graph used to demonstrate the workings of the previous two waterfall approaches.
