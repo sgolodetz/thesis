@@ -628,8 +628,6 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 
 A more implementation-focused description of the algorithm, including code, can be found in \cite{golodetz08}. It is important to note that the order in which edges should be processed during the propagation step is not in general well-defined (note that I wrote `non-decreasing' rather than `increasing' order of edge weight above, since multiple edges under consideration can have the same weight). The `obvious' implementation of the propagation step uses a priority queue and pops a lowest adjacent edge for consideration each time: thus the next edge to be considered ends up depending fundamentally on the way the priority queue is implemented. This has significant consequences: as mentioned previously, the issue of how to handle non-minimal plateaux in a landscape is possibly the key problem to be faced when implementing a watershed-based method. Whilst it can be argued that the quality of the resulting segmentation is what is most important (in other words, as long as the end result is semantically interesting, the choice made about handling non-minimal plateaux can be somewhat arbitrary), it is nevertheless undesirable to have the segmentation output depend closely on the implementation of an internal data structure which may in principle be subject to change. I will return to this issue in the following subsections.
 
-\afterpage{\clearpage}
-
 \subsubsection{Nicholls' Algorithm}
 
 Marcotegui's waterfall method is fast and effective, but there are at least two aspects of it that are worth looking at. The first has just been mentioned -- the algorithm does not well-specify which edges should be elided when there are non-minimal plateaux in the MST, essentially leaving it to the implementor to make a sensible choice. I address this robustly in my algorithm below. The second is that the algorithm as defined is a general graph algorithm, even though it is actually operating on a tree: this makes implementing the waterfall a somewhat more intricate procedure than is strictly necessary and makes the code harder to understand.
@@ -707,8 +705,6 @@ A case analysis of what is going on should prove illuminating. There are in fact
 %---
 
 The arbitrary assumption that all the implied flow is along the lowest child in the first case is this algorithm's way of dealing with non-minimal plateaux in the MST. It is a valid way of dealing with the problem (in that any choice here is arguably valid), but it is not robust: in particular, the selected direction of implied flow from a particular node depends on both where the MST is rooted, and the specific method used to choose the lowest child. It also ignores the possibility that part of the implied flow is along the parent. All of this fundamentally affects which edges are elided, and hence the result of the segmentation. In the following subsection, I will present an alternative tree-based algorithm which deals with this issue in a more robust manner.
-
-\afterpage{\clearpage}
 
 \subsubsection{My Algorithm}
 \label{subsubsec:segmentation-waterfall-myalgorithm}
@@ -825,8 +821,6 @@ It is possible to perform a case analysis for the first pass and the route resol
 \end{stusubfig}
 %---
 
-\afterpage{\clearpage}
-
 \subsubsection{Comparison and Evaluation}
 
 Each of the three waterfall algorithms just described has different properties which may make it more or less suitable to use for a given application. The key issues to consider for each algorithm are: (a) the complexity of the algorithm, (b) how easy the algorithm is to implement and (c) the nature of the resulting output, in particular regarding the robustness of the algorithm with respect to changes in implementation details. A comparison of the algorithms is presented for each of these factors.
@@ -835,31 +829,37 @@ Each of the three waterfall algorithms just described has different properties w
 
 The complexity of all three algorithms is dominated by the construction of a minimum spanning tree for the region adjacency graph of the initial partition. As of the time of writing, the fastest known algorithm for constructing a minimum spanning tree is Chazelle's algorithm \cite{?}, which is $O(E \; \alpha(E,V))$ (where $E$ is the number of edges in the graph, $V$ is the number of vertices and $\alpha$ is the functional inverse of the Ackermann function, which grows incredibly slowly). Most normal implementations, however, are likely to either use Kruskal's algorithm ($O(E \log V)$ as most commonly implemented) or Prim's algorithm ($O(E + V \log V)$ using a Fibonnaci heap).
 
+All three algorithms converge to a partition with a single region in a very small number of iterations, so for practical purposes the number of iterations necessary can be treated as being $O(1)$.
+
 \subparagraph{Marcotegui's Algorithm}
 
 TODO
 
 \subparagraph{Nicholls' Algorithm}
 
-Once the MST has been constructed, each recursive pass of Nicholls' algorithm is $O(Vd)$, where $d$ is the maximum degree of a vertex (i.e.~the maximum number of edges adjacent to any vertex in the MST). To see this, consider that the algorithm visits each vertex in the MST precisely once (the factor of $V$), and that for each vertex it finds a minimally-valued child edge ($O(d)$), does some constant-time comparison and remarking work and then elides all the non-guard child edges (also $O(d)$).
+Once the MST has been constructed, each iteration of Nicholls' algorithm is $\Theta(V)$. To justify this, consider that there are by definition $V - 1$ edges in the MST, and that the algorithm accesses each edge at least once (hence $\Omega(V)$) and at most a constant number of times (hence $O(V)$). More specifically, each edge is processed itself, accessed again in the course of finding the lowest child of its parent, and then possibly accessed once more if it is to be elided.
+
+The overall complexity of Nicholls' algorithm is the same as the complexity of the minimum spanning tree construction process (whichever MST algorithm is used), since the complexity of a constant number of iterations is still $\Theta(V)$, and all the MST algorithms are $\omega(V)$.
 
 \subparagraph{My Algorithm}
 
-TODO
+Once the MST has been constructed, each iteration of my algorithm is also $\Theta(V)$. As before, we observe that there are $V - 1$ edges in the MST. Separate arguments can then be made for the up and down passes. For the up pass, note that each edge is considered a constant number of times (once as the child edge of a node in 1(b), once as the edge leading up from a node in 1(b), potentially once as a lowest-valued child edge in 1(c), and potentially once as a lowest-valued edge which was also the parent in 1(d)). The up pass as a whole is thus $\Theta(V)$. For the down pass, steps 2(a) and 2(b) involve a constant amount of work, and step 2(c) just implies that this is done for each node, so the overall amount of work is again $\Theta(V)$. A full iteration of the algorithm is thus also $\Theta(V)$.
+
+The overall complexity of my algorithm is once again the same as the complexity of the minimum spanning tree construction process (whichever MST algorithm is used).
 
 \paragraph{Ease of Implementation}
 
 \subparagraph{Marcotegui's Algorithm}
 
-Medium: Whilst not being notably difficult to code (particularly in a language with good standard libraries), Marcotegui's algorithm is still somewhat trickier to implement than the other two algorithms. Determining the local minima explicitly takes some work, and the propagation step uses a priority queue.
+Whilst not being notably difficult to code (particularly in a language with good standard libraries), Marcotegui's algorithm is still somewhat trickier to implement than the other two algorithms. Determining the local minima explicitly takes some work, and the propagation step requires a priority queue.
 
 \subparagraph{Nicholls' Algorithm}
 
-Very Easy: Once the MST has been constructed, Nicholls' algorithm is a one-pass, recursive, tree-based algorithm, and can be implemented in a very small amount of code.
+Once the MST has been constructed, Nicholls' algorithm is a one-pass, recursive, tree-based algorithm, and can be implemented very simply in a small amount of code.
 
 \subparagraph{My Algorithm}
 
-Easy: Once the MST has been constructed, my algorithm is a two-pass, recursive, tree-based algorithm and can be implemented very simply.
+Once the MST has been constructed, my algorithm is a two-pass, recursive, tree-based algorithm and can be implemented very simply.
 
 \paragraph{Nature of Output}
 
