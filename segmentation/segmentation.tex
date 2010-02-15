@@ -833,7 +833,7 @@ All three algorithms converge to a partition with a single region in a very smal
 
 \subparagraph{Marcotegui's Algorithm}
 
-The complexity of the implementation of Marcotegui's algorithm suggested when it was described above is somewhat hard to characterise, due to the flooding process proposed for the implementation of step 1 of each iteration (determining the local minima of the MST). However, an iteration of Marcotegui's algorithm can be implemented in an entirely equivalent manner by running my waterfall algorithm on the MST\footnotemark{} to perform step 1: this classifies the edges of the MST (see Figure~\ref{fig:segmentation-waterfall-smg-mergecases}), allowing those edges which form the MST's local minima to simply be read off. In particular, the edges we are interested in are those classified as either (a) \{unambiguous in, unambiguous in\} -- a singular minimum, (b) \{unambiguous in, no flow\} -- on the boundary of a minimal plateau, or (c) \{no flow, no flow\} -- within a minimal plateau. As will be shown via the complexity analysis of my algorithm below, these can all be determined in $\Theta(V)$ time. The edges can then be directly elided in $O(V)$ time in step 2 (note that it is unnecessary to separate them into their respective local minima, since they are all to be elided).
+The complexity of the implementation of Marcotegui's algorithm suggested when it was described above is somewhat hard to characterise, due to the flooding process proposed for the implementation of step 1 of each iteration (determining the local minima of the MST). However, an iteration of Marcotegui's algorithm can be implemented in an entirely equivalent manner by running my waterfall algorithm on the MST to perform step 1: this classifies the edges of the MST (see Figure~\ref{fig:segmentation-waterfall-smg-mergecases}), allowing those edges which form the MST's local minima to simply be read off. In particular, the edges we are interested in are those classified as either (a) \{unambiguous in, unambiguous in\} -- a singular minimum, (b) \{unambiguous in, no flow\} -- on the boundary of a minimal plateau, or (c) \{no flow, no flow\} -- within a minimal plateau. As will be shown via the complexity analysis of my algorithm below, these can all be determined in $\Theta(V)$ time. The edges can then be directly elided in $O(V)$ time in step 2 (note that it is unnecessary to separate them into their respective local minima, since they are all to be elided).
 
 The analysis of the propagation process in step 3 depends on the implementation of the priority queue. Assuming the common heap-based approach \cite{clr-pq} is used, both the insertion and extraction operations on the priority queue are logarithmic in complexity. We can then observe that all the edges of the MST which did not form part of a local minimum are inserted into the priority queue once only and later extracted. Since there are (by definition) $V - 1$ edges in total in the MST, there are $O(V)$ such `non-minimal' edges, so the overall cost of the various logarithmic priority queue operations is $O(V \lg V)$. The elision performed on each edge after it is extracted is $\Theta(1)$, so the overall cost of the propagation step is $O(V \lg V)$. The complexity of an iteration of Marcotegui's algorithm is thus also $O(V \lg V)$, since the propagation step is the most costly part of the algorithm.
 
@@ -859,9 +859,36 @@ Of the three waterfall algorithms, Nicholls' algorithm is the easiest to impleme
 
 The key difference between the three algorithms presented is in the nature of their output. Although the algorithms exist to solve the same problem, they do not in general give precisely the same results. As discussed when motivating the development of my algorithm above, this is ultimately a result of different decisions as to how best to deal with non-minimal plateaux in the MST: Marcotegui's algorithm and Nicholls' algorithm take (different) implementation-dependent, implicit approaches to non-minimal plateaux, whilst mine accounts for them in a consistent, explicit manner. (This does not imply that my algorithm yields better results: rather, it yields more consistent results which do not depend on implementation choices. It is worth noting that the results of running the three different algorithms on an MST with no non-minimal plateaux are actually identical: the only difference occurs when non-minimal plateaux are present.)
 
-The variation in output that can occur is most easily understood by comparing the output of the three algorithms on an example MST with several non-minimal plateaux. (Since both Marcotegui's algorithm and Nicholls' algorithm can produce different results based on specific implementation details, only one of the possible results will be shown for each.) TODO
+The variation in output that can occur is most easily understood by comparing the output of the three algorithms on an example MST with a non-minimal plateau: see Figure~\ref{fig:segmentation-waterfall-comparison}. (Note that since both Marcotegui's algorithm and Nicholls' algorithm can produce different results based on specific implementation details, only one of the possible results is shown for each.) There are a number of important things to observe:
+%
+\begin{enumerate}
 
-It is important to observe that Marcotegui's algorithm and Nicholls' algorithm produce results which contain equal numbers of regions (the number of regions produced in each case is equal to the number of local minima in the MST). Significantly, my algorithm may produce a result containing more regions than the other algorithms, because it avoids making an arbitrary merging decision in ambiguous situations. This was a deliberate design choice made in the development of my algorithm: it would be easy enough to change the algorithm to instead arbitrarily pick one of the possible directions of flow from an ambiguous node in step 2(b) of my algorithm if desired.
+\item Whilst Marcotegui's algorithm and Nicholls' algorithm produce results which contain the same number of regions (the number of regions produced in each case is equal to the number of local minima in the MST), my algorithm may produce a result containing more regions than the other algorithms, because it avoids making an arbitrary merging decision in ambiguous situations. This was a deliberate design choice made in the development of my algorithm: it would be easy enough to change the algorithm to instead arbitrarily pick one of the possible directions of flow from an ambiguous node in step 2(b) of my algorithm if desired.
+
+\item The output from Nicholls' algorithm could have been generated by Marcotegui's algorithm had the order of edge extraction from the priority queue in the latter been different. The converse is also true, were the MST to be rooted at a different node. Note, however, that when faced with an ambiguous node of the type shown (the one labelled with a 1 in the result from my algorithm), Nicholls' algorithm will always choose to keep the parent edge.
+
+\item My algorithm produces the same result regardless of where the MST is rooted.
+
+\end{enumerate}
+%
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The input MST]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-comparison-input.png}}%
+	\hspace{4mm}%
+	\subfigure[A possible Marcotegui's algorithm result]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-comparison-marcotegui.png}}%
+	\\
+	\subfigure[A possible Nicholls' algorithm result]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-comparison-nicholls.png}}%
+	\hspace{4mm}%
+	\subfigure[The result of my algorithm]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-comparison-smg.png}}%
+\caption{Comparing the outputs of the three different waterfall algorithms on a sample MST with a non-minimal plateau.}
+\label{fig:segmentation-waterfall-comparison}
+\end{stusubfig}
+%---
 
 \paragraph{Summary}
 
