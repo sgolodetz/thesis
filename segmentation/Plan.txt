@@ -192,6 +192,3 @@ TODO
 > Chapter Summary
 
 - Done
-
-...
-
