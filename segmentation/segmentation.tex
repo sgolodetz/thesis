@@ -841,29 +841,19 @@ The overall complexity of Marcotegui's algorithm depends on which minimum spanni
 
 \subparagraph{Nicholls' Algorithm}
 
-Once the MST has been constructed, each iteration of Nicholls' algorithm is $\Theta(V)$. To justify this, consider that there are by definition $V - 1$ edges in the MST, and that the algorithm accesses each edge a constant number of times. More specifically, each edge is processed itself, accessed again in the course of finding the lowest child of its parent, and then possibly accessed once more if it is to be elided.
+Each iteration of Nicholls' algorithm is $\Theta(V)$. To justify this, consider that there are by definition $V - 1$ edges in the MST, and that the algorithm accesses each edge a constant number of times. More specifically, each edge is processed itself, accessed again in the course of finding the lowest child of its parent, and then possibly accessed once more if it is to be elided.
 
 The overall complexity of Nicholls' algorithm is the same as the complexity of the minimum spanning tree construction process (whichever MST algorithm is used), since the complexity of a constant number of iterations is still $\Theta(V)$, and all the MST algorithms are $\Omega(V)$, since the original graph was connected and so $E \in \Omega(V)$.
 
 \subparagraph{My Algorithm}
 
-Once the MST has been constructed, each iteration of my algorithm is also $\Theta(V)$. As before, we observe that there are $V - 1$ edges in the MST. Separate arguments can then be made for the up and down passes. For the up pass, note that each edge is considered a constant number of times (once as the child edge of a node in 1(b), once as the edge leading up from a node in 1(b), potentially once as a lowest-valued child edge in 1(c), and potentially once as a lowest-valued edge which was also the parent in 1(d)). The up pass as a whole is thus $\Theta(V)$. For the down pass, steps 2(a) and 2(b) involve a constant amount of work, and step 2(c) just implies that this is done for each node, so the overall amount of work is again $\Theta(V)$. A full iteration of the algorithm is thus also $\Theta(V)$.
+Each iteration of my algorithm is also $\Theta(V)$. As before, we observe that there are $V - 1$ edges in the MST. Separate arguments can then be made for the up and down passes. For the up pass, note that each edge is considered a constant number of times (once as the child edge of a node in 1(b), once as the edge leading up from a node in 1(b), potentially once as a lowest-valued child edge in 1(c), and potentially once as a lowest-valued edge which was also the parent in 1(d)). The up pass as a whole is thus $\Theta(V)$. For the down pass, steps 2(a) and 2(b) involve a constant amount of work, and step 2(c) just implies that this is done for each node, so the overall amount of work is again $\Theta(V)$. A full iteration of the algorithm is thus also $\Theta(V)$.
 
 The overall complexity of my algorithm is once again the same as the complexity of the minimum spanning tree construction process (whichever MST algorithm is used).
 
 \paragraph{Ease of Implementation}
 
-\subparagraph{Marcotegui's Algorithm}
-
-Whilst not being notably difficult to code (particularly in a language with good standard libraries), Marcotegui's algorithm is still somewhat trickier to implement than the other two algorithms. Determining the local minima explicitly takes some work, and the propagation step requires a priority queue.
-
-\subparagraph{Nicholls' Algorithm}
-
-Once the MST has been constructed, Nicholls' algorithm is a one-pass, recursive, tree-based algorithm, and can be implemented very simply in a small amount of code.
-
-\subparagraph{My Algorithm}
-
-Once the MST has been constructed, my algorithm is a two-pass, recursive, tree-based algorithm and can be implemented very simply.
+Nicholls' algorithm is the easiest to implement: the iteration process itself can be implemented using a single, short, recursive function. It is particularly suitable for implementation in a functional language such as Haskell (this was a key motivation for its development), but is no harder to implement in imperative languages. My algorithm is slightly harder to implement, because it requires two separate passes over the tree for each iteration, but each pass is still simple and recursive. Marcotegui's algorithm is the hardest of the three to implement. If my algorithm is used to find the local minimum edges in preference to the flooding-based approach described earlier, however, the implementation is still relatively simple. All that is then required is an implementation of the propagation step, which can be done straightforwardly using a priority queue, as already mentioned.
 
 \paragraph{Nature of Output}
 
