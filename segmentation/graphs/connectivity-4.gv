@@ -1,0 +1,13 @@
+graph
+{
+	node [shape=circle, style=filled, color=black, label=""];
+
+	n01 -- n11 -- n21;
+	n10 -- n11 -- n12;
+
+	n01 [pos="0,1!"];
+	n10 [pos="1,0!"];
+	n11 [pos="1,1!", color=red];
+	n12 [pos="1,2!"];
+	n21 [pos="2,1!"];
+}

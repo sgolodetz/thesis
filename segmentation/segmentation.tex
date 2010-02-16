@@ -15,7 +15,10 @@ The IPF construction process described in the following sections uses the waters
 
 At a conceptual level, the watershed transform is about dividing a landscape into its catchment basins. A catchment basin is an area of the landscape from which water runs down to the same point (a local minimum of the landscape). A watershed (also known in some parts of the world as a drainage divide) is the boundary between adjacent catchment basins (see Figure~\ref{fig:segmentation-watershed-concept}).\footnote{The name watershed means `water divider', since shedding is an old term for splitting, or dividing -- e.g.~sheepdogs often have to `shed' specified sheep from a flock in competitions.}
 
+%---
 % TODO: fig:segmentation-watershed-concept
+\stufigex{width=10cm, height=10cm}{todo.png}{TODO}{fig:segmentation-watershed-concept}{t}
+%---
 
 The watershed transform conceptually takes a landscape as its input and produces either the set of the landscape's catchment basins, or the set of its watershed lines, as output, depending on the particular algorithm. There are in fact two broad classes of watershed algorithms in use, based on two different ways of viewing the problem:
 %
@@ -74,7 +77,10 @@ The watershed transform is commonly thought of not in the abstract terms just de
 \stufigex{height=8cm}{segmentation/segmentation-watershed-landscapeanalogy.png}{The landscape analogy -- viewing a 2D image as a height map}{fig:segmentation-watershed-landscapeanalogy}{p}
 %---
 
-% TODO: fig-segmentation-watershed-regionbasincorrespondence
+%--
+% TODO: fig:segmentation-watershed-regionbasincorrespondence
+\stufigex{width=15cm, height=14cm}{todo.png}{TODO}{fig:segmentation-watershed-regionbasincorrespondence}{p}
+%--
 
 A variety of different watershed image algorithms are possible (e.g.~\cite{bieniek00,meijster98,osma-ruiz06,rambabu07,stoev00}), but I will focus on Meijster and Roerdink's rainfalling method described in \cite{meijster98}, not least because the ideas behind it translate across to my rainfalling algorithm for the waterfall transform described in \S\ref{subsubsec:segmentation-waterfall-myalgorithm}.
 
@@ -84,7 +90,24 @@ A variety of different watershed image algorithms are possible (e.g.~\cite{bieni
 
 For the purposes of this algorithm, we define an image to be a function $I: \Omega_{\subset \mathbb{Z}^n} \to \mathbb{Z}$ that maps elements of the domain $\Omega$ to integer grey values. (For instance, a $2$-dimensional $512 \times 512$ image could be defined to have domain $\Omega = \{(x,y) : 0 \le x,y < 512\}$.) A pixel $\mathbf{p} \in \Omega$ is defined to have height $I(\mathbf{p})$ and neighbour set $N(\mathbf{p})$, according to some implementation-defined notion of neighbourhood: usually neighbourhood is defined so that pixels are either 4- or 8-connected in 2D, and 6- or 26-connected in 3D (see Figure~\ref{fig:segmentation-watershed-connectivity}).
 
-% TODO: fig:segmentation-watershed-connectivity
+%---
+\begin{stusubfig}{p}
+	\subfigure[4-connected (2D)]
+	{\includegraphics[width=.25\linewidth]{segmentation/segmentation-watershed-connectivity-4.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[8-connected (2D)]
+	{\includegraphics[width=.25\linewidth]{segmentation/segmentation-watershed-connectivity-8.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[6-connected (3D)]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-watershed-connectivity-6.png}}%
+\caption{Notions of neighbourhood for image pixels in 2D and 3D: note that the 3D equivalent of 8-connectivity, namely 26-connectivity, is not shown.}
+\label{fig:segmentation-watershed-connectivity}
+\end{stusubfig}
+%---
 
 A singular minimum of an image is a point whose neighbours are all strictly higher than it. Formally, $\mathbf{p}$ is a singular minimum iff $\forall \mathbf{p'} \in N(\mathbf{p}) \cdot f(\mathbf{p'}) > f(\mathbf{p})$. A plateau of an image is a maximal set of two or more connected pixels of equal altitude. A minimal plateau is a plateau from which it is impossible to descend, and a non-minimal plateau is the opposite. Together, the singular minima and minimal plateaux of an image form the local minima of the image.
 
@@ -870,7 +893,6 @@ The variation in output that can occur is most easily understood by comparing th
 \item My algorithm produces the same result regardless of where the MST is rooted.
 
 \end{enumerate}
-%
 
 %---
 \begin{stusubfig}{p}
