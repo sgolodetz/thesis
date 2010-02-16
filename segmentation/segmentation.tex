@@ -394,6 +394,10 @@ $\;\; \longrightarrow \;\;$%
 \end{figure}
 %---
 
+%---
+\stufigex{width=8cm, height=8cm}{todo.png}{Gaussian filtering is very good at smoothing an image}{fig:segmentation-watershed-smoothedimage}{p}
+%---
+
 The actual blurring is performed by \emph{convolving} an image $I$ with the mask to form a new image $I'$. Letting $M_\sigma^{3,3}$ be the 3x3 mask, this is written as $I' = I \otimes M_\sigma^{3,3}$. Convolution means overlaying the mask on each pixel of the image in turn, multiplying the value of each pixel in the mask by the value of the pixel beneath it, summing the results and using the value thus obtained as the value of the centre pixel in the blurred image. For the 3x3 mask with $\sigma = 1$, this means that:
 %
 \begin{eqnarray*}
@@ -412,8 +416,6 @@ I'(0,1) = \frac{0.0751 \times (I(1,0) + I(1,2)) + 0.1238 \times (I(0,0) + I(0,2)
 \paragraph{Edge-Preserving Filters}
 
 Gaussian filtering is very good at smoothing an image (see Figure~\ref{fig:segmentation-watershed-smoothedimage}), but it isn't generally sufficient as the sole pre-processing filter for image segmentation because it uniformly blurs the image. This makes the image smoother, but if we smooth it enough to make it suitable for input to the watershed, we often end up destroying fine detail in which we're interested (e.g.~boundaries between organs, as mentioned previously). For any application, this would cause problems, but for medical applications it is unacceptable. The solution is to be selective about how much blurring we do in different parts of the image: specifically, we want to blur a lot in areas of little or no interest, and blur a minimal amount (or not at all) near features of interest, such as edges between organs. Each of the following two approaches described aims to accomplish this.
-
-% TODO: fig:segmentation-watershed-smoothedimage
 
 \subparagraph{Spatially-Variant Gaussian Filtering}
 
