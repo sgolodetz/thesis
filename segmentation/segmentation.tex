@@ -17,7 +17,7 @@ At a conceptual level, the watershed transform is about dividing a landscape int
 
 %---
 % TODO: fig:segmentation-watershed-concept
-\stufigex{width=9cm, height=9cm}{todo.png}{TODO}{fig:segmentation-watershed-concept}{t}
+\stufigex{width=9cm, height=9cm}{todo.png}{The watersheds (marked in red) are the boundaries between adjacent catchment basins in the landscape}{fig:segmentation-watershed-concept}{t}
 %---
 
 The watershed transform conceptually takes a landscape as its input and produces either the set of the landscape's catchment basins, or the set of its watershed lines, as output, depending on the particular algorithm. There are in fact two broad classes of watershed algorithms in use, based on two different ways of viewing the problem:
@@ -79,7 +79,7 @@ The watershed transform is commonly thought of not in the abstract terms just de
 
 %--
 % TODO: fig:segmentation-watershed-regionbasincorrespondence
-\stufigex{width=15cm, height=14cm}{todo.png}{TODO}{fig:segmentation-watershed-regionbasincorrespondence}{p}
+\stufigex{width=15cm, height=14cm}{todo.png}{Applying a watershed algorithm to an image partitions the image into regions that correspond to the catchment basins of the discrete landscape to which the image corresponds.}{fig:segmentation-watershed-regionbasincorrespondence}{p}
 %--
 
 A variety of different watershed image algorithms are possible (e.g.~\cite{bieniek00,meijster98,osma-ruiz06,rambabu07,stoev00}), but I will focus on Meijster and Roerdink's rainfalling method described in \cite{meijster98}, not least because the ideas behind it translate across to my rainfalling algorithm for the waterfall transform described in \S\ref{subsubsec:segmentation-waterfall-myalgorithm}.
@@ -318,7 +318,7 @@ Once arrows have been assigned to all the pixels in the image, the paths they fo
 
 \subsection{Segmenting CT Images}
 
-Computerised tomography (CT) is (as of the time of writing) a widely-used medical imaging modality that provides doctors with a non-invasive way to see inside their patients without needing to resort to exploratory surgery \cite{?}. CT images can be segmented using the type of grey-scale image watershed algorithm just described, but a number of issues must first be tackled in order to obtain desirable results.
+Computerised tomography (CT) is currently a widely-used medical imaging modality \cite{garvey02} that provides doctors with a non-invasive way to see inside their patients without needing to resort to exploratory surgery. CT images can be segmented using the type of grey-scale image watershed algorithm just described, but a number of issues must first be tackled in order to obtain desirable results.
 
 \subsubsection{Smoothness}
 
@@ -518,7 +518,7 @@ Having the scanners calibrated to produce images whose pixel values are on a fix
 
 %---
 % TODO: fig:segmentation-watershed-windowing
-\stufigex{width=16cm, height=6cm}{todo.png}{TODO}{fig:segmentation-watershed-windowing}{p}
+\stufigex{width=16cm, height=6cm}{todo.png}{The chosen CT window is mapped to the available grey values}{fig:segmentation-watershed-windowing}{p}
 %---
 
 %---
