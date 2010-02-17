@@ -395,7 +395,8 @@ $\;\; \longrightarrow \;\;$%
 %---
 
 %---
-\stufigex{width=8cm, height=8cm}{todo.png}{Gaussian filtering is very good at smoothing an image}{fig:segmentation-watershed-smoothedimage}{p}
+% TODO: fig:segmentation-watershed-smoothedimage
+\stufigex{width=16cm, height=8cm}{todo.png}{Gaussian filtering is very good at smoothing an image}{fig:segmentation-watershed-smoothedimage}{p}
 %---
 
 The actual blurring is performed by \emph{convolving} an image $I$ with the mask to form a new image $I'$. Letting $M_\sigma^{3,3}$ be the 3x3 mask, this is written as $I' = I \otimes M_\sigma^{3,3}$. Convolution means overlaying the mask on each pixel of the image in turn, multiplying the value of each pixel in the mask by the value of the pixel beneath it, summing the results and using the value thus obtained as the value of the centre pixel in the blurred image. For the 3x3 mask with $\sigma = 1$, this means that:
@@ -498,12 +499,12 @@ What we need is a way of transforming our input image into one where the feature
 %---
 \begin{stusubfig}{p}
 	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-medicalimage.png}}%
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-medicalimage.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The corresponding gradient magnitude image]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-gradientmagnitudemedicalimage.png}}%
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-gradientmagnitudemedicalimage.png}}%
 \caption{To a first approximation, the value of the gradient magnitude image is relatively low within organs, and relatively high at their edges}
 \label{fig:segmentation-watershed-gradientmagnitude}
 \end{stusubfig}
@@ -515,7 +516,24 @@ A final issue to contend with when working with CT images concerns the scale use
 
 Having the scanners calibrated to produce images whose pixel values are on a fixed scale with real-world meaning is extremely helpful, but in order to diagnose patients, radiologists need to be able to clearly distinguish between different types of tissue on a viewable image. Unfortunately, there is a limit to how many grey values can be distinguished by the human visual system, and the Hounsfield range is too wide ($> 4000$ distinct values) for Hounsfield images to be directly used for diagnostic purposes. (Looking at things another way, viewing a Hounsfield image directly would be equivalent to looking at an image with extremely low contrast.) For this reason, Hounsfield images are subjected to a process known as windowing before being viewed by a radiologist.
 
+%---
 % TODO: fig:segmentation-watershed-windowing
+\stufigex{width=16cm, height=6cm}{todo.png}{TODO}{fig:segmentation-watershed-windowing}{p}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Segmentation of a Hounsfield image before windowing]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-hounsfieldvswindowed-h.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Segmentation of the same image after windowing]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-hounsfieldvswindowed-w.png}}%
+\caption{Windowing images before segmenting them leads to a less pronounced oversegmentation}
+\label{fig:segmentation-watershed-hounsfieldvswindowed}
+\end{stusubfig}
+%---
 
 Windowing is essentially a way of changing the brightness and contrast of the image (in particular, in a way that makes practical sense to radiologists). Rather than viewing the entire Hounsfield scale, the radiologist can select a window on the scale which is mapped to the available grey values (see Figure~\ref{fig:segmentation-watershed-windowing}). The position and size of the window are controlled by two parameters, known respectively as the \emph{window level} (L) and \emph{window width} (W). With the window set, the Hounsfield image can then be transformed into a human-viewable grey-scale image. For example, if we were working with 8-bit greyscale images (with $0$ being black and $2^8 - 1 = 255$ being white), then pixels with Hounsfield value $\le L - W/2$ would be mapped to $0$ and those with value $\ge L + W/2$ would be mapped to $255$, with pixel values in between being mapped using the formula:
 %
@@ -525,9 +543,7 @@ Windowing is essentially a way of changing the brightness and contrast of the im
 %
 The reason windowing is a sensible way for radiologists to control the brightness and contrast of an image (rather than just adjusting them directly) is that it allows them to focus on an interesting part of the scale. For instance, when diagnosing kidney tumours, it is common to use a window level of $40$ and a window width of $400$ in order to focus on organs made of soft tissue (like the kidneys). A window like $40/400$ would thus be referred to as a soft tissue window. Different windows are used for other types of investigation (e.g.~when looking at lung images), and it is common for appropriate window settings chosen by a radiologist to be stored with each image as meta-data.
 
-Windowing makes a practical difference for the purposes of segmentation. In particular, it is possible to work with either the original Hounsfield image or a windowed version of it, and these yield different results. It is noticeable that segmenting a windowed image (using an appropriately chosen window, such as the one stored with the image) tends to work better in practice, in that it produces a less pronounced oversegmentation of the image (see Figure~\ref{fig:segmentation-watershed-hounsfieldvswindowed}). This may seem surprising, since there is effectively less information in the windowed image than the original, but there is a logical explanation. When the width of window chosen is greater than the width of the greyscale range, the process of windowing will map more than one Hounsfield value to the same grey-scale output (one reason why there is a loss of information involved). This has the effect of removing some of the spurious local minima in the image, which improves the resulting watershed segmentation. In short, whilst we are losing some of the information from the original Hounsfield image, the information we are losing was actually hindering the segmentation rather than helping it.
-
-% TODO: fig:segmentation-watershed-hounsfieldvswindowed
+Windowing makes a practical difference for the purposes of segmentation. In particular, it is possible to work with either the original Hounsfield image or a windowed version of it, and these yield different results. It is noticeable that segmenting a windowed image (using an appropriately chosen window, such as the one stored with the image) tends to work better in practice, in that it produces a less pronounced oversegmentation of the image (see Figure~\ref{fig:segmentation-watershed-hounsfieldvswindowed}). This may seem surprising, since there is effectively less information in the windowed image than the original, but there is a logical explanation. When the width of window chosen is greater than the width of the greyscale range (which is invariably the case, since to choose otherwise would mean failing to make full use of the grey values available), the process of windowing will map more than one Hounsfield value to the same grey-scale output (one reason why there is a loss of information involved). This has the effect of removing some of the spurious local minima in the image, which improves the resulting watershed segmentation. In short, whilst we are losing some of the information from the original Hounsfield image, the information we are losing was actually hindering the segmentation rather than helping it.
 
 \subsubsection{Summary}
 
