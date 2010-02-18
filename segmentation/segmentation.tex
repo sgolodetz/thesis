@@ -549,7 +549,7 @@ Windowing makes a practical difference for the purposes of segmentation. In part
 
 To segment a CT image using the watershed transform, then, we first window it using appropriate window settings (generally speaking, the ones stored with the image by a radiologist) in order to obtain a more conventional grey-scale image. We next smooth it using an edge-preserving filter (as we have seen, anisotropic diffusion filtering is preferred for this step) and then pass it through a gradient magnitude filter to try and establish a reasonable correspondence between features of interest in the image and catchment basins in the discrete landscape associated with it. Finally, we run an image watershed algorithm on this smoothed, gradient magnitude image: in our case, we use the Meijster/Roerdink algorithm, which produces an image of numeric labels. As we will see in \S\ref{sec:segmentation-ipfconstruction}, this labelled image is what we need to construct the leaf layer and lowest branch layer of an IPF for the image. The remainder of the IPF will be constructed using the waterfall transform, which will now be introduced.
 
-\afterpage{\clearpage}
+\clearpage
 
 %---
 \section{The Waterfall Transform}
@@ -585,9 +585,41 @@ Whilst watershed-from-markers has been used successfully in a variety of situati
 
 \subsection{Concept}
 
-The waterfall transform is a multi-pass, hierarchical segmentation method. It generates a sequence of partitions of a landscape, each coarser (i.e.~containing fewer regions) than the one preceding it. An illustration of this is Figure~\ref{fig:segmentation-waterfall-partitionsequence}, which shows the result of applying a waterfall algorithm to an example image.
+The waterfall transform is a multi-pass, hierarchical segmentation method. It generates a sequence of partitions of a landscape, each coarser (i.e.~containing fewer regions) than the one preceding it. An illustration of this (in image terms) is seen in Figure~\ref{fig:segmentation-waterfall-partitionsequence}, which shows the result of applying a waterfall algorithm to an example image.
 
-% TODO: fig: segmentation-waterfall-partitionsequence
+%---
+\begin{stusubfig}{p}
+	\subfigure[The example image]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-partitionsequence-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The initial watershed partition]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-partitionsequence-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After the first waterfall iteration]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-partitionsequence-c.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After the second waterfall iteration]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-partitionsequence-d.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After the third waterfall iteration]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-partitionsequence-e.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After the fourth waterfall iteration]
+	{\includegraphics[width=.4\linewidth]{segmentation/segmentation-waterfall-partitionsequence-f.png}}%
+\caption{A waterfall partition sequence (note that the final, single-region partition is not shown)}
+\label{fig:segmentation-waterfall-partitionsequence}
+\end{stusubfig}
+%---
 
 Each waterfall pass takes a partition of the landscape as input, merges some of the adjacent catchment basins together, and returns a coarser partition as its result. The input partition to the first pass is the output of an initial watershed transform on the landscape. The final partition (if we go that far) would be the whole landscape, but for most applications the regions contained in the coarsest few partitions are of little semantic interest, so the process is often terminated early.
 
@@ -951,7 +983,7 @@ The variation in output that can occur is most easily understood by comparing th
 
 Having compared the three waterfall algorithms in terms of their algorithmic complexity, ease of implementation, and output, it is possible to draw some conclusions about when it is more appropriate to choose one over another. If ease of implementation is the primary consideration for an application, and the details of how non-minimal plateaux should be handled are unimportant, then Nicholls' algorithm is the best approach. If, however, non-minimal plateaux need to be handled consistently, my algorithm is a more appropriate choice.
 
-\afterpage{\clearpage}
+\clearpage
 
 %---
 \section{IPF Construction}
