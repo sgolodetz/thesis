@@ -663,7 +663,7 @@ Conceptually, each pass of the waterfall takes its input partition (Figure~\ref{
 In practice, actually transforming the landscape for each waterfall pass would be a slow process and is better avoided. More practical implementations of the waterfall are possible which work on a weighted graph whose edges correspond to watershed boundaries and whose nodes correspond to regions in the input partition (in other words, the region adjacency graph of the input partition: this is illustrated in Figure~\ref{fig:segmentation-waterfall-rag}).
 
 %---
-\stufigex{height=6cm}{segmentation/segmentation-waterfall-rag.jpg}{An example image partition and its region adjacency graph. Note that this is an abstract diagram designed for explication purposes only: regions have been given arbitrary colours, and edges to the surrounding (beige) region and weights on all other edges have been omitted, in order to reduce unnecessary clutter in the image.}{fig:segmentation-waterfall-rag}{p}
+\stufigex{height=8cm}{segmentation/segmentation-waterfall-rag.jpg}{An example image partition and its region adjacency graph. Note that this is an abstract diagram designed for explication purposes only: regions have been given arbitrary colours, and edges to the surrounding (beige) region and weights on all other edges have been omitted, in order to reduce unnecessary clutter in the image.}{fig:segmentation-waterfall-rag}{p}
 %---
 
 In fact, as shown in \cite{marcotegui05}, it actually suffices to work just on a minimum spanning tree (MST) of such a graph (see Appendix~\ref{chap:datastructures}). Each waterfall pass then takes such an MST as its input and elides appropriate edges in it (eliding an edge means combining the nodes at either end of the edge and removing the edge itself from the MST). This has the effect of merging the partition regions joined by the edges (since the nodes which are combined actually represent regions in the partition). It is worth observing in passing (because it sheds some insight on the development of the algorithms which follow) that the goal of a MST-based waterfall algorithm is only to decide which edges in the MST need to be elided: if concerns are properly separated at a code level, the issue of how this elision process takes place can be entirely ignored for the purposes of the waterfall, and different implementations can be substituted for each other with relative impunity.
@@ -676,39 +676,55 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 
 \begin{enumerate}
 
-\item \emph{Determination of Local Minima}. We define a local minimum of a weighted graph G to be a connected subgraph of G whose own edges have equal weight and whose adjacent edges in G have strictly higher weights. Figure~\ref{fig:segmentation-waterfall-marcotegui-graphlocalminima} shows an example graph and its local minima. Note that the two edges with a weight of $4$ are part of the same local minimum. The first step of the algorithm consists of determining the local minima of the MST. To do this, we iterate over all the edges in the MST and flood outwards from each one to determine (a) whether it's part of a local minimum and (b) the extent of the local minimum if so.
+\item \emph{Determination of Local Minima}. We define a local minimum of a weighted graph G to be a connected subgraph of G whose own edges have equal weight and whose adjacent edges in G have strictly higher weights. Figure~\ref{fig:segmentation-waterfall-marcotegui-localminima}(a) shows an example graph and its local minima. Note that the two edges with a weight of $4$ are part of the same local minimum. The first step of the algorithm consists of determining the local minima of the MST. To do this, we iterate over all the edges in the MST and flood outwards from each one to determine (a) whether it's part of a local minimum and (b) the extent of the local minimum if so.
 
 %---
-\stufigex{height=6cm}{segmentation/segmentation-waterfall-marcotegui-graphlocalminima.png}{An example graph and its local minima (drawn in red)}{fig:segmentation-waterfall-marcotegui-graphlocalminima}{p}
+\begin{stusubfig}{p}
+	\subfigure[An example graph and its local minima (drawn in red)]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-marcotegui-graphlocalminima.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Eliding/labelling the local minima (the edges to be elided are drawn in blue)]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-marcotegui-localminimaelision.png}}%
+\caption{Finding and eliding a graph's local minima}
+\label{fig:segmentation-waterfall-marcotegui-localminima}
+\end{stusubfig}
 %---
 
-\item \emph{Elision of Local Minima}. Having determined the local minima of the MST, we next elide all the edges in them: this is equivalent to merging minimal plateaux in a landscape into single points to which water can be considered to run down. In the original paper (and in the diagrams, for reasons of clarity), the nodes at the ends of an edge are assigned the same label, rather than the edge itself being elided, but the end result is the same. See Figure~\ref{fig:segmentation-waterfall-marcotegui-localminimaelision} for an illustration.
-
-%---
-\stufigex{height=6cm}{segmentation/segmentation-waterfall-marcotegui-localminimaelision.png}{Eliding/labelling the local minima (the edges to be elided are drawn in blue)}{fig:segmentation-waterfall-marcotegui-localminimaelision}{p}
-%---
+\item \emph{Elision of Local Minima}. Having determined the local minima of the MST, we next elide all the edges in them: this is equivalent to merging minimal plateaux in a landscape into single points to which water can be considered to run down. In the original paper (and in the diagrams, for reasons of clarity), the nodes at the ends of an edge are assigned the same label, rather than the edge itself being elided, but the end result is the same. See Figure~\ref{fig:segmentation-waterfall-marcotegui-localminima}(b) for an illustration.
 
 \item \emph{Propagation}. Finally, we flood out from the nodes which now represent the local minima (so-called `marker nodes') along the edges, in non-decreasing order of edge weight, starting from the edges directly adjacent to the marker nodes. Each edge considered will either join a marker node to another marker node, in which case it should be ignored (since eliding it would mean merging two catchment basins in the MST), or it will join a marker to a non-marker, in which case it should be elided. An illustration of the process is shown in Figure~\ref{fig:segmentation-waterfall-marcotegui-propagation}.
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[The start of the propagation]{\includegraphics[width=.3\linewidth]
-	{segmentation/segmentation-waterfall-marcotegui-propagation-a.png}}%
+	\subfigure[The start of the propagation]
+	{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-marcotegui-propagation-a.png}}%
+	%
 	\hspace{4mm}%
-	\subfigure[The 3 edge is lowest (and elidable), so elide it]{\includegraphics[width=.3\linewidth]
-	{segmentation/segmentation-waterfall-marcotegui-propagation-b.png}}%
+	%
+	\subfigure[The 3 edge is lowest (and elidable), so elide it]
+	{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-marcotegui-propagation-b.png}}%
+	%
 	\hspace{4mm}%
-	\subfigure[A 4 edge is lowest (and elidable), so elide it]{\includegraphics[width=.3\linewidth]
-	{segmentation/segmentation-waterfall-marcotegui-propagation-c.png}}%
+	%
+	\subfigure[A 4 edge is lowest (and elidable), so elide it]
+	{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-marcotegui-propagation-c.png}}%
+	%
 	\hspace{4mm}%
-	\subfigure[The other 4 edge is lowest (and elidable), so elide it]{\includegraphics[width=.3\linewidth]
-	{segmentation/segmentation-waterfall-marcotegui-propagation-d.png}}%
+	%
+	\subfigure[The other 4 edge is lowest (and elidable), so elide it]
+	{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-marcotegui-propagation-d.png}}%
+	%
 	\hspace{4mm}%
-	\subfigure[The 5 edge is lowest (and elidable), so elide it]{\includegraphics[width=.3\linewidth]
-	{segmentation/segmentation-waterfall-marcotegui-propagation-e.png}}%
+	%
+	\subfigure[The 5 edge is lowest (and elidable), so elide it]
+	{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-marcotegui-propagation-e.png}}%
+	%
 	\hspace{4mm}%
-	\subfigure[The other 5 edge is lowest (and elidable), so elide it; all remaining edges will be considered in order but not elided because they are not elidable]{\includegraphics[width=.3\linewidth]
-	{segmentation/segmentation-waterfall-marcotegui-propagation-f.png}}%
+	%
+	\subfigure[The other 5 edge is lowest (and elidable), so elide it; all remaining edges will be considered in order but not elided because they are not elidable]
+	{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-marcotegui-propagation-f.png}}%
 \caption{The propagation step of Marcotegui's waterfall algorithm, illustrated on the graph in \cite{marcotegui05}: blue edges are those that have already been elided, green edges are the ones currently under consideration, and red edges are those that will not be elided.}
 \label{fig:segmentation-waterfall-marcotegui-propagation}
 \end{stusubfig}
