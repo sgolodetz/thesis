@@ -743,12 +743,12 @@ This latter problem was the motivation behind the development of a simpler, tree
 %---
 \begin{stusubfig}{p}
 	\subfigure[Before rooting the MST]
-	{\includegraphics[height=8cm]{segmentation/segmentation-waterfall-nicholls-root-before.png}}%
+	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-nicholls-root-before.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[After rooting it: note the dummy root edge that gets added above the chosen root]
-	{\includegraphics[height=8cm]{segmentation/segmentation-waterfall-nicholls-root-after.png}}%
+	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-nicholls-root-after.png}}%
 \caption{Nicholls' algorithm starts by picking a node at which to root the MST and adding a dummy root edge}
 \label{fig:segmentation-waterfall-nicholls-root}
 \end{stusubfig}
@@ -780,9 +780,13 @@ A case analysis of what is going on should prove illuminating. There are in fact
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[The edge under consideration is not the unique lowest edge]{\includegraphics[height=7cm]{segmentation/segmentation-waterfall-nicholls-cases-a.png}}%
+	\subfigure[The edge under consideration is not the unique lowest edge]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-nicholls-cases-a.png}}%
+	%
 	\hspace{4mm}%
-	\subfigure[The edge under consideration is the unique lowest edge]{\includegraphics[height=7cm]{segmentation/segmentation-waterfall-nicholls-cases-b.png}}%
+	%
+	\subfigure[The edge under consideration is the unique lowest edge]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-nicholls-cases-b.png}}%
 \caption{Case analysis for the recursive step of Nicholls' algorithm: black edges are non-guards, red edges are guards, blue edges are those which have been elided and the green edge is the one under active consideration. The arrow (on the node) indicates the direction in which the algorithm presumes water to flow.}
 \label{fig:segmentation-waterfall-nicholls-cases}
 \end{stusubfig}
@@ -864,32 +868,32 @@ It is possible to perform a case analysis for the first pass and the route resol
 %---
 \begin{stusubfig}{p}
 	\subfigure[The node has a unique path of steepest descent down a child edge]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-a.png}}%
+	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The node has a unique path of steepest descent up the parent edge]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-b.png}}%
+	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-b.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The node has more than one path of steepest descent (and the parent edge is not a possible path of steepest descent)]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-c.png}}%
+	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-c.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The node has more than one \emph{downwards} path of steepest descent (but the parent edge still needs to be considered)]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-d.png}}%
+	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-d.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[There is no flow out of the node]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-e.png}}%
+	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-e.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[There is no downwards flow out of the node (but the parent edge still needs to be considered)]
-	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-f.png}}%
+	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-f.png}}%
 \caption{Case analysis for the first pass of my waterfall algorithm}
 \label{fig:segmentation-waterfall-smg-pass1cases}
 \end{stusubfig}
@@ -897,19 +901,23 @@ It is possible to perform a case analysis for the first pass and the route resol
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[The arrow from the parent node points towards us]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-resolutioncases-a.png}}%
+	\subfigure[The arrow from the parent node points towards us]
+	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-smg-resolutioncases-a.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[There is no flow from the parent node]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-resolutioncases-b.png}}%
+	\subfigure[There is no flow from the parent node]
+	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-smg-resolutioncases-b.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[There is an equally good route via the parent node]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-resolutioncases-c.png}}%
+	\subfigure[There is an equally good route via the parent node]
+	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-smg-resolutioncases-c.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[There is a better route via the parent node]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-resolutioncases-d.png}}%
+	\subfigure[There is a better route via the parent node]
+	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-smg-resolutioncases-d.png}}%
 \caption{Case analysis for the resolution step of my waterfall algorithm}
 \label{fig:segmentation-waterfall-smg-resolutioncases}
 \end{stusubfig}
