@@ -179,7 +179,37 @@ Choose when - you want an approach which handles non-minimal plateaux consistent
 
 - It remains to show two things: that properties for several leaf nodes can be combined to determine the properties of their (branch node) parent, and that properties of several branch nodes can likewise be combined.
 
-- In the first case, TODO
+>>>>> Branch Properties from Leaf Children
+
+- Suppose there are k >= 1 children, c_1 to c_k. The parent is n, with pixel set N.
+- n.Area = |N| = k
+- TODO: Central moments
+- n.Centroid = \frac{1}{k} \sum_{i=1}^k c_i.Position
+- TODO: Elongatedness
+- n.FeatureID =	{ c_1.FeatureID		if all c_i.FeatureID are equal
+		{ None			otherwise
+- n.GreyValueMax = \max_{i=1}^k c_i.GreyValue
+- n.GreyValueMean = \frac{1}{k} \sum_{i=1}^k c_i.GreyValue
+- n.GreyValueVariance = \frac{1}{k} \sum_{i=1}^k (c_i.GreyValue - n.GreyValueMean)^2 [BUT USE RAW SCORE METHOD FOR SINGLE PASS]
+- n.HounsfieldValueMax = \max_{i=1}^k c_i.HounsfieldValue
+- n.HounsfieldValueMean = \frac{1}{k} \sum_{i=1}^k c_i.HounsfieldValue
+- n.HounsfieldValueVariance = \frac{1}{k} \sum_{i=1}^k (c_i.HounsfieldValue - n.HounsfieldValueMean)^2
+
+>>>>> Branch Properties from Branch Children
+
+- Suppose there are k >= 1 children: c_1 to c_k, with pixel sets C_1 to C_k. The parent is n, with pixel set N.
+- n.Area = |N| = \sum_{i=1}^k |C_i|
+- TODO: Central moments
+- n.Centroid = \frac{1}{|N|} \sum_{i=1}^k (c_i.Area * c_i.Centroid)
+- TODO: Elongatedness
+- n.FeatureID =	{ c_1.FeatureID		if all c_i.FeatureID are equal
+		{ None			otherwise
+- n.GreyValueMax = \max_{i=1}^k c_i.GreyValueMax
+- n.GreyValueMean = \frac{1}{n.Area} \sum_{i=1}^k (c_i.Area * c_i.GreyValueMean)
+- TODO: Grey value variance (see msg to Irina 12/06/2008 12:40)
+- n.HounsfieldValueMax = \max_{i=1}^k c_i.HounsfieldValueMax
+- n.HounsfieldValueMean = \frac{1}{n.Area} \sum_{i=1}^k (c_i.Area * c_i.HounsfieldValueMean)
+- TODO: Hounsfield variance
 
 >> Constructing the lowest two layers using the watershed
 

@@ -1035,37 +1035,156 @@ It is not necessary, however, for nodes in every layer to have the same set of p
 
 \paragraph{Chosen Property Sets}
 
-For the feature identification algorithms in Chapter~\ref{chap:featureid}, at least, the properties needed for leaf nodes are:
+For the feature identification algorithms in Chapter~\ref{chap:featureid}, at least, the properties needed for a leaf node are:
+
+%---
+\begin{itemize}
+
+\item \emph{Feature ID} ($f$). One of an application-specific set of possible labels. The set used here is: \{None, Aorta, Inferior Vena Cava, Left Kidney, Liver, Other Artery, Other Vein, Rib, Right Kidney, Spinal Cord, Spine, Spleen, Tumour (Necrotic), Tumour (Normal)\}. Initially set to `None', prior to identifying any image features.
+
+\item \emph{Grey Value} ($g$). The value of the pixel in the grey value image that results from applying a CT windowing transformation to the original Hounsfield image.
+
+\item \emph{Hounsfield Value} ($h$). The original Hounsfield Unit (HU) value of the pixel.
+
+\item \emph{Position} ($\mathbf{p}$). The position of the pixel, as a vector in either $\mathbb{R}^2$ (in 2D) or $\mathbb{R}^3$ (in 3D).
+
+\end{itemize}
+%---
+
+\noindent For a branch node $b$, with ultimate leaf set (i.e.~the set of leaf nodes below $b$ in the IPF) $L$, the necessary properties are:
+
+%---
+\begin{itemize}
+
+\item \emph{Area} ($|L|$). The area of the region, in pixels.
+
+\item \emph{Central Moments} ($\mu_{20}$, $\mu_{11}$, $\mu_{02}$). The $20$, $11$ and $02$ central moments of the region, all of which are scalars $\in \mathbb{R}$. The $uv$ central moment is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} (x(\ell) - \bar{x}(b))^u (y(\ell) - \bar{y}(b))^v$, where $x(\ell)$ and $y(\ell)$ denote the $x$ and $y$ components of $\mathbf{p}(\ell)$, and $\bar{x}(b)$ and $\bar{y}(b)$ denote the $x$ and $y$ components of $\mathbf{c}(b)$. These statistical properties of the region are used when calculating the region's elongatedness.
+
+\item \emph{Centroid} ($\mathbf{c}$). The centre of the region, as a vector in either $\mathbb{R}^2$ (in 2D) or $\mathbb{R}^3$ (in 3D). This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} \mathbf{p}(\ell)$.
+
+\item \emph{Elongatedness}. The ratio between the lengths of the major and minor axes of the minimum bounding ellipse of the region. This can be calculated using principal component analysis. In particular, if we define the covariance matrix of $L$ to be
+%
+\[
+\left(
+\begin{array}{cc}
+\mu_{20} & \mu_{11} \\
+\mu_{11} & \mu_{02}
+\end{array}
+\right),
+\]
+%
+and calculate the eigenvalues $\lambda_1 > \lambda_2$ of this matrix, then the elongatedness of the region can be calculated as $|\sqrt{\lambda_1}| / |\sqrt{\lambda_2}|$.
+
+\item \emph{Feature ID} ($f$). As above.
+
+\item \emph{Grey Value Max} ($M_g$). The maximum grey value of a pixel in the region. This is defined as $\displaystyle \max_{\ell \in L} g(\ell)$.
+
+\item \emph{Grey Value Mean} ($\bar{g}$). The mean grey value of a pixel in the region, as a scalar $\in \mathbb{R}$. This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} g(\ell)$.
+
+\item \emph{Grey Value Variance ($\upsilon_g$)}. The variance of the distribution of grey values for all pixels in the region. This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} (g(\ell) - \bar{g}(b))^2$.
+
+\item \emph{Hounsfield Value Max} ($M_h$). The maximum HU value of a pixel in the region. This is defined as $\displaystyle \max_{\ell \in L} h(\ell)$.
+
+\item \emph{Hounsfield Value Mean} ($\bar{h}$). The mean HU value of a pixel in the region. This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} h(\ell)$.
+
+\item \emph{Hounsfield Value Variance ($\upsilon_h$)}. The variance of the HU distribution for all pixels in the region. This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} (h(\ell) - \bar{h}(b))^2$.
+
+\end{itemize}
+%---
+
+\paragraph{Property Combination}
+
+It is necessary to show how the properties of several leaf nodes can be combined to determine the properties of their (branch node) parent, and how the properties of several branch nodes can likewise be combined.
+
+\subparagraph{Branch Properties from Leaf Children}
+
+Suppose a branch node $b$, has $k \ge 1$ (leaf) children, denoted $c_1$ to $c_k$. Then most of the properties of $b$ can be calculated directly from the definitions above (substituting the set $\{c_1,\ldots,c_k\}$ for $L$). The exceptions are the feature ID and the variances. The feature ID is defined specially as:
+%
+\[
+f(b) = \left\{
+\begin{array}{ll}
+f(c_1) & \mbox{if all }f(c_i)\mbox{ are identical} \\
+\mbox{None} & \mbox{otherwise}
+\end{array}
+\right.
+\]
+%
+The calculations of the variances use the raw score method rather than the definition given above as it is much more efficient. For the grey value variance, this is:
+%
+\[
+\upsilon_g(b) = \frac{\sum_{i=1}^k g(c_i)^2 - \frac{(\sum_{i=1}^k g(c_i))^2}{k}}{k}
+\]
+
+\subparagraph{Branch Properties from Branch Children}
+
+Suppose a branch node, $b$, with pixel set $B$, has $k \ge 1$ (branch) children, $c_1$ to $c_k$, with ultimate leaf sets $C_1$ to $C_k$ respectively. We deal with the trivial properties first:
 
 \begin{itemize}
 
-\item \emph{Feature ID}. One of an application-specific set of possible labels. The set used here is: \{None, Aorta, Inferior Vena Cava, Left Kidney, Liver, Other Artery, Other Vein, Rib, Right Kidney, Spinal Cord, Spine, Spleen, Tumour (Necrotic), Tumour (Normal)\}. Initially set to `None', prior to identifying any image features.
+\item $\displaystyle |B| = \sum_{i=1}^k |C_i|$
 
-\item \emph{Grey Value}. The value of the pixel in the grey value image that results from applying a CT windowing transformation to the original Hounsfield image.
+\item $\displaystyle \mathbf{c}(b) = \frac{1}{|B|} \sum_{i=1}^k |C_i| \mathbf{c}(c_i)$
 
-\item \emph{Hounsfield Value}. The original Hounsfield Unit (HU) value of the pixel.
+\item $f(b) = \left\{
+\begin{array}{ll}
+f(c_1) & \mbox{if all }f(c_i)\mbox{ are identical} \\
+\mbox{None} & \mbox{otherwise}
+\end{array}
+\right.$
+
+\item $\displaystyle M_g(b) = \max_{i=1}^k M_g(c_i)$
+
+\item $\displaystyle \bar{g}(b) = \frac{1}{|B|} \sum_{i=1}^k |C_i| \bar{g}(c_i)$
+
+\item $\displaystyle M_h(b) = \max_{i=1}^k M_h(c_i)$
+
+\item $\displaystyle \bar{h}(b) = \frac{1}{|B|} \sum_{i=1}^k |C_i| \bar{h}(c_i)$
 
 \end{itemize}
 
-\noindent For branch nodes, the necessary properties are:
-
-\begin{itemize}
-\item \emph{Area}. The area of the region, in pixels.
-\item \emph{Central Moments}. TODO
-\item \emph{Centroid}. The centre of the region, as a vector $\in \mathbb{R}^3$.
-\item \emph{Elongatedness}. TODO
-\item \emph{Feature ID}. As above.
-\item \emph{Grey Value Max}. The maximum grey value of a pixel in the region.
-\item \emph{Grey Value Mean}. The mean grey value of a pixel in the region, as a scalar $\in \mathbb{R}$.
-\item \emph{Grey Value Variance}. The variance of the distribution of grey values for all pixels in the region.
-\item \emph{Hounsfield Value Max}. The maximum HU value of a pixel in the region.
-\item \emph{Hounsfield Value Mean}. The mean HU value of a pixel in the region.
-\item \emph{Hounsfield Value Variance}. The variance of the HU distribution for all pixels in the region.
-\end{itemize}
-
-\noindent It is necessary to show how properties for several leaf nodes can be combined to determine the properties of their (branch node) parent, and how properties of several branch nodes can likewise be combined.
-
-TODO
+\noindent Combining the grey value variances of the children to find the parent variance is slightly more involved. We observe that:
+%
+\begin{eqnarray*}
+&   & |B|\upsilon_g(b) \\
+& = & \sum_{\ell \in B} (g(\ell) - \bar{g}(b))^2 \\
+& = & \sum_{i=1}^k \sum_{\ell \in C_i} (g(\ell) - \bar{g}(b))^2
+\end{eqnarray*}
+%
+\noindent Furthermore:
+%
+\[
+\sum_{i=1}^k |C_i|\upsilon_g(c_i) = \sum_{i=1}^k \sum_{\ell \in C_i} (g(\ell) - \bar{g}(c_i))^2
+\]
+%
+\noindent Thus:
+%
+\begin{eqnarray*}
+&   & |B|\upsilon_g(b) - \sum_{i=1}^k |C_i|\upsilon_g(c_i) \\
+%
+& = & \sum_{i=1}^k \sum_{\ell \in C_i} \left\{ (g(\ell) - \bar{g}(b))^2 - (g(\ell) - \bar{g}(c_i))^2 \right\} \\
+%
+& = & \sum_{i=1}^k \sum_{\ell \in C_i} (2g(\ell) - \bar{g}(b) - \bar{g}(c_i))(\bar{g}(c_i) - \bar{g}(b)) \\
+%
+& = & \sum_{i=1}^k (\bar{g}(c_i) - \bar{g}(b)) \left\{ 2 \sum_{\ell \in C_i} g(\ell) - \sum_{\ell \in C_i} (\bar{g}(b) + \bar{g}(c_i)) \right\} \\
+%
+& = & \sum_{i=1}^k (\bar{g}(c_i) - \bar{g}(b)) \left\{ 2|C_i|\bar{g}(c_i) - |C_i|(\bar{g}(b) + \bar{g}(c_i)) \right\} \\
+%
+& = & \sum_{i=1}^k |C_i|(\bar{g}(c_i) - \bar{g}(b))^2
+\end{eqnarray*}
+%
+\noindent This in turn gives us the required formula, namely:
+%
+\[
+\upsilon_g(b) = \frac{1}{|B|} \sum_{i=1}^k |C_i| (\upsilon_g(c_i) + (\bar{g}(c_i) - \bar{g}(b))^2)
+\]
+%
+\noindent The formula for the Hounsfield value variance is entirely analogous. A similar approach also works for the central moments, which can be combined using the formula:
+%
+\[
+\mu_{uv}(b) = \frac{1}{|B|} \sum_{i=1}^k |C_i| (\mu_{uv}(c_i) + (\bar{x}(c_i) - \bar{x}(b))^u (\bar{y}(c_i) - \bar{y}(b))^v)
+\]
+%
+\noindent The elongatedness of $b$ is calculated not by combining the elongatedness properties of the child nodes, but by direct calculation from the calculated central moments for $b$ (via eigen analysis, as described earlier).
 
 \subsection{Constructing the Lowest Two Layers}
 
