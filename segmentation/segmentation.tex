@@ -553,6 +553,7 @@ To segment a CT image using the watershed transform, then, we first window it us
 
 %---
 \section{The Waterfall Transform}
+\label{sec:segmentation-waterfall}
 
 \subsection{Motivation}
 
@@ -1189,8 +1190,6 @@ f(c_1) & \mbox{if all }f(c_i)\mbox{ are identical} \\
 
 \subsection{Constructing the Lowest Two Layers}
 
-%TODO (don't forget to discuss the effects of using different pre-processing approaches)
-
 As seen in Figure~\ref{fig:segmentation-ipfconstruction-goal}, the leaf layer of the IPF consists of a node for each pixel in the source image. The region adjacency graph of the leaf layer simply connects every pixel to its neighbours (recall that this depends on what notion of connectivity we choose: see Figure~\ref{fig:segmentation-watershed-connectivity}). An edge between adjacent pixels is weighted with the maximum of the two pixel values, as this provides an appropriate measure of the height of the boundary between them. Constructing the leaf layer is thus a fairly trivial process. It is worth observing, however, that sensible implementations are unlikely to want to store the (many) edges of the graph explicitly for this layer, especially given the sizes of the images involved: given, the regularity of the graph, a more practical solution is to calculate the edges on demand.
 
 We will see in the following subsection that a general scheme for constructing the next branch layer of the IPF is to clone the current top-most layer of the IPF, and then merge some of the nodes in the new top-most layer in a manner decided by a segmentation algorithm. In theory, this scheme is one way to construct the lowest branch layer of the IPF: we clone the leaf layer to form the lowest branch layer, then merge some of its nodes together based on the results of our watershed segmentation. This approach has the advantage of automatically calculating the required RAG for the lowest branch layer. Unfortunately, it may not always be practical in environments with limited storage.\footnote{This is not to say that the approach is never practical: in environments with sufficient memory, it may actually be preferable, because it is far simpler than the alternative.} The leaf layer's RAG, whilst extremely large, can be stored implicitly because it is entirely regular. The RAG for the lowest branch layer, however, is not regular. In its final form, it is also not especially large (thus posing no inherent storage problem), but the scheme described above works by gradually transforming the large leaf layer RAG into the smaller RAG of the lowest branch layer, via a process of merging some of its nodes together. The non-regular intermediate graph (which is initially almost as large as the leaf layer graph) must be stored explicitly, and it is this which potentially causes a problem. An alternative approach of storing just the differences between the leaf layer graph and the intermediate graph just alters the problem, without in any way solving it.
@@ -1209,7 +1208,11 @@ A solution is to construct the lowest branch layer explicitly. We start by const
 
 \subsection{Constructing the Higher Layers}
 
-TODO
+The higher branch layers of the IPF are constructed, as mentioned previously, using the waterfall transform. The waterfall algorithms presented in \S\ref{sec:segmentation-waterfall}, however, operate not on a region adjacency graph, but on a minimum spanning tree; before they can be used, therefore, it is necessary to construct an MST of the lowest branch layer's RAG. This can be done in a variety of standard ways (see Appendix~\ref{chap:datastructures} for an example). At an implementation level, the MST should be constructed in such a way that eliding an edge in the MST causes the corresponding regions in whichever is the current top-most layer of the IPF to merge.
+
+Having constructed the MST, we then iteratively clone the top-most layer of the IPF and run a waterfall iteration (of whichever algorithm we decide to use) on the MST. The MST itself is maintained from one iteration of the waterfall to the next: at the beginning of each waterfall iteration it is the MST for the current top-most layer of the IPF. This allows us to avoid rebuilding the MST for each layer of the IPF. Figure~\ref{fig:segmentation-ipfconstruction-higherlayers} illustrates how the construction of the higher layers proceeds. The process continues either for a fixed number of iterations, or until the top-most layer of the IPF contains only a single region. The result is the finished IPF for the image, which is suitable for further processing.
+
+% TODO: fig:segmentation-ipfconstruction-higherlayers
 
 %---
 \section{Chapter Summary}
