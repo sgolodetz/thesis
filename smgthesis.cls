@@ -44,3 +44,18 @@
 
 % Change the formatting of figure captions
 \usepackage[labelfont=bf,textfont=it]{caption}
+
+% Define a centred itemize environment
+\usepackage{varwidth}
+
+\newenvironment{centreditemize}
+{
+\begin{center}
+\begin{varwidth}{\linewidth}
+\begin{itemize}
+}
+{
+\end{itemize}
+\end{varwidth}
+\end{center}
+}
