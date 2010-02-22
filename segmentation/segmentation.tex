@@ -1094,6 +1094,8 @@ and calculate the eigenvalues $\lambda_1 > \lambda_2$ of this matrix, then the e
 \end{itemize}
 %---
 
+\enlargethispage*{\baselineskip}
+
 \paragraph{Property Combination}
 
 It is necessary to show how the properties of several leaf nodes can be combined to determine the properties of their (branch node) parent, and how the properties of several branch nodes can likewise be combined.
@@ -1199,20 +1201,69 @@ A solution is to construct the lowest branch layer explicitly. We start by const
 %---
 % TODO: fig:segmentation-ipfconstruction-lowestbranchlayer
 
-% (a) Original (3x3) image
-% (b) Leaf layer RAG
-% (c) Watershed labelling
-% (d) Forest (showing edges added)
-% (e) Lowest branch layer RAG
+% (a) Original (3x3) image with leaf layer RAG
+% (b) Watershed labelling
+% (c) Forest (showing edges added)
+% (d) Lowest branch layer RAG (superimposed on original image)
+
+\begin{stusubfig}{p}
+	\subfigure[An example image and its RAG]
+	{\includegraphics[height=6cm]{todo.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The watershed labelling]
+	{\includegraphics[height=6cm]{todo.png}}%
+	%
+	\\
+	%
+	\subfigure[The lowest two layers of the IPF]
+	{\includegraphics[height=6cm]{todo.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The lowest branch layer and its RAG]
+	{\includegraphics[height=6cm]{todo.png}}%
+\caption{The lowest two layers of the IPF}
+\label{fig:segmentation-ipfconstruction-lowestbranchlayer}
+\end{stusubfig}
 %---
 
 \subsection{Constructing the Higher Layers}
 
 The higher branch layers of the IPF are constructed, as mentioned previously, using the waterfall transform. The waterfall algorithms presented in \S\ref{sec:segmentation-waterfall}, however, operate not on a region adjacency graph, but on a minimum spanning tree; before they can be used, therefore, it is necessary to construct an MST of the lowest branch layer's RAG. This can be done in a variety of standard ways (see Appendix~\ref{chap:datastructures} for an example). At an implementation level, the MST should be constructed in such a way that eliding an edge in the MST causes the corresponding regions in whichever is the current top-most layer of the IPF to merge.
 
-Having constructed the MST, we then iteratively clone the top-most layer of the IPF and run a waterfall iteration (of whichever algorithm we decide to use) on the MST. The MST itself is maintained from one iteration of the waterfall to the next: at the beginning of each waterfall iteration it is the MST for the current top-most layer of the IPF. This allows us to avoid rebuilding the MST for each layer of the IPF. Figure~\ref{fig:segmentation-ipfconstruction-higherlayers} illustrates how the construction of the higher layers proceeds. The process continues either for a fixed number of iterations, or until the top-most layer of the IPF contains only a single region. The result is the finished IPF for the image, which is suitable for further processing.
+Having constructed the MST, we then iteratively clone the top-most layer of the IPF and run a waterfall iteration (of whichever algorithm we decide to use) on the MST. When the waterfall iteration calls for an edge to be elided, this not only elides the edge in the MST, but merges the relevant regions in the top-most layer of the IPF as well. The MST itself is maintained from one iteration of the waterfall to the next: at the beginning of each waterfall iteration it is the MST for the current top-most layer of the IPF. This allows us to avoid rebuilding the MST for each layer of the IPF. Figure~\ref{fig:segmentation-ipfconstruction-higherlayers} illustrates how the construction of the higher layers proceeds. The process continues either for a fixed number of iterations, or until the top-most layer of the IPF contains only a single region. The result is the finished IPF for the image, which is suitable for further processing.
 
+%---
 % TODO: fig:segmentation-ipfconstruction-higherlayers
+\begin{stusubfig}{p}
+	\subfigure[The IPF after constructing the lowest two layers]
+	{\includegraphics[height=6cm]{todo.png}}%
+	%
+	\\
+	%
+	\subfigure[After cloning the top-most layer]
+	{\includegraphics[height=6cm]{todo.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After the first waterfall iteration]
+	{\includegraphics[height=6cm]{todo.png}}%
+	%
+	\\
+	%
+	\subfigure[After cloning the top-most layer]
+	{\includegraphics[height=6cm]{todo.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After the second waterfall iteration]
+	{\includegraphics[height=6cm]{todo.png}}%
+\caption{Constructing the higher layers of the IPF}
+\label{fig:segmentation-ipfconstruction-higherlayers}
+\end{stusubfig}
+%---
 
 %---
 \section{Chapter Summary}
