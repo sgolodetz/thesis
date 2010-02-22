@@ -213,7 +213,7 @@ Choose when - you want an approach which handles non-minimal plateaux consistent
 
 >> Constructing the lowest two layers using the watershed
 
-- With this in mind, TODO
+TODO
 
 >> Constructing the higher layers using the waterfall
 
