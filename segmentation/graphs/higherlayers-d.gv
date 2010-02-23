@@ -4,18 +4,20 @@ graph
 
 	a3 -- a2;
 	b3 -- b2;
+	f3 -- f2;
 	a2 -- a1;
 	b2 -- b1;
 	b2 -- e1;
+	f2 -- f1;
 	a1 -- a0;
 	a1 -- d0;
 	b1 -- b0;
 	b1 -- c0;
-	b1 -- f0;
 	e1 -- e0;
 	e1 -- g0;
 	e1 -- h0;
-	e1 -- i0;
+	f1 -- f0;
+	f1 -- i0;
 
 	a0 [label=a];
 	a1 [label=a];
@@ -30,6 +32,9 @@ graph
 	e0 [label=e];
 	e1 [label=e];
 	f0 [label=f];
+	f1 [label=f];
+	f2 [label=f];
+	f3 [label=f];
 	g0 [label=g];
 	h0 [label=h];
 	i0 [label=i];

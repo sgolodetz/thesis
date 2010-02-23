@@ -1226,11 +1226,11 @@ A solution is to construct the lowest branch layer explicitly. We start by const
 
 The higher branch layers of the IPF are constructed, as mentioned previously, using the waterfall transform. The waterfall algorithms presented in \S\ref{sec:segmentation-waterfall}, however, operate not on a region adjacency graph, but on a minimum spanning tree; before they can be used, therefore, it is necessary to construct an MST of the lowest branch layer's RAG. This can be done in a variety of standard ways (see Appendix~\ref{chap:datastructures} for an example). At an implementation level, the MST should be constructed in such a way that eliding an edge in the MST causes the corresponding regions in whichever is the current top-most layer of the IPF to merge.
 
-Having constructed the MST, we then iteratively clone the top-most layer of the IPF and run a waterfall iteration (of whichever algorithm we decide to use) on the MST. When the waterfall iteration calls for an edge to be elided, this not only elides the edge in the MST, but merges the relevant regions in the top-most layer of the IPF as well. The MST itself is maintained from one iteration of the waterfall to the next: at the beginning of each waterfall iteration it is the MST for the current top-most layer of the IPF. This allows us to avoid rebuilding the MST for each layer of the IPF. Figure~\ref{fig:segmentation-ipfconstruction-higherlayers} illustrates how the construction of the higher layers proceeds. The process continues either for a fixed number of iterations, or until the top-most layer of the IPF contains only a single region. The result is the finished IPF for the image, which is suitable for further processing.
+Having constructed the MST, we then iteratively clone the top-most layer of the IPF and run a waterfall iteration (of whichever algorithm we decide to use) on the MST. When the waterfall iteration calls for an edge to be elided, this not only elides the edge in the MST, but merges the relevant regions in the top-most layer of the IPF as well. The MST itself is maintained from one iteration of the waterfall to the next: at the beginning of each waterfall iteration it is the MST for the current top-most layer of the IPF. This allows us to avoid rebuilding the MST for each layer of the IPF. Figure~\ref{fig:segmentation-ipfconstruction-higherlayers} illustrates how the construction of the higher layers of an IPF might proceed. The process continues either for a fixed number of iterations, or until the top-most layer of the IPF contains only a single region. The result is the finished IPF for the image, which is suitable for further processing.
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[The IPF after constructing the lowest two layers]
+	\subfigure[An IPF after constructing the lowest two layers]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-ipfconstruction-higherlayers-a.png}}%
 	%
 	\\
@@ -1252,7 +1252,7 @@ Having constructed the MST, we then iteratively clone the top-most layer of the 
 	%
 	\subfigure[After the second waterfall iteration]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-ipfconstruction-higherlayers-e.png}}%
-\caption{Constructing the higher layers of the IPF}
+\caption{Constructing the higher layers of an IPF}
 \label{fig:segmentation-ipfconstruction-higherlayers}
 \end{stusubfig}
 %---
