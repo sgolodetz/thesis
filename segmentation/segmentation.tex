@@ -1199,31 +1199,24 @@ We will see in the following subsection that a general scheme for constructing t
 A solution is to construct the lowest branch layer explicitly. We start by constructing a layer with a number of nodes equal to the number of labels in the watershed output. We then perform a raster scan over the image: forest links are added between each pixel and its parent in the lowest branch layer based on the watershed labelling, and RAG edges are added between adjacent regions in the lowest branch layer based on the leaf layer's RAG. Recalling the earlier discussion of the waterfall algorithm, this latter process must arrange for the edges of the lowest branch layer's RAG to be weighted with the heights of the lowest pass points along the boundaries between adjacent regions. To do this, it examines the watershed labels of the neighbours of each pixel: if one differs from the pixel's own watershed label, part of a boundary (between the lowest branch layer regions associated with the given watershed labels) has been found. The leaf layer edge between the two pixels gives the height of the boundary at this point. This is compared with the value on any existing edge between the two lowest branch layer regions involved, and the minimum of the two values becomes the new weight on the edge. (If there is no existing edge, one is simply added, with weight equal to the height of the boundary found.) At the end of the raster scan, the lowest branch layer's RAG will thus contain an edge for every pair of adjacent regions, weighted with the height of the lowest pass point along their boundary. Figure~\ref{fig:segmentation-ipfconstruction-lowestbranchlayer} illustrates the desired results on an example image.
 
 %---
-% TODO: fig:segmentation-ipfconstruction-lowestbranchlayer
-
-% (a) Original (3x3) image with leaf layer RAG
-% (b) Watershed labelling
-% (c) Forest (showing edges added)
-% (d) Lowest branch layer RAG (superimposed on original image)
-
 \begin{stusubfig}{p}
-	\subfigure[An example image and its RAG]
-	{\includegraphics[height=6cm]{todo.png}}%
+	\subfigure[An example image and its 4-connected RAG (the letters on the pixels are leaf node references; the numbers are the pixel values)]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-ipfconstruction-lowestbranchlayer-a.png}}%
 	%
-	\hspace{4mm}%
+	\hspace{12mm}%
 	%
-	\subfigure[The watershed labelling]
-	{\includegraphics[height=6cm]{todo.png}}%
+	\subfigure[The watershed labelling (shown as a colouring on the nodes)]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-ipfconstruction-lowestbranchlayer-b.png}}%
 	%
-	\\
+	\\ \vspace{4mm}
+	%
+	\subfigure[The lowest branch layer and its RAG (the edges are shown as being between the original pixels they connect for illustration purposes, but are really a--b, a--e and b--e in the lowest branch layer)]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-ipfconstruction-lowestbranchlayer-c.png}}%
+	%
+	\hspace{12mm}%
 	%
 	\subfigure[The lowest two layers of the IPF]
-	{\includegraphics[height=6cm]{todo.png}}%
-	%
-	\hspace{4mm}%
-	%
-	\subfigure[The lowest branch layer and its RAG]
-	{\includegraphics[height=6cm]{todo.png}}%
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-ipfconstruction-lowestbranchlayer-d.png}}%
 \caption{The lowest two layers of the IPF}
 \label{fig:segmentation-ipfconstruction-lowestbranchlayer}
 \end{stusubfig}

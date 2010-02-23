@@ -1,0 +1,30 @@
+graph
+{
+	node [shape=square, style=filled, label="", penwidth=2];
+
+	n00 [pos="0,0!", label="a,1", color=red, fillcolor=grey25, fontcolor=white];
+	n10 [pos="1,0!", label="b,2", color=green, fillcolor=grey50, fontcolor=white];
+	n20 [pos="2,0!", label="b,0", color=green, fillcolor=grey0, fontcolor=white];
+	n01 [pos="0,1!", label="a,2", color=red, fillcolor=grey50, fontcolor=white];
+	n11 [pos="1,1!", label="e,4", color=blue, fillcolor=grey100, fontcolor=black];
+	n21 [pos="2,1!", label="b,3", color=green, fillcolor=grey75, fontcolor=black];
+	n02 [pos="0,2!", label="e,3", color=blue, fillcolor=grey75, fontcolor=black];
+	n12 [pos="1,2!", label="e,1", color=blue, fillcolor=grey25, fontcolor=white];
+	n22 [pos="2,2!", label="e,2", color=blue, fillcolor=grey50, fontcolor=white];
+
+	// Horizontal edges
+	n00 -- n10 [label=2, fontsize=12, color=gold];
+	//n10 -- n20 [label=2, fontsize=12];
+	//n01 -- n11 [label=4, fontsize=12];
+	//n11 -- n21 [label=4, fontsize=12];
+	//n02 -- n12 [label=3, fontsize=12];
+	//n12 -- n22 [label=2, fontsize=12];
+
+	// Vertical edges
+	//n00 -- n01 [label=2, fontsize=12];
+	n01 -- n02 [label=3, fontsize=12, color=magenta];
+	//n10 -- n11 [label=4, fontsize=12];
+	//n11 -- n12 [label=4, fontsize=12];
+	//n20 -- n21 [label=3, fontsize=12];
+	n21 -- n22 [label=3, fontsize=12, color=cyan];
+}

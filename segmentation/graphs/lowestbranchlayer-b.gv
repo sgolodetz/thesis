@@ -1,0 +1,14 @@
+graph
+{
+	node [shape=square, style=filled, label="", penwidth=2];
+
+	n00 [pos="0,0!", label="1", color=red, fillcolor=grey25, fontcolor=white];
+	n10 [pos="1,0!", label="2", color=green, fillcolor=grey50, fontcolor=white];
+	n20 [pos="2,0!", label="0", color=green, fillcolor=grey0, fontcolor=white];
+	n01 [pos="0,1!", label="2", color=red, fillcolor=grey50, fontcolor=white];
+	n11 [pos="1,1!", label="4", color=blue, fillcolor=grey100, fontcolor=black];
+	n21 [pos="2,1!", label="3", color=green, fillcolor=grey75, fontcolor=black];
+	n02 [pos="0,2!", label="3", color=blue, fillcolor=grey75, fontcolor=black];
+	n12 [pos="1,2!", label="1", color=blue, fillcolor=grey25, fontcolor=white];
+	n22 [pos="2,2!", label="2", color=blue, fillcolor=grey50, fontcolor=white];
+}

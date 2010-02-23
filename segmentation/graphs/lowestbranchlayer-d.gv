@@ -1,0 +1,27 @@
+graph
+{
+	node [shape=circle, style=solid, label=""];
+
+	a1 -- a0;
+	a1 -- d0;
+	b1 -- b0;
+	b1 -- c0;
+	b1 -- f0;
+	e1 -- e0;
+	e1 -- g0;
+	e1 -- h0;
+	e1 -- i0;
+
+	a0 [label=a];
+	a1 [label=a];
+	b0 [label=b];
+	b1 [label=b];
+	c0 [label=c];
+	d0 [label=d];
+	e0 [label=e];
+	e1 [label=e];
+	f0 [label=f];
+	g0 [label=g];
+	h0 [label=h];
+	i0 [label=i];
+}
