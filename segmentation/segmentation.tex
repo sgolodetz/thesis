@@ -395,8 +395,17 @@ $\;\; \longrightarrow \;\;$%
 %---
 
 %---
-% TODO: fig:segmentation-watershed-smoothedimage
-\stufigex{width=16cm, height=8cm}{todo.png}{Gaussian filtering is very good at smoothing an image}{fig:segmentation-watershed-smoothedimage}{p}
+\begin{stusubfig}{p}
+		\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
+	{\includegraphics[height=8cm]{segmentation/segmentation-watershed-smoothedimage-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The image after smoothing with a Gaussian filter ($\sigma^2 = 5$)]
+	{\includegraphics[height=8cm]{segmentation/segmentation-watershed-smoothedimage-b.png}}%
+\caption{Gaussian filtering is very good at smoothing an image}
+\label{fig:segmentation-watershed-smoothedimage}
+\end{stusubfig}
 %---
 
 The actual blurring is performed by \emph{convolving} an image $I$ with the mask to form a new image $I'$. Letting $M_\sigma^{3,3}$ be the 3x3 mask, this is written as $I' = I \otimes M_\sigma^{3,3}$. Convolution means overlaying the mask on each pixel of the image in turn, multiplying the value of each pixel in the mask by the value of the pixel beneath it, summing the results and using the value thus obtained as the value of the centre pixel in the blurred image. For the 3x3 mask with $\sigma = 1$, this means that:
