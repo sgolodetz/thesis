@@ -1027,8 +1027,7 @@ Having compared the three waterfall algorithms in terms of their algorithmic com
 Having now seen how the watershed and waterfall transforms can be implemented, it remains to demonstrate how they can be used to construct an image partition forest as defined in the previous chapter. The first step is to illustrate the sort of IPF we want to create (see Figure~\ref{fig:segmentation-ipfconstruction-goal}). The leaf layer corresponds directly to the original image, in that each node in it corresponds to a pixel in the image. The branch layers represent partitions of the image that become increasingly coarse as we ascend the forest. (Of course, the leaf layer is itself a partition of the image, if a trivial one.)
 
 %---
-% TODO: fig:segmentation-ipfconstruction-goal
-\stufigex{width=15cm, height=24cm}{todo.png}{The goal of the IPF construction process}{fig:segmentation-ipfconstruction-goal}{p}
+\stufigex{height=24cm}{segmentation/segmentation-ipfconstruction-goal.png}{The goal of the IPF construction process: coloured edges represent tree (forest) links between layers, whilst the dotted edges in each layer represent the layer's region adjacency graph}{fig:segmentation-ipfconstruction-goal}{p}
 %---
 
 We observe that the watershed process described produces an initial (relatively fine) partition of the image, which is then iteratively refined by the waterfall to give a sequence of ever coarser partitions. The idea, therefore, is that the lowest branch layer of the forest will correspond to the initial partition of the image output by the watershed, with higher branch layers being created by the waterfall.
