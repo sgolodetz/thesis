@@ -78,8 +78,27 @@ The watershed transform is commonly thought of not in the abstract terms just de
 %---
 
 %--
-% TODO: fig:segmentation-watershed-regionbasincorrespondence
-\stufigex{width=15cm, height=14cm}{todo.png}{Applying a watershed algorithm to an image partitions the image into regions that correspond to the catchment basins of the discrete landscape to which the image corresponds.}{fig:segmentation-watershed-regionbasincorrespondence}{p}
+\begin{stusubfig}{p}
+	\subfigure[An image]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-regionbasincorrespondence-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The corresponding discrete landscape]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-regionbasincorrespondence-b.png}}%
+	%
+	\\
+	%
+	\subfigure[The image after watershed segmentation]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-regionbasincorrespondence-c.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The landscape after watershed segmentation]
+	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-regionbasincorrespondence-d.png}}%
+\caption{Applying a watershed algorithm to an image partitions the image into regions that correspond to the catchment basins of the discrete landscape to which the image corresponds.}
+\label{fig:segmentation-watershed-regionbasincorrespondence}
+\end{stusubfig}
 %--
 
 A variety of different watershed image algorithms are possible (e.g.~\cite{bieniek00,meijster98,osma-ruiz06,rambabu07,stoev00}), but I will focus on Meijster and Roerdink's rainfalling method described in \cite{meijster98}, not least because the ideas behind it translate across to my rainfalling algorithm for the waterfall transform described in \S\ref{subsubsec:segmentation-waterfall-myalgorithm}.
