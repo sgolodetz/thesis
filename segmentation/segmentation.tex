@@ -16,8 +16,7 @@ The IPF construction process described in the following sections uses the waters
 At a conceptual level, the watershed transform is about dividing a landscape into its catchment basins. A catchment basin is an area of the landscape from which water runs down to the same point (a local minimum of the landscape). A watershed (also known in some parts of the world as a drainage divide) is the boundary between adjacent catchment basins (see Figure~\ref{fig:segmentation-watershed-concept}).\footnote{The name watershed means `water divider', since shedding is an old term for splitting, or dividing -- e.g.~sheepdogs often have to `shed' specified sheep from a flock in competitions.}
 
 %---
-% TODO: fig:segmentation-watershed-concept
-\stufigex{width=9cm, height=9cm}{todo.png}{The watersheds (marked in red) are the boundaries between adjacent catchment basins in the landscape}{fig:segmentation-watershed-concept}{t}
+\stufigex{width=9cm, height=9cm}{segmentation/segmentation-watershed-concept.png}{The watersheds (marked in red) are the boundaries between adjacent catchment basins in the landscape}{fig:segmentation-watershed-concept}{t}
 %---
 
 The watershed transform conceptually takes a landscape as its input and produces either the set of the landscape's catchment basins, or the set of its watershed lines, as output, depending on the particular algorithm. There are in fact two broad classes of watershed algorithms in use, based on two different ways of viewing the problem:
