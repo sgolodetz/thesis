@@ -1,0 +1,27 @@
+Principles of Image Partition Forests - Plan
+
+> Chapter Overview
+> What is an IPF?
+> IPF Algorithms
+>> Overview
+>> Modification Algorithms
+>>> Overview
+>>> Core Algorithms
+>>>> Layer Creation
+>>>> Layer Deletion
+>>>> Node Splitting
+>>>> Sibling Node Merging
+>>> Zipping Algorithms
+>>>> Unzipping
+>>>> Zipping
+>>> Higher-Level Algorithms
+>>>> Arbitrary Node Merging
+>>>> Parent Switching
+>>> Applied Algorithms
+>>>> Feature Identification
+>> Selection Algorithms
+>>> Overview
+>>> Add To Selection
+>>> Remove From Selection
+>>> View Selection At Layer
+> Chapter Summary
