@@ -10,6 +10,16 @@ Principles of Image Partition Forests - Plan
 
 > What is a Partition Forest?
 
+- A partition forest is in essence a hierarchy of adjacency graphs which all partition the same object.
+
+- The object itself can be anything divisible into pieces -- an image, a road network, food, etc.
+
+- Indeed, the idea can be illustrated surprisingly well (if somewhat farcically) using a pizza. At the lowest level, a pizza is divided into slices (see diagram). The union of all the slices is the entire pizza. The adjacency graph for the slices forms a ring (each slice is adjacent to the slices on either side of it). The weights on the edges between slices are not especially important in the case of pizzas, but they are very important in the case of images, as we will see later. At the next level up, the pizza might be divided into person-sized portions, consisting of several adjacent slices. The union of all the portions is still the whole pizza. The highest level just contains the whole pizza, as a trivial partition of itself. All the layers taken together form a hierarchy of partitions of the pizza; in this context, the slices and portions become nodes in the hierarchy. In this case, the hierarchy is a tree. However, note that if we had just considered the lowest two layers of the pizza then we would still have had a hierarchy, just one that wasn't rooted - in this case, we would be dealing with a forest. The theory in this chapter is developed to handle this more general case.
+
+- It is rare for pizza slices and portions to all be identical - some slices will generally have more cheese on than others, say, and some portions may contain more slices than others. When identifying the right portion to choose, therefore, it is important to have relevant properties of the slices and portions available in order to make an informed choice. For that reason, we can attach properties to the nodes of the forest which provide this information for later use. These properties can be different for different levels of node. In the case of slices, we might be interested in their cheesiness. In the case of portions, however, we might be more interested in the number of slices and their average cheesiness. What is important is that the properties of each node can be calculated directly from those of its children in the hierarchy. For instance, in this case the properties of a portion should be a function of the properties of the slices in the portion, and of nothing else.
+
+- Abstracting away from pizzas, the partition forest idea can be more formally defined as follows:
+
 TODO
 
 > Partition Forest Algorithms

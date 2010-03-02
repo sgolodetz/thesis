@@ -1,39 +1,171 @@
 Partition Forest - Definition
 
-Define a property
-
-- A T property is a function of type Node -> T. For example, 'area' is an integer property (T = \mathbb{Z} in this instance).
-
-Define a property value tuple
-
-- Given a tuple P, of properties which may be of various kinds, the property value tuple PV_P(o) is the tuple which results from applying each property to the object o. For example, if P = (area, mean grey value), PV(o1) might equal (5, 134.7).
-
-Define a weight function
-
-- Given a set of objects in an object o', S_{o'} = {o_1,...,o_k}, a function w: S_{o'} x S_{o'} \to \mathbb{R}^+ is a weight function for S_{o'} iff w(o_i, o_j) \ne \infty when, and only when, o_i and o_j are (in some implementation-defined sense) physically adjacent in o.
-
-Define a weight function generator
-
-- A weight function generator is a function of type {Object} -> Weight Function. In particular, applying a weight function generator to an object set S yields a weight function for S.
-
+###
 Define what partitioning is
 
 - A set of k objects {o_1,...,o_k} partitions object o' iff Union_i o_i = o' and \forall i,j \cdot i \ne j \Rightarrow o_i \cap o_j = \emptyset. We write the relation as \mathcal{P}({o_1,...,o_k}, o').
 
+###
 Define the notion of refinement between partitions
 
 - See existing definition, but remember that the last condition is redundant.
 
+###
+Define a property
+
+- A T property is a function of type Node -> T. For example, 'area' is an integer property (T = \mathbb{Z} in this instance).
+
+###
+Define a property value tuple
+
+- Given a tuple P, of properties which may be of various kinds, the property value tuple PV_P(o) is the tuple which results from applying each property to the object o. For example, if P = (area, mean grey value), PV_P(o1) might equal (5, 134.7).
+
+###
+Define a property value combiner
+
+- Given a set of k objects {o_1,...,o_k} which partitions object o', and two properties of tuples, P and P', a property value combiner is a function which will take the tuples PV_P(o_i) and return the tuple PV_{P'}(o').
+
+###
+Define a weight function
+
+- Given a set of objects in an object o', S_{o'} = {o_1,...,o_k}, a function w: S_{o'} x S_{o'} \to \mathbb{R}^+ is a weight function for S_{o'} iff w(o_i, o_j) \ne \infty when, and only when, o_i and o_j are (in some implementation-defined sense) physically adjacent in o'.
+
+
+###
+Define a weight function generator
+
+- A weight function generator is a function of type {Object} -> Weight Function. In particular, applying a weight function generator to an object set S yields a weight function for S.
+
+###
+Define a weight function propagator
+
+- A weight function propagator is a function of type Weight Function for {o_1,...,o_k} -> Weight Function for o'.
+
+###
 Define an adjacency graph
 
 - The adjacency graph G(S,WFG,P), where none of the nodes in S overlap, is the graph with node set S, and edge weights given by the weight function WFG(S). Each node has an associated property value tuple PV_P(o_i).
 
+###
 Define a partitioning graph
 
 - A partitioning graph of o' is an adjacency graph whose nodes additionally union to make o'.
 
+###
 Define a partition forest
 
 - Given an object o', a tuple TN = (N_0,...,N_n) of partitions of o' satisfying N_0 \sqsubseteq ... \sqsubseteq N_n, a tuple TW = (WFG_0,...,WFG_n) of weight function generators and a tuple TP = (P_0,...,P_n) of property tuples:
 
-- The image partition forest IPF_{TN,TW,TP}(o') is the following tuple of partitioning graphs of o': [G(N_0,WFG_0,P_0),...,G(N_n,WFG_n,P_n)]
+- The partition forest PF_{TN,TW,TP}(o') is the following tuple of partitioning graphs of o': [G(N_0,WFG_0,P_0),...,G(N_n,WFG_n,P_n)]
+
+@@@
+
+1) Define partitioning
+
+- As usual
+
+2) Define partition refinement
+
+- As usual
+
+3) Define a weight function
+
+- A weight function for a set of sub-objects O which form part of a larger object o' is a function of type S x S \to \mathbb{R}^+, which additionally satisfies the requirement that w(o_i, o_j) \ne \infty when, and only when, o_i and o_j are (in some implementation-defined sense) physically adjacent in o'.
+
+4) Define a weight function generator
+
+- A weight function generator is a process that yields a weight function for a given set of objects.
+
+5) Define a weight function propagator
+
+- A weight function propagator for two sets of sub-objects of o', O_f and O_c, is a process that takes a weight function for O_f and yields one for O_c.
+
+6) Define a property
+
+- TODO
+
+7) Define a property value set
+8) Define a property value set generator
+9) Define a property value set combiner
+10) Define a propertied adjacency graph
+11) Define a partitioning graph
+12) Define a partition forest
+
+@@@
+
+1) Define partitioning
+2) Define partition refinement
+3) Define a partitionable object
+
+- A partitionable object is simply a non-empty set {s_1,...,s_n} of sub-objects. Note that a singleton set is allowed here.
+
+4) Define a weight function
+
+- Letting adj_o(s_i,s_j) denote that sub-objects s_i and s_j are adjacent in a partitionable object o, a weight function for o is a function of type Power(o) x Power(o) \to \mathbb{R}^+, which satisfies the requirements that (a) w(s_i, s_j) \ne \infty when, and only when, adj_o(s_i, s_j) is true; and (b) that if S_1 partitions o_1 and S_2 partitions o_2, then w({o1},{o2}) is a function of the values in the set {w(s_{1i},s_{2j}) | s_{1i} <- S_1, s_{2j} <- S_2} only.
+
+5) Define a property set
+
+- A property set is an ordered set of properties, each of which is a function which takes a partionable object and yields a result of some value type (not all the value types have to be equal).
+
+6) Define a property value set
+
+- A property value set is the ordered set resulting from applying a property set to a forest node. In particular, if P is a property set, then the property value set PV_P(o) contains (in order) the value of each of the properties mentioned in P for o.
+
+7) Define direct calculability of property sets
+
+- Given a set of sub-objects S which partition an object o, we call a property set P' directly calculable from a property set P if PV_{P'}(o) is a function of the property value sets in {PV_P(s) | s <- S} only. We write this as P \hookrightarrow P'.
+
+8) Define a propertied adjacency graph
+
+- A propertied adjacency graph is a graph G(V,w,P) = (V,E,PVS) with node set V, edge set E, and set of property value sets PVS, where \forall v_i, v_j \cdot v_i \ne v_j \Rightarrow v_i \cap v_j = \emptyset, E = {(v_i,v_j,w(v_i,v_j)) | v_i, v_j <- V} and PVS = {PV_P(v) | v <- V}.
+
+9) Define a partitioning graph
+10) Define a partition forest
+
+- Given an object o, a tuple TV = (V_0,...,V_n) of partitions of o satisfying V_0 \sqsubseteq ... \sqsubseteq V_n, a weight function w for o and a tuple TP of property sets (P_0,...,P_n) satisfying P_0 \hookrightarrow ... \hookrightarrow P_n:
+
+- The partition forest PF_{TV,w,TP}(o) is the pair (FL,GS), where FL are the forest links, defined as {{o_i,o_j} | o_i, o_j <- V_0,...,V_n and o_i \subset o_j}, and GS are the partitioning graphs, defined to be [G(V_0,w,P_0),...,G(V_n,w,P_n)].
+
+@@@
+
+1) Define partitioning
+2) Define partition refinement
+3) Define a partitionable object
+
+- A partitionable object is simply a non-empty set {s_1,...,s_n} of sub-objects. Note that a singleton set is allowed here.
+
+4) Define a partition node
+
+- A partition node is a node in the partition forest. Each node represents a given set of sub-objects {s_1,...,s_n}, *which together form a contiguous object*. The set of sub-objects represented by node n may be denoted objs(n), but note that this can be expensive to calculate at run-time. In similar vein, the set of sets of sub-objects represented by the node set N = {n0,...,nk} can be denoted Objs(N).
+
+5) Define a weight function
+
+- Letting adj_o(s_i,s_j) denote that sub-objects s_i and s_j are adjacent in a partitionable object o, a weight function for o is a function of type Power(o) x Power(o) \to \mathbb{R}^+, which satisfies the requirements that (a) w(s_i, s_j) \ne \infty when, and only when, adj_o(s_i, s_j) is true; and (b) that if S_1 partitions o_1 and S_2 partitions o_2, then w({o1},{o2}) is a function of the values in the set {w(s_{1i},s_{2j}) | s_{1i} <- S_1, s_{2j} <- S_2} only.
+
+6) Define a property set
+
+- A property set is an ordered set of properties, each of which is a notional function that takes a partionable object and yields a result of some value type (not all the value types have to be equal).
+
+7) Define a property value set
+
+- A property value set is the ordered set which would result from applying a property set to a partitionable object. In particular, if P is a property set, then the property value set PV_P(o) contains (in order) the value of each of the properties mentioned in P for the object o.
+
+8) Define direct calculability of property sets
+
+- Given a set of sub-objects S which partition an object o, we call a property set P' directly calculable from a property set P if PV_{P'}(o) is a function of the property value sets in {PV_P(s) | s <- S} only. We write this as P \hookrightarrow P'.
+
+9) Define a propertied adjacency graph
+
+- A propertied adjacency graph is a graph G(V,w,P) = (V,E,PVS) with node set V, edge set E, and set of property value sets PVS, where \forall v_i, v_j \cdot v_i \ne v_j \Rightarrow objs(v_i) \cap objs(v_j) = \emptyset, E = {(v_i,v_j,w(objs(v_i),objs(v_j))) | v_i, v_j <- V} and PVS = {PV_P(objs(v)) | v <- V}.
+
+10) Define a partitioning graph
+
+- A partitioning graph of o is a propertied adjacency graph whose nodes additionally union to make o.
+
+11) Define a partition forest
+
+- Given an object o, a tuple TV = (V_0,...,V_n), where Objs(V_i) are partitions of o satisfying Objs(V_0) \sqsubseteq ... \sqsubseteq V_n, a weight function w for o and a tuple TP of property sets (P_0,...,P_n) satisfying P_0 \hookrightarrow ... \hookrightarrow P_n:
+
+- The partition forest PF_{TV,w,TP}(o) is the pair (FL,GS), where FL are the forest links, defined as {{v_i,v_j} | v_i, v_j <- V_0,...,V_n and v_i \ne v_j and objs(v_i) \subseteq objs(v_j)}, and GS are the partitioning graphs of o, defined to be [G(V_0,w,P_0),...,G(V_n,w,P_n)].
+
+- It can be noted that the parent relation can be defined by noting that p = parent(c) and c \in children(p) iff {c,p} \in FL and \exists i . c \in V_i and p \in V_{i+1}.
