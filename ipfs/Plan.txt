@@ -1,8 +1,15 @@
 Principles of Image Partition Forests - Plan
 
 > Chapter Overview
-> What is an IPF?
-> IPF Algorithms
+
+- In Chapter 3, I discussed the goals of the project and the methods I chose to try to achieve them.
+- This chapter presents the key data structure to be used -- the image partition forest -- and novel algorithms for working with it.
+- Image partition forests are, as their name suggests, a specialization of a more general data structure (partition forests) to images. Since all of the algorithms apply equally well to the more general data structure, they will be described in relatively general terms here in order to facilitate their use for other purposes. We will see an alternative use of partition forests in Chapter 8.
+- As used in the current project, an IPF is an intermediate representation of the image produced by the process of segmentation for later use in feature identification.
+- Discussion of how to construct IPFs from images (i.e.~the segmentation process), and how to use them for identifying features therein, is deferred to Chapters 5 and 6; in this chapter, we focus only on the data structure and its accompanying algorithms.
+
+> What is a Partition Forest?
+> Partition Forest Algorithms
 >> Overview
 >> Modification Algorithms
 >>> Overview
@@ -24,4 +31,5 @@ Principles of Image Partition Forests - Plan
 >>> Add To Selection
 >>> Remove From Selection
 >>> View Selection At Layer
+> Image Partition Forests
 > Chapter Summary
