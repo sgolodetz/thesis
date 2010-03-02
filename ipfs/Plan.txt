@@ -9,6 +9,9 @@ Principles of Image Partition Forests - Plan
 - Discussion of how to construct IPFs from images (i.e.~the segmentation process), and how to use them for identifying features therein, is deferred to Chapters 5 and 6; in this chapter, we focus only on the data structure and its accompanying algorithms.
 
 > What is a Partition Forest?
+
+TODO
+
 > Partition Forest Algorithms
 >> Overview
 >> Modification Algorithms

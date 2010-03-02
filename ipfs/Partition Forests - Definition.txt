@@ -1,0 +1,39 @@
+Partition Forest - Definition
+
+Define a property
+
+- A T property is a function of type Node -> T. For example, 'area' is an integer property (T = \mathbb{Z} in this instance).
+
+Define a property value tuple
+
+- Given a tuple P, of properties which may be of various kinds, the property value tuple PV_P(o) is the tuple which results from applying each property to the object o. For example, if P = (area, mean grey value), PV(o1) might equal (5, 134.7).
+
+Define a weight function
+
+- Given a set of objects in an object o', S_{o'} = {o_1,...,o_k}, a function w: S_{o'} x S_{o'} \to \mathbb{R}^+ is a weight function for S_{o'} iff w(o_i, o_j) \ne \infty when, and only when, o_i and o_j are (in some implementation-defined sense) physically adjacent in o.
+
+Define a weight function generator
+
+- A weight function generator is a function of type {Object} -> Weight Function. In particular, applying a weight function generator to an object set S yields a weight function for S.
+
+Define what partitioning is
+
+- A set of k objects {o_1,...,o_k} partitions object o' iff Union_i o_i = o' and \forall i,j \cdot i \ne j \Rightarrow o_i \cap o_j = \emptyset. We write the relation as \mathcal{P}({o_1,...,o_k}, o').
+
+Define the notion of refinement between partitions
+
+- See existing definition, but remember that the last condition is redundant.
+
+Define an adjacency graph
+
+- The adjacency graph G(S,WFG,P), where none of the nodes in S overlap, is the graph with node set S, and edge weights given by the weight function WFG(S). Each node has an associated property value tuple PV_P(o_i).
+
+Define a partitioning graph
+
+- A partitioning graph of o' is an adjacency graph whose nodes additionally union to make o'.
+
+Define a partition forest
+
+- Given an object o', a tuple TN = (N_0,...,N_n) of partitions of o' satisfying N_0 \sqsubseteq ... \sqsubseteq N_n, a tuple TW = (WFG_0,...,WFG_n) of weight function generators and a tuple TP = (P_0,...,P_n) of property tuples:
+
+- The image partition forest IPF_{TN,TW,TP}(o') is the following tuple of partitioning graphs of o': [G(N_0,WFG_0,P_0),...,G(N_n,WFG_n,P_n)]
