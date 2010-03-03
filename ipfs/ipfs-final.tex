@@ -4,12 +4,71 @@
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a data structure, along with a set of algorithms for working with them. It further explains how the generic partition forest data structure can be applied in the imaging domain. In that context, we will talk of the partition forests as image partition forests (or IPFs). This lays the foundation for the two following chapters, which describe how IPFs can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}).
+In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a data structure, along with a set of novel algorithms for working with them. It further explains how the generic partition forest data structure can be applied in the imaging domain. In that context, we will talk of the partition forests as image partition forests (or IPFs). This lays the foundation for the two following chapters, which describe how IPFs can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}).
 
 As will be discussed in Chapter~\ref{chap:assessment}, however, the partition forest data structure and its accompanying algorithms are useful in a wider context than just imaging. In particular, we will later see another application of partition forests in the domain of hierarchical pathfinding.
 
 %---
 \section{What is a Partition Forest?}
+
+\subsection{Intuition}
+
+A partition forest is in essence a hierarchy of adjacency graphs that all partition the same object (the sense in which a graph can partition an object will be formalised in what follows). The object itself can be anything that can be divided into pieces, whether that be an image, a road network, an organisation, or even a pizza. Partition forests as a data structure are similar to the picture trees described in \cite{andrade03}. They are also related to the semantic segmentation trees found in \cite{al-haj08} and the binary partition trees found in \cite{salembier00}.
+
+The ideas behind partition forests can be illustrated surprisingly well using the aforementioned example of a pizza.\footnote{This will necessitate a mature suspension of disbelief on the part of the reader.} The finest partition of a pizza is into slices (see Figure~\ref{fig:ipfs-pizza}). The union of all the slices is the entire pizza. The adjacency graph for the slices forms a ring (each slice is adjacent to the slices on either side of it). The weights on the edges between slices are not especially important in the case of pizzas, but they are very important in the case of images, as we will see later. At the next layer up, the pizza might be divided into person-sized portions, consisting of several adjacent slices. The union of all the portions is still the whole pizza. The highest layer might contain two half-pizzas -- one vegetarian, the other not. All the layers taken together form a hierarchy of partitions of the pizza. The slices, portions and halves all become nodes in this hierarchy. Note that the top-most layer of the hierarchy is allowed to contain more than one node -- this is what makes the hierarchy a forest rather than a tree.
+
+% TODO: fig:ipfs-pizza
+
+It is rare for pizza slices and portions to all be identical -- some slices will generally end up with more topping on than others, and some portions may contain more slices than others. When identifying an appropriate portion to choose, therefore, it is important to have relevant properties of the slices and portions available in order to make an informed choice. For that purpose, we can attach properties to the nodes of the forest that provide this information for later use. These properties can be different for different node layers. We can imagine maintaining a topping quality property for slices, with perhaps slice count and best/average topping quality properties for portions. What is important is that the properties of each node can be calculated directly from those of its children in the hierarchy. In this case, that would mean that the properties of a portion should be a function of the properties of the slices in the portion only.
+
+\subsection{Definition}
+
+Abstracting away from the intuitive description of partition forests just given, it is possible to define them more formally as follows:
+
+\begin{definition}
+An \textbf{object} is a non-empty set of basic components which together form a contiguous whole. (For example, a contiguous image region would be a non-empty set of pixels.)
+\end{definition}
+
+\begin{definition}
+A set of k objects $\{o'_1,\ldots,o'_k\}$ \textbf{partitions} an object $o$ iff $\bigcup_i o'_i = o$ and $\forall i,j \cdot o'_i \cap o'_j = \emptyset$. We write the relation as $\mathcal{P}(\{o'_1,\ldots,o'_k\}, o)$.
+\end{definition}
+
+\begin{definition}
+Given an object $o$, and two objects sets $O'_f = \{o'_{f1},\ldots,o'_{fk_f}\}$ and $O'_c = \{o'_{c1},\ldots,o'_{ck_c}\}$, satisfying $\mathcal{P}(O'_f,o)$ and $\mathcal{P}(O'_c,o)$, we say that $O'_c$ is a \textbf{coarser partition} of $o$ than $O'_f$ (written $O'_f \sqsubseteq O'_c$) iff for every object $o'_{ci} \in O'_c$ there exists a subset $S_i \subseteq O'_f$ such that $\mathcal{P}(S_i,o'_{ci})$. (In other words, $O'_f$ is a partition of $o$ in which each individual object in $O'_c$ has itself been partitioned.)
+\end{definition}
+
+\begin{definition}
+Letting $\mbox{adj}_o(o'_i, o'_j)$ denote that sub-objects $o'_i$ and $o'_j$ are (in some sense) adjacent in an object $o$, we define a \textbf{weight function} $w_o$ for $o$ to be a function of type $\mathbb{P}(o) \times \mathbb{P}(o) \to \mathbb{R}^+$ that satisfies the following two requirements:
+
+\begin{enumerate}
+
+\item $w_o(o'_i, o'_j) \ne \infty$ when, and only when, $adj_o(o'_i, o'_j)$ is true
+
+\item Given any sets $S_i$ and $S_j$ satisfying $\mathcal{P}(S_i,o'_i)$ and $\mathcal{P}(S_j,o'_j)$, the value $w_o(o'_i, o'_j)$ is a function of only the values in the set $\{w_o(s_i, s_j) \; | \; s_i \leftarrow S_i, \; s_j \leftarrow S_j\}$.
+
+\end{enumerate}
+
+\end{definition}
+
+\begin{definition}
+A \textbf{property set} is an ordered set (a tuple) of properties, each of which is a function that maps an object to a value (the types of the values may differ). For example, in the context of imaging it would be possible to have an area property that calculates the area of a given image region in pixels.
+\end{definition}
+
+\begin{definition}
+Given a property set $P = (p_1,\ldots,p_k)$ and an object $o$, the \textbf{property value set} $PV_P(o)$ is the ordered set that results from applying each property in $P$ to the object $o$, namely $(p_1(o),\ldots,p_k(o))$.
+\end{definition}
+
+\begin{definition}
+We call a property set $P$ \textbf{directly calculable} from a property set $P'$ iff, for any given set of sub-objects $O'$ and object $o$ satisfying $\mathcal{P}(O',o)$, the property value set $V_P(o)$ is a function of only the property value sets in $\{V_{P'}(o') \; | \; o' \in O'\}$. We write this relation as $P' \hookrightarrow P$.
+\end{definition}
+
+\begin{definition}
+A \textbf{partition node} is a node in a partition forest. Each node $n$ represents a given object, denoted as $\mbox{obj}(n)$. The set of objects represented by a node set $N$ can be denoted as $\mbox{Objs}(N)$.
+\end{definition}
+
+\begin{definition}
+A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(n_i,n_j,w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \leftarrow N\}$, and property value set tuple $VS = (V_P(\mbox{obj}(n)) \; | \; n \leftarrow N)$.
+\end{definition}
 
 TODO
 
