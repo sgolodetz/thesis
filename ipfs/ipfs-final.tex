@@ -39,7 +39,7 @@ Given an object $o$, and two objects sets $O'_f = \{o'_{f1},\ldots,o'_{fk_f}\}$ 
 
 \begin{definition}
 Letting $\mbox{adj}_o(o'_i, o'_j)$ denote that sub-objects $o'_i$ and $o'_j$ are (in some sense) adjacent in an object $o$, we define a \textbf{weight function} $w_o$ for $o$ to be a function of type $\mathbb{P}(o) \times \mathbb{P}(o) \to \mathbb{R}^+$ that satisfies the following two requirements:
-
+%
 \begin{enumerate}
 
 \item $w_o(o'_i, o'_j) \ne \infty$ when, and only when, $adj_o(o'_i, o'_j)$ is true
@@ -55,7 +55,7 @@ A \textbf{property set} is an ordered set (a tuple) of properties, each of which
 \end{definition}
 
 \begin{definition}
-Given a property set $P = (p_1,\ldots,p_k)$ and an object $o$, the \textbf{property value set} $PV_P(o)$ is the ordered set that results from applying each property in $P$ to the object $o$, namely $(p_1(o),\ldots,p_k(o))$.
+Given a property set $P = (p_1,\ldots,p_k)$ and an object $o$, the \textbf{property value set} $V_P(o)$ is the ordered set that results from applying each property in $P$ to the object $o$, namely $(p_1(o),\ldots,p_k(o))$.
 \end{definition}
 
 \begin{definition}
@@ -70,7 +70,28 @@ A \textbf{partition node} is a node in a partition forest. Each node $n$ represe
 A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(n_i,n_j,w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \leftarrow N\}$, and property value set tuple $VS = (V_P(\mbox{obj}(n)) \; | \; n \leftarrow N)$.
 \end{definition}
 
-TODO
+\begin{definition}
+Given an object $o$, a tuple $NS = (N_1,\ldots,N_k)$, where $\forall N_i \in NS \cdot \mathcal{P}(\mbox{Objs}(N_i),o)$ and $\mbox{Objs}(N_1) \sqsubseteq \ldots \sqsubseteq \mbox{Objs}(N_k)$, a weight function $w_o$ for $o$ and a tuple $PS = (P_1,\ldots,P_k)$ satisfying $P_1 \hookrightarrow \ldots \hookrightarrow P_k$, we define the \textbf{partition forest} $PF_{NS,w_o,PS}(o)$ to be the pair $(FL,PG)$, in which:
+
+\begin{itemize}
+
+\item $FL$ is a set of forest links, defined as:
+%
+\[
+\{(n_c,n_p) \; | \; n_c, n_p \leftarrow N_1,\ldots,N_k \mbox{ and } n_c \ne n_p \mbox{ and } \mbox{obj}(n_c) \subseteq \mbox{obj}(n_p)\}
+\]
+
+\item $GS$ is an ordered set of partitioning graphs of $o$, defined as:
+%
+\[
+(G(N_1,w_o,P_1),\ldots,G(N_k,w_o,P_k))
+\]
+
+\end{itemize}
+
+\noindent We can also define a parent/child relation between nodes, namely that $p = \mbox{parent}(c)$ and $c \in \mbox{children}(p)$ iff $(c,p) \in FL$.
+
+\end{definition}
 
 %---
 \section{Partition Forest Algorithms}
