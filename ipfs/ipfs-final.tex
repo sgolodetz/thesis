@@ -1,10 +1,10 @@
-\chapter{Principles of Image Partition Forests}
+\chapter{Principles of Partition Forests}
 \label{chap:ipfs}
 
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a data structure, along with a set of novel algorithms for working with them. It further explains how the partition forest data structure can be applied in the imaging domain. In that context, we will talk of partition forests as image partition forests (or IPFs). This lays the foundation for the two following chapters, which describe how IPFs can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}).
+In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a data structure, along with a set of novel algorithms for working with them. This lays the foundation for the two following chapters, which describe how partition forests can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}). In that context, we will talk of partition forests as image partition forests (or IPFs).
 
 As will be discussed in Chapter~\ref{chap:assessment}, however, the partition forest data structure and its accompanying algorithms are useful in a wider context than just imaging. In particular, we will later see another application of partition forests in the domain of hierarchical pathfinding.
 
@@ -71,21 +71,21 @@ A \textbf{partition node} is a node in a partition forest. Each node $n$ represe
 \end{definition}
 
 \begin{definition}
-A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(n_i,n_j,w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \leftarrow N\}$, and property value set tuple $VS = (V_P(\mbox{obj}(n)) \; | \; n \leftarrow N)$.
+A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(n_i,n_j,w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \leftarrow N\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \leftarrow N)$.
 \end{definition}
 
 \begin{definition}
-Given an object $o$, a tuple $NS = (N_1,\ldots,N_k)$, where $\forall N_i \in NS \cdot \mathcal{P}(\mbox{Objs}(N_i),o)$ and $\mbox{Objs}(N_1) \sqsubseteq \ldots \sqsubseteq \mbox{Objs}(N_k)$, a weight function $w_o$ for $o$ and a tuple $PS = (P_1,\ldots,P_k)$ satisfying $P_1 \hookrightarrow \ldots \hookrightarrow P_k$, we define the \textbf{partition forest} $PF_{NS,w_o,PS}(o)$ to be the pair $(FL,PG)$, in which:
+Given an object $o$, a non-empty tuple $\textit{NS} = (N_1,\ldots,N_k)$, where $\forall N_i \in \textit{NS} \cdot \mathcal{P}(\mbox{Objs}(N_i),o)$ and $\mbox{Objs}(N_1) \sqsubseteq \ldots \sqsubseteq \mbox{Objs}(N_k)$, a weight function $w_o$ for $o$ and a non-empty tuple $\textit{PS} = (P_1,\ldots,P_k)$ satisfying $P_1 \hookrightarrow \ldots \hookrightarrow P_k$, we define the \textbf{partition forest} $PF_{\textit{NS},w_o,\textit{PS}}(o)$ to be the pair $(\textit{FL},\textit{PG})$, in which:
 
 \begin{itemize}
 
-\item $FL$ is a set of forest links, defined as:
+\item $\textit{FL}$ is a set of forest links, defined as:
 %
 \[
 \{(n_c,n_p) \; | \; n_c, n_p \leftarrow N_1,\ldots,N_k \mbox{ and } n_c \ne n_p \mbox{ and } \mbox{obj}(n_c) \subseteq \mbox{obj}(n_p)\}
 \]
 
-\item $GS$ is an ordered set of partitioning graphs of $o$, defined as:
+\item $\textit{GS}$ is an ordered set of partitioning graphs of $o$, defined as:
 %
 \[
 (G(N_1,w_o,P_1),\ldots,G(N_k,w_o,P_k))
@@ -93,9 +93,9 @@ Given an object $o$, a tuple $NS = (N_1,\ldots,N_k)$, where $\forall N_i \in NS 
 
 \end{itemize}
 
-\noindent We can also define a parent/child relation between nodes, namely that $p = \mbox{parent}(c)$ and $c \in \mbox{children}(p)$ iff $(c,p) \in FL$.
-
 \end{definition}
+
+\noindent We can also define a parent/child relation between nodes, namely that $p = \mbox{parent}(c)$ iff $(c,p) \in \textit{FL}$. (This is equivalent to saying $c \in \mbox{children}(p)$.)
 
 %---
 \section{Partition Forest Algorithms}
@@ -113,17 +113,37 @@ Having formally defined partition forests, I will now present a series of algori
 
 \subsubsection{Overview}
 
-The algorithms for modifying partition forests can be divided into four groups (in three levels). The lowest level contains four core algorithms: layer cloning, layer deletion, node splitting and sibling node merging (merging two or more nodes which share the same parent). These are all that is needed to allow the user to manually create any partition forest for a leaf layer of basic components (e.g.~pixels, in the case of images).\footnote{A good way of thinking about it (coming from a programming background) is that if you were to implement a partition forest class in an object-oriented programming language, the core algorithms would be the ones which had to be implemented as member functions of the class (in other words, they form the class's minimal interface).} More sophisticated algorithms can then be built on this foundation. The level above the core contains the zipping algorithms. These are essentially multi-layer split and merge operations -- instead of splitting or merging individual nodes, they split and merge branches of the hierarchy. They form the basis of algorithms such as non-sibling node merging and feature identification in the highest level.
+The algorithms for modifying partition forests can be divided into four groups (in three levels). The lowest level contains four core algorithms: layer cloning, layer deletion, node splitting and sibling node merging (merging two or more nodes which share the same parent). These are all that is needed to allow the user to manually create any partition forest for a leaf layer of basic components (e.g.~pixels, in the case of images).\footnote{A good way of thinking about it (coming from a programming perspective) is that if you were to implement a partition forest class in an object-oriented programming language, the core algorithms would be the ones which had to be implemented as member functions of the class (in other words, they form the class's minimal interface).} More sophisticated algorithms can then be built on this foundation. The level above the core contains the zipping algorithms. These are essentially multi-layer split and merge operations -- instead of splitting or merging individual nodes, they split and merge branches of the hierarchy. They form the basis of algorithms such as non-sibling node merging and feature identification in the highest level.
 
 \subsubsection{Core Algorithms}
 
 \paragraph{Layer Cloning}
 
-TODO
+\begin{itemize}
+
+\item \emph{Description}. New layers can be inserted anywhere in the hierarchy by cloning a layer above or below the insertion point (for example, see Figure~\ref{fig:ipfs-algorithms-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{GS}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
+
+\item \emph{Usage}. Used to create additional layers that can later be modified using split/merge operations.
+
+\item \emph{Complexity}. Suppose layer $i$ is to be inserted between two existing layers, $b$ (below) and $a$ (above). Let $n_\ell$ be the number of nodes and $e_\ell$ be the number of adjacency graph edges in layer $\ell$. Then, since we are cloning one of the two existing layers, either $n_i = n_b$ and $e_i = e_b$, or $n_i = n_a$ and $e_i = e_a$. In either case, the complexity of cloning the partitioning graph is $\Theta(e_i)$. Observe in passing that $n_i \in O(e_i)$, since the adjacency graph is connected, so there is no need to include $n_i$ when analysing the complexity of the cloning process. Forest links must then be added between layers $b$ and $i$, and layers $i$ and $a$. There are $\Theta(n_b)$ of the former, and $\Theta(n_i)$ of the latter (consider connecting each of the nodes in the two layers to its parent in the layer above). So the cost of adding the links is $\Theta(n_b + n_i)$. This is $\Theta(n_b)$, since $n_b \ge n_i$. The overall complexity is thus $\Theta(e_i + n_b)$. (If we are cloning the layer below, whether because there is no layer above or otherwise, this simplifies to $\Theta(e_b)$. If we are cloning the layer above, and there is a layer below, it becomes $\Theta(e_a + n_b)$. If we are cloning the layer above and there is no layer below, this simplifies to $\Theta(e_a)$.)
+
+\end{itemize}
+
+% TODO: fig:ipfs-algorithms-layercloning
 
 \paragraph{Layer Deletion}
 
-TODO
+\begin{itemize}
+
+\item \emph{Description}. Any layer can be deleted from the hierarchy, provided that there is still at least one layer remaining after the operation (for example, see Figure~\ref{fig:ipfs-algorithms-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{GS}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+% TODO: fig:ipfs-algorithms-layerdeletion
 
 \paragraph{Node Splitting}
 
@@ -174,11 +194,6 @@ TODO
 TODO
 
 \subsubsection{View Selection At Layer}
-
-TODO
-
-%---
-\section{Image Partition Forests}
 
 TODO
 
