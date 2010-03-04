@@ -10,16 +10,17 @@ As will be discussed in Chapter~\ref{chap:assessment}, however, the partition fo
 
 %---
 \section{What is a Partition Forest?}
+%\label{sec:ipfs-description}
 
 \subsection{Concept}
 
 A partition forest is in essence a hierarchy of adjacency graphs that all partition the same object (the sense in which a graph can partition an object will be formalised in what follows). The object itself can be anything that can be divided into pieces, whether that be an image, a road network, an organisation, or even a pizza. Partition forests as a data structure are similar to the picture trees described in \cite{andrade03}. They are also related to the semantic segmentation trees found in \cite{al-haj08} and the binary partition trees found in \cite{salembier00}. The partition forest algorithms I will describe in \S\ref{sec:ipfs-algorithms}, however, are entirely novel.
 
-The ideas behind partition forests can be most simply illustrated using the aforementioned example of a pizza (see Figure~\ref{fig:ipfs-pizza}). We consider three different levels of partitioning for the pizza: into slices, into portions, and into halves (e.g.~a vegetarian half and a meat half). Each half contains one or more portions and each portion contains one or more slices. All the slices taken together form the whole pizza, and none of them mutually overlap. This is equally true for both the portions and the halves. Taken together, the slices, portions and halves (the `pieces') form a hierarchy of partitions of the pizza, in which the individual pieces become nodes. (Note that the top-most level of the hierarchy is allowed to contain more than one node -- this is what makes the hierarchy a forest rather than a tree.) Each level of the hierarchy is an adjacency graph: in this case, the adjacency graphs for the slices and portions form rings (each slice/portion is adjacent to the slices/portions on either side of it), whilst the adjacency graph for the halves is just a single edge between them. The weights on the edges are not especially important in the case of pizzas (we could perhaps imagine them as indicating the ease of pulling the pizza apart at that point, if we wanted to push the analogy), but they are very important in the imaging domain, as we will see later.
+The ideas behind partition forests can be most simply illustrated using the aforementioned example of a pizza (see Figure~\ref{fig:ipfs-description-pizza}). We consider three different levels of partitioning for the pizza: into slices, into portions, and into halves (e.g.~a vegetarian half and a meat half). Each half contains one or more portions and each portion contains one or more slices. All the slices taken together form the whole pizza, and none of them mutually overlap. This is equally true for both the portions and the halves. Taken together, the slices, portions and halves (the `pieces') form a hierarchy of partitions of the pizza, in which the individual pieces become nodes. (Note that the top-most level of the hierarchy is allowed to contain more than one node -- this is what makes the hierarchy a forest rather than a tree.) Each level of the hierarchy is an adjacency graph: in this case, the adjacency graphs for the slices and portions form rings (each slice/portion is adjacent to the slices/portions on either side of it), whilst the adjacency graph for the halves is just a single edge between them. The weights on the edges are not especially important in the case of pizzas (we could perhaps imagine them as indicating the ease of pulling the pizza apart at that point, if we wanted to push the analogy), but they are very important in the imaging domain, as we will see later.
 
 %---
-% TODO: fig:ipfs-pizza
-\stufigex{width=15cm, height=24cm}{todo.png}{TODO}{fig:ipfs-pizza}{p}
+% TODO: fig:ipfs-description-pizza
+\stufigex{width=15cm, height=24cm}{todo.png}{TODO}{fig:ipfs-description-pizza}{p}
 %---
 
 It is rare for pizza slices and portions to all be identical -- some slices will generally end up with more topping on than others, and some portions may contain more slices than others. When identifying an appropriate portion to choose, therefore, it is important to have relevant properties of the slices and portions available in order to make an informed choice. For that purpose, we can attach properties to the nodes of the forest that provide this information for later use. These properties can be different for different node layers. We can imagine maintaining a topping quality property for slices, with perhaps slice count and best/average topping quality properties for portions. What is important is that the properties of each node can be calculated directly from those of its children in the hierarchy. In this case, that would mean that the properties of a portion should be a function of only the properties of the slices in that portion.
@@ -102,17 +103,21 @@ Given an object $o$, a tuple $NS = (N_1,\ldots,N_k)$, where $\forall N_i \in NS 
 
 \subsection{Overview}
 
-TODO
+Having formally defined partition forests, I will now present a series of algorithms for working with them. The algorithms I have developed can be partitioned into two major classes: modification algorithms, which allow users to alter the structure of a forest, and selection algorithms, which provide a means of selecting nodes in the forest. The organisation of the algorithms is illustrated in Figure~\ref{fig:ipfs-algorithms-organisation}.
+
+%---
+\stufigex{width=15cm}{ipfs/ipfs-algorithms-organisation.png}{The organisation of the partition forest algorithms -- the red lines indicate the dependencies between the different algorithms.}{fig:ipfs-algorithms-organisation}{p}
+%---
 
 \subsection{Modification Algorithms}
 
 \subsubsection{Overview}
 
-TODO
+The algorithms for modifying partition forests can be divided into four groups (in three levels). The lowest level contains four core algorithms: layer cloning, layer deletion, node splitting and sibling node merging (merging two or more nodes which share the same parent). These are all that is needed to allow the user to manually create any partition forest for a leaf layer of basic components (e.g.~pixels, in the case of images).\footnote{A good way of thinking about it (coming from a programming background) is that if you were to implement a partition forest class in an object-oriented programming language, the core algorithms would be the ones which had to be implemented as member functions of the class (in other words, they form the class's minimal interface).} More sophisticated algorithms can then be built on this foundation. The level above the core contains the zipping algorithms. These are essentially multi-layer split and merge operations -- instead of splitting or merging individual nodes, they split and merge branches of the hierarchy. They form the basis of algorithms such as non-sibling node merging and feature identification in the highest level.
 
 \subsubsection{Core Algorithms}
 
-\paragraph{Layer Creation}
+\paragraph{Layer Cloning}
 
 TODO
 
@@ -140,7 +145,7 @@ TODO
 
 \subsubsection{Higher-Level Algorithms}
 
-\paragraph{Arbitrary Node Merging}
+\paragraph{Non-Sibling Node Merging}
 
 TODO
 
