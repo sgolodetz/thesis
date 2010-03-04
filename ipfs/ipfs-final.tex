@@ -75,7 +75,31 @@ A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected gra
 \end{definition}
 
 \begin{definition}
-Given an object $o$, a non-empty tuple $\textit{NS} = (N_1,\ldots,N_k)$, where $\forall N_i \in \textit{NS} \cdot \mathcal{P}(\mbox{Objs}(N_i),o)$ and $\mbox{Objs}(N_1) \sqsubseteq \ldots \sqsubseteq \mbox{Objs}(N_k)$, a weight function $w_o$ for $o$ and a non-empty tuple $\textit{PS} = (P_1,\ldots,P_k)$ satisfying $P_1 \hookrightarrow \ldots \hookrightarrow P_k$, we define the \textbf{partition forest} $PF_{\textit{NS},w_o,\textit{PS}}(o)$ to be the pair $(\textit{FL},\textit{PG})$, in which:
+Given:
+
+%-
+\begin{enumerate}
+
+\item An object $o$
+\item A non-empty tuple $\textit{NS} = (N_1,\ldots,N_k)$, where:
+
+%--
+\begin{enumerate}
+
+\item $\forall N_i \in \textit{NS} \cdot \mathcal{P}(\mbox{Objs}(N_i),o)$
+\item $\mbox{Objs}(N_1) \sqsubseteq \ldots \sqsubseteq \mbox{Objs}(N_k)$ 
+\item $\forall n \in N_1 \cdot |\mbox{obj}(n)| = 1$
+
+\end{enumerate}
+%--
+
+\item A weight function $w_o$ for $o$
+\item A non-empty tuple $\textit{PS} = (P_1,\ldots,P_k)$ satisfying $P_1 \hookrightarrow \ldots \hookrightarrow P_k$
+
+\end{enumerate}
+%-
+
+\noindent We define the \textbf{partition forest} $PF_{\textit{NS},w_o,\textit{PS}}(o)$ to be the pair $(\textit{FL},\textit{PG})$, in which:
 
 \begin{itemize}
 
@@ -85,7 +109,7 @@ Given an object $o$, a non-empty tuple $\textit{NS} = (N_1,\ldots,N_k)$, where $
 \{(n_c,n_p) \; | \; n_c, n_p \leftarrow N_1,\ldots,N_k \mbox{ and } n_c \ne n_p \mbox{ and } \mbox{obj}(n_c) \subseteq \mbox{obj}(n_p)\}
 \]
 
-\item $\textit{GS}$ is an ordered set of partitioning graphs of $o$, defined as:
+\item $\textit{PG}$ is an ordered set of partitioning graphs of $o$, defined as:
 %
 \[
 (G(N_1,w_o,P_1),\ldots,G(N_k,w_o,P_k))
@@ -113,7 +137,7 @@ Having formally defined partition forests, I will now present a series of algori
 
 \subsubsection{Overview}
 
-The algorithms for modifying partition forests can be divided into four groups (in three levels). The lowest level contains four core algorithms: layer cloning, layer deletion, node splitting and sibling node merging (merging two or more nodes which share the same parent). These are all that is needed to allow the user to manually create any partition forest for a leaf layer of basic components (e.g.~pixels, in the case of images).\footnote{A good way of thinking about it (coming from a programming perspective) is that if you were to implement a partition forest class in an object-oriented programming language, the core algorithms would be the ones which had to be implemented as member functions of the class (in other words, they form the class's minimal interface).} More sophisticated algorithms can then be built on this foundation. The level above the core contains the zipping algorithms. These are essentially multi-layer split and merge operations -- instead of splitting or merging individual nodes, they split and merge branches of the hierarchy. They form the basis of algorithms such as non-sibling node merging and feature identification in the highest level.
+The algorithms for modifying partition forests can be divided into four groups (in three levels). The lowest level contains four core algorithms: layer cloning, layer deletion, node splitting and sibling node merging (merging two or more nodes which share the same parent). These are all that is needed to allow the user to manually create any partition forest from a leaf layer of basic components (e.g.~pixels, in the case of images).\footnote{A good way of thinking about it (coming from a programming perspective) is that if you were to implement a partition forest class in an object-oriented programming language, the core algorithms would be the ones which had to be implemented as member functions of the class (in other words, they form the class's minimal interface).} More sophisticated algorithms can then be built on this foundation. The level above the core contains the zipping algorithms. These are essentially multi-layer split and merge operations -- instead of splitting or merging individual nodes, they split and merge branches of the hierarchy. They form the basis of algorithms such as non-sibling node merging and feature identification in the highest level.
 
 \subsubsection{Core Algorithms}
 
@@ -121,7 +145,9 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \begin{itemize}
 
-\item \emph{Description}. New layers can be inserted anywhere in the hierarchy by cloning a layer above or below the insertion point (for example, see Figure~\ref{fig:ipfs-algorithms-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{GS}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
+\item \emph{Interface}. \texttt{clone_above_layer(layer)} and \texttt{clone_below_layer(layer)}
+
+\item \emph{Description}. New layers can be inserted anywhere in the hierarchy by cloning a layer above or below the insertion point (for example, see Figure~\ref{fig:ipfs-algorithms-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{PG}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
 
 \item \emph{Usage}. Used to create additional layers that can later be modified using split/merge operations.
 
@@ -135,11 +161,13 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \begin{itemize}
 
-\item \emph{Description}. Any layer can be deleted from the hierarchy, provided that there is still at least one layer remaining after the operation (for example, see Figure~\ref{fig:ipfs-algorithms-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{GS}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
+\item \emph{Interface}. \texttt{delete_layer(layer)}
+
+\item \emph{Description}. Any layer except the lowest can be deleted from the hierarchy (for example, see Figure~\ref{fig:ipfs-algorithms-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{PG}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
 
 \item \emph{Usage}. Used to delete a layer -- perhaps because it contains no objects of semantic interest.
 
-\item \emph{Complexity}. Suppose layer $d$ is to be deleted and that it lies between two other layers, $b$ (below) and $a$ (above). The complexity of removing the partitioning graph from $\textit{GS}$ is $\Theta(1)$. The forest links between layers $b$ and $d$, and layers $d$ and $a$ must then be deleted. This has complexity $\Theta(n_b + n_d)$, which simplifies to $\Theta(n_b)$ since $n_b \ge n_d$. Finally, forest links must be added between layers $b$ and $a$. This has complexity $\Theta(n_b)$. The overall complexity of the whole algorithm is thus $\Theta(n_b)$. (If, instead of being layers above and below that being deleted, there is only a layer below, the complexity is still $\Theta(n_b)$. If, on the other hand, there is only a layer above, the complexity becomes $\Theta(n_d)$, since all that is involved is removing the partitioning graph and the upwards forest links from the $n_d$ nodes in layer $d$.)
+\item \emph{Complexity}. Suppose layer $d$ is to be deleted and that it lies between two other layers, $b$ (below) and $a$ (above). The complexity of removing the partitioning graph from $\textit{PG}$ is $\Theta(1)$. The forest links between layers $b$ and $d$, and layers $d$ and $a$ must then be deleted. This has complexity $\Theta(n_b + n_d)$, which simplifies to $\Theta(n_b)$ since $n_b \ge n_d$. Finally, forest links must be added between layers $b$ and $a$. This has complexity $\Theta(n_b)$. The overall complexity of the whole algorithm is thus $\Theta(n_b)$. (If, instead of there being layers above and below that being deleted, there is only a layer below, the complexity is still $\Theta(n_b)$.)
 
 \end{itemize}
 
@@ -147,7 +175,33 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \paragraph{Node Splitting}
 
-TODO
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{split_node(node, $\{group_1,\ldots,group_n\}$)}
+
+\item \emph{Description}. Nodes representing objects containing more than one basic component (e.g.~a pixel) can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an example). The process then involves the following steps:
+%
+\begin{enumerate}
+
+\item Check the precondition that the node to be split represents an object containing more than one basic component.
+
+\item Check the precondition that each group containing more than one child node is contiguous. This can be done with a simple flooding algorithm on the partitioning graph of the child layer (the layer containing the nodes in the groups). Starting from the first node in the group, recursively visit adjacent nodes that are in the group and have not yet been seen. The process terminates when either the entire group has been visited (in which case the group is contiguous), or when there are no more nodes to which to recurse and not every node in the group has yet been visited (in which case the group is not contiguous).
+
+\item Remove the forest links between the node being split (hereafter called the `initial parent') and its children.
+
+\item Create new nodes in the parent layer (the one containing the initial parent) as necessary for all but one of the groups (we reuse the initial parent for one of them) and add forest links between the new nodes and the parent of the node being split (the initial grandparent), if any.
+
+\item Link the child nodes in each group to their new parents and calculate the property value sets of the group parents from those of their children in each case.
+
+\item Locally rebuild the partitioning graph for the parent layer: this involves first removing the edges for the initial parent, some of which will no longer be valid, and then calculating the edges connected to all the group parents using the partitioning graph for the child layer. Note that it is at this point that the second requirement on the weight function for the partition forest becomes relevant: it must be possible to calculate the weight on the edge between two nodes in the parent layer from only the weights on the edges between their respective children in the child layer. How that actually happens depends on how a specific application chooses to define its weight function. In the case of the `lowest pass point' weight function we will see in Chapter~\ref{chap:segmentation}, the weight on the edge between two parent nodes is simply the minimum of the weights on the edges between their respective children, but any number of other weight functions are possible.
+
+\end{enumerate}
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
 
 \paragraph{Sibling Node Merging}
 
