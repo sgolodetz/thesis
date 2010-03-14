@@ -71,7 +71,7 @@ A \textbf{partition node} is a node in a partition forest. Each node $n$ represe
 \end{definition}
 
 \begin{definition}
-A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(n_i,n_j,w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \leftarrow N\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \leftarrow N)$.
+A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(\{n_i,n_j\},w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \leftarrow N \mbox{ and } n_i \ne n_j\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \leftarrow N)$.
 \end{definition}
 
 \begin{definition}
@@ -177,7 +177,7 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \begin{itemize}
 
-\item \emph{Interface}. \texttt{split_node(node, $\{group_1,\ldots,group_n\}$)}
+\item \emph{Interface}. \texttt{split_node(node, $\{\mbox{group}_1,\ldots,\mbox{group}_n\}$)}
 
 \item \emph{Description}. Nodes representing objects containing more than one basic component (e.g.~a pixel) can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an example). The process then involves the following steps:
 %
@@ -203,9 +203,53 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \end{itemize}
 
+% TODO: fig:ipfs-algorithms-nodesplitting
+
 \paragraph{Sibling Node Merging}
 
-TODO
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{merge_sibling_nodes($\{\mbox{node}_1,\ldots,\mbox{node}_n\}$)}
+
+\item \emph{Description}. Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-algorithms-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest). The algorithm takes as input the set of sibling nodes to be merged, and proceeds as follows:
+
+%-
+\begin{enumerate}
+
+\item Check the precondition that the nodes to be merged are not in the lowest layer of the hierarchy.
+
+\item Check the precondition that the nodes are all siblings of each other.
+
+\item Check the precondition that the union of the objects represented by the nodes is a contiguous object (this can be done using the method described in Step 2 the \emph{Node Splitting} process, above).
+
+\item Set the parent link of every node in the set $\bigcup_{i=2}^n \mbox{children}(\mbox{node}_i)$ to point to $\mbox{node}_1$.
+
+\item If the nodes have a parent, $p$, remove the forest links $\{(\mbox{node}_i, p) \; | \; i \leftarrow \{2,\ldots,n\}\}$ from $\textit{FL}$.
+
+\item Update the partitioning graph for the nodes' layer in $\textit{PG}$.
+
+%--
+\begin{itemize}
+
+\item Remove every edge between two of the nodes being merged from $E$.
+\item Replace every edge of the form $(\{\mbox{node}_i, m\}, w)$ -- where $2 \le i \le n$ and $m$ is not one of the nodes being merged -- with one of the form $(\{node_1, m\}, w)$.
+\item Remove nodes $\mbox{node}_2,\ldots,\mbox{node}_n$ from the node set $N$.
+\item Remove their corresponding property value sets from $\textit{VS}$.
+\item Recalculate the property value set for $\mbox{node}_1$ from the property value sets of its children.
+
+\end{itemize}
+%--
+
+\end{enumerate}
+%-
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+% TODO: fig:ipfs-algorithms-siblingnodemerging
 
 \subsubsection{Zipping Algorithms}
 
