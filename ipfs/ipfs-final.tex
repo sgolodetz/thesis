@@ -180,22 +180,52 @@ The algorithms for modifying partition forests can be divided into four groups (
 \item \emph{Interface}. \texttt{split_node(node, $\{\mbox{group}_1,\ldots,\mbox{group}_n\}$)}
 
 \item \emph{Description}. Nodes representing objects containing more than one basic component (e.g.~a pixel) can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an example). The process then involves the following steps:
-%
+
+%-
 \begin{enumerate}
 
 \item Check the precondition that the node to be split represents an object containing more than one basic component.
 
 \item Check the precondition that each group containing more than one child node is contiguous. This can be done with a simple flooding algorithm on the partitioning graph of the child layer (the layer containing the nodes in the groups). Starting from the first node in the group, recursively visit adjacent nodes that are in the group and have not yet been seen. The process terminates when either the entire group has been visited (in which case the group is contiguous), or when there are no more nodes to which to recurse and not every node in the group has yet been visited (in which case the group is not contiguous).
 
-\item Remove the forest links between the node being split (hereafter called the `initial parent') and its children.
+\item Delete the node being split from the forest.
 
-\item Create new nodes in the parent layer (the one containing the initial parent) as necessary for all but one of the groups (we reuse the initial parent for one of them) and add forest links between the new nodes and the parent of the node being split (the initial grandparent), if any.
+%--
+\begin{enumerate}
 
-\item Link the child nodes in each group to their new parents and calculate the property value sets of the group parents from those of their children in each case.
+\item Remove all forest links of the form $(c,\mbox{node})$ or $(\mbox{node},p)$ from $\textit{FL}$. These are the links connecting the node to its children and parent (if any), respectively.
 
-\item Locally rebuild the partitioning graph for the parent layer: this involves first removing the edges for the initial parent, some of which will no longer be valid, and then calculating the edges connected to all the group parents using the partitioning graph for the child layer. Note that it is at this point that the second requirement on the weight function for the partition forest becomes relevant: it must be possible to calculate the weight on the edge between two nodes in the parent layer from only the weights on the edges between their respective children in the child layer. How that actually happens depends on how a specific application chooses to define its weight function. In the case of the `lowest pass point' weight function we will see in Chapter~\ref{chap:segmentation}, the weight on the edge between two parent nodes is simply the minimum of the weights on the edges between their respective children, but any number of other weight functions are possible.
+\item Remove the node from the partitioning graph for its layer in $\textit{PG}$.
+
+%---
+\begin{enumerate}
+
+\item Remove every edge connected to the node from $E$.
+\item Remove the node from the node set $N$.
+\item Remove the corresponding property value set from $\textit{VS}$.
 
 \end{enumerate}
+%---
+
+\end{enumerate}
+%--
+
+\item Create new nodes in the split node's layer for each of the specified groups.
+
+%--
+\begin{enumerate}
+
+\item Add the nodes to the node set $N$ of the partitioning graph for the layer.
+\item Add forest links between the new nodes and the parent of the node which was split (if any).
+\item Add forest links between the child nodes in each group and the newly-created parent node for their group.
+\item Calculate the property value sets for each of the new nodes from those of their children, and add them to $\textit{VS}$.
+\item Add partitioning graph edges as necessary to connect the new nodes to the rest of the graph. The necessary edges can be obtained by propagating edges upwards from the partitioning graph of the child layer. Specifically, consider all edges connected to the nodes in the child groups: if there is an edge between one of these children $c$ and another node $x$ in the child layer, there should be an edge between $\mbox{parent}(c)$ and $\mbox{parent}(x)$ in the layer above, provided that $\mbox{parent}(c) \ne \mbox{parent}(x)$. In practice, there may be many edges in the child layer that induce the same edge in the layer above, but the latter should only be added once. The weight on the new edge should be calculated from the weights on all the child edges that induced it (note that it is at this point that the second requirement on the weight function for the partition forest becomes relevant: it must be possible to calculate the weight on the edge between two nodes from only the weights on the edges between their respective children in the child layer). How that actually happens depends on how a specific application chooses to define its weight function. In the case of the `lowest pass point' weight function we will see in Chapter~\ref{chap:segmentation}, the weight on the edge between two parent nodes is simply the minimum of the weights on the edges between their respective children, but any number of other weight functions are possible.
+
+\end{enumerate}
+%--
+
+\end{enumerate}
+%-
 
 \item \emph{Usage}. TODO
 
@@ -222,14 +252,12 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \item Check the precondition that the union of the objects represented by the nodes is a contiguous object (this can be done using the method described in Step 2 the \emph{Node Splitting} process, above).
 
-\item Set the parent link of every node in the set $\bigcup_{i=2}^n \mbox{children}(\mbox{node}_i)$ to point to $\mbox{node}_1$.
-
-\item If the nodes have a parent, $p$, remove the forest links $\{(\mbox{node}_i, p) \; | \; i \leftarrow \{2,\ldots,n\}\}$ from $\textit{FL}$.
+\item Set the parent link of every node in the set $\bigcup_{i=2}^n \mbox{children}(\mbox{node}_i)$ to point to $\mbox{node}_1$. If the nodes have a parent, $p$, remove the forest links $\{(\mbox{node}_i, p) \; | \; i \leftarrow \{2,\ldots,n\}\}$ from $\textit{FL}$.
 
 \item Update the partitioning graph for the nodes' layer in $\textit{PG}$.
 
 %--
-\begin{itemize}
+\begin{enumerate}
 
 \item Remove every edge between two of the nodes being merged from $E$.
 \item Replace every edge of the form $(\{\mbox{node}_i, m\}, w)$ -- where $2 \le i \le n$ and $m$ is not one of the nodes being merged -- with one of the form $(\{node_1, m\}, w)$.
@@ -237,7 +265,7 @@ The algorithms for modifying partition forests can be divided into four groups (
 \item Remove their corresponding property value sets from $\textit{VS}$.
 \item Recalculate the property value set for $\mbox{node}_1$ from the property value sets of its children.
 
-\end{itemize}
+\end{enumerate}
 %--
 
 \end{enumerate}
