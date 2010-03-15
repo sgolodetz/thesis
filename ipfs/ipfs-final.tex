@@ -177,7 +177,7 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \begin{itemize}
 
-\item \emph{Interface}. \texttt{split_node(node, $\{\mbox{group}_1,\ldots,\mbox{group}_n\}$) $\rightarrow$ \{Node\}}
+\item \emph{Interface}. \texttt{split_node(node, $\{\mbox{group}_1,\ldots,\mbox{group}_k\}$) $\rightarrow$ \{Node\}}
 
 \item \emph{Description}. Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes. It returns the nodes created by the split. The process (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an illustrated example) involves the following steps:
 
@@ -241,7 +241,7 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \begin{itemize}
 
-\item \emph{Interface}. \texttt{merge_sibling_nodes($\{\mbox{node}_1,\ldots,\mbox{node}_n\}$) $\rightarrow$ Node}
+\item \emph{Interface}. \texttt{merge_sibling_nodes($\{\mbox{node}_1,\ldots,\mbox{node}_k\}$) $\rightarrow$ Node}
 
 \item \emph{Description}. Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-algorithms-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest). The algorithm takes as input the set of sibling nodes to be merged, and proceeds as follows:
 
@@ -254,7 +254,7 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \item Check the precondition that the union of the objects represented by the nodes is a contiguous object (this can be done using the method described in Step 2 the \emph{Node Splitting} process, above).
 
-\item Set the parent link of every node in the set $\bigcup_{i=2}^n \mbox{children}(\mbox{node}_i)$ to point to $\mbox{node}_1$. If the nodes have a parent, $p$, remove the forest links $\{(\mbox{node}_i, p) \; | \; i \leftarrow \{2,\ldots,n\}\}$ from $\textit{FL}$.
+\item Set the parent link of every node in the set $\bigcup_{i=2}^k \mbox{children}(\mbox{node}_i)$ to point to $\mbox{node}_1$. If the nodes have a parent, $p$, remove the forest links $\{(\mbox{node}_i, p) \; | \; i \leftarrow \{2,\ldots,k\}\}$ from $\textit{FL}$.
 
 \item Update the partitioning graph for the nodes' layer in $\textit{PG}$.
 
@@ -262,8 +262,8 @@ The algorithms for modifying partition forests can be divided into four groups (
 \begin{enumerate}
 
 \item Remove every edge between two of the nodes being merged from $E$.
-\item Replace every edge of the form $(\{\mbox{node}_i, m\}, w)$ -- where $2 \le i \le n$ and $m$ is not one of the nodes being merged -- with one of the form $(\{node_1, m\}, w)$.
-\item Remove nodes $\mbox{node}_2,\ldots,\mbox{node}_n$ from the node set $N$.
+\item Replace every edge of the form $(\{\mbox{node}_i, m\}, w)$ -- where $2 \le i \le k$ and $m$ is not one of the nodes being merged -- with one of the form $(\{node_1, m\}, w)$.
+\item Remove nodes $\mbox{node}_2,\ldots,\mbox{node}_k$ from the node set $N$.
 \item Remove their corresponding property value sets from $\textit{VS}$.
 \item Recalculate the property value set for $\mbox{node}_1$ from the property value sets of its children.
 
@@ -293,7 +293,7 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \item \emph{Description}. A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration.
 
-The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains, which can be passed to the zipping algorithm described below in order to undo the operation. A chain is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length.
+The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains, which can be passed to the zipping algorithm described below in order to undo the operation. A chain is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length, but they all start in the same layer of the hierarchy.
 
 The unzipping process involves the following steps:
 
@@ -346,9 +346,31 @@ See Figure~\ref{fig:ipfs-algorithms-unzipping} for an example.
 
 \begin{itemize}
 
-\item \emph{Interface}. \texttt{zip_chains($\{\mbox{chain}_1,\ldots,\mbox{chain}_n\}$)}
+\item \emph{Interface}. \texttt{zip_chains($\{\mbox{chain}_1,\ldots,\mbox{chain}_k\}$) $\rightarrow$ (Node, Integer)}
 
-\item \emph{Description}. TODO
+\item \emph{Description}. A set of chains of nodes that all start in the same layer can be zipped together, an operation that is effectively a multi-layer sibling node merge. When performed on the results of an unzip, this effectively undoes that operation.
+
+In order for the operation to be valid, the preconditions for every sibling node merge to be performed must be satisfied. (These must be checked in advance if the intention is, as is likely the case, to implement zipping as an atomic operation.) The first precondition, that we are not trying to merge nodes in the lowest layer of the hierarchy, can be easily enforced by ensuring that no node in any of the chains is from the lowest layer. The second precondition, that nodes to be merged are siblings of each other, can be enforced by checking that the highest nodes in each of the chains share a common parent (we will see when the algorithm is presented that there is no need to check that other corresponding nodes in the chains are siblings -- merging their parents in the previous iteration of the loop will automatically guarantee that they share the same parent). The third precondition, that the union of the objects represented by the nodes to be merged in each case will be contiguous, is harder to check efficiently: in the worst case, it is necessary to perform a contiguity check (as described earlier) for each set of nodes to be merged. Nevertheless, it is worth noting that enforcing the preconditions explicitly in the zipping operation has benefits beyond making it possible to implement the operation atomically. The checks here can entirely replace those which would otherwise be performed in the merge operations themselves, and in the case of all but the third precondition involve less work because they exploit our knowledge about the sequence of merges to be performed.
+
+With the preconditions enforced, the zipping process itself is actually rather straightforward. It takes as input $k$ chains $[n_{1h},\ldots,n_{1\ell_1}], \ldots, [n_{kh},\ldots,n_{k\ell_k}]$, zips them together and returns a pair consisting of a node and a layer index, namely the parameters which we would need to pass to \texttt{unzip_node} in order to undo the operation. The algorithm is as follows:
+
+\begin{enumerate}
+
+\item Let $\ell_{\mbox{min}} = \min_{i=1}^k \ell_i$ and check the precondition that $\ell_{\mbox{min}} > 0$, i.e.~that none of the nodes to be merged is in the lowest layer of the hierarchy.
+
+\item Check the precondition that the nodes $n_{1h},\ldots,n_{kh}$ are siblings.
+
+\item Let $S_i = \{n_{ji} \; | \; j \leftarrow [1,k] \mbox{ and } i \le \ell_j\}$ be the set of sibling nodes to be merged in layer $i$ and check the precondition that, for each $i \in [\ell_{\mbox{min}},h]$, the nodes in $S_i$ are contiguous.
+
+\item For $i = h$ down to $\ell_{\mbox{min}}$, perform a sibling node merge on the nodes in $S_i$ as just defined.
+
+\item Return the pair $(\mbox{node},h)$, where $\mbox{node}$ is the result of the sibling node merge in layer $\ell_{\mbox{min}}$.
+
+\end{enumerate}
+
+An example zipping operation is illustrated in Figure~\ref{fig:ipfs-algorithms-zipping}.
+
+% TODO: fig:ipfs-algorithms-zipping
 
 \item \emph{Usage}. TODO
 
