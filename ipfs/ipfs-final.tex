@@ -177,9 +177,9 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \begin{itemize}
 
-\item \emph{Interface}. \texttt{split_node(node, $\{\mbox{group}_1,\ldots,\mbox{group}_n\}$)}
+\item \emph{Interface}. \texttt{split_node(node, $\{\mbox{group}_1,\ldots,\mbox{group}_n\}$) $\rightarrow$ \{Node\}}
 
-\item \emph{Description}. Nodes representing objects containing more than one basic component (e.g.~a pixel) can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an example). The process then involves the following steps:
+\item \emph{Description}. Nodes representing objects containing more than one basic component (e.g.~a pixel) can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes. It returns the nodes created by the split. The process (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an illustrated example) involves the following steps:
 
 %-
 \begin{enumerate}
@@ -223,6 +223,8 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \end{enumerate}
 %--
+
+\item Return the new nodes.
 
 \end{enumerate}
 %-
@@ -287,9 +289,9 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \begin{itemize}
 
-\item \emph{Interface}. \texttt{unzip_node(node, toLayer)}
+\item \emph{Interface}. \texttt{unzip_node(node, toLayer) $\rightarrow$ \{Chain\}}
 
-\item \emph{Description}. A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration. This involves the following steps:
+\item \emph{Description}. A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration. The process involves the following steps:
 
 %-
 \begin{enumerate}
@@ -302,11 +304,8 @@ The algorithms for modifying partition forests can be divided into four groups (
 \begin{enumerate}
 
 \item Let $p = \mbox{parent}(cur)$ and $S = \mbox{children}(p) \; \backslash \; cur$.
-
 \item Calculate $\textit{CCS}$, the connected components of $S$.
-
 \item Invoke \texttt{split_node($p$, $\textit{CCS} \cup \{\{cur\}\}$)}.
-
 \item Set $cur = \mbox{parent}(cur)$.
 
 \end{enumerate}
