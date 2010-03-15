@@ -179,12 +179,12 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \item \emph{Interface}. \texttt{split_node(node, $\{\mbox{group}_1,\ldots,\mbox{group}_n\}$) $\rightarrow$ \{Node\}}
 
-\item \emph{Description}. Nodes representing objects containing more than one basic component (e.g.~a pixel) can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes. It returns the nodes created by the split. The process (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an illustrated example) involves the following steps:
+\item \emph{Description}. Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes. It returns the nodes created by the split. The process (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an illustrated example) involves the following steps:
 
 %-
 \begin{enumerate}
 
-\item Check the precondition that the node to be split represents an object containing more than one basic component.
+\item Check the precondition that the node to be split is not in the lowest layer of the hierarchy.
 
 \item Check the precondition that each group containing more than one child node is contiguous. This can be done with a simple flooding algorithm on the partitioning graph of the child layer (the layer containing the nodes in the groups). Starting from the first node in the group, recursively visit adjacent nodes that are in the group and have not yet been seen. The process terminates when either the entire group has been visited (in which case the group is contiguous), or when there are no more nodes to which to recurse and not every node in the group has yet been visited (in which case the group is not contiguous).
 
@@ -291,12 +291,16 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \item \emph{Interface}. \texttt{unzip_node(node, toLayer) $\rightarrow$ \{Chain\}}
 
-\item \emph{Description}. A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration. The process involves the following steps:
+\item \emph{Description}. A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration.
+
+The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains, which can be passed to the zipping algorithm described below in order to undo the operation. A chain is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length.
+
+The unzipping process involves the following steps:
 
 %-
 \begin{enumerate}
 
-\item Let $cur$ be the node to be unzipped.
+\item Let $cur$ be the node to be unzipped, and $C = \emptyset$ be the initial set of chains.
 
 \item While the layer of $cur$ is less than the specified higher layer and $cur$ has a parent:
 
@@ -305,11 +309,25 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \item Let $p = \mbox{parent}(cur)$ and $S = \mbox{children}(p) \; \backslash \; cur$.
 \item Calculate $\textit{CCS}$, the connected components of $S$.
-\item Invoke \texttt{split_node($p$, $\textit{CCS} \cup \{\{cur\}\}$)}.
+\item Invoke \texttt{split_node($p$, $\textit{CCS} \cup \{\{cur\}\}$)} and let $R$ denote the set of returned nodes.
+\item For each chain $c \in C$:
+
+%---
+\begin{enumerate}
+
+\item Let $h$ be the head of $c$.
+\item Prepend $\mbox{parent}(h)$ to $c$ and remove it from $R$ (it must be in $R$ because of the way the algorithm works).
+
+\end{enumerate}
+%---
+
+\item For each remaining node in $R$, add a new singleton chain containing it to $C$.
 \item Set $cur = \mbox{parent}(cur)$.
 
 \end{enumerate}
 %--
+
+\item Return $C$.
 
 \end{enumerate}
 %-
