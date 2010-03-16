@@ -1,0 +1,73 @@
+Corrections
+===========
+
+?s are levels of dubiousness
+
+(?) = not sure / more thought needed
+(??) = eh?
+
+--------
+12-03-10
+--------
+
+[Stephen]
+
+* Generalizations of watershed etc. to non-scalar images
+* Complexity analysis of watershed
+* Sample running times
+* Font issues - variables should be consistently typeset in math mode etc. (?)
+* Under "Gaussian Filtering" - are there other techniques for dealing with border pixels? If this is the best one, just revise the language.
+* The "Spatially-Variant Gaussian Filtering" section requires more of a lead-in - it's a bit abrupt
+* Does SVGF have any theoretical justification?
+* More maths in the chapter as a whole would be good (??)
+
+[Irina]
+
+* The viewing angle of Figure 5.1 is not ideal
+* Under "Overview" for the Meijster/Roerdink algorithm: "the direction in which it would run off would be unclear" -> "non-determistic" (?)
+* Under "The Lower-Complete Transformation": change to "The lower-complete transformation described by Meijster and Roerdink in [30]..." [DONE]
+* Under "The Lower-Complete Transformation": expand/explain the paragraph about implementation using breadth-first search
+* Some of the things in Figure 5.6(c) overlay others in unfortunate/confusing ways - fix
+* Figure 5.9 needs to be explained in the text - what do the numbers mean?
+* Under "Arrow Assignment" - what are the criteria by which a canonical element of a minimal plateau is chosen?
+* The introduction on "Segmenting CT Images" is probably misplaced ultimately
+* The switch from "Segmenting Grey-Scale Images" to "Segmenting CT Images" is a bit abrupt - it needs a transition paragraph explaining the move from one to the other
+* What is the reader meant to see in Figure 5.11? Was it obtained using Meijster and Roerdink's algorithm?
+* Figure 5.11 reminds Irina that we might want an ethics considerations section in an appendix (?)
+* Under "Gaussian Filtering", the footnote should be put into the main text (?)
+* Under "Gaussian Filtering", change "For the 3x3 mask with \sigma = 1, this means that" to "The 3x3 mask with \sigma = 1 is shown in Figure ..., which means that" (?)
+  - There needs to be a change here, but I don't like the change suggested so far
+* Under "Edge-Preserving Filters", change "uniformly blurs the image" to "blurs the image uniformly" [DONE]
+* Under "Edge-Preserving Filters", Irina objects to the word "described" in the last sentence - possibly because of its tense (??)
+* Under "Spatially-Variant Gaussian Filtering", *whose* experiments showed that a sigmoid function works well in practice? [DONE]
+* Under "Spatially-Variant Gaussian Filtering", use display style in the equations for clarity [DONE]
+* Make Figure 5.16 bigger (at the expense of Figure 5.15 if necessary) [DONE]
+* Under "Anisotropic Diffusion Filtering", clarify what is meant by "for some C"
+* Under "Features vs Catchment Basins", change "it depends on the type of image we are segmenting and the sort of features in which *we're* interested"
+  - I'm not sure whether or not it's the abbreviation Irina is objecting to - check this
+* Under "Features vs Catchment Basins", change "The intuition... (...segmentation result)." along the lines described in Irina's notes [DONE]
+* Under "Features vs Catchment Basins", change "of less use to us when our goal" to "of less use when the goal" [DONE]
+* Under "Hounsfield Units and Windowing", change to "Materials that have a lower radiodensity than water, such as fatty tissue, have negative Hounsfield values; conversely, those with a greater radiodensity than water, such as muscle, have positive values." [DONE]
+* Under "Hounsfield Units and Windowing", change "clearly distinguish" to "distinguish" [DONE]
+* Under "Hounsfield Units and Windowing", change "visual system" to "eye" [DONE]
+* Under "Hounsfield Units and Windowing", move "before being viewed by a radiologist" earlier in the sentence [DONE]
+* Under "Hounsfield Units and Windowing", clarify the nature of the window selected by a radiologist [DONE]
+* Under "Hounsfield Units and Windowing", add in something about radiologists getting trained to know/recognise Hounsfield values (?)
+  - This needs clarifying with Irina
+* Under "Hounsfield Units and Windowing", clarify what is meant by "tends to work better in practice" (??)
+  - I already did! I said "in that it produces a less pronounced oversegmentation of the image" - check this with Irina
+* TODO
+
+* Several references are missing (e.g. to appendices) - these will be fixed later (and are highlighted by LaTeX), so I'm not worried about them
+
+[Me]
+
+* The "Edge-Preserving Filters" section needs revisiting and finishing off (particularly the "Comparison" bit)
+* The complexity analysis of the three waterfall algorithms (under the "Comparison" section) needs serious revisiting
+  - In particular, it IS possible to characterise the worst case number of local minima in the MST - it's something like floor((V+1)/2)
+  - So the number of nodes next time will at worst roughly halve
+  - So the number of waterfall iterations is upper-bounded by something like ceil(log_2 V)
+  - And if the total amount of work for each iteration is linear, then so is the whole amount, since n + n/2 + n/4 + ... = 2n
+* The "Nature of Output" section for the waterfall algorithms needs revisiting
+  - I forgot to highlight the key aspect of my algorithm, which is that it keeps the edges nearest the middle of the plateaux!
+  - A better example will be needed
