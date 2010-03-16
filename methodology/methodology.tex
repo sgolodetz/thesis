@@ -4,12 +4,18 @@
 %---
 \section{Chapter Overview}
 
-TODO
+In Chapter~\ref{chap:background}, the major techniques currently in use for medical image segmentation were surveyed, with the intent of placing the specific methods I used for my work within the context of the field as a whole. This chapter builds on that foundation by discussing both my goals and the methods I then chose to try to achieve them, with particular emphasis on their appropriateness in each case. The aim is to address the question of why my research was undertaken in the manner it was, before focusing on the question of how it was undertaken in Chapters~\ref{chap:ipfs} through \ref{chap:applications}.
 
 %---
 \section{Goals}
 
-TODO
+The overarching goal of my doctorate was to conduct research into ways of segmenting abdominal CT scans and identifying salient features therein. There are a number of important use cases which make research into this area worthwhile, but the two I have been particularly interested in are those of volume visualization and volume estimation (see Chapter~\ref{chap:applications}).
+
+Visualization is the process of rendering information in a manner intended to aid human understanding. In the context of medical imaging, the term volume visualization (also known as volume rendering) generally refers to the process of taking a three-dimensional volume of scan data (for example, a series of CT slices) and rendering it onto a two-dimensional screen. This is potentially useful to clinicians because it allows them to view the state of the imaged part of the body as a whole, rather than having to mentally visualize the situation based on what they can see on the individual 2D images. For similar reasons, it is also potentially of benefit to anyone with a less finely-honed knowledge of anatomy (e.g.~non-medics, or indeed early-stage medical students). In order to work, volume visualization techniques need some idea of where different features are in the images: for example, the multiple material marching cubes algorithm \cite{wu03} for volume rendering takes as input a volume where each voxel is assigned a label corresponding to a feature of interest (e.g.~a kidney). The construction of such a labelled volume from an initial data-set is the kind of segmentation/feature identification problem discussed in this dissertation.
+
+The second use case, volume estimation, is the process of estimating the volumes of particular features of interest (such as organs, or tumours) from medical images. There are various potential uses to which clinicians can put such information. For certain types of tumour, it is hypothesized \cite{?} that changes in the volume of a tumour are a good indicator as to the efficacy of a patient's current treatment regime, and can thus help inform treatment decisions. (It should be noted, however, that this is by no means always the case -- indeed, in the case of liver tumours at a minimum the picture has been shown to be much more complicated \cite{?}.) Changes in organ volumes following partial resections are also of interest to clinicians: as part of my work on volume estimation, I provided data for a clinical study investigating the extent to which a reduction in kidney volume following a partial nephrectomy (i.e.~an operation to remove part of a kidney) led to a corresponding reduction in renal function \cite{pbgmvc09}. Regardless of the uses to which the volume information is ultimately put, however, volume estimation in general once again relies entirely on knowing where whichever feature is of interest lies within the scans: the real problem is not how to sum, for example, the number of voxels marked as kidney, but how to identify the voxels as kidney in the first place.
+
+Segmentation and feature identification, then, are the key problems that must be tackled when intending to apply other medical imaging algorithms with more direct real-world uses. Clearly, however, TODO
 
 %---
 \section{Methods}
