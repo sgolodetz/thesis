@@ -1,0 +1,136 @@
+\chapter{Background}
+\label{chap:background}
+
+%---
+\section{Chapter Overview}
+
+In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the use of partition trees in an imaging context. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
+
+Whilst the segmentation and feature identification problems are theoretically distinct -- in that feature identification involves assigning semantic meaning to parts of an image where segmentation does not -- there is a great deal of overlap between them in practice. For example, the goal of some of the segmentation techniques we will see (e.g.~region growing) is to directly segment a particular feature of interest; in that sense, they are as much feature identification approaches as segmentation ones. For that reason, I have chosen to present the techniques used for both problems together, rather than separately, commenting on the extent to which they address each of the problems where I feel it is appropriate.
+
+%---
+\section{Segmentation and Feature Identification Techniques}
+
+\subsection{Overview}
+
+The majority of the segmentation and feature identification techniques in current use can be divided into six classes: thresholding, region growing, morphological techniques, deformable models, learning techniques and hybrid techniques. Each of these is discussed in more detail in the following subsections. At a high-level, and generalizing somewhat: (a) thresholding techniques seek to segment an image based on dividing up the histogram of its grey values, (b) region growing techniques search for specific features by flooding outwards from one or more initial seed points in the image, (c) morphological techniques such as the watershed transform treat an image as a height map and divide it up into catchment basins which we try and ensure correspond to features of interest, (d) deformable models start with some arbitrary boundary and try to deform it to fit image features, (e) learning techniques construct some variety of model based on a set of training images and use it to segment subsequent scans, and (f) hybrid techniques combine methods from the other classes to produce good results for specific applications.
+
+\subsection{Thresholding}
+
+In principle, thresholding segmentation methods are quite simple. The idea is to divide the pixels of the image into classes through the use of one or more dividing lines on the image histogram. Dividing the image into two classes is known as \emph{binary thresholding}; where more classes are used, we refer to the process as \emph{multi-thresholding}. As an example, we could use binary thresholding to divide an 8-bit image (with grey levels ranging from $0 = \mbox{black}$ to $255 = \mbox{white}$) into two classes, one containing pixels greater than (say) $160$, and representing the foreground of the image, and the other containing all the remaining pixels and representing the background (see Figure~\ref{fig:background-thresholding-binaryexample}).
+
+%---
+% TODO: fig:background-thresholding-binaryexample
+\stufigex{width=16cm, height=9cm}{todo.png}{TODO}{fig:background-thresholding-binaryexample}{p}
+%---
+
+The difficulty encountered in practice is how to determine the optimum threshold location(s). A misplaced threshold will cause an inaccurate segmentation, so choosing the location appropriately is essential. In our example above, choosing a threshold which was too high would mean that the foreground of the image would be \emph{undersegmented} (i.e. pixels which should be classified as being part of the foreground are incorrectly classified as background) and the background would be \emph{oversegmented} (the converse) -- see Figure~\ref{fig:background-thresholding-inaccurate}(a). Choosing too low a threshold would cause the opposite problem -- see Figure~\ref{fig:background-thresholding-inaccurate}(b).
+
+%---
+% TODO: fig:background-thresholding-inaccurate
+\begin{stusubfig}{p}
+	\subfigure[TODO]
+	{\includegraphics[height=8cm]{todo.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[TODO]
+	{\includegraphics[height=8cm]{todo.png}}%
+\caption{TODO}
+\label{fig:background-thresholding-inaccurate}
+\end{stusubfig}
+%---
+
+Owing to difficulties like this, applications are often designed so that thresholds can be chosen interactively by the user, but a great deal of work has also been done on automatically determining good threshold locations. As surveyed by Sezgin and Sankur in \cite{sezgin04}, there are six types of approach to the problem in current use:
+
+\begin{enumerate}
+
+\item \emph{Histogram shape-based methods.} These use shape properties of the histogram to find a good threshold. For instance, Rosenfeld's histogram concavity method, cited in \cite{lee.c92}, works by examining the difference between a histogram and its convex hull. A grey level at which the the height difference between the histogram and its convex hull is greatest (i.e. a point of deepest concavity) is picked as the threshold value.
+
+\item \emph{Clustering-based methods.} These try and group the grey level data into a given number of clusters (two in the case of binary thresholding). One example is the method of Ridler and Calvard \cite{ridler78}. Their idea was to take a grey-level image and produce an initial binary classification which makes the assumption that the object of interest is somewhere in the middle of the image and the corners of the image contain only background. The means of the pixels currently classified as background and object are calculated and the average of the two means is taken. The new value is then used to threshold the image and produce a new binary classification into background and object classes: it is assumed that this will be more accurate than the initial guess. Finally, the process is iterated until there is little or no change in the binary classification, and the last threshold in the iteration is chosen for use.
+
+\item \emph{Entropy-based methods.} These are based on information theory and pick thresholds by (for example) trying to maximise the information content in the thresholded image. As described by Wong and Sahoo in \cite{wong89}, the simplest possible method looks at two probabilities, $F(T)$ and $F^*(T) = 1 - F(T)$, each parameterised in terms of a threshold, $T$. The first, $F(T)$, gives us the probability of a given pixel having a grey value less than or equal to the threshold, and the second, $F^*(T)$, gives us the probability of the value being greater than it. The information content in the thresholded image is given by
+%
+\[
+H(T) = -F(T) \log_2 F(T) - F^*(T) \log_2 F^*(T)
+\]
+%
+and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in the absence of any other knowledge, the maximum entropy principle tells us that the information contained in the thresholded image is maximised by picking a threshold which classifies half the pixels as background and half as foreground. This makes intuitive sense, but is too simplistic an approach for the majority of applications. Better alternatives have been developed, but are beyond the scope of this dissertation (TODO: this was appropriate for my transfer report, but not for my actual thesis).
+
+\item \emph{Object attribute-based methods.} TODO
+
+\item \emph{Spatial methods.} TODO
+
+\item \emph{Local / adaptive methods.} TODO
+
+\end{enumerate}
+
+\noindent In spite of the large amount of work done on thresholding, however, it has some significant downsides when used on its own to process medical images:
+
+\begin{itemize}
+
+\item It divides the image into two or more groups of pixels, based on their grey values, but there is no guarantee (or even an expectation) that any of these groups will be contiguous in the image. For instance, trying to segment a kidney from a CT scan by bounding it between two grey value thresholds might also result in inadvertently segmenting blood vessels across the image as well (their grey levels are quite similar to those of the kidneys). Not only are these blood vessels not part of the kidney, they are actually physically separated from it in the image! (It is also worth noting that trying to segment a kidney will generally result in segmenting both of them at once, since their grey level ranges are the same. This sort of problem can be overcome by specifying the side of the body in which we're interested.)
+
+\item It is by no means the case that acceptable threshold locations always exist. If the grey value ranges of different objects of interest significantly overlap, it may be impossible to separate them using thresholding alone.
+
+\end{itemize}
+
+\noindent These limitations can in some cases be overcome by combining thresholding with other techniques. For instance, the results of thresholding often have gaps in them, which can sometimes be filled in by carefully applying various morphological operators (e.g. morphological opening and closing). Luc Soler's team \cite{soler01} made use of thresholding (as one technique among many) and achieved excellent automatic segmentation results for the liver. However, they did not use thresholding on its own. For instance, they segmented bones by thresholding for bright areas and then keeping only those which were near to the fat tissue (which had already been segmented). Simple thresholding alone would have been insufficient for the task, since structures such as the aorta also appeared bright on the contrast-enhanced images.
+
+\subsection{Region Growing}
+
+Region growing methods for segmentation essentially work as follows. First, an initial seed point is chosen for a feature of interest. Then, the region is `grown' by iteratively considering all points which are adjacent to the region and adding any which satisfy certain criteria. For example, we could choose to add adjacent pixels whose grey value differs from that of their neighbour in the region by less than a certain amount. Alternatively, we could try and add adjacent pixels which preserve the homogeneity of the entire region (for some suitable definition of homogeneity). A basic region growing algorithm can be implemented straightforwardly using a queue. Starting from a queue containing only the initial seed point, we repeatedly pop the pixel at the front of the queue, consider its non-region neighbours for addition to the region, and push any which satisfy the requisite criteria onto the end of the queue. The process terminates when the queue empties.
+
+The key issues when implementing region growing are how to choose the seed point, how to formulate the criteria specifying which points to add to the region, and how to decide when the process should terminate. For automated segmentation methods, how to choose the seed point is of fundamental importance; semi-automated algorithms can focus exclusively on the latter two problems, relying instead on the user to interactively specify an initial seed.
+
+As mentioned above, one of the simplest approaches to region growing is to add adjacent pixels which are within a certain fixed threshold value of their neighbour in the region. Practical region growing methods, however, such as \cite{lin06,pohle01}, tend instead to use \emph{adaptive} region growing, whereby the criterion varies to take account of the area around the pixel under consideration. In \cite{lin06}, for example, the approach taken is as follows. After locating an initial seed point $(s_x, s_y)$, a $7 \times 7$ mesh is placed over it and the maximum and minimum pixel intensities within the mesh, $M(s_x, s_y)$ and $m(s_x, s_y)$ are determined. From these, a contrast range $t_0 = M(s_x, s_y) - m(s_x, s_y)$ is calculated and recorded. Next, for each pixel $(x,y)$ under consideration for addition to the region, values $M(x,y)$ and $m(x,y)$ are similarly calculated, and a local value $\theta_{\rm local} = (M(x,y) + m(x,y)) / 2$ is determined. The region growing criterion is then formulated as $|f(x,y) - \theta_{\rm local}| \le t_0$, i.e. we add an adjacent pixel $(x,y)$ to the region if the absolute difference between its grey value $f(x,y)$ and the midpoint of the contrast range of the $7 \times 7$ mesh surrounding it is less than the contrast range of the $7 \times 7$ mesh centred on the initial seed point. The region growing is specified to stop when this absolute difference is greater than a certain threshold, implying that the area surrounding a given pixel is not homogeneous.
+
+The advantages of region growing methods are that the resultant region is guaranteed to be connected in the image (unlike with thresholding) and that they are, on the whole, fairly easy to implement. However, from the point of view of automatic segmentation, they present difficulties, because choosing an initial seed point is in general a non-trivial problem. The usual approach taken for automatic seed point selection is to rely on statistical data about where the features of interest (e.g. organs) usually lie in the body. For instance, the approach in \cite{lin06} is to search for suitable seed points in two elliptical regions on each side of the body, one for each kidney. This works quite well, but doesn't seem as if it would be that robust if tested on unusual cases.
+
+Whilst region growing algorithms are guaranteed to produce a connected result, the region may still have holes in the middle of it. Whilst this may be desirable if we really are trying to segment a torus-shaped feature, on the whole we need to post-process the region growing results to remove these holes. Common techniques for doing this include morphological closing, etc.
+
+\subsection{Morphological Techniques}
+
+TODO
+
+\subsection{Deformable Models}
+
+TODO
+
+\subsubsection{Parametric Deformable Models}
+
+TODO: Snakes, NURBS-based
+
+\subsubsection{Geometric Deformable Models}
+
+TODO: Level sets
+
+\subsubsection{Other Deformable Models}
+
+TODO: Charged particles, m-reps
+
+\subsection{Learning Techniques}
+
+TODO
+
+\subsubsection{Atlas-Based Techniques}
+
+TODO
+
+\subsubsection{Neural Network Techniques}
+
+TODO
+
+\subsection{Hybrid Techniques}
+
+TODO: Luc Soler's work, Fuzzy Connectedness/Voronoi Diagram Classification/Deformable Models, Gibbs Priors/Deformable Models
+
+%---
+\section{Representing Images as Partition Trees}
+
+TODO
+
+%---
+\section{Chapter Summary}
+
+TODO
