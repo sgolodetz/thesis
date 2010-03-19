@@ -11,7 +11,7 @@
 	{\z@}
 	{-3.5ex \@plus -1ex \@minus -.2ex}
 	{2.3ex \@plus.2ex}
-	{\normalfont\LARGE\bfseries\scshape\center}
+	{\normalfont\LARGE\scshape\center}
 }
 
 \renewcommand\subsection{\@startsection{subsection}{2}
