@@ -13,11 +13,11 @@ Whilst the segmentation and feature identification problems are theoretically di
 
 \subsection{Overview}
 
-The majority of the segmentation and feature identification techniques in current use can be divided into six classes: (1) thresholding techniques, which seek to segment an image based on dividing up the histogram of its grey values, (2) region growing techniques, which search for specific features by flooding outwards from one or more initial seed points in the image, (3) morphological techniques such as the watershed transform, which treats an image as a height map and divides it up into catchment basins that we try to ensure correspond to features of interest, (4) deformable models, which start with some arbitrary model of a desired feature and try to deform it to fit the image data, (5) learning techniques, which construct some variety of model based on a set of training images and use it to segment subsequent scans, and (6) hybrid techniques, which combine methods from the other classes to produce (what are hopefully good) results for specific applications. Each of these is discussed in more detail in one of the following subsections. The field as a whole is visually depicted in Figure~\ref{fig:background-segmentation-field}.
+The majority of the segmentation and feature identification techniques in current use can be divided into eight classes: (1) thresholding techniques, which seek to segment an image based on dividing up the histogram of its grey values, (2) region growing techniques, which search for specific features by flooding outwards from one or more initial seed points in the image, (3) morphological techniques such as the watershed transform, which treats an image as a height map and divides it up into catchment basins that we try to ensure correspond to features of interest, (4) deformable models, which start with some arbitrary model of a desired feature and try to deform it to fit the image data, (5) learning techniques, which construct some variety of model based on a set of training images and use it to segment subsequent scans, (6) clustering techniques such as the K-means algorithm, (7) graph partitioning techniques such as the normalized cuts algorithm, and (8) hybrid techniques, which combine methods from the other classes to produce (what are hopefully good) results for specific applications. Each of these is discussed in more detail in one of the following subsections. The field as a whole is visually depicted in Figure~\ref{fig:background-segmentation-field}.
 
 %---
 % TODO: fig:background-segmentation-field
-\stufigex{width=16cm, height=16cm}{todo.png}{The field of image segmentation and feature identification}{fig:background-segmentation-thresholding-binaryexample}{p}
+\stufigex{width=16cm, height=16cm}{todo.png}{The field of image segmentation and feature identification}{fig:background-segmentation-field}{p}
 %---
 
 \subsection{Thresholding}
@@ -128,9 +128,7 @@ E_{snake}^* = \int_0^1 E_{int}(\mathbf{v}(s)) + E_{image}(\mathbf{v}(s)) + E_{co
 %
 The three terms in the summation are \emph{internal} energy, which tries to limit the curvature of the snake, \emph{image} energy, which tries to attract the snake towards features in the image such as lines and edges, and \emph{constraint} energy, which allows the user to apply constraints to influence the result of the segmentation. The snake algorithm as a whole attempts to find a spline minimising $E_{snake}^*$.
 
-The original snakes paper describes a continuous model, but more recent research \cite{lobregt95,miller90b,miller90a} has seen the development of discrete models as well. The model described by Lobregt and Viergever in \cite{lobregt95}, called a \emph{discrete dynamic contour model}, is particularly interesting, and worth describing in more detail.
-
-Rather than relying on ideas of energy-minimization, Lobregt and Viergever model snakes using a force-based physical simulation. In their approach, a snake is a set of vertices connected by edges. At each time-step, various forces are applied to each vertex, which gradually \emph{deform} the snake towards the desired result. The results of this approach will depend to an extent on the lengths of the edges joining the vertices: if an edge is too long, important image features may pass through the gaps between vertices; if it is too short, the snake may become overly fixated on small details, not to mention the speed of the process being adversely affected. For this reason, after each deformation step, the snake is \emph{resampled} (by adding or removing vertices where necessary) to keep the edge lengths within certain limits.
+The original snakes paper describes a continuous model, but more recent research \cite{lobregt95,miller90b,miller90a} has seen the development of discrete models as well. The model described by Lobregt and Viergever in \cite{lobregt95}, called a \emph{discrete dynamic contour model}, is particularly interesting, and worth describing in more detail. Rather than relying on ideas of energy-minimization, Lobregt and Viergever model snakes using a force-based physical simulation. In their approach, a snake is a set of vertices connected by edges. At each time-step, various forces are applied to each vertex, which gradually \emph{deform} the snake towards the desired result. The results of this approach will depend to an extent on the lengths of the edges joining the vertices: if an edge is too long, important image features may pass through the gaps between vertices; if it is too short, the snake may become overly fixated on small details, not to mention the speed of the process being adversely affected. For this reason, after each deformation step, the snake is \emph{resampled} (by adding or removing vertices where necessary) to keep the edge lengths within certain limits.
 
 The forces applied to each vertex closely mimic the energy terms in the original snakes paper. The force $\mathbf{f_i}$ applied to vertex $i$ is defined as the weighted sum
 %
@@ -167,16 +165,21 @@ x^2 + y^2 = r^2
 %
 As we have seen, parametric deformable model approaches like snakes represent their model using the former approach. Level set approaches, by contrast, use the latter. As an introduction to the ideas behind level sets, consider the function $\psi(x,y) = x^2 + y^2$, which defines a scalar field over $\mathbb{R}^2$. For any value $k > 0$, the equation $\psi(x,y) = k$ defines a circle in the x-y plane: we will refer to each of these circles as an \emph{isosurface} of $\psi$, because each of them is the surface (curve) of all the points at which $\psi$ takes a particular value.\footnote{\emph{Iso} means `equal' in Greek, so here we are talking about the surface containing all the points with the same $\psi$ value.} The key idea is that if we now change $\psi$, for instance by redefining it as $\psi(x,y) = x^3 + y^3$, the isosurfaces change, in this case from circles to hypercircles. Thus by changing the function $\psi$, we can move the isosurfaces of $\psi$ around without ever having to represent them explicitly. Level set approaches make use of this by representing the deformable model as an isosurface of some function $\psi$, and then modifying $\psi$ to deform the model towards the boundary of the desired image feature.
 
-% TODO: fig:background-levelsets-circlexample
-% TODO: fig:background-levelsets-ellipseexample
+%---
+\stufigex{height=8cm}{background/background-segmentation-levelsets-circleexample.png}{A simple circular contour which gradually expands over time}{fig:background-segmentation-levelsets-circleexample}{p}
+%---
 
-To represent contour changes over time, level set approaches make $\psi$ a function of time as well, and define it over some domain $U \subset \mathbb{R}^N$, giving us $\psi(\mathbf{x}, t) : U \times \mathbb{R}^+ \rightarrow \mathbb{R}$. They then set this equal to some constant (generally $0$) to actually specify one of the isosurfaces of $\psi$ as the contour being deformed. As a simple example of this, consider a circle, centred at the origin, which gradually expands outwards as the time increases (see Figure~\ref{fig:background-levelsets-circleexample}). Supposing its radius to be $t$ at time $t$, we could represent this as:
+%---
+\stufigex{height=8cm}{background/background-segmentation-levelsets-ellipseexample.png}{An example of a contour which changes its shape over time}{fig:background-segmentation-levelsets-ellipseexample}{p}
+%---
+
+To represent contour changes over time, level set approaches make $\psi$ a function of time as well, and define it over some domain $U \subset \mathbb{R}^N$, giving us $\psi(\mathbf{x}, t) : U \times \mathbb{R}^+ \rightarrow \mathbb{R}$. They then set this equal to some constant (generally $0$) to actually specify one of the isosurfaces of $\psi$ as the contour being deformed. As a simple example of this, consider a circle, centred at the origin, which gradually expands outwards as the time increases (see Figure~\ref{fig:background-segmentation-levelsets-circleexample}). Supposing its radius to be $t$ at time $t$, we could represent this as:
 %
 \[
 \psi((x,y),t) = x^2 + y^2 - t^2 = 0
 \]
 %
-A more complicated example might involve gradually changing the circle into an ellipse over time (see Figure~\ref{fig:background-levelsets-ellipseexample}). This could be achieved by writing:
+A more complicated example might involve gradually changing the circle into an ellipse over time (see Figure~\ref{fig:background-segmentation-levelsets-ellipseexample}). This could be achieved by writing:
 %
 \[
 \psi((x,y),t) = x^2 + (yt)^2 - t^2 = 0
@@ -238,9 +241,21 @@ where $F_A$ is the advection component and $\hat{F}_I$ is the image component. F
 %
 where $F_G$ is the geometry component and $\hat{k}_I$ fulfils the role of the image component in the previous equation. The detailed definitions of the various components can be found in \cite{malladi95}. It is worth noting that this term-based approach bears a lot of similarity to that used for snakes, and in general the motivations for the various terms are more or less the same in each case.
 
-Level sets have a number of advantages over snakes. One advantage is that they handle topological changes in an extremely simple fashion. For instance, consider Figure~\ref{fig:background-levelsets-topologychanges}(a), in which the isosurface $\psi = 4$ is divided into two separate components. This is seamlessly represented by a level set approach, since it merely has to maintain a grid of numbers and not one or more explicit curves. Furthermore, the number of components can evolve over time without any special handling being required: in Figure~\ref{fig:background-levelsets-topologychanges}(b), a change to the value of a single grid point can merge the two separate components into one, changing the topology at a stroke without any fuss. A corresponding implementation with snakes would involve far more work.
+Level sets have a number of advantages over snakes. One advantage is that they handle topological changes in an extremely simple fashion. For instance, consider Figure~\ref{fig:background-segmentation-levelsets-topologychanges}(a), in which the isosurface $\psi = 4$ is divided into two separate components. This is seamlessly represented by a level set approach, since it merely has to maintain a grid of numbers and not one or more explicit curves. Furthermore, the number of components can evolve over time without any special handling being required: in Figure~\ref{fig:background-segmentation-levelsets-topologychanges}(b), a change to the value of a single grid point can merge the two separate components into one, changing the topology at a stroke without any fuss. A corresponding implementation with snakes would involve far more work.
 
-% TODO: fig:background-levelsets-topologychanges
+%---
+\begin{stusubfig}{p}
+	\subfigure[An isosurface divided into two separate components]
+	{\includegraphics[width=.45\linewidth]{background/background-segmentation-levelsets-topologychanges-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Changing a single grid value merges the two components into one]
+	{\includegraphics[width=.45\linewidth]{background/background-segmentation-levelsets-topologychanges-b.png}}%
+\caption{Level set approaches seamlessly handle multiple boundaries and changes in topology}
+\label{fig:background-segmentation-levelsets-topologychanges}
+\end{stusubfig}
+%---
 
 Another advantage of level sets is that, unlike snakes, they translate straightforwardly into three dimensions -- all that is required is to replace a 2D grid with a 3D one. It is worth remarking, however, that the extra processing involved in the 3D case is substantial, making the basic scheme described above unsuitable if timely solutions are required. Special techniques have been developed to deal with this problem. One example is the narrow-band technique mentioned in \cite{malladi95}, which essentially restricts numerical calculations to a narrow regions around the isosurface in which we're particularly interested (i.e.~the one representing the deformable model). The insight is that solving the PDE over the whole domain is only necessary if we're interested in solving for the entire family of isosurfaces associated with $\psi$: often, we're only interested in a single isosurface, so the extra computations aren't necessary. More details of this sort of technique are available in \cite{malladi95} and \cite{itk}.
 
@@ -293,6 +308,14 @@ A more up-to-date (and more complicated) NN scheme can be found in \cite{lee03}.
 \subsubsection{Statistical Methods}
 
 TODO: \cite{touhami05}
+
+\subsection{Clustering Techniques}
+
+TODO: K-means
+
+\subsection{Graph Partitioning Techniques}
+
+TODO: Normalized cuts
 
 \subsection{Hybrid Techniques}
 
