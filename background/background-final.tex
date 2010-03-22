@@ -150,7 +150,95 @@ Another type of parametric deformable model, this time based on non-uniform rati
 
 \subsubsection{Implicit Deformable Models}
 
-TODO: Level sets
+\paragraph{Level Sets}
+
+Curves and surfaces in general can be specified either explicitly (such that they can be calculated directly from the definition) or implicitly (the opposite). For instance, an explicit (parametric) representation of a circle in terms of its radius $r$ and an angle $\theta$ might be:
+%
+\begin{eqnarray*}
+x & = & r \cos \theta \\
+y & = & r \sin \theta
+\end{eqnarray*}
+%
+The corresponding implicit representation would be:
+%
+\[
+x^2 + y^2 = r^2
+\]
+%
+As we have seen, parametric deformable model approaches like snakes represent their model using the former approach. Level set approaches, by contrast, use the latter. As an introduction to the ideas behind level sets, consider the function $\psi(x,y) = x^2 + y^2$, which defines a scalar field over $\mathbb{R}^2$. For any value $k > 0$, the equation $\psi(x,y) = k$ defines a circle in the x-y plane: we will refer to each of these circles as an \emph{isosurface} of $\psi$, because each of them is the surface (curve) of all the points at which $\psi$ takes a particular value.\footnote{\emph{Iso} means `equal' in Greek, so here we are talking about the surface containing all the points with the same $\psi$ value.} The key idea is that if we now change $\psi$, for instance by redefining it as $\psi(x,y) = x^3 + y^3$, the isosurfaces change, in this case from circles to hypercircles. Thus by changing the function $\psi$, we can move the isosurfaces of $\psi$ around without ever having to represent them explicitly. Level set approaches make use of this by representing the deformable model as an isosurface of some function $\psi$, and then modifying $\psi$ to deform the model towards the boundary of the desired image feature.
+
+% TODO: fig:background-levelsets-circlexample
+% TODO: fig:background-levelsets-ellipseexample
+
+To represent contour changes over time, level set approaches make $\psi$ a function of time as well, and define it over some domain $U \subset \mathbb{R}^N$, giving us $\psi(\mathbf{x}, t) : U \times \mathbb{R}^+ \rightarrow \mathbb{R}$. They then set this equal to some constant (generally $0$) to actually specify one of the isosurfaces of $\psi$ as the contour being deformed. As a simple example of this, consider a circle, centred at the origin, which gradually expands outwards as the time increases (see Figure~\ref{fig:background-levelsets-circleexample}). Supposing its radius to be $t$ at time $t$, we could represent this as:
+%
+\[
+\psi((x,y),t) = x^2 + y^2 - t^2 = 0
+\]
+%
+A more complicated example might involve gradually changing the circle into an ellipse over time (see Figure~\ref{fig:background-levelsets-ellipseexample}). This could be achieved by writing:
+%
+\[
+\psi((x,y),t) = x^2 + (yt)^2 - t^2 = 0
+\]
+%
+Thus far, we have examined the basic ideas underpinning level sets, but not seen how they can be applied to the practical problem of segmentation. A common approach of real-world level set methods is to take as input not an explicit function of the kind we have just seen, but an initial contour on the image. This will then be deformed (using numerical methods) over time to try and fit it to an image feature of interest. There are thus six essential questions to consider:
+
+\begin{enumerate}
+
+\item How do we represent the function $\psi$?
+
+\item Given an initial contour by the user, how do we use it to construct the initial function $\psi(\mathbf{x}, t = 0)$?
+
+\item How do we define a numerical method to deform the initial function over time?
+
+\item How do we know when the algorithm has terminated?
+
+\item How do we extract the contour of interest over time?
+
+\item How do we try and make the algorithm segment the desired image feature?
+
+\end{enumerate}
+
+To answer these questions, we consider the level set approach of Malladi et al., described in \cite{malladi95}. There, as tends to be the case for level set approaches in general, the function $\psi$ is represented by storing a discrete grid of approximate values over the domain $U$. The grid is uniformly-spaced, with squares of side $h$ (see Figure~\ref{fig:background-levelsets-grid}). Each grid node has (for each integer value of $n \ge 0$) an associated value $\psi_{ij}^n$, which approximates the value $\psi(ih,jh,n\dt)$, where $\dt$ is the time step of the numerical method that will be used to deform the initial contour over time.
+
+% TODO: fig:background-levelsets-grid
+
+The initial goal is to construct, from a contour specified by the user, the grid of values $\psi_{ij}^0$ approximating the function $\psi(\mathbf{x},0)$. In \cite{malladi95}, this is done by setting $\psi_{ij}^0$ to be the signed distance of the grid node $ij$ from the initial contour (points outside the contour are assigned positive values and those inside are assigned negative ones) -- see Figure~\ref{fig:background-levelsets-initialfunction}.
+
+% TODO: fig:background-levelsets-initialfunction
+
+Having constructed the grid for the initial function, the next step is then to define an appropriate numerical method to deform it over time. To do this, we first need a partial differential equation for $\psi$. The appropriate PDE, as derived in \cite{malladi95}, is:
+%
+\[
+\pd{\psi}{t} + F|\nabla \psi| = 0
+\]
+%
+Here, $F$ is called the \emph{speed function}, and will be used to control how $\psi$ evolves in a manner that will be discussed below. This can be approximated numerically as
+%
+\[
+\frac{\psi_{ij}^{n+1} - \psi_{ij}^n}{\dt} + (F)(\nabla_{ij} \psi_{ij}^n) = 0,
+\]
+%
+where (as noted, and described in more detail, in the paper), $\nabla_{ij} \psi_{ij}^n$ is `some appropriate finite difference operator for the spatial derivative'. This equation can be iteratively solved using standard numerical techniques \cite{?} and used to deform the model over time. The algorithm terminates when the contour of interest no longer changes between iterations.
+
+To extract the contour of interest after each iteration, Malladi et al. construct a piecewise linear approximation to it, the gist of which involves finding the squares where some of the corner values are positive and some are negative, and constructing line segments therein. This bears not a little resemblance to the marching squares algorithm, the 2D analogue of marching cubes \cite{lorensen87}.
+
+The remaining issue is how to use this algorithm to actually segment features in an image. For this, we make use of the speed function $F$, which controls how the contour deforms. Malladi et al.\ go into great detail about how $F$ should be defined, but essentially the idea is to define it so as to have (a) an advection component -- basically a term providing a constant speed inwards or outwards, (b) an image component -- a term which tries to make the contour move quickly when it is not near potential feature boundaries and slowly when it is close to them, and possibly (c) a geometry component -- a term which aims to control the local curvature of the contour. For the two-component version, with only an advection and an image component, this corresponds to an equation of the form
+%
+\[
+\pd{\psi}{t} + (F_A + \hat{F}_I)|\nabla \psi| = 0,
+\]
+%
+where $F_A$ is the advection component and $\hat{F}_I$ is the image component. For the version with a geometry component as well, the equation becomes
+%
+\[
+\pd{\psi}{t} + \hat{k}_I(F_A + F_G)|\nabla \psi| = 0,
+\]
+%
+where $F_G$ is the geometry component and $\hat{k}_I$ fulfils the role of the image component in the previous equation. The detailed definitions of the various components can be found in \cite{malladi95}. It is worth noting that this term-based approach bears a lot of similarity to that used for snakes, and in general the motivations for the various terms are more or less the same in each case.
+
+The key advantages of level sets over snakes are TODO
 
 \subsubsection{Other Deformable Models}
 
