@@ -4,7 +4,7 @@
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the use of partition trees in an imaging context. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
+In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the use of partition trees in the imaging domain. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
 
 Whilst the segmentation and feature identification problems are theoretically distinct -- in that feature identification involves assigning semantic meaning to parts of an image where segmentation does not -- there is a great deal of overlap between them in practice. For example, the goal of some of the segmentation techniques we will see (e.g.~region growing) is to directly segment a particular feature of interest; in that sense, they are as much feature identification approaches as segmentation ones. For that reason, I have chosen to present the techniques used for both problems together, rather than separately, commenting on the extent to which they address each of the problems where I feel it is appropriate.
 
@@ -143,7 +143,7 @@ Problems of this kind with snakes methods have led to a great deal of interest i
 
 \paragraph{NURBS-Based}
 
-Another type of parametric deformable model, this time based on non-uniform rational B-splines (NURBS), can be seen in \cite{tsagaan02}. TODO
+Another type of parametric deformable model, this time based on non-uniform rational B-splines (NURBS), is described by Tsagaan et al.\ \cite{tsagaan02}, in which they use a 3D NURBS-based model of a kidney and deform it by minimizing an energy function. Their results seem good in some cases, but differ markedly from the manually segmented results they show in others.
 
 \subsubsection{Implicit Deformable Models}
 
@@ -260,7 +260,7 @@ Another advantage of level sets is that, unlike snakes, they translate straightf
 
 \subsubsection{Other Deformable Models}
 
-TODO: Charged particles, m-reps
+Although parametric and implicit models are the most common types of deformable model in use, there are some techniques which do not fall into either category. Two techniques in particular are worth briefly mentioning. In \cite{jalba04}, Jalba et al.\ use a deformable model based on charged particles to achieve some interesting automatic segmentation results. There, the model is represented neither parametrically nor implicitly, but instead as a set of charged particles under the influence of an electrostatic field. Another interesting type of deformable model is the m-rep, described by Pizer et al.\ in \cite{pizer03}. This uses a medial representation of the model.
 
 \subsection{Learning Techniques}
 
