@@ -314,10 +314,10 @@ Clustering is the general problem of how to collect objects into groups in such 
 
 \subsubsection{K-Means}
 
-A generalised description of the K-means approach to clustering is that it aims to divide a set of $n$ objects $\{o_1,\ldots,o_n\}$ into $k \le n$ groups $G = \{G_1,\ldots,G_k\}$ in such a way as to minimise the sum of some measure of similarity $m$ between each object and the `mean' of the objects of its group. (At this stage of the description, what is meant by the mean in this instance is left deliberately under-specified.) More formally, if $\mu_i$ is the mean of the objects in group $G_i$, K-means aims to find a set of groups $G$ minimising:
+A generalised description of the K-means approach to clustering is that it aims to divide a set of $n$ objects $\{o_1,\ldots,o_n\}$ into $k \le n$ groups $G = \{G_1,\ldots,G_k\}$ in such a way as to minimise the sum of squares of some measure of similarity $m$ between each object and the `mean' of the objects of its group. (At this stage of the description, what is meant by the mean in this instance is left deliberately under-specified.) More formally, if $\mu_j$ is the mean of the objects in group $G_j$, K-means aims to find a set of groups $G$ minimising:
 %
 \[
-\sum_{i=1}^k \sum_{o \in G_i} m(o, \mu_i)
+\sum_{j=1}^k \sum_{o \in G_j} m(o, \mu_j)^2
 \]
 %
 The method generally used to try and find $G$ is an heuristic known as Lloyd's algorithm \cite{lloyd82} (which, it must be remarked, may be difficult to discern from the original paper). This works as follows:
@@ -340,13 +340,47 @@ The method generally used to try and find $G$ is an heuristic known as Lloyd's a
 
 \noindent Lloyd's algorithm is not guaranteed to find the global optimum for $G$, but it has been shown by Arthur and Vassilvitskii \cite{arthur07} that a careful choice of the initial means can make the algorithm $O(\log k)$-competitive with the optimal clustering.
 
-The key issues when using Lloyd's algorithm to segment images are how to define both the similarity measure and the mean of a set of objects. In some domains, the similarity measure can simply be defined as the square of the distance between objects, and the mean as the average of the objects' positions, but for images this may not produce good results. Instead, similarity measures can be defined which are based not only on the positions of the pixels, but also on their values (for example, see \cite{?}). In such cases, the way in which the mean of a set of objects is defined will vary accordingly.
+The key issues when using Lloyd's algorithm to segment images are how to define both the similarity measure and the mean of a set of objects. In some domains, the similarity measure can simply be defined as the distance between objects, and the mean as the average of the objects' positions, but for images this may not produce good results. Instead, similarity measures can be defined which are based not only on the positions of the pixels, but also on their values (for example, see \cite{?}). In such cases, the way in which the mean of a set of objects is defined will vary accordingly.
 
 It should be noted that each cluster produced by this simple k-means approach is highly unlikely to be contiguous in the image (see Figure~\ref{fig:background-segmentation-kmeans-noncontiguity}). Some attempts have been made to address this in the literature (e.g.~see \cite{luo03,ilea06}).
 
 \subsubsection{Fuzzy C-Means}
 
-TODO
+Fuzzy C-means is essentially a fuzzy relative of the K-means approach just described. It was originally presented by Dunn in 1974 \cite{dunn74}. The key idea is that instead of objects being divided crisply into groups (i.e.~each object belonging completely to exactly one group), objects have a degree of membership for each group. Using the same notation as before, and letting $u_{ij}$ be a real number between $0$ and $1$ indicating the degree to which object $o_i$ is a member of group $G_j$, and $1 \le p < \infty$ be a real parameter (e.g.~$p = 2$), we seek to find a set of groups $G$ minimising:
+%
+\[
+\sum_{j=1}^k \sum_{o_i \in G_j} u_{ij}^p \cdot m(o,\mu_j)^2
+\]
+%
+The standard algorithm for fuzzy C-means is once again an iterative, heuristic method:
+
+\begin{enumerate}
+
+\item Initialise the $u_{ij}$ values for the first iteration (written as ${}^{(0)}u_{ij}$). Any of the initialisation approaches which work for K-means will work equally well for this (i.e.~it suffices to pick an initial set of means and assign objects completely to their nearest groups by setting the $u_{ij}$ value to $1$ for their group and $0$ for all other groups).
+
+\item At iteration $s$, calculate the updated means of the groups using the equation:
+%
+\[
+\mu_j^{(s)} = \frac{\displaystyle \sum_{o_i \in G_j} {}^{(s-1)}u_{ij}^p \cdot o_i}{\displaystyle \sum_{o_i \in G_j} {}^{(s-1)}u_{ij}^p}
+\]
+
+\item Calculate the updated values ${}^{(s+1)}u_{ij}$ using the equation:
+%
+\[
+{}^{(s+1)}u_{ij} = \frac{1}{\displaystyle \sum_{j=1}^k \left( \frac{m(o_i, \mu_j)}{m(o_i, \mu_k)} \right)^{\frac{2}{p-1}}}
+\]
+
+\item Iterate Steps 2 and 3 until
+%
+\[
+\max_{ij} |{}^{(s+1)}u_{ij} - {}^{(s)}u_{ij}| < \epsilon,
+\]
+%
+where $\epsilon$ is a real number between $0$ and $1$.
+
+\end{enumerate}
+
+\noindent Once again, as with Lloyd's algorithm for K-means, this is not guaranteed to produce the global optimum.
 
 \subsection{Graph Partitioning}
 
