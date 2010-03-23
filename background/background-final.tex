@@ -4,7 +4,7 @@
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the use of partition trees in the imaging domain. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
+In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys some of the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the use of partition trees in the imaging domain. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
 
 Whilst the segmentation and feature identification problems are theoretically distinct -- in that feature identification involves assigning semantic meaning to parts of an image where segmentation does not -- there is a great deal of overlap between them in practice. For example, the goal of some of the segmentation techniques we will see (e.g.~region growing) is to directly segment a particular feature of interest; in that sense, they are as much feature identification approaches as segmentation ones. For that reason, I have chosen to present the techniques used for both problems together, rather than separately, commenting on the extent to which they address each of the problems where I feel it is appropriate.
 
@@ -13,7 +13,7 @@ Whilst the segmentation and feature identification problems are theoretically di
 
 \subsection{Overview}
 
-The majority of the segmentation techniques in current use can be divided into eight classes: (1) thresholding techniques, which seek to segment an image based on dividing up the histogram of its grey values, (2) region growing techniques, which search for specific features by flooding outwards from one or more initial seed points in the image, (3) morphological techniques such as the watershed transform, which treats an image as a height map and divides it up into catchment basins that we try to ensure correspond to features of interest, (4) deformable models, which start with some arbitrary model of a desired feature and try to deform it to fit the image data, (5) learning techniques, which construct some variety of model based on a set of training images and use it to segment subsequent scans, (6) clustering techniques such as the K-means algorithm, (7) graph partitioning techniques such as the normalized cuts algorithm, and (8) hybrid techniques, which combine methods from the other classes to produce (what are hopefully good) results for specific applications. Each of these is discussed in more detail in one of the following subsections. The field as a whole is visually depicted in Figure~\ref{fig:background-segmentation-field}.
+The majority of the segmentation techniques in current use can be divided into eight classes: (1) thresholding techniques, which seek to segment an image based on dividing up the histogram of its grey values, (2) region growing techniques, which search for specific features by flooding outwards from one or more initial seed points in the image, (3) morphological techniques such as the watershed transform, which treats an image as a height map and divides it up into catchment basins that we try to ensure correspond to features of interest, (4) deformable models, which start with some arbitrary model of a desired feature and try to deform it to fit the image data, (5) learning techniques, which construct some variety of model based on a set of training images and use it to segment subsequent scans, (6) clustering techniques, which try and cluster objects (in this case image pixels) into groups whose members are mutually similar, but dissimilar to the members of other groups, (7) graph partitioning techniques such as the normalized cuts algorithm, and (8) hybrid techniques, which combine methods from the other classes to produce (what are hopefully good) results for specific applications. Each of these is discussed in more detail in one of the following subsections. The field as a whole is visually depicted in Figure~\ref{fig:background-segmentation-field}.
 
 %---
 \stufigex{height=16cm}{background/background-segmentation-field.png}{The field of image segmentation techniques}{fig:background-segmentation-field}{p}
@@ -304,15 +304,51 @@ A more up-to-date (and more complicated) NN scheme can be found in \cite{lee03}.
 \stufigex{height=8cm}{todo.png}{The architecture of the contextual neural network used in \cite{lee03} (borrowed from the paper in question)}{fig:background-segmentation-neuralnets-lee}{p}
 %---
 
-\subsubsection{Statistical Methods}
+%\subsubsection{Statistical Methods}
 
-TODO: \cite{touhami05}
+%TODO: \cite{touhami05}
 
-\subsection{Clustering Techniques}
+\subsection{Clustering}
 
-TODO: K-means
+Clustering is the general problem of how to collect objects into groups in such a way that the members of each group are (with relation to application-specific criteria) similar to each other, but dissimilar to those in other groups. This can evidently be applied to image segmentation, with the goal of clustering the image into groups of similar pixels.
 
-\subsection{Graph Partitioning Techniques}
+\subsubsection{K-Means}
+
+A generalised description of the K-means approach to clustering is that it aims to divide a set of $n$ objects $\{o_1,\ldots,o_n\}$ into $k \le n$ groups $G = \{G_1,\ldots,G_k\}$ in such a way as to minimise the sum of some measure of similarity $m$ between each object and the `mean' of the objects of its group. (At this stage of the description, what is meant by the mean in this instance is left deliberately under-specified.) More formally, if $\mu_i$ is the mean of the objects in group $G_i$, K-means aims to find a set of groups $G$ minimising:
+%
+\[
+\sum_{i=1}^k \sum_{o \in G_i} m(o, \mu_i)
+\]
+%
+The method generally used to try and find $G$ is an heuristic known as Lloyd's algorithm \cite{lloyd82} (which, it must be remarked, may be difficult to discern from the original paper). This works as follows:
+
+\begin{enumerate}
+
+\item An initial set of $k$ means are chosen, either manually, randomly or otherwise.
+
+\item Each object (in the case of imaging, each pixel) is assigned to the group to whose mean it is closest, i.e.~object $o$ is placed in the group with index:
+%
+\[
+\argmin_{i=1}^k m(o, \mu_i)
+\]
+
+\item The means for all groups that have changed since the last iteration are recalculated.
+
+\item Steps 2 and 3 are repeated until no groups change between one iteration and the next.
+
+\end{enumerate}
+
+\noindent Lloyd's algorithm is not guaranteed to find the global optimum for $G$, but it has been shown by Arthur and Vassilvitskii \cite{arthur07} that a careful choice of the initial means can make the algorithm $O(\log k)$-competitive with the optimal clustering.
+
+The key issues when using Lloyd's algorithm to segment images are how to define both the similarity measure and the mean of a set of objects. In some domains, the similarity measure can simply be defined as the square of the distance between objects, and the mean as the average of the objects' positions, but for images this may not produce good results. Instead, similarity measures can be defined which are based not only on the positions of the pixels, but also on their values (for example, see \cite{?}). In such cases, the way in which the mean of a set of objects is defined will vary accordingly.
+
+It should be noted that each cluster produced by this simple k-means approach is highly unlikely to be contiguous in the image (see Figure~\ref{fig:background-segmentation-kmeans-noncontiguity}). Some attempts have been made to address this in the literature (e.g.~see \cite{luo03,ilea06}).
+
+\subsubsection{Fuzzy C-Means}
+
+TODO
+
+\subsection{Graph Partitioning}
 
 TODO: Normalized cuts
 
