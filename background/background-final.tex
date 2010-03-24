@@ -388,7 +388,11 @@ TODO: Normalized cuts
 
 \subsection{Hybrid Techniques}
 
-TODO: Luc Soler's work, Fuzzy Connectedness/Voronoi Diagram Classification/Deformable Models, Gibbs Priors/Deformable Models
+It is sometimes possible to achieve better results by combining a number of different segmentation methods than it is by using a single method on its own. A striking example of how successful this sort of technique can be seen in the work of Luc Soler et al.\ \cite{soler01}, in which they describe an extensively hybrid technique for automatic segmentation of the liver from spiral CT scans. Their segmentation method first uses thresholding, morphological operators and distance maps to identify the skin, bones, lungs, kidneys and spleen. They next use a clever deformable model approach to embed a reference model of the liver into the image and automatically deform it to the liver contours. Later stages use Gaussian fitting on the image histogram to separate normal liver tissue from blood vessels and lesions (tumours), a result which is further refined by their own analytical methods. The final stage of their method makes use of higher-level medical knowledge to label the hepatic portal vein and segment the liver automatically according to an anatomically-based definition by Couinaud \cite{couinaud57}. The results of this technique are excellent -- see Figure~\ref{fig:background-segmentation-hybrid-soler}.
+
+% TODO: fig:background-segmentation-hybrid-soler
+
+Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{ng06}, Ng et al.\ precede a watershed segmentation of MRI images of the head with a K-means clustering step -- this has the effect of hugely reducing the oversegmentation that the watershed would otherwise produce. It is a method that works particularly well for head segmentation, where the number of clusters is well-known a priori (in this case, the authors note that the types of tissue present tend to be `bone, soft tissue, fat and background'). There are several hybrid segmentation methods in \cite{itk}: in one, the authors combine fuzzy connectedness, Voronoi diagram classification and deformable models; in another, they combine Gibbs priors and deformable models. The details of these techniques are beyond the scope of this dissertation, but an implementation of the methods can be found in the freely-available \emph{Insight Toolkit}.
 
 %---
 \section{Representing Images as Partition Trees}
