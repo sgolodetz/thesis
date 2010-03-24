@@ -202,7 +202,7 @@ Thus far, we have examined the basic ideas underpinning level sets, but not seen
 
 \end{enumerate}
 
-To answer these questions, we consider the level set approach of Malladi et al., described in \cite{malladi95}. There, as tends to be the case for level set approaches in general, the function $\psi$ is represented by storing a discrete grid of approximate values over the domain $U$. The grid is uniformly-spaced, with squares of side $h$ (see Figure~\ref{fig:background-levelsets-grid}). Each grid node has (for each integer value of $n \ge 0$) an associated value $\psi_{ij}^n$, which approximates the value $\psi(ih,jh,n\dt)$, where $\dt$ is the time step of the numerical method that will be used to deform the initial contour over time.
+\noindent To answer these questions, we consider the level set approach of Malladi et al., described in \cite{malladi95}. There, as tends to be the case for level set approaches in general, the function $\psi$ is represented by storing a discrete grid of approximate values over the domain $U$. The grid is uniformly-spaced, with squares of side $h$ (see Figure~\ref{fig:background-levelsets-grid}). Each grid node has (for each integer value of $n \ge 0$) an associated value $\psi_{ij}^n$, which approximates the value $\psi(ih,jh,n\dt)$, where $\dt$ is the time step of the numerical method that will be used to deform the initial contour over time.
 
 % TODO: fig:background-levelsets-grid
 
@@ -384,7 +384,23 @@ where $\epsilon$ is a real number between $0$ and $1$.
 
 \subsection{Graph Partitioning}
 
-TODO: Normalized cuts
+Graph partitioning segmentation algorithms work by representing an object to be segmented as a weighted, undirected graph. In the case of images, the nodes of this graph would be the pixels of the image, and each of its edges would connect a pair of adjacent pixels and be weighted according to some measure of the dissimilarity between those pixels (one possible definition, based on both the pixel values and their spatial location in the image, appears in \cite{shi00}). The idea is then to find a good way to partition the nodes of the graph into pieces. For instance, if $G = (V,E,w)$ is a graph with vertex set $V$, edge set $E$ and weight function $w$, the \emph{minimum cut} approach seeks to partition $V$ into two disjoint sets $A$ and $B$ such as to minimise:
+%
+\[
+\mbox{cut}(A,B) = \sum_{u \in A, v \in B} w(u,v)
+\]
+%
+As mentioned by (among others) Shi and Malik in \cite{shi00}, however, the minimum cut approach tends to partition the graph so as to cut away small groups of poorly connected nodes, with undesirable results. Instead, they define, and then try to minimise, a measure of the lack of quality of a binary partition called the \emph{normalized cut}, namely
+%
+\[
+\mbox{Ncut}(A,B) = \frac{\mbox{cut}(A,B)}{\mbox{assoc}(A,V)} + \frac{\mbox{cut}(A,B)}{\mbox{assoc}(B,V)},
+\]
+%
+where they define $\mbox{assoc}(X,V) = \sum_{u \in X, t \in V} w(u,t)$ for both $X = A$ and $X = B$. This solves the aforementioned problem with the minimum cut approach, because if (for example) $A$ is a small group of poorly connected nodes, we would expect $\mbox{cut}(A,B)$ to be almost the same as $\mbox{assoc}(A,V)$, leading to a large value for $\mbox{Ncut}(A,B)$.
+
+Finding a good partition given the definition of a normalized cut involves solving an eigenvalue problem, the details of which are described in \cite{shi00}. Having solved the eigensystem, we take the second smallest eigenvector (for reasons discussed in the paper) and use it to try and compute a good partition. The eigenvector will have one real-valued component for each pixel in the image -- the idea is to find a splitting point which minimises the value of the normalized cut. Assuming the values are relatively well separated into two distinct clusters, this can be done by checking the cut value for a number of evenly-spaced, real-valued potential cut points, and picking the one with the lowest value. Pixels with values above the cut then form one group, and those with values below the other. If the values are not well separated, however, the cut values may well be similar for several different cut points. For that reason, \cite{shi00} defines a stability criterion which essentially measure the reliability of the cut.
+
+The binary partitioning process thus far described then becomes part of a recursive partitioning scheme. Starting with the whole image, as good a binary partition as possible of the current image region is computed, along with the stability of the cut. If the stability is too low, the image region is not partitioned. Otherwise, the value of the cut itself is considered. If it is too high (i.e.~greater than some user-specified threshold), the recursion terminates. Otherwise, the binary partitioning process is repeated on the two sub-regions just computed. Via this recursive process, the image as a whole is partitioned into a number of groups dependent on the maximum allowed cut value and the stability criterion.
 
 \subsection{Hybrid Techniques}
 
