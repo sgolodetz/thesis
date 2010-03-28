@@ -1,168 +1,37 @@
+%%%%%%%%%%%%%%%%
 %%% Preamble %%%
+%%%%%%%%%%%%%%%%
+
 \documentclass{smgthesis}
-\usepackage{afterpage}
-\usepackage{alltt}
-\usepackage{amsfonts}
-\usepackage{amsthm}
-\usepackage{color}
-\usepackage{epigraph}
-\usepackage{float}
-\usepackage{graphicx}
-%\usepackage[draft]{graphicx}
-\usepackage{latexsym}						% Include extra symbols like \Box and \sqsubset
-\usepackage{listings}
-\usepackage{makeidx} \makeindex
-\usepackage{setspace}
-\usepackage{subfigure}
-%\usepackage{times}
-\usepackage[notlof,nottoc]{tocbibind}	% Include the bibliography in the table of contents
-\usepackage{underscore}
-\usepackage{url}
-\usepackage{vmargin}
-
-% This must be loaded after the other packages.
-\usepackage{microtype}
-
-% Set the paper size and margins
-\setpapersize{A4}
-\setmargnohfrb{2cm}{2cm}{2cm}{2cm}
-
-% Set the table of contents depth
-\setcounter{tocdepth}{2}
-
-% Change the line spacing
-\doublespacing
-
-% Prevent footnotes being split across multiple pages.
-\interfootnotelinepenalty=10000
-
-% Define new math operators
-\newcommand{\argmax}{\mathop{\rm argmax}}
-\newcommand{\argmin}{\mathop{\rm argmin}}
-\newcommand{\diag}{\mathop{\rm diag}}
-
-% Define the definition environment
-\newtheorem{definition}{Definition}[chapter]
-
-% Define the thesis environment
-\newtheorem*{thesis}{Thesis}
-
-% Macros
-\def\dx{\Delta x}
-\def\dy{\Delta y}
-\def\dz{\Delta z}
-\def\dt{\Delta t}
-
-\def\pd#1#2{\frac{\partial #1}{\partial #2}}						% partial derivative
-\def\pdd#1#2{\frac{\partial^2 #1}{\partial #2^2}}				% partial second derivative
-\def\pdk#1#2#3{\frac{\partial^#3 #1}{\partial #2^#3}}		% partial k'th derivative
-
-\def\pdnf#1#2{\partial #1/\partial #2}									% partial derivative (no frac)
-\def\pddnf#1#2{\partial^2 #1/\partial #2^2}							% partial second derivative (no frac)
-\def\pdknf#1#2#3{\partial^#3 #1/\partial #2^#3}					% partial k'th derivative (no frac)
-
-% Define a shorter way to add index entries
-\newcommand{\stuidx}[2][\DefaultOpt]{\def\DefaultOpt{#2} \index{#1} \emph{#2}}
-
-% Define a shorter way to include graphics.
-\newcommand{\stufig}[4]
-{
-	\begin{figure}
-	\begin{center}
-		\includegraphics[#1]{#2}
-		\caption{#3}
-		\label{#4}
-	\end{center}
-	\end{figure}
-}
-
-\newcommand{\stufigex}[5]
-{
-	\begin{figure}[#5]
-	\begin{center}
-		\includegraphics[#1]{#2}
-		\caption{#3}
-		\label{#4}
-	\end{center}
-	\end{figure}
-}
-
-\newcommand{\stufignc}[2]					% images without captions
-{
-	\begin{figure}[H]
-	\begin{center}
-		\includegraphics[#1]{#2}
-	\end{center}
-	\label{fig:#2}
-	\end{figure}
-}
-
-\newenvironment{stusubfig}[1]
-{
-	\begin{figure}[#1]
-	\begin{center}
-}
-{
-	\end{center}
-	\end{figure}
-}
 
 \begin{document}
 
-% Setup before using the listings package
-\renewcommand{\lstlistingname}{\textbf{Listing}}
-\renewcommand{\thelstlisting}{\textbf{\arabic{lstlisting}}}
+%%%%%%%%%%%%%%%%%%
+%%% Title Page %%%
+%%%%%%%%%%%%%%%%%%
 
-\definecolor{darkgreen}{rgb}{0, 0.6, 0}
+\doublespacing								% change the line spacing to double-spaced
 
-\lstdefinelanguage{Pseudocode}{
-morekeywords={break,continue,each,else,for,function,if,not,ref,return,then,var,while},
-sensitive=true,
-morecomment=[l]{//},
-morecomment=[s]{/*}{*/}
-}
-
-\lstdefinestyle{Default}{
-abovecaptionskip=0.5cm,
-basicstyle=\scriptsize\ttfamily,
-belowcaptionskip=0.5cm,
-belowskip=0.5cm,
-commentstyle=\color{darkgreen},
-language=Pseudocode,
-numbers=left,
-numbersep=5pt,
-numberstyle=\tiny,
-mathescape=true,
-showstringspaces=false,
-stepnumber=1,
-tabsize=4
-}
-
-\floatstyle{ruled}
-\newfloat{stulisting}{thp}{lop}[chapter]
-\floatname{stulisting}{Listing}
-
-% Define extra colours
-\definecolor{gold}{rgb}{0.75, 0.75, 0}
-\definecolor{cyan}{rgb}{0, 0.75, 0.75}
-\definecolor{purple}{rgb}{0.75, 0, 0.75}
-
-%%% Top Matter %%%
 \input{title}
 
-%%% Main Document %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Table of Contents etc. %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\onehalfspacing								% change the line spacing to 1.5-spaced
+
 \tableofcontents
 \listoffigures
 \listof{stulisting}{List of Code Listings}
 
-% Get rid of the unnecessary space before chapter titles
-\dropchapter{-2cm}
+%%%%%%%%%%%%%%%%%%%%%
+%%% Main Document %%%
+%%%%%%%%%%%%%%%%%%%%%
 
-% Add page numbers
-\pagestyle{plain}
-
-% Stop the page numbers overlapping the text at the bottom of the page
-\addtolength{\footskip}{7mm}
+\doublespacing								% change the line spacing to double-spaced
+\dropchapter{-2cm}						% get rid of the unnecessary space before chapter titles
+\pagestyle{plain}							% add page numbers
+\addtolength{\footskip}{10mm}	% stop the page numbers overlapping the text at the bottom of the page
 
 \input{abstract}
 

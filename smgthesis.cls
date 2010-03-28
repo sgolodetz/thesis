@@ -6,6 +6,133 @@
 \ProcessOptions\relax
 \LoadClass[a4paper,12pt]{report}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Required Packages %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\RequirePackage{afterpage}
+\RequirePackage{alltt}
+\RequirePackage{amsfonts}
+\RequirePackage{amsthm}
+\RequirePackage{color}
+\RequirePackage{epigraph}
+\RequirePackage{float}
+\RequirePackage{graphicx}
+%\RequirePackage[draft]{graphicx}
+\RequirePackage{latexsym}										% include extra symbols like \Box and \sqsubset
+\RequirePackage{listings}
+\RequirePackage{makeidx} \makeindex
+\RequirePackage{setspace}
+\RequirePackage{subfigure}
+%\RequirePackage{times}
+\RequirePackage[notlof,nottoc]{tocbibind}		% include the bibliography in the table of contents
+\RequirePackage{underscore}
+\RequirePackage{url}
+\RequirePackage{varwidth}
+\RequirePackage{vmargin}
+
+% This must be loaded after the other packages
+\RequirePackage{microtype}
+
+%%%%%%%%%%%%%%%
+%%% Colours %%%
+%%%%%%%%%%%%%%%
+
+\definecolor{cyan}{rgb}{0, 0.75, 0.75}
+\definecolor{gold}{rgb}{0.75, 0.75, 0}
+\definecolor{purple}{rgb}{0.75, 0, 0.75}
+
+%%%%%%%%%%%%%%%%
+%%% Commands %%%
+%%%%%%%%%%%%%%%%
+
+% Define shorter ways to include individual images
+\newcommand{\stufig}[4]						% images with default placement
+{
+	\begin{figure}
+	\begin{center}
+		\includegraphics[#1]{#2}
+		\caption{#3}
+		\label{#4}
+	\end{center}
+	\end{figure}
+}
+
+\newcommand{\stufigex}[5]					% images with specified placement
+{
+	\begin{figure}[#5]
+	\begin{center}
+		\includegraphics[#1]{#2}
+		\caption{#3}
+		\label{#4}
+	\end{center}
+	\end{figure}
+}
+
+\newcommand{\stufignc}[2]					% images without captions
+{
+	\begin{figure}[H]
+	\begin{center}
+		\includegraphics[#1]{#2}
+	\end{center}
+	\label{fig:#2}
+	\end{figure}
+}
+
+% Define a shorter way to add index entries
+\newcommand{\stuidx}[2][\DefaultOpt]{\def\DefaultOpt{#2} \index{#1} \emph{#2}}
+
+%%%%%%%%%%%%%%%%%%%%
+%%% Environments %%%
+%%%%%%%%%%%%%%%%%%%%
+
+% Define the centreditemize environment
+\newenvironment{centreditemize}
+{
+\begin{center}
+\begin{varwidth}{\linewidth}
+\begin{itemize}
+}
+{
+\end{itemize}
+\end{varwidth}
+\end{center}
+}
+
+% Define the definition environment
+\newtheorem{definition}{Definition}[chapter]
+
+% Define the stusubfig environment
+\newenvironment{stusubfig}[1]
+{
+	\begin{figure}[#1]
+	\begin{center}
+}
+{
+	\end{center}
+	\end{figure}
+}
+
+% Define the thesis environment
+\newtheorem*{thesis}{Thesis}
+
+%%%%%%%%%%%%%%
+%%% Floats %%%
+%%%%%%%%%%%%%%
+
+% Create a new type of float for listings
+\floatstyle{ruled}
+\newfloat{stulisting}{thp}{lop}[chapter]
+\floatname{stulisting}{Listing}
+
+%%%%%%%%%%%%%%%%%%
+%%% Formatting %%%
+%%%%%%%%%%%%%%%%%%
+
+% Set the paper size and margins
+\setpapersize{A4}
+\setmargnohfrb{2cm}{2cm}{2cm}{2cm}
+
 % Change the ways headings are formatted (based on the definitions in report.cls)
 \renewcommand\section{\@startsection{section}{1}
 	{\z@}
@@ -42,20 +169,72 @@
 	{\normalfont\normalsize\itshape\center}
 }
 
-% Change the formatting of figure captions
+% Change the way figure captions are formatted
 \usepackage[labelfont=bf,textfont=it]{caption}
 
-% Define a centred itemize environment
-\usepackage{varwidth}
+% Prevent footnotes being split across multiple pages
+\interfootnotelinepenalty=10000
 
-\newenvironment{centreditemize}
+% Set the table of contents depth
+\setcounter{tocdepth}{2}
+
+%%%%%%%%%%%%%%%%%%%
+%%% Mathematics %%%
+%%%%%%%%%%%%%%%%%%%
+
+% Macros
+\def\dx{\Delta x}
+\def\dy{\Delta y}
+\def\dz{\Delta z}
+\def\dt{\Delta t}
+
+\def\pd#1#2{\frac{\partial #1}{\partial #2}}						% partial derivative
+\def\pdd#1#2{\frac{\partial^2 #1}{\partial #2^2}}				% partial second derivative
+\def\pdk#1#2#3{\frac{\partial^#3 #1}{\partial #2^#3}}		% partial k'th derivative
+
+\def\pdnf#1#2{\partial #1/\partial #2}									% partial derivative (no frac)
+\def\pddnf#1#2{\partial^2 #1/\partial #2^2}							% partial second derivative (no frac)
+\def\pdknf#1#2#3{\partial^#3 #1/\partial #2^#3}					% partial k'th derivative (no frac)
+
+% Operators
+\newcommand{\argmax}{\mathop{\rm argmax}}
+\newcommand{\argmin}{\mathop{\rm argmin}}
+\newcommand{\diag}{\mathop{\rm diag}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Start of Document %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\AtBeginDocument
 {
-\begin{center}
-\begin{varwidth}{\linewidth}
-\begin{itemize}
+
+% Setup before using the listings package
+\renewcommand{\lstlistingname}{\textbf{Listing}}
+\renewcommand{\thelstlisting}{\textbf{\arabic{lstlisting}}}
+
+\definecolor{darkgreen}{rgb}{0, 0.6, 0}
+
+\lstdefinelanguage{Pseudocode}{
+morekeywords={break,continue,each,else,for,function,if,not,ref,return,then,var,while},
+sensitive=true,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/}
 }
-{
-\end{itemize}
-\end{varwidth}
-\end{center}
+
+\lstdefinestyle{Default}{
+abovecaptionskip=0.5cm,
+basicstyle=\scriptsize\ttfamily,
+belowcaptionskip=0.5cm,
+belowskip=0.5cm,
+commentstyle=\color{darkgreen},
+language=Pseudocode,
+numbers=left,
+numbersep=5pt,
+numberstyle=\tiny,
+mathescape=true,
+showstringspaces=false,
+stepnumber=1,
+tabsize=4
+}
+
 }
