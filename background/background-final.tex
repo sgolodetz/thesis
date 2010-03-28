@@ -21,29 +21,44 @@ The majority of the segmentation techniques in current use can be divided into e
 
 \subsection{Thresholding}
 
-In principle, thresholding segmentation methods are quite simple. The idea is to divide the pixels of the image into classes through the use of one or more dividing lines on the image histogram. Dividing the image into two classes is known as \emph{binary thresholding}; where more classes are used, we refer to the process as \emph{multi-thresholding}. As an example, we could use binary thresholding to divide an 8-bit image (with grey levels ranging from $0 = \mbox{black}$ to $255 = \mbox{white}$) into two classes, one containing pixels greater than (say) $160$, and representing the foreground of the image, and the other containing all the remaining pixels and representing the background (see Figure~\ref{fig:background-thresholding-binaryexample}).
+In principle, thresholding segmentation methods are quite simple. The idea is to divide the pixels of the image into classes through the use of one or more dividing lines on the image histogram. Dividing the image into two classes is known as \emph{binary thresholding}; where more classes are used, we refer to the process as \emph{multi-thresholding}. As an example, we could use binary thresholding to divide an 8-bit image (with grey levels ranging from $0 = \mbox{black}$ to $255 = \mbox{white}$) into two classes, one containing pixels greater than (say) $125$, and representing the foreground of the image, and the other containing all the remaining pixels and representing the background (see Figure~\ref{fig:background-segmentation-thresholding-binaryexample}).
 
 %---
-% TODO: fig:background-segmentation-thresholding-binaryexample
-\stufigex{width=16cm, height=9cm}{todo.png}{TODO}{fig:background-segmentation-thresholding-binaryexample}{p}
-%---
-
-The difficulty encountered in practice is how to determine the optimum threshold location(s). A misplaced threshold will cause an inaccurate segmentation, so choosing the location appropriately is essential. In our example above, choosing a threshold which was too high would mean that the foreground of the image would be \emph{undersegmented} (i.e. pixels which should be classified as being part of the foreground are incorrectly classified as background) and the background would be \emph{oversegmented} (the converse) -- see Figure~\ref{fig:background-segmentation-thresholding-inaccurate}(a). Choosing too low a threshold would cause the opposite problem -- see Figure~\ref{fig:background-segmentation-thresholding-inaccurate}(b).
-
-%---
-% TODO: fig:background-segmentation-thresholding-inaccurate
 \begin{stusubfig}{p}
-	\subfigure[TODO]
-	{\includegraphics[height=8cm]{todo.png}}%
+	\subfigure[The original image]
+	{\includegraphics[height=.4\linewidth]{background/background-segmentation-thresholding-binaryexample-a.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[TODO]
-	{\includegraphics[height=8cm]{todo.png}}%
-\caption{TODO}
+	\subfigure[The thresholded image]
+	{\includegraphics[height=.4\linewidth]{background/background-segmentation-thresholding-binaryexample-c.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The image histogram and threshold at grey value $125$]
+	{\includegraphics[width=.8\linewidth, height=.3\linewidth]{todo.png}}%
+\caption{Segmenting the brighter of two adjacent objects in an 8-bit greyscale image using binary thresholding (the objects are easily separated in this case because the distribution of grey values in the image is bimodal)}
+\label{fig:background-segmentation-thresholding-binaryexample}
+\end{stusubfig}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Segmenting Figure~\ref{fig:background-segmentation-thresholding-binaryexample}(a) with a threshold of $175$ leads to undersegmentation]
+	{\includegraphics[height=.4\linewidth]{background/background-segmentation-thresholding-inaccurate-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Conversely, segmenting it with a threshold of $75$ leads to oversegmentation]
+	{\includegraphics[height=.4\linewidth]{background/background-segmentation-thresholding-inaccurate-b.png}}%
+\caption{Misplaced thresholds lead to inaccurate segmentations}
 \label{fig:background-segmentation-thresholding-inaccurate}
 \end{stusubfig}
 %---
+
+\afterpage{\clearpage}
+
+The difficulty encountered in practice is how to determine the optimum threshold location(s). A misplaced threshold will cause an inaccurate segmentation, so choosing the location appropriately is essential. In our example above, choosing a threshold that was too high would mean that the foreground of the image would be \emph{undersegmented} (i.e. pixels which should be classified as being part of the foreground are incorrectly classified as background) and the background would be \emph{oversegmented} (the converse) -- see Figure~\ref{fig:background-segmentation-thresholding-inaccurate}(a). Choosing too low a threshold would cause the opposite problem -- see Figure~\ref{fig:background-segmentation-thresholding-inaccurate}(b).
 
 Owing to difficulties like this, applications are often designed so that thresholds can be chosen interactively by the user, but a great deal of work has also been done on automatically determining good threshold locations. As surveyed by Sezgin and Sankur in \cite{sezgin04}, there are six types of approach to the problem in current use:
 
@@ -291,8 +306,7 @@ In other words, the probability of the correct segmentation result for a given v
 Neural networks (NNs) can be used to segment images in a number of ways. A simple NN technique can be found in \cite{tsai94}, where Tsai and Tanahashi use a feed-forward network to classify each pixel into one of three classes (liver, boundary or non-liver) according to the grey-level histogram of the 7x7 region centred on the pixel. (In practice, they use a histogram with 16 grey levels instead of 256, to avoid a proliferation of input nodes in the NN.) The schematic of how this works (borrowed from their paper) is shown in Figure~\ref{fig:background-segmentation-neuralnets-tsai}. The NN is initially trained by picking a suitable image from the middle of the volume and marking a significant number of training regions for each class. The well-known back-propagation algorithm for NNs \cite{?} is used to update the weights on the network arcs accordingly.
 
 %---
-% TODO: fig:background-segmentation-neuralnets-tsai
-\stufigex{width=16cm, height=20cm}{todo.png}{Schematic diagram of the neural-network-based boundary detection method used in \cite{tsai94} (borrowed from the paper in question)}{fig:background-segmentation-neuralnets-tsai}{p}
+\stufigex{height=20cm}{background/background-segmentation-neuralnets-tsai.png}{Schematic diagram of the neural-network-based boundary detection method used in \cite{tsai94} (reproduced from the paper in question)}{fig:background-segmentation-neuralnets-tsai}{p}
 %---
 
 The results of the scheme are somewhat hard to evaluate since the images in this somewhat old paper (1994) have not really survived the ravages of time. However, they do seem to show that the authors have obtained something that looks reasonably like a liver, so the method has some merit (TODO: I can't say this in my actual thesis!).
@@ -300,8 +314,7 @@ The results of the scheme are somewhat hard to evaluate since the images in this
 A more up-to-date (and more complicated) NN scheme can be found in \cite{lee03}. Here, Lee et al.\ use a multi-module, recurrent neural network to segment multiple abdominal organs (see Figure~\ref{fig:background-segmentation-neuralnets-lee}). There is a module associated with each label under consideration. Each node of a given module $k$ corresponds to a pixel in the image and encodes the probability that the pixel should be assigned label $k$. The weights of the network arcs are initially derived from (for example) a correlation matrix containing the likelihoods of various labels occurring next to each other. (For example, the liver might be quite likely to occur next to the right kidney, but definitely shouldn't occur next to the left kidney.) An iterative state evolution algorithm is used to determine the probabilities at each node in each of the modules of the NN. The initial probabilities are generated using something called the `Kohonen self-organizing algorithm' (see the paper for details) and the nodes are updated at each time step based on the current probability at a given node and the support it receives from its neighbours. (So, for instance, if a pixel was currently classified as part of the left kidney, but all its neighbours were liver, it would be very likely to change to liver over time.) The results of this method (after combining it with fuzzy spatial rules for organ identification) are quite good (though the authors admit that more work is needed).
 
 %---
-%TODO: fig:background-segmentation-neuralnets-lee
-\stufigex{height=8cm}{todo.png}{The architecture of the contextual neural network used in \cite{lee03} (borrowed from the paper in question)}{fig:background-segmentation-neuralnets-lee}{p}
+\stufigex{height=8cm}{background/background-segmentation-neuralnets-lee.png}{The architecture of the contextual neural network used in \cite{lee03} (reproduced from the paper in question)}{fig:background-segmentation-neuralnets-lee}{p}
 %---
 
 %\subsubsection{Statistical Methods}
@@ -406,7 +419,9 @@ The binary partitioning process thus far described then becomes part of a recurs
 
 It is sometimes possible to achieve better results by combining a number of different segmentation methods than it is by using a single method on its own. A striking example of how successful this sort of technique can be seen in the work of Luc Soler et al.\ \cite{soler01}, in which they describe an extensively hybrid technique for automatic segmentation of the liver from spiral CT scans. Their segmentation method first uses thresholding, morphological operators and distance maps to identify the skin, bones, lungs, kidneys and spleen. They next use a clever deformable model approach to embed a reference model of the liver into the image and automatically deform it to the liver contours. Later stages use Gaussian fitting on the image histogram to separate normal liver tissue from blood vessels and lesions (tumours), a result which is further refined by their own analytical methods. The final stage of their method makes use of higher-level medical knowledge to label the hepatic portal vein and segment the liver automatically according to an anatomically-based definition by Couinaud \cite{couinaud57}. The results of this technique are excellent -- see Figure~\ref{fig:background-segmentation-hybrid-soler}.
 
-% TODO: fig:background-segmentation-hybrid-soler
+%---
+\stufigex{height=8cm}{background/background-segmentation-hybrid-soler.png}{An automatic 3D reconstruction of patients from medical images, as performed by the IRCAD surgical planning tools developed using the work of Luc Soler et al.\ (the figure is reproduced from \cite{soler-imvie})}{fig:background-segmentation-hybrid-soler}{p}
+%---
 
 Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{ng06}, Ng et al.\ precede a watershed segmentation of MRI images of the head with a K-means clustering step -- this has the effect of hugely reducing the oversegmentation that the watershed would otherwise produce. It is a method that works particularly well for head segmentation, where the number of clusters is well-known a priori (in this case, the authors note that the types of tissue present tend to be `bone, soft tissue, fat and background'). There are several hybrid segmentation methods in \cite{itk}: in one, the authors combine fuzzy connectedness, Voronoi diagram classification and deformable models; in another, they combine Gibbs priors and deformable models. The details of these techniques are beyond the scope of this dissertation, but an implementation of the methods can be found in the freely-available \emph{Insight Toolkit}.
 
