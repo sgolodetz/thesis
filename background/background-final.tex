@@ -255,13 +255,17 @@ Thus far, we have examined the basic ideas underpinning level sets, but not seen
 
 \end{enumerate}
 
-\noindent To answer these questions, we consider the level set approach of Malladi et al., described in \cite{malladi95}. There, as tends to be the case for level set approaches in general, the function $\psi$ is represented by storing a discrete grid of approximate values over the domain $U$. The grid is uniformly-spaced, with squares of side $h$ (see Figure~\ref{fig:background-levelsets-grid}). Each grid node has (for each integer value of $n \ge 0$) an associated value $\psi_{ij}^n$, which approximates the value $\psi(ih,jh,n\dt)$, where $\dt$ is the time step of the numerical method that will be used to deform the initial contour over time.
+\noindent To answer these questions, we consider the level set approach of Malladi et al., described in \cite{malladi95}. There, as tends to be the case for level set approaches in general, the function $\psi$ is represented by storing a discrete grid of approximate values over the domain $U$. The grid is uniformly-spaced, with squares of side $h$ (see Figure~\ref{fig:background-segmentation-levelsets-uniformgrid}). Each grid node has (for each integer value of $n \ge 0$) an associated value $\psi_{ij}^n$, which approximates the value $\psi((ih,jh),n\dt)$, where $\dt$ is the time step of the numerical method that will be used to deform the initial contour over time.
 
-% TODO: fig:background-levelsets-grid
+%---
+\stufigex{height=8cm}{background/background-segmentation-levelsets-uniformgrid.png}{Approximating a function $\psi(\mathbf{x},t)$ with a discrete, uniformly-spaced grid (note that the time superscripts on the grid values are not shown)}{fig:background-segmentation-levelsets-uniformgrid}{p}
+%---
 
-The initial goal is to construct, from a contour specified by the user, the grid of values $\psi_{ij}^0$ approximating the function $\psi(\mathbf{x},0)$. In \cite{malladi95}, this is done by setting $\psi_{ij}^0$ to be the signed distance of the grid node $ij$ from the initial contour (points outside the contour are assigned positive values and those inside are assigned negative ones) -- see Figure~\ref{fig:background-levelsets-initialfunction}.
+The initial goal is to construct, from a contour specified by the user, the grid of values $\psi_{ij}^0$ approximating the function $\psi(\mathbf{x},0)$. In \cite{malladi95}, this is done by setting $\psi_{ij}^0$ to be the signed distance of the grid node $ij$ from the initial contour (points outside the contour are assigned positive values and those inside are assigned negative ones) -- see Figure~\ref{fig:background-segmentation-levelsets-initialfunction}.
 
-% TODO: fig:background-levelsets-initialfunction
+%---
+\stufigex{height=8cm}{background/background-segmentation-levelsets-initialfunction.png}{Generating the initial function from the zero contour specified by the user (in red)}{fig:background-segmentation-levelsets-initialfunction}{p}
+%---
 
 Having constructed the grid for the initial function, the next step is then to define an appropriate numerical method to deform it over time. To do this, we first need a partial differential equation for $\psi$. The appropriate PDE, as derived in \cite{malladi95}, is:
 %

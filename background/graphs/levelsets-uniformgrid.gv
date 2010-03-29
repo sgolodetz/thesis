@@ -1,0 +1,39 @@
+graph
+{
+	node [shape=circle, style=solid, color=black, label=""];
+
+	// Nodes
+	n00 [pos="0,0!", label="&psi;00"];
+	n10 [pos="1,0!", label="&psi;10"];
+	n20 [pos="2,0!", label="&psi;20"];
+	n30 [pos="3,0!", label="&psi;30"];
+
+	n01 [pos="0,1!", label="&psi;01"];
+	n11 [pos="1,1!", label="&psi;11"];
+	n21 [pos="2,1!", label="&psi;21"];
+	n31 [pos="3,1!", label="&psi;31"];
+
+	n02 [pos="0,2!", label="&psi;02"];
+	n12 [pos="1,2!", label="&psi;12"];
+	n22 [pos="2,2!", label="&psi;22"];
+	n32 [pos="3,2!", label="&psi;32"];
+
+	n03 [pos="0,3!", label="&psi;03"];
+	n13 [pos="1,3!", label="&psi;13"];
+	n23 [pos="2,3!", label="&psi;23"];
+	n33 [pos="3,3!", label="&psi;33"];
+
+	// Edges
+	n00 -- n10 [label="h"];
+	n00 -- n01 [label="h"];
+
+	n10 -- n20 -- n30;
+	n01 -- n11 -- n21 -- n31;
+	n02 -- n12 -- n22 -- n32;
+	n03 -- n13 -- n23 -- n33;
+
+	n01 -- n02 -- n03;
+	n10 -- n11 -- n12 -- n13;
+	n20 -- n21 -- n22 -- n23;
+	n30 -- n31 -- n32 -- n33;
+}
