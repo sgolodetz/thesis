@@ -28,17 +28,17 @@ In principle, thresholding segmentation methods are quite simple. The idea is to
 %---
 \begin{stusubfig}{p}
 	\subfigure[The original image]
-	{\includegraphics[height=.4\linewidth]{background/background-segmentation-thresholding-binaryexample-a.png}}%
+	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-binaryexample-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The thresholded image]
-	{\includegraphics[height=.4\linewidth]{background/background-segmentation-thresholding-binaryexample-c.png}}%
+	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-binaryexample-b.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[The image histogram and threshold at grey value $125$]
-	{\includegraphics[width=.8\linewidth, height=.3\linewidth]{todo.png}}%
+	\subfigure[The image histogram and threshold (at grey value $125$)]
+	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-binaryexample-c.png}}%
 \caption{Segmenting the brighter of two adjacent objects in an 8-bit greyscale image using binary thresholding (the objects are easily separated in this case because the distribution of grey values in the image is bimodal)}
 \label{fig:background-segmentation-thresholding-binaryexample}
 \end{stusubfig}
@@ -47,12 +47,12 @@ In principle, thresholding segmentation methods are quite simple. The idea is to
 %---
 \begin{stusubfig}{p}
 	\subfigure[Segmenting Figure~\ref{fig:background-segmentation-thresholding-binaryexample}(a) with a threshold of $175$ leads to undersegmentation]
-	{\includegraphics[height=.4\linewidth]{background/background-segmentation-thresholding-inaccurate-a.png}}%
+	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-inaccurate-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[Conversely, segmenting it with a threshold of $75$ leads to oversegmentation]
-	{\includegraphics[height=.4\linewidth]{background/background-segmentation-thresholding-inaccurate-b.png}}%
+	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-inaccurate-b.png}}%
 \caption{Misplaced thresholds lead to inaccurate segmentations}
 \label{fig:background-segmentation-thresholding-inaccurate}
 \end{stusubfig}
