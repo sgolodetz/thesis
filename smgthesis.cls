@@ -14,6 +14,7 @@
 \RequirePackage{alltt}
 \RequirePackage{amsfonts}
 \RequirePackage{amsthm}
+\RequirePackage{bold-extra}									% not installed by default -- MUST be provided with smgthesis.cls
 \RequirePackage{color}
 \RequirePackage{epigraph}
 \RequirePackage{float}
