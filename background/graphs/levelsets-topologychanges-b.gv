@@ -1,0 +1,64 @@
+graph
+{
+	node [shape=circle, style=solid, color=black, label=""];
+
+	// Nodes
+	n00 [pos="0,0!", label="5"];
+	n01 [pos="0,1!", label="5"];
+	n02 [pos="0,2!", label="5"];
+	n03 [pos="0,3!", label="5"];
+	n04 [pos="0,4!", label="5"];
+
+	n10 [pos="1,0!", label="5"];
+	n11 [pos="1,1!", label="4", color=red];
+	n12 [pos="1,2!", label="4", color=red];
+	n13 [pos="1,3!", label="4", color=red];
+	n14 [pos="1,4!", label="5"];
+
+	n20 [pos="2,0!", label="5"];
+	n21 [pos="2,1!", label="4", color=red];
+	n22 [pos="2,2!", label="3"];
+	n23 [pos="2,3!", label="4", color=red];
+	n24 [pos="2,4!", label="5"];
+
+	n30 [pos="3,0!", label="5"];
+	n31 [pos="3,1!", label="4", color=red];
+	n32 [pos="3,2!", label="4", color=red];
+	n33 [pos="3,3!", label="4", color=red];
+	n34 [pos="3,4!", label="5"];
+
+	n40 [pos="4,0!", label="5"];
+	n41 [pos="4,1!", label="5"];
+	n42 [pos="4,2!", label="4", color=red];
+	n43 [pos="4,3!", label="5"];
+	n44 [pos="4,4!", label="5"];
+
+	n50 [pos="5,0!", label="5"];
+	n51 [pos="5,1!", label="4", color=red];
+	n52 [pos="5,2!", label="4", color=red];
+	n53 [pos="5,3!", label="4", color=red];
+	n54 [pos="5,4!", label="5"];
+
+	n60 [pos="6,0!", label="5"];
+	n61 [pos="6,1!", label="4", color=red];
+	n62 [pos="6,2!", label="3"];
+	n63 [pos="6,3!", label="4", color=red];
+	n64 [pos="6,4!", label="5"];
+
+	n70 [pos="7,0!", label="5"];
+	n71 [pos="7,1!", label="4", color=red];
+	n72 [pos="7,2!", label="4", color=red];
+	n73 [pos="7,3!", label="4", color=red];
+	n74 [pos="7,4!", label="5"];
+
+	n80 [pos="8,0!", label="5"];
+	n81 [pos="8,1!", label="5"];
+	n82 [pos="8,2!", label="5"];
+	n83 [pos="8,3!", label="5"];
+	n84 [pos="8,4!", label="5"];
+
+	// Contours
+	n13 -- n23 -- n33 -- n32 -- n31 -- n21 -- n11 -- n12 -- n13 [color=red];
+	n53 -- n63 -- n73 -- n72 -- n71 -- n61 -- n51 -- n52 -- n53 [color=red];
+	n32 -- n42 -- n52 [color=red];
+}

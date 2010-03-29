@@ -294,7 +294,7 @@ Thus far, we have examined the basic ideas underpinning level sets, but not seen
 The initial goal is to construct, from a contour specified by the user, the grid of values $\psi_{ij}^0$ approximating the function $\psi(\mathbf{x},0)$. In \cite{malladi95}, this is done by setting $\psi_{ij}^0$ to be the signed distance of the grid node $ij$ from the initial contour (points outside the contour are assigned positive values and those inside are assigned negative ones) -- see Figure~\ref{fig:background-segmentation-levelsets-initialfunction}.
 
 %---
-\stufigex{height=10cm}{background/background-segmentation-levelsets-initialfunction.png}{Generating the initial function from the zero contour specified by the user (in red)}{fig:background-segmentation-levelsets-initialfunction}{p}
+\stufigex{height=7cm}{background/background-segmentation-levelsets-initialfunction.png}{Generating the initial function from the zero contour specified by the user (in red)}{fig:background-segmentation-levelsets-initialfunction}{p}
 %---
 
 Having constructed the grid for the initial function, the next step is then to define an appropriate numerical method to deform it over time. To do this, we first need a partial differential equation for $\psi$. The appropriate PDE, as derived in \cite{malladi95}, is:
@@ -332,12 +332,12 @@ Level sets have a number of advantages over snakes. One advantage is that they h
 %---
 \begin{stusubfig}{p}
 	\subfigure[An isosurface divided into two separate components]
-	{\includegraphics[width=.45\linewidth]{background/background-segmentation-levelsets-topologychanges-a.png}}%
+	{\includegraphics[height=6cm]{background/background-segmentation-levelsets-topologychanges-a.png}}%
 	%
-	\hspace{4mm}%
+	\\
 	%
 	\subfigure[Changing a single grid value merges the two components into one]
-	{\includegraphics[width=.45\linewidth]{background/background-segmentation-levelsets-topologychanges-b.png}}%
+	{\includegraphics[height=6cm]{background/background-segmentation-levelsets-topologychanges-b.png}}%
 \caption{Level set approaches seamlessly handle multiple boundaries and changes in topology}
 \label{fig:background-segmentation-levelsets-topologychanges}
 \end{stusubfig}
