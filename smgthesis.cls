@@ -39,6 +39,7 @@
 %%%%%%%%%%%%%%%
 
 \definecolor{cyan}{rgb}{0, 0.75, 0.75}
+\definecolor{darkgreen}{rgb}{0, 0.6, 0}
 \definecolor{gold}{rgb}{0.75, 0.75, 0}
 \definecolor{purple}{rgb}{0.75, 0, 0.75}
 
@@ -120,7 +121,7 @@
 %%% Floats %%%
 %%%%%%%%%%%%%%
 
-% Create a new type of float for listings
+% Create a new type of float (called a stulisting) for listings
 \floatstyle{ruled}
 \newfloat{stulisting}{thp}{lop}[chapter]
 \floatname{stulisting}{Listing}
@@ -211,8 +212,6 @@
 % Setup before using the listings package
 \renewcommand{\lstlistingname}{\textbf{Listing}}
 \renewcommand{\thelstlisting}{\textbf{\arabic{lstlisting}}}
-
-\definecolor{darkgreen}{rgb}{0, 0.6, 0}
 
 \lstdefinelanguage{Pseudocode}{
 morekeywords={break,continue,each,else,for,function,if,not,ref,return,then,var,while},

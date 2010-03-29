@@ -112,7 +112,35 @@ More involved criteria are also possible. One popular approach is that of \emph{
 
 A generic region growing algorithm can be implemented straightforwardly using a queue (see Listing~\ref{code:background-segmentation-regiongrowing-generic}). Starting from a queue containing only the initial seed point, we repeatedly pop the pixel at the front of the queue, consider its non-region neighbours for addition to the region, and push any which satisfy the requisite criteria onto the end of the queue. The process terminates when the queue empties.
 
-% TODO: code:background-segmentation-regiongrowing-generic
+%---
+\begin{stulisting}[p]
+\caption{A Generic Region Growing Algorithm}
+\label{code:background-segmentation-regiongrowing-generic}
+\begin{lstlisting}[style=Default]
+function grow_region
+: (seed : PixelCoords; criterion : PixelCoords $\to$ bool) $\to$ Set<PixelCoords>
+
+	var queue : Queue<PixelCoords>;
+	var result, visited : Set<PixelCoords>;
+
+	// Add the seed point to the queue and mark it as visited.
+	queue.push(seed);
+	visited.insert(seed);
+
+	while not queue.empty()
+		p := queue.pop();
+		result.insert(p);
+
+		// Add neighbours satisfying the similarity criterion to the queue.
+		for each neighbour $\in$ neighbours(p)
+			if not visited.contains(neighbour) then
+				if criterion(neighbour) = true then queue.push(neighbour);
+				visited.insert(neighbour);
+			
+	return result;
+\end{lstlisting}
+\end{stulisting}
+%---
 
 The key policy issues to consider when implementing region growing are how to choose the seed point, how to formulate the criteria specifying which points to add to the region, and how to decide when the process should terminate. For automated segmentation methods, how to choose the seed point is of fundamental importance; semi-automated algorithms can focus exclusively on the latter two problems, relying instead on the user to interactively specify an initial seed.
 
