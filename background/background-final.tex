@@ -4,12 +4,14 @@
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys some of the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the use of partition trees in the imaging domain. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
+In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys some of the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the uses of partition trees, with particular reference to the imaging domain. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
 
 Whilst the segmentation and feature identification problems are theoretically distinct -- in that feature identification involves assigning semantic meaning to parts of an image where segmentation does not -- there is a great deal of overlap between them in practice. For example, the goal of some of the segmentation techniques we will see (e.g.~region growing) is to directly segment a particular feature of interest; in that sense, they are as much feature identification approaches as segmentation ones. For that reason, I have chosen to present the techniques used for both problems together, rather than separately, commenting on the extent to which they address each of the problems where I feel it is appropriate.
 
+The discussion of existing work on partition trees foreshadows the formal definition of partition forests and the presentation of novel algorithms for working with them in Chapter~\ref{chap:ipfs}. Partition forests are a generalization of the partition trees that result from a bottom-up (merging-based) construction process, and the background on other areas where partition trees are applied thus lays the groundwork for assessing the wider usefulness of my algorithms in Chapter~\ref{chap:assessment}.
+
 %---
-\section{Segmentation and Feature Identification Techniques}
+\section{Segmentation and Feature Identification}
 
 \subsection{Overview}
 
@@ -436,12 +438,12 @@ It is sometimes possible to achieve better results by combining a number of diff
 Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{ng06}, Ng et al.\ precede a watershed segmentation of MRI images of the head with a K-means clustering step -- this has the effect of hugely reducing the oversegmentation that the watershed would otherwise produce. It is a method that works particularly well for head segmentation, where the number of clusters is well-known a priori (in this case, the authors note that the types of tissue present tend to be `bone, soft tissue, fat and background'). There are several hybrid segmentation methods in \cite{itk}: in one, the authors combine fuzzy connectedness, Voronoi diagram classification and deformable models; in another, they combine Gibbs priors and deformable models. The details of these techniques are beyond the scope of this dissertation, but an implementation of the methods can be found in the freely-available \emph{Insight Toolkit}.
 
 %---
-\section{Representing Images as Partition Trees}
+\section{Partition Trees}
 \label{sec:background-partitiontrees}
 
-TODO: (i) Brief description of what a partition tree is; (ii) Explain, with suitable references, that they are used in a variety of different situations; (iii) Narrow it down to images and survey the various techniques, noting the key differences between the representations (e.g.~whether or not adjacency information is maintained, etc.); (iv) Explain where partition forests fit into the picture
+TODO: (i) Brief description of what a partition tree is; (ii) Explain, with suitable references, the various situations in which they are used; (iii) Narrow it down to images and survey the various techniques, noting the key differences between the representations (e.g.~whether or not adjacency information is maintained, etc.); (iv) Explain (at a high level) how partition forests fit into the picture
 
 %---
 \section{Chapter Summary}
 
-TODO
+This chapter has given an overview of most of the techniques currently in use for medical image segmentation and provided some important background on the varied uses of partition trees. In Chapter~\ref{chap:methodology}, I will discuss the design of my research in the context of these large bodies of existing work.
