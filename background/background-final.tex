@@ -494,16 +494,68 @@ The binary partitioning process thus far described then becomes part of a recurs
 It is sometimes possible to achieve better results by combining a number of different segmentation methods than it is by using a single method on its own. A striking example of how successful this sort of technique can be seen in the work of Luc Soler et al.\ \cite{soler01}, in which they describe an extensively hybrid technique for automatic segmentation of the liver from spiral CT scans. Their segmentation method first uses thresholding, morphological operators and distance maps to identify the skin, bones, lungs, kidneys and spleen. They next use a clever deformable model approach to embed a reference model of the liver into the image and automatically deform it to the liver contours. Later stages use Gaussian fitting on the image histogram to separate normal liver tissue from blood vessels and lesions (tumours), a result which is further refined by their own analytical methods. The final stage of their method makes use of higher-level medical knowledge to label the hepatic portal vein and segment the liver automatically according to an anatomically-based definition by Couinaud \cite{couinaud57}. The results of this technique are excellent -- see Figure~\ref{fig:background-segmentation-hybrid-soler}.
 
 %---
-\stufigex{height=8cm}{background/background-segmentation-hybrid-soler.png}{An automatic 3D reconstruction of patients from medical images, as performed by the IRCAD surgical planning tools developed using the work of Luc Soler et al.\ (the figure is reproduced from \cite{soler-imvie})}{fig:background-segmentation-hybrid-soler}{p}
+\stufigex{height=8cm}{background/background-segmentation-hybrid-soler.png}{An automatic 3D reconstruction of patients from medical images, as performed by the IRCAD surgical planning tools developed using the work of Luc Soler et al.\ (the figure is reproduced from \cite{soler-imvie})}{fig:background-segmentation-hybrid-soler}{t}
 %---
 
 Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{ng06}, Ng et al.\ precede a watershed segmentation of MRI images of the head with a K-means clustering step -- this has the effect of hugely reducing the oversegmentation that the watershed would otherwise produce. It is a method that works particularly well for head segmentation, where the number of clusters is well-known a priori (in this case, the authors note that the types of tissue present tend to be `bone, soft tissue, fat and background'). There are several hybrid segmentation methods in \cite{itk}: in one, the authors combine fuzzy connectedness, Voronoi diagram classification and deformable models; in another, they combine Gibbs priors and deformable models. The details of these techniques are beyond the scope of this dissertation, but an implementation of the methods can be found in the freely-available \emph{Insight Toolkit}.
+
+\clearpage
 
 %---
 \section{Partition Trees}
 \label{sec:background-partitiontrees}
 
-TODO: (i) Brief description of what a partition tree is; (ii) Explain, with suitable references, the various situations in which they are used; (iii) Narrow it down to images and survey the various techniques, noting the key differences between the representations (e.g.~whether or not adjacency information is maintained, etc.); (iv) Explain (at a high level) how partition forests fit into the picture
+%TODO: (i) Brief description of what a partition tree is; (ii) Explain, with suitable references, the various situations in which they are used; (iii) Narrow it down to images and survey the various techniques, noting the key differences between the representations (e.g.~whether or not adjacency information is maintained, etc.); (iv) Explain (at a high level) how partition forests fit into the picture
+
+\subsection{Overview}
+
+In the most general sense, a partition tree is a tree data structure containing nodes that represent portions of an entity, and satisfying the condition that the sub-entities represented by the children of any node in the tree partition the sub-entity represented by that node -- that is, the child sub-entities together form the parent sub-entity, and none of the child sub-entities mutually overlap. An example of this can be seen in Figure~\ref{fig:background-partitiontrees-example}. (I will henceforth, for reasons of brevity, refer to nodes partitioning each other, rather than referring to the sub-entities they represent.)
+
+%---
+\stufigex{height=8cm}{todo.png}{TODO}{fig:background-partitiontrees-example}{p}
+%---
+
+Partition trees can be either incomplete or complete. An incomplete partition tree is one with an incomplete lowest layer, and a complete one is the opposite. Complete partition trees have the property that the nodes in any given layer form a partition of the entity as a whole. For either type of tree, this is also true of the set of leaf nodes (those nodes without children). It should be noted that every incomplete partition tree has an equivalent complete partition tree. This can be constructed by adding a chain of nodes downwards from every leaf which is not in the lowest layer -- see Figure~\ref{fig:background-partitiontrees-completeness}.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[An incomplete partition tree]
+	{\includegraphics[height=8cm]{todo.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The same tree after making it complete]
+	{\includegraphics[height=8cm]{todo.png}}%
+\caption{Any incomplete partition tree can be converted into a complete one}
+\label{fig:background-partitiontrees-completeness}
+\end{stusubfig}
+%---
+
+There are essentially two ways of constructing partition trees -- top-down or bottom-up. Top-down approaches start with a root node representing the entire entity, and recursively split it until some desired termination criteria are satisfied. Bottom-up approaches, by contrast, start with a partition of the entity into the smallest sub-entities possible -- this becomes the lowest layer of the tree. They then iteratively (a) clone the current highest layer of the tree and (b) merge some of the nodes in it together. The process terminates when the highest layer of the tree contains exactly one node (the root). Note that bottom-up approaches naturally produce complete partition trees. Whilst top-down approaches can also theoretically produce complete partition trees, they tend not to in practice.
+
+\enlargethispage*{\baselineskip}
+
+Since representing entities hierarchically is a fundamental way in which we, as humans, seek to manage the inherent complexity of the world around us, partition tree usage is ubiquitous in computer science. The varied contexts in which partition trees are used, to name but a few, include hierarchical hair modelling \cite{?}, hierarchical pathfinding \cite{kim98}, image representation \cite{?}, team organisation \cite{?} and world representation \cite{?}. Each of these is now discussed in more detail.
+
+\subsection{Hierarchical Hair Modelling}
+
+TODO
+
+\subsection{Hierarchical Pathfinding}
+
+TODO
+
+\subsection{Image Representation}
+
+TODO
+
+\subsection{Team Organisation}
+
+TODO
+
+\subsection{World Representation}
+
+TODO
 
 %---
 \section{Chapter Summary}
