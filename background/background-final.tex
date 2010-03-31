@@ -543,7 +543,23 @@ As is well-known among computer scientists, the basic pathfinding problem over g
 
 % TODO: fig:background-partitiontrees-pathfinding-transitiontable
 
-Hierarchical pathfinding is an approach designed to minimise these prohibitive storage costs. TODO
+Hierarchical pathfinding is an approach designed to reduce these prohibitive storage costs. The essence of the idea is to partition the graph into clusters. Pathfinding schemes can then be devised that still produce optimal paths, but only store the substantially smaller transition tables for paths within each cluster and a transition table for an inter-cluster `super-graph' -- for an illustration of this sort of scheme, see Figure~\ref{fig:background-partitiontrees-pathfinding-kim}.
+
+% TODO: fig:background-partitiontrees-pathfinding-kim
+
+To find an optimal path between two nodes using this scheme, we observe that such a route can either (a) go from the source node to a boundary node of the source cluster, then (via the super-graph) to a boundary node of the destination cluster, then to the destination node, or (b) go directly from the source node to the destination node if they are in the same cluster. (Note that the shortest path between two nodes in the same cluster may actually go via the super-graph, so we have to consider both options in such a case.) An optimal intra-cluster route (where applicable) can simply be looked up in the cluster's transition table, but to find an optimal inter-cluster route is slightly more involved. To do so, we find three sets of optimal sub-paths:
+%
+\begin{enumerate}
+
+\item $S = \{s_i\}$, the set of optimal paths from the source node to a boundary node of the source cluster. These can be looked up using the source cluster's transition table.
+\item $P = \{p_j\}$, the set of optimal paths from a boundary node of the source cluster to a boundary node of the destination cluster. These can be looked up using the super-graph's transition table.
+\item $D = \{d_k\}$, the set of optimal paths from a boundary node of the destination cluster to the boundary node. These can be looked up using the destination cluster's transition table.
+
+\end{enumerate}
+%
+We then consider all possible paths $s_i \mbox{++} p_j \mbox{++} d_k$ (where $\mbox{++}$ represents path concatenation) and pick one with the lowest cost. This is minimised against any possible intra-cluster route where necessary to give a path that is optimal overall.
+
+Thus far, we have only considered a pathfinding hierarchy with two levels TODO
 
 \subsection{Image Representation}
 
