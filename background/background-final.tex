@@ -4,11 +4,13 @@
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys some of the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the uses of partition trees, with particular reference to the imaging domain. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
+In Chapter~\ref{chap:introduction}, the medical image segmentation and feature identification problems were introduced, and my thesis was formally stated. This chapter surveys some of the wide variety of segmentation and feature identification techniques currently in use in the field, with the intention of providing the background necessary to place the specific techniques I used for my own work in context. It also surveys existing work on the uses of partition hierarchies (trees and forests), with particular reference to the imaging domain. This background lays the foundation for Chapter~\ref{chap:methodology}, in which the research approach I chose is discussed in the context of the overall goals of my doctoral work.
 
 Whilst the segmentation and feature identification problems are theoretically distinct -- in that feature identification involves assigning semantic meaning to parts of an image where segmentation does not -- there is a great deal of overlap between them in practice. For example, the goal of some of the segmentation techniques we will see (e.g.~region growing) is to directly segment a particular feature of interest; in that sense, they are as much feature identification approaches as segmentation ones. For that reason, I have chosen to present the techniques used for both problems together, rather than separately, commenting on the extent to which they address each of the problems where I feel it is appropriate.
 
-The discussion of existing work on partition trees foreshadows the formal definition of partition forests and the presentation of novel algorithms for working with them in Chapter~\ref{chap:ipfs}. Partition forests are a generalization of the partition trees that result from a bottom-up (merging-based) construction process, and the background on other areas where partition trees are applied thus lays the groundwork for assessing the wider usefulness of my algorithms in Chapter~\ref{chap:assessment}.
+\enlargethispage*{\baselineskip}
+
+The discussion of existing work on partition hierarchies foreshadows the formal definition of partition forests and the presentation of novel algorithms for working with them in Chapter~\ref{chap:ipfs}. Partition forests are a generalization of the partition trees that result from a bottom-up (merging-based) construction process, and the background on other areas where partition hierarchies are applied thus lays the groundwork for assessing the wider usefulness of my algorithms in Chapter~\ref{chap:assessment}.
 
 %---
 \section{Segmentation and Feature Identification}
@@ -188,7 +190,7 @@ There are two main approaches in the literature for dealing with this problem, n
 
 In situations where neither is the case, however, the alternative approach of hierarchical segmentation can be used. As one might expect, the general idea here is to take the oversegmented result of running the watershed transform on an image, and perform several iterations of region merging to produce a hierarchy of gradually coarser partitions of the original image. As will be illustrated in far more detail in Chapter~\ref{chap:segmentation}, this is exactly the sort of approach taken by the waterfall transform \cite{beucher90,marcotegui05}: what is unique about the waterfall, however, is that each of its iterations in which it merges regions together is itself a watershed transform.
 
-As will be discussed in Chapter~\ref{chap:methodology}, the hierarchical approach to watershed segmentation is interesting for a couple of reasons: on the one hand, it produces, without requiring a great deal of manual fine-tuning, segmentations which, whilst not perfect, are often quite reasonable to a first approximation; on the other hand, the hierarchy of partitions of the image it produces can be turned into a tree structure (see \S\ref{sec:background-partitiontrees}) which is amenable to further editing, allowing any flaws in the initial segmentation to be corrected in an intuitive manner. These two qualities make this approach eminently suitable in situations where automated solutions are desirable but interactive control remains important.
+As will be discussed in Chapter~\ref{chap:methodology}, the hierarchical approach to watershed segmentation is interesting for a couple of reasons: on the one hand, it produces, without requiring a great deal of manual fine-tuning, segmentations which, whilst not perfect, are often quite reasonable to a first approximation; on the other hand, the hierarchy of partitions of the image it produces can be turned into a tree structure (see \S\ref{sec:background-partitionhierarchies}) which is amenable to further editing, allowing any flaws in the initial segmentation to be corrected in an intuitive manner. These two qualities make this approach eminently suitable in situations where automated solutions are desirable but interactive control remains important.
 
 \subsection{Deformable Models}
 
@@ -470,6 +472,7 @@ where $\epsilon$ is a real number between $0$ and $1$.
 \noindent Once again, as with Lloyd's algorithm for K-means, this is not guaranteed to produce the global optimum.
 
 \subsection{Graph Partitioning}
+\label{subsec:graphpartitioning}
 
 Graph partitioning segmentation algorithms work by representing an object to be segmented as a weighted, undirected graph. In the case of images, the nodes of this graph would be the pixels of the image, and each of its edges would connect a pair of adjacent pixels and be weighted according to some measure of the dissimilarity between those pixels (one possible definition, based on both the pixel values and their spatial location in the image, appears in \cite{shi00}). The idea is then to find a good way to partition the nodes of the graph into pieces. For instance, if $G = (V,E,w)$ is a graph with vertex set $V$, edge set $E$ and weight function $w$, the \emph{minimum cut} approach seeks to partition $V$ into two disjoint sets $A$ and $B$ such as to minimise:
 %
@@ -502,20 +505,20 @@ Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{n
 \clearpage
 
 %---
-\section{Partition Trees}
-\label{sec:background-partitiontrees}
+\section{Partition Hierarchies}
+\label{sec:background-partitionhierarchies}
 
 %TODO: (i) Brief description of what a partition tree is; (ii) Explain, with suitable references, the various situations in which they are used; (iii) Narrow it down to images and survey the various techniques, noting the key differences between the representations (e.g.~whether or not adjacency information is maintained, etc.); (iv) Explain (at a high level) how partition forests fit into the picture
 
 \subsection{Overview}
 
-A partition tree is a tree-based data structure containing nodes that represent portions of an entity, and satisfying the condition that the sub-entities represented by the children of any node in the tree partition the sub-entity represented by that node -- that is, the child sub-entities together form the parent sub-entity, and none of the child sub-entities mutually overlap. An example of this can be seen in Figure~\ref{fig:background-partitiontrees-example}. (I will henceforth, for reasons of brevity, refer to nodes partitioning each other, rather than referring to the sub-entities they represent.)
+Partition hierarchies comprise two related data structures -- partition trees and partition forests. A \emph{partition tree} is a tree-based data structure containing nodes that represent portions of an entity, and satisfying the condition that the sub-entities represented by the children of any node in the tree partition the sub-entity represented by that node -- that is, the child sub-entities together form the parent sub-entity, and none of the child sub-entities mutually overlap. (I will henceforth, for reasons of brevity, refer to nodes partitioning each other, rather than referring to the sub-entities they represent.) An example of a partition tree can be seen in Figure~\ref{fig:background-partitionhierarchies-treeexample}. Partition forests will be discussed below (and in Chapter~\ref{chap:ipfs}).
 
 %---
-\stufigex{height=8cm}{todo.png}{TODO}{fig:background-partitiontrees-example}{p}
+\stufigex{height=8cm}{todo.png}{TODO}{fig:background-partitionhierarchies-treeexample}{p}
 %---
 
-Partition trees can be either incomplete or complete. An incomplete partition tree is one with an incomplete lowest layer, and a complete one is the opposite. Complete partition trees have the property that the nodes in any given layer form a partition of the entity as a whole. For either type of tree, this is also true of the set of leaf nodes (those nodes without children). It should be noted that every incomplete partition tree has an equivalent complete partition tree. This can be constructed by adding a chain of nodes downwards from every leaf which is not in the lowest layer -- see Figure~\ref{fig:background-partitiontrees-completeness}.
+Partition trees can be either incomplete or complete. An incomplete partition tree is one with an incomplete lowest layer, and a complete one is the opposite. Complete partition trees have the property that the nodes in any given layer form a partition of the entity as a whole. For either type of tree, this is also true of the set of leaf nodes (those nodes without children). It should be noted that every incomplete partition tree has an equivalent complete partition tree. This can be constructed by adding a chain of nodes downwards from every leaf which is not in the lowest layer -- see Figure~\ref{fig:background-partitionhierarchies-completeness}.
 
 %---
 \begin{stusubfig}{p}
@@ -527,15 +530,13 @@ Partition trees can be either incomplete or complete. An incomplete partition tr
 	\subfigure[The same tree after making it complete]
 	{\includegraphics[height=8cm]{todo.png}}%
 \caption{Any incomplete partition tree can be converted into a complete one}
-\label{fig:background-partitiontrees-completeness}
+\label{fig:background-partitionhierarchies-completeness}
 \end{stusubfig}
 %---
 
-There are essentially two ways of constructing partition trees -- top-down or bottom-up. Top-down approaches start with a root node representing the entire entity, and recursively split it until some desired termination criteria are satisfied. Bottom-up approaches, by contrast, start with a partition of the entity into the smallest sub-entities possible -- this becomes the lowest layer of the tree. They then iteratively (a) clone the current highest layer of the tree and (b) merge some of the nodes in it together. The process terminates when the highest layer of the tree contains exactly one node (the root). Note that bottom-up approaches naturally produce complete partition trees. Whilst top-down approaches can also theoretically produce complete partition trees, they tend not to in practice.
+There are essentially two ways of constructing partition trees -- top-down or bottom-up. Top-down approaches start with a root node representing the entire entity, and recursively split it until some desired termination criteria are satisfied. Bottom-up approaches, by contrast, start with a partition of the entity into the smallest sub-entities possible -- this becomes the lowest layer of the tree. They then iteratively (a) clone the current highest layer of the tree and (b) merge some of the nodes in it together. The process terminates when the highest layer of the tree contains exactly one node (the root). Note that bottom-up approaches naturally produce complete partition trees. Whilst top-down approaches can also theoretically produce complete partition trees, they tend not to in practice. When bottom-up approaches are terminated early (i.e.~whilst the highest layer still contains more than one node), they construct not a partition tree, with a single root, but a forest of such trees (which can naturally be called a \emph{partition forest}). A detailed discussion of this derived data structure can be found in Chapter~\ref{chap:ipfs}.
 
-\enlargethispage*{\baselineskip}
-
-Since representing entities hierarchically is a fundamental way in which we, as humans, seek to manage the inherent complexity of the world around us, partition tree usage is ubiquitous in computer science. The varied contexts in which partition trees can be used, to name but a few, include hierarchical pathfinding \cite{kim98}, image representation \cite{al-haj08,andrade03,salembier00}, team organisation \cite{?} and world representation \cite{finkel74,fuchs80}. Each of these is now discussed in more detail.
+Since representing entities hierarchically is a fundamental way in which we, as humans, seek to manage the inherent complexity of the world around us, partition hierarchy usage is ubiquitous in computer science. The varied contexts in which partition hierarchies can be used, to name but a few, include hierarchical pathfinding \cite{kim98}, image representation \cite{al-haj08,andrade03,salembier00}, team organisation \cite{?} and world representation \cite{finkel74,fuchs80}. Each of these is now discussed in more detail.
 
 \subsection{Hierarchical Pathfinding}
 
@@ -543,7 +544,7 @@ As is well-known among computer scientists, the basic pathfinding problem over g
 
 % TODO: fig:background-partitiontrees-pathfinding-transitiontable
 
-Hierarchical pathfinding is an approach designed to reduce these prohibitive storage costs. The essence of the idea is to partition the graph into clusters. Pathfinding schemes can then be devised that still produce optimal paths, but only store the substantially smaller transition tables for paths within each cluster and a transition table for an inter-cluster `super-graph' -- for an illustration of this sort of scheme, see Figure~\ref{fig:background-partitiontrees-pathfinding-kim}.
+Hierarchical pathfinding is an approach designed to reduce these prohibitive storage costs. The essence of the idea is to partition the graph into clusters. This partitioning of the graph into clusters creates a two-layer partition hierarchy (in this case a partition forest) of the graph nodes. Pathfinding schemes can then be devised that still produce optimal paths, but only store the substantially smaller transition tables for paths within each cluster and a transition table for an inter-cluster `super-graph' -- for an illustration of this sort of scheme, see Figure~\ref{fig:background-partitiontrees-pathfinding-kim}. The kind of storage savings that can be expected from this sort of approach are quantified by Dickheiser in \cite{dickheiser04}.
 
 % TODO: fig:background-partitiontrees-pathfinding-kim
 
@@ -559,7 +560,7 @@ To find an optimal path between two nodes using this scheme, we observe that suc
 %
 We then consider all possible paths $s_i \mbox{++} p_j \mbox{++} d_k$ (where $\mbox{++}$ represents path concatenation) and pick one with the lowest cost. This is minimised against any possible intra-cluster route where necessary to give a path that is optimal overall.
 
-Thus far, we have only considered a pathfinding hierarchy with two levels TODO
+Thus far, we have only considered a pathfinding hierarchy with two layers, but the scheme can easily be extended to allow more layers if e.g.~the transition tables for the individual clusters are still considered too memory-intensive. The easiest way to do this is to treat each individual cluster as a graph in its own right and partition it into pieces (a top-down approach), although bottom-up approaches are also possible (one such approach, referred to in \cite{kim98}, can be found in \cite{jing96}). Actually constructing the partitions of individual graphs automatically is the problem known as graph partitioning or graph clustering (see e.g.~\cite{huang96,jing98}, or indeed \S\ref{subsec:graphpartitioning}). In certain domains (such as the computer games industry), the partitions may actually be constructed manually to gain finer control over the end result \cite{dickheiser04}. In either case, however, it is helpful to be able to edit the partition hierarchy interactively to try and minimise the amount of memory required to store the transition tables. This can be facilitated by the partition forest algorithms I will describe in Chapter~\ref{chap:ipfs}.
 
 \subsection{Image Representation}
 
