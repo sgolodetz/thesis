@@ -23,6 +23,7 @@
 \RequirePackage{latexsym}										% include extra symbols like \Box and \sqsubset
 \RequirePackage{listings}
 \RequirePackage{makeidx} \makeindex
+\RequirePackage{multirow}
 \RequirePackage{setspace}
 \RequirePackage{subfigure}
 %\RequirePackage{times}

@@ -543,13 +543,36 @@ Since representing entities hierarchically is a fundamental way in which we, as 
 As is well-known among computer scientists, the basic pathfinding problem over graphs, that of finding the shortest route from one node to another in a weighted graph, can in principle be `solved' using common algorithms such as Dijkstra's or, more usually, A* \cite{aima}. However, in domains with hard real-time constraints (such as AI for computer games \cite{dickheiser04,vandersterren04}, in which it is often necessary for large numbers of pathfinding queries to be resolved in an extremely short space of time, or traffic guidance systems \cite{jing96,jung96,kim98}, where drivers need real-time route updates to help them avoid congestion), pathfinding using these algorithms can take an unacceptably long time. An alternative, if the graph is static, is to precompute the best paths between all pairs of nodes in the graph offline and store them in a transition table (see Figure~\ref{fig:background-partitionhierarchies-pathfinding-transitiontable}). However, this rapidly becomes impractical for even moderately-sized graphs, as it requires a quadratic amount of storage.
 
 %---
-\stufigex{width=16cm, height=8cm}{todo.png}{A graph and its corresponding transition table -- each table entry $t_{sd}$ stores the node after $s$ on the optimal path between $s$ and $d$}{fig:background-partitionhierarchies-pathfinding-transitiontable}{p}
+\begin{stusubfig}{p}
+	\subfigure[]
+	{\includegraphics[height=8cm]{background/background-partitionhierarchies-pathfinding-transitiontable-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{
+	\raisebox{1cm}{\begin{tabular}[b]{cc|cccccc}
+	&& \multicolumn{6}{c}{Destination} \\
+	&& A & B & C & D & E & F \\
+	\hline
+	\multirow{6}{*}{Source}
+	& A  & $\times$ & B & B & B & B & B \\
+	& B  & A & $\times$ & C & C & C & C \\
+	& C  & B & B & $\times$ & D & D & D \\
+	& D  & C & C & C & $\times$ & E & F \\
+	& E  & D & D & D & D & $\times$ & F \\
+	& F  & D & D & D & D & E & $\times$
+	\end{tabular}}
+	}%
+\caption{A graph and its corresponding transition table -- each table entry $t_{SD}$ stores the node after $S$ on the optimal path between $S$ and $D$}
+\label{fig:background-partitionhierarchies-pathfinding-transitiontable}
+\end{stusubfig}
 %---
 
 Hierarchical pathfinding is an approach designed to reduce these prohibitive storage costs. The essence of the idea is to partition the graph into clusters. This partitioning of the graph into clusters creates a two-layer partition hierarchy (in this case a partition forest) of the graph nodes. Pathfinding schemes can then be devised that still produce optimal paths, but only store the substantially smaller transition tables for paths within each cluster and a transition table for an inter-cluster `super-graph' -- for an illustration of this sort of scheme, see Figure~\ref{fig:background-partitionhierarchies-pathfinding-kim}. The kind of storage savings that can be expected from this sort of approach are quantified by Dickheiser in \cite{dickheiser04}.
 
 %---
-\stufigex{height=12cm}{background/background-partitionhierarchies-pathfinding-kim.png}{Partitioning a large graph into clusters allows us to only store transition tables for each cluster (b) and the super-graph (c), rather than a transition table for the entire graph. When finding paths, all the necessary information is contained in the transition tables for the source cluster, the destination cluster and the super-graph (d). (The figure is reproduced from Kim et al.\ \cite{kim98}.)}{fig:background-partitionhierarchies-pathfinding-kim}{p}
+\stufigex{height=11cm}{background/background-partitionhierarchies-pathfinding-kim.png}{Partitioning a large graph into clusters allows us to only store transition tables for each cluster (b) and the super-graph (c), rather than a transition table for the entire graph. When finding paths, all the necessary information is contained in the transition tables for the source cluster, the destination cluster and the super-graph (d). (The figure is reproduced from Kim et al.\ \cite{kim98}.)}{fig:background-partitionhierarchies-pathfinding-kim}{p}
 %---
 
 To find an optimal path between two nodes using this scheme, we observe that such a route can either (a) go from the source node to a boundary node of the source cluster, then (via the super-graph) to a boundary node of the destination cluster, then to the destination node, or (b) go directly from the source node to the destination node if they are in the same cluster. (Note that the shortest path between two nodes in the same cluster may actually go via the super-graph, so we have to consider both options in such a case.) An optimal intra-cluster route (where applicable) can simply be looked up in the cluster's transition table, but to find an optimal inter-cluster route is slightly more involved. To do so, we find three sets of optimal sub-paths:

@@ -1,0 +1,15 @@
+graph
+{
+	overlap=scale;
+
+	node [shape=circle];
+	edge [fontsize=10, fontcolor=red];
+
+	A -- B [label=1];
+	A -- C [label=3];
+	B -- C [label=1];
+	C -- D [label=4];
+	D -- E [label=2];
+	D -- F [label=2];
+	E -- F [label=1];
+}
