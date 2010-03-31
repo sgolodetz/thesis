@@ -375,7 +375,7 @@ In other words, the probability of the correct segmentation result for a given v
 
 \subsubsection{Neural Network Techniques}
 
-Neural networks (NNs) can be used to segment images in a number of ways. A simple NN technique can be found in \cite{tsai94}, where Tsai and Tanahashi use a feed-forward network to classify each pixel into one of three classes (liver, boundary or non-liver) according to the grey-level histogram of the 7x7 region centred on the pixel. (In practice, they use a histogram with 16 grey levels instead of 256, to avoid a proliferation of input nodes in the NN.) The schematic of how this works (borrowed from their paper) is shown in Figure~\ref{fig:background-segmentation-neuralnets-tsai}. The NN is initially trained by picking a suitable image from the middle of the volume and marking a significant number of training regions for each class. The well-known back-propagation algorithm for NNs \cite{aima-backprop} is used to update the weights on the network arcs accordingly.
+Neural networks (NNs) can be used to segment images in a number of ways. A simple NN technique can be found in \cite{tsai94}, where Tsai and Tanahashi use a feed-forward network to classify each pixel into one of three classes (liver, boundary or non-liver) according to the grey-level histogram of the 7x7 region centred on the pixel. (In practice, they use a histogram with 16 grey levels instead of 256, to avoid a proliferation of input nodes in the NN.) The schematic of how this works (borrowed from their paper) is shown in Figure~\ref{fig:background-segmentation-neuralnets-tsai}. The NN is initially trained by picking a suitable image from the middle of the volume and marking a significant number of training regions for each class. The well-known back-propagation algorithm for NNs \cite{aima} is used to update the weights on the network arcs accordingly.
 
 %---
 \stufigex{height=20cm}{background/background-segmentation-neuralnets-tsai.png}{Schematic diagram of the neural-network-based boundary detection method used in \cite{tsai94} (reproduced from the paper in question)}{fig:background-segmentation-neuralnets-tsai}{p}
@@ -509,7 +509,7 @@ Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{n
 
 \subsection{Overview}
 
-In the most general sense, a partition tree is a tree data structure containing nodes that represent portions of an entity, and satisfying the condition that the sub-entities represented by the children of any node in the tree partition the sub-entity represented by that node -- that is, the child sub-entities together form the parent sub-entity, and none of the child sub-entities mutually overlap. An example of this can be seen in Figure~\ref{fig:background-partitiontrees-example}. (I will henceforth, for reasons of brevity, refer to nodes partitioning each other, rather than referring to the sub-entities they represent.)
+A partition tree is a tree-based data structure containing nodes that represent portions of an entity, and satisfying the condition that the sub-entities represented by the children of any node in the tree partition the sub-entity represented by that node -- that is, the child sub-entities together form the parent sub-entity, and none of the child sub-entities mutually overlap. An example of this can be seen in Figure~\ref{fig:background-partitiontrees-example}. (I will henceforth, for reasons of brevity, refer to nodes partitioning each other, rather than referring to the sub-entities they represent.)
 
 %---
 \stufigex{height=8cm}{todo.png}{TODO}{fig:background-partitiontrees-example}{p}
@@ -535,15 +535,15 @@ There are essentially two ways of constructing partition trees -- top-down or bo
 
 \enlargethispage*{\baselineskip}
 
-Since representing entities hierarchically is a fundamental way in which we, as humans, seek to manage the inherent complexity of the world around us, partition tree usage is ubiquitous in computer science. The varied contexts in which partition trees are used, to name but a few, include hierarchical hair modelling \cite{bertails03,ward03}, hierarchical pathfinding \cite{kim98}, image representation \cite{al-haj08,andrade03,salembier00}, team organisation \cite{?} and world representation \cite{?}. Each of these is now discussed in more detail.
-
-\subsection{Hierarchical Hair Modelling}
-
-TODO
+Since representing entities hierarchically is a fundamental way in which we, as humans, seek to manage the inherent complexity of the world around us, partition tree usage is ubiquitous in computer science. The varied contexts in which partition trees can be used, to name but a few, include hierarchical pathfinding \cite{kim98}, image representation \cite{al-haj08,andrade03,salembier00}, team organisation \cite{?} and world representation \cite{finkel74,fuchs80}. Each of these is now discussed in more detail.
 
 \subsection{Hierarchical Pathfinding}
 
-TODO
+As is well-known among computer scientists, the basic pathfinding problem over graphs, that of finding the shortest route from one node to another in a weighted graph, can in principle be `solved' using common algorithms such as Dijkstra's or, more usually, A* \cite{aima}. However, in domains with hard real-time constraints (such as AI for computer games \cite{dickheiser04,vandersterren04}, in which it is often necessary for large numbers of pathfinding queries to be resolved in an extremely short space of time, or traffic guidance systems \cite{jing96,jung96,kim98}, where drivers need real-time route updates to help them avoid congestion), pathfinding using these algorithms can take an unacceptably long time. An alternative, if the graph is static, is to precompute the best paths between all pairs of nodes in the graph offline and store them in a transition table (see Figure~\ref{fig:background-partitiontrees-pathfinding-transitiontable}). However, this rapidly becomes impractical for even moderately-sized graphs, as it requires a quadratic amount of storage.
+
+% TODO: fig:background-partitiontrees-pathfinding-transitiontable
+
+Hierarchical pathfinding is an approach designed to minimise these prohibitive storage costs. TODO
 
 \subsection{Image Representation}
 
