@@ -54,6 +54,7 @@
 % Define a way to specify a single, bulleted item without having to manually create an itemize environment
 \newcommand{\singleitem}[2]
 {
+\vspace{-1mm}
 \begin{itemize}[leftmargin=*, nolistsep]
 \setlength{\parskip}{0pt}
 \item[#1] \nohyphens{#2}

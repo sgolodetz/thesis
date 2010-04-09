@@ -19,13 +19,32 @@ Segmentation and feature identification, then, are key problems that must be tac
 
 These two considerations of automation and supervision have proved key to the design of my research. On the one hand, in the context of segmenting an image volume consisting of a large number of slices, it is clearly undesirable to require the end user (e.g.~a radiologist with a busy schedule) to interact substantively with every slice. Segmenting an entire image series by hand can easily take several hours: some degree of automation is therefore extremely desirable. On the other hand, because automated segmentation algorithms will never be 100\% accurate, and because clinicians naturally need some degree of certainty about the results when they will affect real people, it is crucial that they retain the ability to view and edit the results of any automated algorithms used. A system whose output cannot be edited to correct mistakes is of little to no use in a clinical setting.
 
-The goal I therefore adopted for my segmentation and feature identification work was a compromise: to devise an approach that was as automated as possible, to reduce the interactivity burden on the user, whilst simultaneously allowing (but not requiring) as much interaction as possible, to allow the user to correct any errors in the results. This principle has fundamentally affected the methods I have chosen, as described in the next section.
+The goal I therefore adopted for my segmentation and feature identification work was a compromise: to devise an approach that was as automated as possible, to reduce the interactivity burden on the user, whilst simultaneously allowing (but not requiring) as much interaction as possible, to allow the user to correct any errors in the results. This principle fundamentally affected the methods I chose, as described in the next section.
 
 %---
 \section{Methods}
 
-TODO
+As discussed in detail in Chapter~\ref{chap:background}, there are a wide variety of image segmentation and feature identification methods currently used. Having compared (see Figure~\ref{fig:methodology-methods-comparison}) the relative advantages and disadvantages of a number of methods, however, I decided that a segmentation approach based on the watershed and waterfall transforms was the most appropriate choice for my research, as it has a number of useful properties:
+%
+\begin{enumerate}
 
+\item It can be made to produce a reasonable (if not perfect) initial segmentation of an image virtually automatically, without any requirement to specify e.g.~seed points (region growing), markers (watershed from markers), initial contours (snakes and level sets) or other parameters.
+
+\item It produces contiguous regions. Region contiguity is desirable because the objects of interest in an image tend to be contiguous (or, at worst, split into a few pieces). Thresholding generally produces regions which are neither contiguous nor hole-free, as do clustering techniques.
+
+\item It provides a mechanism for the user to edit the initial segmentation, as its output can be used to construct a partition hierarchy that can be edited using the algorithms I will present in Chapter~\ref{chap:ipfs}. By contrast, it is unclear how to facilitate editing for a number of other techniques such as thresholding, watershed from markers, clustering, normalized cuts or region growing over pixels (although, as we will see later, editing the results of region growing over nodes in an adjacency graph is more possible).
+
+\item It handles unusual cases well because -- unlike, for example, atlas-based and neural network methods -- it does not rely on specific features being in their expected places in an image. Moreover, it does not have the requirements of those methods for large amounts of training data to be available.
+
+\item It can be easily extended to work with 3D images (unlike snakes).
+
+\end{enumerate}
+%
+The watershed and waterfall transforms, and the way in which I used them to construct a partition hierarchy, are described in Chapter~\ref{chap:segmentation}. To actually identify features within the hierarchy, I used two separate approaches, both of which are discussed in more detail in Chapter~\ref{chap:featureid}. For distinctive features such as ribs, I simply applied a Bayesian classifier to each region in the hierarchy. This was appropriate because each rib generally corresponded directly to a very small number (usually $1$ or $2$) of regions in the hierarchy.
+
+For other features, I developed a more sophisticated region growing approach that works on the adjacency graphs of the hierarchy. Region growing was an appropriate technique in this case because the disadvantages listed for it in Figure~\ref{fig:methodology-methods-comparison} were less applicable here. Firstly, seed regions in the hierarchy were relatively easy to generate, as a result of the large number of properties associated with each region on which such a decision could be based. Secondly, the features being identified (e.g.~the spine and kidneys) were relatively homogeneous in the image, so the results produced tended not to contain an excessive number of holes. Finally, my method produced as its result the selection of a manageable number of nodes in the partition hierarchy, which could be easily edited using the hierarchy algorithms presented in Chapter~\ref{chap:ipfs}.
+
+%---
 \begin{figure}[p]
 \begin{center}
 \footnotesize
@@ -55,8 +74,8 @@ TODO
 	\textbf{Watershed and Waterfall}
 	& \singleitem{+}{Effectively automatic (although pre-processing and windowing require parameters)} & \singleitem{--}{Good initial segmentation reliant on being able to establish a correspondence between features of interest and catchment basins} \\
 	& \singleitem{+}{Regions contiguous, no holes} \\
-	& \singleitem{+}{Segments the entire image, rather than just an individual object (useful if trying to find lots of different features)} \\
 	& \singleitem{+}{Hierarchical, so can be used to construct a tree/forest, which can be edited later} \\
+	& \singleitem{+}{Handles unusual cases well} \\
 	& \singleitem{+}{Works in either 2D or 3D}
 	\\
 	\hline
@@ -72,27 +91,29 @@ TODO
 	\\
 	\hline
 	\textbf{Atlas-Based}
-	& & \singleitem{--}{Atlas construction requires large amounts of data} \\
-	& & \singleitem{--}{Doesn't handle unusual cases well}
+	& \singleitem{+}{Aids decision-making when the image is unclear} & \singleitem{--}{Construction requires large amounts of data} \\
+	& \singleitem{+}{Works in either 2D or 3D} & \singleitem{--}{Doesn't handle unusual cases well}
 	\\
 	\hline
 	\textbf{Neural Nets}
-	& & \singleitem{--}{Workings tend to be opaque} \\
-	& & \singleitem{--}{Requires large amounts of training data} \\
+	& \singleitem{+}{Aids decision-making when the image is unclear} & \singleitem{--}{Workings tend to be opaque} \\
+	& \singleitem{+}{Works in either 2D or 3D} & \singleitem{--}{Requires large amounts of training data} \\
 	& & \singleitem{--}{Doesn't handle unusual cases well}
 	\\
 	\hline
 	\textbf{Clustering}
-	& & \singleitem{--}{More appropriate when the number of clusters is known in advance (e.g.~for brain images)}
+	& \singleitem{+}{Works in either 2D or 3D} & \singleitem{--}{More appropriate when the number of clusters is known in advance (e.g.~for brain images)}
 	\\
 	\hline
 	\textbf{Normalized Cuts}
-	& \singleitem{+}{Good for low-contrast images} & \singleitem{--}{Biased towards even partitions}
+	& \singleitem{+}{Good for low-contrast images} & \singleitem{--}{Biased towards even partitions} \\
+	& \singleitem{+}{Works in either 2D or 3D}
 \end{tabular}
 \end{center}
-\caption{A comparison of the segmentation methods available, with reference to my goals}
+\caption{A comparison of available segmentation methods}
 \label{fig:methodology-methods-comparison}
 \end{figure}
+%---
 
 %---
 \section{Chapter Summary}
