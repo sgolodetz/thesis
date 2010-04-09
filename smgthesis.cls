@@ -22,7 +22,7 @@
 \RequirePackage{graphicx}
 %\RequirePackage[draft]{graphicx}
 
-% Both underscore and hyphenat define a BreakableUnderscore command -- this restores one from underscore to prevent problems.
+% Both underscore and hyphenat define a BreakableUnderscore command -- this restores the one from underscore to prevent problems.
 \RequirePackage{savesym}
 \RequirePackage{underscore}
 \savesymbol{BreakableUnderscore}
