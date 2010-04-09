@@ -1,0 +1,82 @@
+Thresholding
+
++ Simple (at least conceptually)
++ Techniques exist for automatic threshold generation in some cases
++ Translates easily into 3D
+- Produces non-contiguous results
+- Appropriate thresholds may not exist when grey value distributions of different features overlap
+- Not clear how to facilitate editing of imperfect results
+
+Region Growing
+
++ Simple, easy to implement
++ Results contiguous
++ Translates easily into 3D
+- Requires seed point generation -- can be tricky to automate
+- Results may still have holes
+- Not clear how to facilitate editing of imperfect results for region growing over graphs whose nodes represent something small (e.g. a pixel)
+
+Watershed from Markers
+
++ Regions contiguous, no holes
++ Segments the entire image, rather than just an individual object -- useful if you're trying to find lots of different features
++ Divides the image into a customisable number of regions
++ Translates easily into 3D
+- Trickier to implement than simpler methods
+- Segmentation can take longer than with simpler methods
+- Requires marker specification -- tricky to automate in general
+- Not clear how to facilitate editing of imperfect results
+
+Watershed/Waterfall
+
++ Regions contiguous, no holes
++ Effectively automatic, although pre-processing and windowing require parameters
++ Segments the entire image, rather than just an individual object -- useful if you're trying to find lots of different features
++ Hierarchical approach -- can be used to construct a tree/forest, which can be edited later
++ Translates easily into 3D
+- Trickier to implement than simpler methods
+- Segmentation can take longer than with simpler methods
++/- Achieving a good initial segmentation is reliant on being able to establish a correspondence between features of interest and catchment basins -- almost impossible to get a perfect correspondence between the two (so the ability to edit the results is important), but a reasonable correspondence is achievable and the hierarchical approach helps
+
+Snakes
+
++ Resulting contour surrounds a contiguous region
++ Can represent open as well as closed structures
++ Simpler than level sets
++ Result could in theory be edited by dragging the contour around
+- Can be tricky to implement
+- Generally requires specification of an initial contour (although some attempts have been made to get round this)
+- Often requires manual tweaking to segment particular objects
+- Basic snakes method requires close initialization (although this can be mitigated using e.g. gradient vector flow techniques)
+- Translation into 3D is not straightforward
+- Segmentation can take longer than with simpler methods
+
+Level Sets
+
++ Can represent features which are split into multiple pieces
++ Translates easily into 3D
++ Result could in theory be edited (perhaps by some sort of drawing-based approach which makes changes to the underlying numerical grid)
+- Difficult and time-consuming to implement -- techniques such as narrow band required to make it run fast enough for large data sets
+- Generally requires specification of an initial contour
+- Often requires manual tweaking to segment particular objects (show examples)
+- Segmentation can take longer than with simpler methods
+
+Atlas-Based Techniques
+
+- Construction of an atlas requires access to a reasonably large amount of data
+- Atlas-based techniques don't handle unusual cases well
+
+Neural Network Techniques
+
+- Workings of neural networks tend to be opaque -- hard to ensure that it's doing the right thing for the right reasons (as opposed to you getting good results most of the time, but occasional bad ones when it matters)
+- Require a reasonably large amount of data for training purposes
+- NN techniques don't handle unusual cases well
+
+Clustering
+
+- Tend to be more suited to segmentation of images where an appropriate number of clusters is known in advance (e.g. brain images)
+
+Normalized Cuts
+
++ Can be good in low-contrast images
+- Biased towards partitioning the image equally

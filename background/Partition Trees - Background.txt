@@ -1,0 +1,40 @@
+(i) Brief description of what a partition tree is;
+(ii) Explain, with suitable references, the various situations in which they are used;
+(iii) Narrow it down to images and survey the various techniques, noting the key differences between the representations (e.g. whether or not adjacency information is maintained, etc.);
+(iv) Explain (at a high level) how partition forests fit into the picture
+
+@@@
+
+(i)
+
+- In the most general sense, a partition tree is a tree data structure containing nodes that represent portions of an entity, and satisfying the condition that the sub-entities represented by the children of any node in the tree partition the sub-entity represented by that node -- that is, the child sub-entities together form the parent sub-entity, and none of the child sub-entities mutually overlap. An example of this can be seen in Figure ??. (I will henceforth equate nodes with the sub-entities they represent for reasons of brevity, since there is no ambiguity involved.)
+
+- Partition trees can be either complete or incomplete. A complete partition tree is one with a complete lowest layer (see Figure ??(a)), and an incomplete one is the opposite (see Figure ??(b)). Complete partition trees have the property that the nodes in any given layer form a partition of the entity as a whole. For either type of tree, this is also true of the set of leaf nodes (those nodes without children).
+
+- It should be noted that every incomplete partition tree has an equivalent complete partition tree. This can be constructed by adding a chain of nodes downwards from every leaf which is not in the lowest layer -- see Figure ??.
+
+- There are essentially two ways of constructing partition trees -- top-down or bottom-up. Top-down approaches start with a root node representing the entire entity, and recursively split it until some desired termination criteria are satisfied -- see Figure ??. Bottom-up approaches start with a partition of the entity into the smallest sub-entities possible -- this becomes the lowest layer of the tree. They then iteratively (a) clone the current highest layer of the tree and (b) merge some of the nodes in it together. The process terminates when the highest layer of the tree contains exactly one node (the root). See Figure ?? for an example.
+
+- Note that bottom-up approaches naturally produce complete partition trees. Top-down approaches can also theoretically produce complete partition trees, but in practice tend not to.
+
+(ii)
+
+- Representing entities hierarchically is a fundamental way in which we, as humans, seek to manage the inherent complexity of the world around us, and this is reflected by the ubiquity of partition tree usage in computer science. The varied contexts in which partition trees are used, to name but a few, include hierarchical pathfinding \cite{?}, image representation \cite{?}, team organisation \cite{?} and world representation \cite{?}. Each of these is discussed in the following subsections.
+
+~~~
+Hierarchical Pathfinding
+~~~
+
+TODO
+
+~~~
+Image Representation
+~~~
+
+~~~
+Team Organisation
+~~~
+
+~~~
+World Representation
+~~~

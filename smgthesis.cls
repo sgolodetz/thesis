@@ -16,10 +16,12 @@
 \RequirePackage{amsthm}
 \RequirePackage{bold-extra}									% not installed by default -- MUST be provided with smgthesis.cls
 \RequirePackage{color}
+\RequirePackage{enumitem}
 \RequirePackage{epigraph}
 \RequirePackage{float}
 \RequirePackage{graphicx}
 %\RequirePackage[draft]{graphicx}
+\RequirePackage{hyphenat}
 \RequirePackage{latexsym}										% include extra symbols like \Box and \sqsubset
 \RequirePackage{listings}
 \RequirePackage{makeidx} \makeindex
@@ -28,7 +30,7 @@
 \RequirePackage{subfigure}
 %\RequirePackage{times}
 \RequirePackage[notlof,nottoc]{tocbibind}		% include the bibliography in the table of contents
-\RequirePackage{underscore}
+%\RequirePackage{underscore}								% not needed if hyphenat is being used
 \RequirePackage{url}
 \RequirePackage{varwidth}
 \RequirePackage{vmargin}
@@ -48,6 +50,16 @@
 %%%%%%%%%%%%%%%%
 %%% Commands %%%
 %%%%%%%%%%%%%%%%
+
+% Define a way to specify a single, bulleted item without having to manually create an itemize environment
+\newcommand{\singleitem}[2]
+{
+\begin{itemize}[leftmargin=*, nolistsep]
+\setlength{\parskip}{0pt}
+\item[#1] \nohyphens{#2}
+\end{itemize}
+\vspace{-5mm}
+}
 
 % Define shorter ways to include individual images
 \newcommand{\stufig}[4]						% images with default placement

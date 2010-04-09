@@ -4,7 +4,7 @@
 %---
 \section{Chapter Overview}
 
-In Chapter~\ref{chap:background}, the major techniques currently in use for medical image segmentation were surveyed, with the intent of placing the specific methods I used for my work within the context of the field as a whole. This chapter builds on that foundation by discussing both my goals and the methods I then chose to try to achieve them, with particular emphasis on their appropriateness in each case. The aim is to address the question of why my research was undertaken in the manner it was, before focusing on the question of how it was undertaken in Chapters~\ref{chap:ipfs} through \ref{chap:applications}.
+In Chapter~\ref{chap:background}, the major techniques currently in use for medical image segmentation were surveyed, with the intent of placing the specific methods I used for my work within the context of the field as a whole. This chapter builds on that foundation by discussing both my goals and the methods I then chose to try to achieve them, with particular emphasis on their appropriateness in each case. The aim is to address the question of why my research was undertaken in the manner it was, before focusing on how it was undertaken in Chapters~\ref{chap:ipfs} through \ref{chap:applications}.
 
 %---
 \section{Goals}
@@ -26,7 +26,75 @@ The goal I therefore adopted for my segmentation and feature identification work
 
 TODO
 
+\begin{figure}[p]
+\begin{center}
+\footnotesize
+\begin{tabular}{p{3cm}||p{6.5cm}|p{6.5cm}}
+	& \parbox{6cm}{\centering \textbf{Some Advantages}} & \parbox{6cm}{\centering \textbf{Some Disadvantages}} \\
+	\hline\hline
+	%
+	\textbf{Thresholding}
+	& \singleitem{+}{Conceptually simple} & \singleitem{--}{Non-contiguous results} \\
+	& \singleitem{+}{It is sometimes possible to automatically generate good thresholds} & \singleitem{--}{Appropriate thresholds may not exist when grey value distributions of different features overlap} \\
+	& \singleitem{+}{Works in either 2D or 3D} & \singleitem{--}{Unclear how to facilitate editing}
+	\\
+	\hline
+	\nohyphens{\textbf{Region Growing}}
+	& \singleitem{+}{Conceptually simple} & \singleitem{--}{Requires seed point generation} \\
+	& \singleitem{+}{Contiguous results} & \singleitem{--}{Results may still have holes} \\
+	& \singleitem{+}{Works in either 2D or 3D} & \singleitem{--}{Unclear how to facilitate editing when region growing over pixels}
+	\\
+	\hline
+	\textbf{Watershed from Markers}
+	& \singleitem{+}{Regions contiguous, no holes} & \singleitem{--}{Requires marker specification (tricky to automate in general)} \\
+	& \singleitem{+}{Segments the entire image, rather than just an individual object (useful if trying to find lots of different features)} & \singleitem{--}{Unclear how to facilitate editing} \\
+	& \singleitem{+}{Divides the image into a specified number of regions} \\
+	& \singleitem{+}{Works in either 2D or 3D}
+	\\
+	\hline
+	\textbf{Watershed and Waterfall}
+	& \singleitem{+}{Effectively automatic (although pre-processing and windowing require parameters)} & \singleitem{--}{Good initial segmentation reliant on being able to establish a correspondence between features of interest and catchment basins} \\
+	& \singleitem{+}{Regions contiguous, no holes} \\
+	& \singleitem{+}{Segments the entire image, rather than just an individual object (useful if trying to find lots of different features)} \\
+	& \singleitem{+}{Hierarchical, so can be used to construct a tree/forest, which can be edited later} \\
+	& \singleitem{+}{Works in either 2D or 3D}
+	\\
+	\hline
+	\textbf{Snakes}
+	& \singleitem{+}{Result bounds contiguous region} & \singleitem{--}{Requires initial contour} \\
+	& \singleitem{+}{Conceptually simpler than level sets} & \singleitem{--}{Manual tweaking often necessary} \\
+	& \singleitem{+}{Editing possible by dragging contour} & \singleitem{--}{Doesn't translate easily into 3D}
+	\\
+	\hline
+	\textbf{Level Sets}
+	& \singleitem{+}{Can easily represent features which are split into multiple pieces} & \singleitem{--}{Requires initial contour and parameters} \\
+	& \singleitem{+}{Works in either 2D or 3D} & \singleitem{--}{Manual tweaking often necessary}
+	\\
+	\hline
+	\textbf{Atlas-Based}
+	& & \singleitem{--}{Atlas construction requires large amounts of data} \\
+	& & \singleitem{--}{Doesn't handle unusual cases well}
+	\\
+	\hline
+	\textbf{Neural Nets}
+	& & \singleitem{--}{Workings tend to be opaque} \\
+	& & \singleitem{--}{Requires large amounts of training data} \\
+	& & \singleitem{--}{Doesn't handle unusual cases well}
+	\\
+	\hline
+	\textbf{Clustering}
+	& & \singleitem{--}{More appropriate when the number of clusters is known in advance (e.g.~for brain images)}
+	\\
+	\hline
+	\textbf{Normalized Cuts}
+	& \singleitem{+}{Good for low-contrast images} & \singleitem{--}{Biased towards even partitions}
+\end{tabular}
+\end{center}
+\caption{A comparison of the segmentation methods available, with reference to my goals}
+\label{fig:methodology-methods-comparison}
+\end{figure}
+
 %---
 \section{Chapter Summary}
 
-TODO
+This chapter has explained the goals of my doctorate and the methods I chose to try to achieve them, and discussed in detail why both were appropriate. In Chapter~\ref{chap:ipfs}, I will describe and define partition forests, the key data structure I used to represent images for feature identification purposes, and present novel algorithms for working with them.
