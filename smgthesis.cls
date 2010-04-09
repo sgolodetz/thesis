@@ -21,7 +21,14 @@
 \RequirePackage{float}
 \RequirePackage{graphicx}
 %\RequirePackage[draft]{graphicx}
+
+% Both underscore and hyphenat define a BreakableUnderscore command -- this restores one from underscore to prevent problems.
+\RequirePackage{savesym}
+\RequirePackage{underscore}
+\savesymbol{BreakableUnderscore}
 \RequirePackage{hyphenat}
+\restoresymbol{hyp}{BreakableUnderscore}
+
 \RequirePackage{latexsym}										% include extra symbols like \Box and \sqsubset
 \RequirePackage{listings}
 \RequirePackage{makeidx} \makeindex
@@ -30,7 +37,6 @@
 \RequirePackage{subfigure}
 %\RequirePackage{times}
 \RequirePackage[notlof,nottoc]{tocbibind}		% include the bibliography in the table of contents
-%\RequirePackage{underscore}								% not needed if hyphenat is being used
 \RequirePackage{url}
 \RequirePackage{varwidth}
 \RequirePackage{vmargin}
