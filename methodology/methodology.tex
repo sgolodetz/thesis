@@ -24,26 +24,6 @@ The goal I therefore adopted for my segmentation and feature identification work
 %---
 \section{Methods}
 
-As discussed in detail in Chapter~\ref{chap:background}, there are a wide variety of image segmentation and feature identification methods currently used. Having compared (see Figure~\ref{fig:methodology-methods-comparison}) the relative advantages and disadvantages of a number of methods, however, I decided that a segmentation approach based on the watershed and waterfall transforms was the most appropriate choice for my research, as it has a number of useful properties:
-%
-\begin{enumerate}
-
-\item It can be made to produce a reasonable (if not perfect) initial segmentation of an image virtually automatically, without any requirement to specify e.g.~seed points (region growing), markers (watershed from markers), initial contours (snakes and level sets) or other parameters.
-
-\item It produces contiguous regions. Region contiguity is desirable because the objects of interest in an image tend to be contiguous (or, at worst, split into a few pieces). Thresholding generally produces regions which are neither contiguous nor hole-free, as do clustering techniques.
-
-\item It provides a mechanism for the user to edit the initial segmentation, as its output can be used to construct a partition hierarchy that can be edited using the algorithms I will present in Chapter~\ref{chap:ipfs}. By contrast, it is unclear how to facilitate editing for a number of other techniques such as thresholding, watershed from markers, clustering, normalized cuts or region growing over pixels (although, as we will see later, editing the results of region growing over nodes in an adjacency graph is more possible).
-
-\item It handles unusual cases well because -- unlike, for example, atlas-based and neural network methods -- it does not rely on specific features being in their expected places in an image. Moreover, it does not have the requirements of those methods for large amounts of training data to be available.
-
-\item It can be easily extended to work with 3D images (unlike snakes).
-
-\end{enumerate}
-%
-The watershed and waterfall transforms, and the way in which I used them to construct a partition hierarchy, are described in Chapter~\ref{chap:segmentation}. To actually identify features within the hierarchy, I used two separate approaches, both of which are discussed in more detail in Chapter~\ref{chap:featureid}. For distinctive features such as ribs, I simply applied a Bayesian classifier to each region in the hierarchy. This was appropriate because each rib generally corresponded directly to a very small number (usually $1$ or $2$) of regions in the hierarchy.
-
-For other features, I developed a more sophisticated region growing approach that works on the adjacency graphs of the hierarchy. Region growing was an appropriate technique in this case because the disadvantages listed for it in Figure~\ref{fig:methodology-methods-comparison} were less applicable here. Firstly, seed regions in the hierarchy were relatively easy to generate, as a result of the large number of properties associated with each region on which such a decision could be based. Secondly, the features being identified (e.g.~the spine and kidneys) were relatively homogeneous in the image, so the results produced tended not to contain an excessive number of holes. Finally, my method produced as its result the selection of a manageable number of nodes in the partition hierarchy, which could be easily edited using the hierarchy algorithms presented in Chapter~\ref{chap:ipfs}.
-
 %---
 \begin{figure}[p]
 \begin{center}
@@ -114,6 +94,28 @@ For other features, I developed a more sophisticated region growing approach tha
 \label{fig:methodology-methods-comparison}
 \end{figure}
 %---
+
+As discussed in detail in Chapter~\ref{chap:background}, there are a wide variety of image segmentation and feature identification methods currently used. Having compared (see Figure~\ref{fig:methodology-methods-comparison}) the relative advantages and disadvantages of a number of methods, however, I decided that a segmentation approach based on the watershed and waterfall transforms was the most appropriate choice for my research, as it has a number of useful properties:
+%
+\begin{enumerate}
+
+\item It can be made to produce a reasonable (if not perfect) initial segmentation of an image virtually automatically, without any requirement to specify e.g.~seed points (region growing), markers (watershed from markers), initial contours (snakes and level sets) or other parameters.
+
+\item It produces contiguous regions. Region contiguity is desirable because the objects of interest in an image tend to be contiguous (or, at worst, split into a few pieces). Thresholding generally produces regions which are neither contiguous nor hole-free, as do clustering techniques.
+
+\item It provides a mechanism for the user to edit the initial segmentation, as its output can be used to construct a partition hierarchy that can be edited using the algorithms I will present in Chapter~\ref{chap:ipfs}. By contrast, it is unclear how to facilitate editing for a number of other techniques such as thresholding, watershed from markers, clustering, normalized cuts or region growing over pixels (although, as we will see later, editing the results of region growing over nodes in an adjacency graph is more possible).
+
+\item It handles unusual cases well because -- unlike, for example, atlas-based and neural network methods -- it does not rely on specific features being in their expected places in an image. Moreover, it does not have the requirements of those methods for large amounts of training data to be available.
+
+\item It can be easily extended to work with 3D images (unlike snakes).
+
+\end{enumerate}
+%
+The watershed and waterfall transforms, and the way in which I used them to construct a partition hierarchy, are described in Chapter~\ref{chap:segmentation}. To actually identify features within the hierarchy, I used two separate approaches, both of which are discussed in more detail in Chapter~\ref{chap:featureid}. For distinctive features such as ribs, I simply applied a Bayesian classifier to each region in the hierarchy. This was appropriate because each rib generally corresponded directly to a very small number (usually $1$ or $2$) of regions in the hierarchy.
+
+For other features, I developed a more sophisticated region growing approach that works on the adjacency graphs of the hierarchy. Region growing was an appropriate technique in this case because the disadvantages listed for it in Figure~\ref{fig:methodology-methods-comparison} were less applicable here. Firstly, seed regions in the hierarchy were relatively easy to generate, as a result of the large number of properties associated with each region on which such a decision could be based. Secondly, the features being identified (e.g.~the spine and kidneys) were relatively homogeneous in the image, so the results produced tended not to contain an excessive number of holes. Finally, my method produced as its result the selection of a manageable number of nodes in the partition hierarchy, which could be easily edited using the hierarchy algorithms presented in Chapter~\ref{chap:ipfs}.
+
+\newpage
 
 %---
 \section{Chapter Summary}
