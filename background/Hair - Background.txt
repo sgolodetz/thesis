@@ -1,0 +1,11 @@
+%hierarchical hair modelling \cite{bertails03,kim.t02,ward03}, hierarchical pathfinding \cite{kim98}, image representation \cite{al-haj08,andrade03,salembier00}, team organisation \cite{?} and world representation \cite{finkel74,fuchs80}. Each of these is now discussed in more detail.
+
+%\subsection{Hierarchical Hair Modelling}
+
+%Simulating long hair dynamics in real-time remains a difficult problem for researchers in physically-based modelling, primarily because of the large number of hairs needed to attain a desirable level of realism (the average human head, for example, has over $100,000$ hairs on it \cite{magnenat-thalmann00}). The key problem is evidently one of scale, and several approaches have tried to overcome it by grouping the hairs into a partition tree for simulation purposes (e.g.~\cite{bertails03,kim.t02,ward03}).
+
+%In \cite{kim.t02}, Kim et al.\ construct a partition tree (a so-called `hair tree') in which individual hair strands are recursively grouped into clusters, represented by what are called \emph{generalized cylinders}. To construct the tree, they start by defining a region on the scalp of their model from which hair can grow (this is effectively the root of the tree). To this are added a small number of clusters, which can then be interactively subdivided into smaller clusters by the user. The hair strands are dynamically assigned to their nearest leaf clusters after each modification. Figure~\ref{fig:background-partitiontrees-hairmodelling-kim} illustrates the resulting partition tree.
+
+% TODO: fig:background-partitiontrees-hairmodelling-kim
+
+%TODO
