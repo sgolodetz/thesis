@@ -1,3 +1,32 @@
 Introduction
 
 - The intertwined fields of segmentation and feature identification pose fundamental challenges in a variety of different domains. One such domain is that of image processing, in which the segmentation problem is first and foremost the task of partitioning an image into regions that correspond to `salient' features therein, although the term is also commonly used to refer to the related task of determining the boundary, or contour, around a feature of interest. The goal of feature identification, by contrast, is to assign semantic meaning to some or all of these regions. Segmentation and feature identification problems TODO
+
+...
+
+Purpose of chapter:
+
+# Establish general problem - why hard enough, why worth solving
+# Narrow general problem to a more specific domain
+# Identify niche - what hasn't been tried yet
+# Occupy niche - I tried it, I obtained interesting results, I plan to support (over the course of this dissertation) the thesis that...
+# Outline thesis - how organised in general, location of contributions
+# Prepare reader for next chapter
+
+[ (Establish general problem)
+* This is what segmentation and feature identification are
+* They are hard to solve in many domains
+* Nevertheless, being able to "solve" them would also be useful
+* This makes them worthy problems to study
+]
+
+- In the most general sense, the problem of segmentation is the challenge of how to partition an object into pieces in such a way as to ensure that those pieces have some meaning in a given domain. The related (and to some extent overlapping) problem of feature identification is how to then ascribe meaning to some or all of those pieces. Whilst a huge variety of techniques have been developed for these problems, there are many domains in which it is difficult to specify, at least in a sufficiently precise manner, what constitutes a meaningful region and what does not. For that reason both problems remain major research challenges.
+
+- Nevertheless, an ability to solve these problems, even in an imperfect way, is often a crucial precursor to applying other algorithms in various domains, making them worthy targets for research efforts. For example, in the medical imaging domain, it is helpful to be able to translate a volume of data produced by a scanner into a 3D mesh, allowing doctors to visualize the state of a patient's organs in a more direct manner. Whilst there are existing algorithms to convert \emph{labelled} volume data to a 3D mesh (e.g.~\cite{wu03}), these rely on a priori knowledge of the location of the organs. That is, they rely on the organs having being labelled in the volume in advance. Producing such a labelling is a segmentation and feature identification problem.
+
+[ (Narrow general problem)
+* This dissertation is more specifically about segmentation and feature identification for abdominal CT scans
+* 
+]
+
+- This dissertation is about tackling the segmentation and feature identification problems for a particular type of medical image, namely computerised tomography (CT) scans of a patient's abdomen. TODO
