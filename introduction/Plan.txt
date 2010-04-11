@@ -26,7 +26,7 @@ Purpose of chapter:
 
 [ (Narrow general problem)
 * This dissertation is more specifically about segmentation and feature identification for abdominal CT scans
-* 
+* etc.
 ]
 
-- This dissertation is about tackling the segmentation and feature identification problems for a particular type of medical image, namely computerised tomography (CT) scans of a patient's abdomen. TODO
+- This dissertation is about tackling the segmentation and feature identification problems for a particular type of medical image, namely computerised tomography (CT) scans of a patient's abdomen.
