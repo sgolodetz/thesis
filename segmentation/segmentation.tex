@@ -335,6 +335,7 @@ function resolve_pixel
 Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{code:segmentation-watershed-labelling}). The process can be made more efficient by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint-set forests are implemented (see Appendix~\ref{?}). The output of Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
 
 \subsection{Segmenting CT Images}
+\label{subsec:segmentation-watershed-ct}
 
 Computerised tomography (CT) is currently a widely-used medical imaging modality \cite{garvey02} that provides doctors with a non-invasive way to see inside their patients without needing to resort to exploratory surgery. CT images can be segmented using the type of grey-scale image watershed algorithm just described, but a number of issues must first be tackled in order to obtain desirable results.
 

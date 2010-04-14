@@ -11,4 +11,61 @@ This thesis dissertation is about tackling the segmentation and feature identifi
 
 My underlying interest is in renal (kidney) cancers, in the diagnosis of which CT scanners are generally used to produce images of the abdomen (see Figure~\ref{fig:introduction-kidneyslocation}). Whilst less prevalent than some other types of cancer -- notably breast, lung, colorectal and prostate -- renal cancers nevertheless kill thousands of people a year in the UK.\footnote{According to Cancer Research UK \cite{cruk-kidneycancermortality}, 3752 people died from a kidney cancer in the UK in 2007, the most recent year for which published statistics are currently available.} An ability to visualize the state of a renal cancer patient's abdominal organs in 3D can provide doctors with an extra tool when making important decisions about how best to treat the patient. In a similar vein, being able to calculate the volume of a renal tumour can help doctors track changes over time that may be relevant when evaluating a patient's response to therapy. For these, and other, applications, finding a way to segment and identify features in abdominal CT scans is a key prerequisite.
 
-TODO
+%---
+\section{The Niche}
+
+TODO: Identify niche
+
+\begin{itemize}
+
+\item Attempts have been made to solve segmentation and feature identification in abdominal CT scans before, e.g.~...
+\item But the limitations of these various methods are ...?
+\item In other imaging subfields (including some of medical imaging) partition trees have been applied to good effect to represent images -- including some trees based on watershed (but not waterfall)
+\item In some cases, attempts have been made to allow select of regions in such a tree via cuts, etc.
+\item What has not been done before is to build an explicit partition hierarchy using both the watershed and waterfall transforms and to use it (in combination with novel algorithms) to facilitate editing of segmentation results by the user
+\item Furthermore, no-one has tried multi-layer region growing techniques for feature identification before (for that matter, I'm not sure they've tried multi-layer feature identification techniques period)
+\item These, then, provide my 'niche' (occupying it)
+\item It is an interesting approach to try because it in principle combines the automation of morphological techniques with the previously untapped editing potential of partition hierarchies
+\item Over the course of this dissertation, I will argue that it is also a useful approach, based on my results
+\item Specifically, I aim to defend the thesis statement that...
+
+\end{itemize}
+
+%---
+\section{Dissertation Organisation}
+
+The remainder of this dissertation is organised as follows.
+
+\textbf{Chapter~\ref{chap:background}} surveys the fields of segmentation and feature identification, and discusses some of the varied uses of partition hierarchies throughout computer science, with the intention of both placing my own techniques in context and providing the foundations for later discussion.
+
+\textbf{Chapter~\ref{chap:methodology}} describes my research methodology in more detail, focusing in particular on the question of the appropriateness of my goals and the methods I chose to achieve them.
+
+\textbf{Chapter~\ref{chap:ipfs}} describes partition forests, the key data structure I used to represent segmented images, and introduces novel algorithms I have developed for editing them and selecting regions in multiple layers within them.
+
+\textbf{Chapter~\ref{chap:segmentation}} shows how partition forests can be constructed from images using existing segmentation approaches such as the watershed and waterfall transforms. It looks at three different ways in which the waterfall transform can be implemented: an algorithm due to Marcotegui and Beucher \cite{marcotegui05}, a new tree-based algorithm due to my colleague Chris Nicholls \cite{nicholls09}, and my own novel tree-based approach, presented here for the first time, that handles minimal plateaux in a robust manner.
+
+\textbf{Chapter~\ref{chap:featureid}} shows how feature identification algorithms, including a novel multi-layer region growing method, can be applied to the partition forest in order to automatically segment certain abdominal features.
+
+\textbf{Chapter~\ref{chap:applications}} illustrates how the results of the segmentation and feature identification processes can be useful in solving real-world problems such as visualizing abdominal organs in three dimensions and calculating organ volumes.
+
+\textbf{Chapter~\ref{chap:assessment}} assesses and validates the contributions made elsewhere in the dissertation (see below) and summarises my case supporting the thesis statement.
+
+\textbf{Chapter~\ref{chap:conclusions}} discusses potential avenues for further work, and concludes the dissertation.
+
+\textbf{Appendix~\ref{chap:datastructures}} provides information on basic structures such as disjoint set forests and minimum spanning trees.
+
+\subsection{Contributions}
+
+The original contributions made by this dissertation are:
+%
+\begin{enumerate}
+
+\item Editing and selection algorithms for partition forests in Chapter~\ref{chap:ipfs}.
+\item A simple edge-preserving image filter (known as a spatially-variant Gaussian filter), in \S\ref{subsec:segmentation-watershed-ct}.
+\item A new algorithm for the waterfall transform in \S\ref{sec:segmentation-waterfall}.
+\item The adaptation of the watershed and waterfall algorithms to construct the partition forest in \S\ref{sec:segmentation-ipfconstruction}.
+\item A new feature identification algorithm based on multi-layer region growing in the partition forest in Chapter~\ref{chap:featureid}.
+
+\end{enumerate}
+%
+As noted above, these will be assessed in Chapter~\ref{chap:assessment}.
