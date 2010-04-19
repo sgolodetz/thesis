@@ -174,7 +174,7 @@ Whilst region growing algorithms are guaranteed to produce a connected result, t
 
 \subsection{Morphological Techniques}
 
-Mathematical morphology is a large and rather general field based on lattice theory \cite{?}. It contains many useful image processing techniques, the majority of which are not relevant for the purposes of this survey, but in segmentation terms its key technique is the watershed transform, originally developed by Serge Beucher \cite{beucher90}.
+Mathematical morphology is a large and rather general field based on lattice theory \cite{goutsias00}. It contains many useful image processing techniques, the majority of which are not relevant for the purposes of this survey, but in segmentation terms its key technique is the watershed transform, originally developed by Serge Beucher \cite{beucher90}.
 
 The watershed, which will be described in substantially more detail in Chapter~\ref{chap:segmentation}, is essentially a technique for dividing landscapes into their catchment basins (where a catchment basin is an area of the landscape from which water would run down to a given local minimum) -- see Figure~\ref{fig:background-segmentation-watershed-concept}. In imaging terms, this can be utilised for segmentation purposes by treating an image as a discrete landscape and pre-processing it so as to try to establish a correspondence between catchment basins in the landscape and features of interest in the image. If such a correspondence can be successfully established, finding the catchment basins then equates to finding the desired image features.
 

@@ -48,7 +48,7 @@ Letting $\mbox{adj}_o(o'_i, o'_j)$ denote that sub-objects $o'_i$ and $o'_j$ are
 
 \item $w_o(o'_i, o'_j) \ne \infty$ when, and only when, $adj_o(o'_i, o'_j)$ is true
 
-\item Given any sets $S_i$ and $S_j$ satisfying $\mathcal{P}(S_i,o'_i)$ and $\mathcal{P}(S_j,o'_j)$, the value $w_o(o'_i, o'_j)$ is a function of only the values in the set $\{w_o(s_i, s_j) \; | \; s_i \leftarrow S_i, \; s_j \leftarrow S_j\}$.
+\item Given any sets $S_i$ and $S_j$ satisfying $\mathcal{P}(S_i,o'_i)$ and $\mathcal{P}(S_j,o'_j)$, the value $w_o(o'_i, o'_j)$ is a function of only the values in the set $\{w_o(s_i, s_j) \; | \; s_i \in S_i, \; s_j \in S_j\}$.
 
 \end{enumerate}
 
@@ -71,7 +71,7 @@ A \textbf{partition node} is a node in a partition forest. Each node $n$ represe
 \end{definition}
 
 \begin{definition}
-A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(\{n_i,n_j\},w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \leftarrow N \mbox{ and } n_i \ne n_j\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \leftarrow N)$.
+A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(\{n_i,n_j\},w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \in N \mbox{ and } n_i \ne n_j\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \in N)$.
 \end{definition}
 
 \begin{definition}
@@ -106,7 +106,7 @@ Given:
 \item $\textit{FL}$ is a set of forest links, defined as:
 %
 \[
-\{(n_c,n_p) \; | \; n_c, n_p \leftarrow N_1,\ldots,N_k \mbox{ and } n_c \ne n_p \mbox{ and } \mbox{obj}(n_c) \subseteq \mbox{obj}(n_p)\}
+\{(n_c,n_p) \; | \; n_c, n_p \in N_1,\ldots,N_k \mbox{ and } n_c \ne n_p \mbox{ and } \mbox{obj}(n_c) \subseteq \mbox{obj}(n_p)\}
 \]
 
 \item $\textit{PG}$ is an ordered set of partitioning graphs of $o$, defined as:
@@ -254,7 +254,7 @@ The algorithms for modifying partition forests can be divided into four groups (
 
 \item Check the precondition that the union of the objects represented by the nodes is a contiguous object (this can be done using the method described in Step 2 the \emph{Node Splitting} process, above).
 
-\item Set the parent link of every node in the set $\bigcup_{i=2}^k \mbox{children}(\mbox{node}_i)$ to point to $\mbox{node}_1$. If the nodes have a parent, $p$, remove the forest links $\{(\mbox{node}_i, p) \; | \; i \leftarrow \{2,\ldots,k\}\}$ from $\textit{FL}$.
+\item Set the parent link of every node in the set $\bigcup_{i=2}^k \mbox{children}(\mbox{node}_i)$ to point to $\mbox{node}_1$. If the nodes have a parent, $p$, remove the forest links $\{(\mbox{node}_i, p) \; | \; i \in \{2,\ldots,k\}\}$ from $\textit{FL}$.
 
 \item Update the partitioning graph for the nodes' layer in $\textit{PG}$.
 
@@ -360,7 +360,7 @@ With the preconditions enforced, the zipping process itself is actually rather s
 
 \item Check the precondition that the nodes $n_{1h},\ldots,n_{kh}$ are siblings.
 
-\item Let $S_i = \{n_{ji} \; | \; j \leftarrow [1,k] \mbox{ and } i \le \ell_j\}$ be the set of sibling nodes to be merged in layer $i$ and check the precondition that, for each $i \in [\ell_{\mbox{min}},h]$, the nodes in $S_i$ are contiguous.
+\item Let $S_i = \{n_{ji} \; | \; j \in [1,k] \mbox{ and } i \le \ell_j\}$ be the set of sibling nodes to be merged in layer $i$ and check the precondition that, for each $i \in [\ell_{\mbox{min}},h]$, the nodes in $S_i$ are contiguous.
 
 \item For $i = h$ down to $\ell_{\mbox{min}}$, perform a sibling node merge on the nodes in $S_i$ as just defined.
 
