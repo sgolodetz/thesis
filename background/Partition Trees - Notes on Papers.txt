@@ -1,0 +1,230 @@
+Names used:
+
+- Partition forest (me)
+- Hierarchical attributed region adjacency graph
+- Picture tree
+- Binary partition tree
+- Hierarchy of (adjacency) graphs
+- Semantic segmentation tree
+- Bounded irregular pyramid
+
+########################################
+Experiments on Picture Representation Using Regular Decomposition (1976)
+########################################
+
+TODO
+
+########################################
+Region Representation: Quadtrees from Binary Arrays (1980)
+########################################
+
+TODO
+
+########################################
+On Approaches to Polygonal Decomposition for Hierarchical Image Representation (1983)
+########################################
+
+TODO
+
+########################################
+Hierarchy in Picture Segmentation: A Stepwise Optimization Approach (1989)
+########################################
+
+TODO
+
+########################################
+Quad-Tree Segmentation for Texture-Based Image Query (1994)
+########################################
+
+TODO
+
+########################################
+Image Segmentation by Connectivity Preserving Relinking in Hierarchical Graph Structures (1995)
+########################################
+
+CRUCIAL
+
+- Very relevant to algorithms on partition forests (called a hierarchy of graphs again here)
+- In particular, discusses parent switching: but *prevents* parent switching when it would break up the old parent (mine splits the remainder of the old parent into its connected components instead)
+- The algorithm here is specifically to do with making *allowed* switches (and clearly specifying when they are allowed); my approach is more general
+
+########################################
+Segmentation of 2D and 3D Images through a Hierarchical Clustering Based on Region Modelling (1997)
+########################################
+
+FOREST DATA STRUCTURE
+
+- Contains the right sort of data structure (calling it a hierarchy of adjacency graphs -- essentially a partition forest)
+- Otherwise not massively relevant (it's a particular algorithm, not the tree representation itself)
+
+########################################
+Binary Partition Tree as an Efficient Representation for Image Processing, Segmentation and Information Retrieval (2000)
+########################################
+
+CRUCIAL
+
+- Incomplete, binary trees
+- Limited region adjacency information (each node is connected to its sibling)
+- Construction by e.g. starting from an initial partition and iteratively merging pairs of adjacent regions in increasing order of dissimilarity (i.e. most similar regions first) -- the result of each merge becomes a region which is then considered with the rest. Terminates when only one region remaining.
+- Alternatively, for segmentation purposes -- terminate when a specified number of regions remains.
+- Descriptors assigned to each node. Alludes to the fact that child descriptors can be combined to form parent descriptors.
+- Interesting marker propagation strategy which avoids merging in the background. A bit like a controlled version of watershed-from-markers.
+
+########################################
+Hierarchies of Partitions and Morphological Segmentation (2001)
+########################################
+
+TODO
+
+########################################
+Semi-Automatic Video Object Segmentation using Recursive Shortest Spanning Tree and Binary Partition Tree (2001)
+########################################
+
+TODO
+
+########################################
+A Hierarchical Image Segmentation Algorithm (2002)
+########################################
+
+TREE/FOREST DATA STRUCTURE
+
+- Contains the right sort of data structure (allows for stopping segmentation early, which produces a forest)
+- Represented slightly unusually (children of a node grouped using a disjoint set forest, parent node stores a pointer to the canonical element of the DSF)
+- Essentially presents a hierarchy construction algorithm which at each level (a) merges neighbouring regions whose similarity measure is below a given threshold and (b) subsequently merges any singleton regions with their nearest neighbour
+- Not massively relevant to the discussion at hand, as its contribution is the algorithm rather than the data structure
+
+########################################
+Visual segment tree creation for MPEG-7 Description Schemes (2002)
+########################################
+
+TODO
+
+########################################
+Graph-based Object Tracking (2003)
+########################################
+
+TODO
+
+########################################
+Hierarchical Image Partitioning with Dual Graph Contraction (2003)
+########################################
+
+TODO
+
+########################################
+Segmentation and Tracking using Region Adjacency Graphs, Picture Trees and Prior Information (2003)
+########################################
+
+TREE/FOREST DATA STRUCTURE
+
+- Contains the right sort of data structure (tree, not forest, but talks about stopping segmentation early)
+- Lowest layer constructed using watershed
+- Higher layers constructed by 'successively merging regions against a variable threshold'
+- Otherwise not massively relevant (primarily just a tracking algorithm)
+
+########################################
+A Fast Morphological Algorithm for Color Image Multi-Scale Segmentation Using Vertex-Collapse (2004)
+########################################
+
+TREE DATA STRUCTURE
+
+- Has lots of good references
+- Contains the right sort of data structure (but tree, not forest)
+- Otherwise not massively relevant (it's about a particular algorithm for colour image segmentation, not the tree representation itself)
+
+########################################
+Binary-Partition-Tree creation using a quasi-inclusion criterion (2004)
+########################################
+
+TODO
+
+########################################
+Content-based image retrieval by matching hierarchical attributed region adjacency graphs (2004)
+########################################
+
+TREE DATA STRUCTURE
+
+- Contains the right sort of data structure, calling it a 'hierarchical attributed region adjacency graph'
+- Not massively relevant otherwise (it's about matching graphs for image retrieval purposes)
+
+########################################
+Grouping and Segmentation in a Hierarchy of Graphs (2004)
+########################################
+
+TODO
+
+########################################
+From Partition Trees to Semantic Trees (2006)
+########################################
+
+TODO
+
+########################################
+Interactive Visualization of Graph Pyramids (2006)
+########################################
+
+TODO
+
+########################################
+Multi-Scale Image Segmentation in a Hierarchy of Partitions (2006)
+########################################
+
+TODO
+
+########################################
+Pyramid segmentation algorithms revisited (2006)
+########################################
+
+TODO
+
+########################################
+Shape Guided Object Segmentation (2006)
+########################################
+
+TODO
+
+########################################
+A new method of morphological hierarchical segmentation (2007)
+########################################
+
+DUBIOUS -- THE WATERFALL RESULTS THEY GIVE LOOK IMPROBABLY AND CONVENIENTLY BAD IN COMPARISON TO THEIR NOVEL METHOD
+
+- Talks about different ways of constructing hierarchies (flat zones, waterfall)
+- Suggests that flat zones are too fine and waterfall too coarse
+- Proposes a new hierarchy construction process called 'nested homogenous connections'
+
+########################################
+Real-time object tracking using bounded irregular pyramids (2007)
+########################################
+
+TODO
+
+########################################
+The Construction of Bounded Irregular Pyramids with a Union-Find Decimation Process (2007)
+########################################
+
+TODO
+
+########################################
+Semantic Segmentation Tree for image content representation (2008)
+########################################
+
+TREE DATA STRUCTURE
+
+- Contains the right sort of data structure, calling it a 'semantic segmentation tree'
+- Key difference they're claiming is that the regions in the hierarchy are more meaningful than with other approaches
+- Essentially they're defining region merging rules which are in some sense 'better' than previous methods
+- Potentially interesting, but not too relevant to my own discussion
+- The paper comes across as making the most of something a bit limited...
+
+########################################
+3D Image Segmentation Using the Bounded Irregular Pyramid (2009)
+########################################
+
+TODO
+
+########################################
+Interactive Image Segmentation with Integrated Use of the Markers and the Hierarchical Watershed Approaches (2009)
+########################################
+
+TODO
