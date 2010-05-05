@@ -1,0 +1,448 @@
+\chapter{Principles of Partition Forests}
+\label{chap:ipfs}
+
+%---
+\section{Chapter Overview}
+
+In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a data structure, along with a set of novel algorithms for working with them. This lays the foundation for the two following chapters, which describe how partition forests can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}). In that context, we will talk of partition forests as image partition forests (or IPFs).
+
+As will be discussed in Chapter~\ref{chap:assessment}, however, the partition forest data structure and its accompanying algorithms are useful in a wider context than just imaging. In particular, we will later see another application of partition forests in the domain of hierarchical pathfinding.
+
+%---
+\section{What is a Partition Forest?}
+%\label{sec:ipfs-description}
+
+\subsection{Concept}
+
+A partition forest is in essence a hierarchy of adjacency graphs that all partition the same object (the sense in which a graph can partition an object will be formalised in what follows). The object itself can be anything that can be divided into pieces, whether that be an image, a road network, an organisation, or even a pizza. In an imaging context, partition forests as a data structure are similar to the picture trees described in \cite{andrade03}. They are also related to the semantic segmentation trees found in \cite{al-haj08} and the binary partition trees found in \cite{salembier00}. The partition forest algorithms I will describe in \S\ref{sec:ipfs-algorithms}, however, are entirely novel.
+
+The ideas behind partition forests can be most simply illustrated using the aforementioned example of a pizza (see Figure~\ref{fig:ipfs-description-pizza}). We consider three different levels of partitioning for the pizza: into slices, into portions, and into halves (e.g.~a vegetarian half and a meat half). Each half contains one or more portions and each portion contains one or more slices. All the slices taken together form the whole pizza, and none of them mutually overlap. This is equally true for both the portions and the halves. Taken together, the slices, portions and halves (the `pieces') form a hierarchy of partitions of the pizza, in which the individual pieces become nodes. (Note that the top-most level of the hierarchy is allowed to contain more than one node -- this is what makes the hierarchy a forest rather than a tree.) Each level of the hierarchy is an adjacency graph: in this case, the adjacency graphs for the slices and portions form rings (each slice/portion is adjacent to the slices/portions on either side of it), whilst the adjacency graph for the halves is just a single edge between them. The weights on the edges are not especially important in the case of pizzas (we could perhaps imagine them as indicating the ease of pulling the pizza apart at that point, if we wanted to push the analogy), but they are very important in the imaging domain, as we will see later.
+
+%---
+% TODO: fig:ipfs-description-pizza
+\stufigex{width=15cm, height=24cm}{todo.png}{TODO}{fig:ipfs-description-pizza}{p}
+%---
+
+It is rare for pizza slices and portions to all be identical -- some slices will generally end up with more topping on than others, and some portions may contain more slices than others. When identifying an appropriate portion to choose, therefore, it is important to have relevant properties of the slices and portions available in order to make an informed choice. For that purpose, we can attach properties to the nodes of the forest that provide this information for later use. These properties can be different for different node layers. We can imagine maintaining a topping quality property for slices, with perhaps slice count and best/average topping quality properties for portions. What is important is that the properties of each node can be calculated directly from those of its children in the hierarchy. In this case, that would mean that the properties of a portion should be a function of only the properties of the slices in that portion.
+
+\subsection{Definition}
+
+Abstracting away from the intuitive description of partition forests just given, it is possible to define them more formally as follows:
+
+\begin{definition}
+An \textbf{object} is a non-empty set of basic components which together form a contiguous whole. (For example, a contiguous image region would be a non-empty set of pixels.)
+\end{definition}
+
+\begin{definition}
+A set of k objects $\{o'_1,\ldots,o'_k\}$ \textbf{partitions} an object $o$ iff $\bigcup_i o'_i = o$ and $\forall i,j \cdot o'_i \cap o'_j = \emptyset$. We write the relation as $\mathcal{P}(\{o'_1,\ldots,o'_k\}, o)$.
+\end{definition}
+
+\begin{definition}
+Given an object $o$, and two objects sets $O'_f = \{o'_{f1},\ldots,o'_{fk_f}\}$ and $O'_c = \{o'_{c1},\ldots,o'_{ck_c}\}$, satisfying $\mathcal{P}(O'_f,o)$ and $\mathcal{P}(O'_c,o)$, we say that $O'_c$ is a \textbf{coarser partition} of $o$ than $O'_f$ (written $O'_f \sqsubseteq O'_c$) iff for every object $o'_{ci} \in O'_c$ there exists a subset $S_i \subseteq O'_f$ such that $\mathcal{P}(S_i,o'_{ci})$. (In other words, $O'_f$ is a partition of $o$ in which each individual object in $O'_c$ has itself been partitioned.)
+\end{definition}
+
+\begin{definition}
+Letting $\mbox{adj}_o(o'_i, o'_j)$ denote that sub-objects $o'_i$ and $o'_j$ are (in some sense) adjacent in an object $o$, we define a \textbf{weight function} $w_o$ for $o$ to be a function of type $\mathbb{P}(o) \times \mathbb{P}(o) \to \mathbb{R}^+$ that satisfies the following two requirements:
+%
+\begin{enumerate}
+
+\item $w_o(o'_i, o'_j) \ne \infty$ when, and only when, $adj_o(o'_i, o'_j)$ is true
+
+\item Given any sets $S_i$ and $S_j$ satisfying $\mathcal{P}(S_i,o'_i)$ and $\mathcal{P}(S_j,o'_j)$, the value $w_o(o'_i, o'_j)$ is a function of only the values in the set $\{w_o(s_i, s_j) \; | \; s_i \in S_i, \; s_j \in S_j\}$.
+
+\end{enumerate}
+
+\end{definition}
+
+\begin{definition}
+A \textbf{property set} is an ordered set (a tuple) of properties, each of which is a function that maps an object to a value (the types of the values may differ). For example, in the context of imaging it would be possible to have an area property that calculates the area of a given image region in pixels.
+\end{definition}
+
+\begin{definition}
+Given a property set $P = (p_1,\ldots,p_k)$ and an object $o$, the \textbf{property value set} $V_P(o)$ is the ordered set that results from applying each property in $P$ to the object $o$, namely $(p_1(o),\ldots,p_k(o))$.
+\end{definition}
+
+\begin{definition}
+We call a property set $P$ \textbf{directly calculable} from a property set $P'$ iff, for any given set of sub-objects $O'$ and object $o$ satisfying $\mathcal{P}(O',o)$, the property value set $V_P(o)$ is a function of only the property value sets in $\{V_{P'}(o') \; | \; o' \in O'\}$. We write this relation as $P' \hookrightarrow P$.
+\end{definition}
+
+\begin{definition}
+A \textbf{partition node} is a node in a partition forest. Each node $n$ represents a given object, denoted as $\mbox{obj}(n)$. The set of objects represented by a node set $N$ can be denoted as $\mbox{Objs}(N)$.
+\end{definition}
+
+\begin{definition}
+A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(\{n_i,n_j\},w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \in N \mbox{ and } n_i \ne n_j\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \in N)$.
+\end{definition}
+
+\begin{definition}
+Given:
+
+%-
+\begin{enumerate}
+
+\item An object $o$
+\item A non-empty tuple $\textit{NS} = (N_1,\ldots,N_k)$, where:
+
+%--
+\begin{enumerate}
+
+\item $\forall N_i \in \textit{NS} \cdot \mathcal{P}(\mbox{Objs}(N_i),o)$
+\item $\mbox{Objs}(N_1) \sqsubseteq \ldots \sqsubseteq \mbox{Objs}(N_k)$ 
+\item $\forall n \in N_1 \cdot |\mbox{obj}(n)| = 1$
+
+\end{enumerate}
+%--
+
+\item A weight function $w_o$ for $o$
+\item A non-empty tuple $\textit{PS} = (P_1,\ldots,P_k)$ satisfying $P_1 \hookrightarrow \ldots \hookrightarrow P_k$
+
+\end{enumerate}
+%-
+
+\noindent We define the \textbf{partition forest} $PF_{\textit{NS},w_o,\textit{PS}}(o)$ to be the pair $(\textit{FL},\textit{PG})$, in which:
+
+\begin{itemize}
+
+\item $\textit{FL}$ is a set of forest links, defined as:
+%
+\[
+\{(n_c,n_p) \; | \; n_c, n_p \in N_1,\ldots,N_k \mbox{ and } n_c \ne n_p \mbox{ and } \mbox{obj}(n_c) \subseteq \mbox{obj}(n_p)\}
+\]
+
+\item $\textit{PG}$ is an ordered set of partitioning graphs of $o$, defined as:
+%
+\[
+(G(N_1,w_o,P_1),\ldots,G(N_k,w_o,P_k))
+\]
+
+\end{itemize}
+
+\end{definition}
+
+\noindent We can also define a parent/child relation between nodes, namely that $p = \mbox{parent}(c)$ iff $(c,p) \in \textit{FL}$. (This is equivalent to saying $c \in \mbox{children}(p)$.)
+
+%---
+\section{Partition Forest Algorithms}
+\label{sec:ipfs-algorithms}
+
+\subsection{Overview}
+
+Having formally defined partition forests, I will now present a series of algorithms for working with them. The algorithms I have developed can be partitioned into two major classes: modification algorithms, which allow users to alter the structure of a forest, and selection algorithms, which provide a means of selecting nodes in the forest. The organisation of the algorithms is illustrated in Figure~\ref{fig:ipfs-algorithms-organisation}.
+
+%---
+\stufigex{width=15cm}{ipfs/ipfs-algorithms-organisation.png}{The organisation of the partition forest algorithms -- the red lines indicate the dependencies between the different algorithms.}{fig:ipfs-algorithms-organisation}{p}
+%---
+
+\subsection{Modification Algorithms}
+
+\subsubsection{Overview}
+
+The algorithms for modifying partition forests can be divided into four groups (in three levels). The lowest level contains four core algorithms: layer cloning, layer deletion, node splitting and sibling node merging (merging two or more nodes which share the same parent). These are all that is needed to allow the user to manually create any partition forest from a leaf layer of basic components (e.g.~pixels, in the case of images).\footnote{A good way of thinking about it (coming from a programming perspective) is that if you were to implement a partition forest class in an object-oriented programming language, the core algorithms would be the ones which had to be implemented as member functions of the class (in other words, they form the class's minimal interface).} More sophisticated algorithms can then be built on this foundation. The level above the core contains the zipping algorithms. These are essentially multi-layer split and merge operations -- instead of splitting or merging individual nodes, they split and merge branches of the hierarchy. They form the basis of algorithms such as non-sibling node merging and feature identification in the highest level.
+
+\subsubsection{Core Algorithms}
+
+\paragraph{Layer Cloning}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{clone_above_layer(layer)} and \texttt{clone_below_layer(layer)}
+
+\item \emph{Description}. New layers can be inserted anywhere in the hierarchy by cloning a layer above or below the insertion point (for example, see Figure~\ref{fig:ipfs-algorithms-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{PG}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
+
+\item \emph{Usage}. Used to create additional layers that can later be modified using split/merge operations.
+
+\item \emph{Complexity}. Let $n_\ell$ be the number of nodes and $e_\ell$ be the number of adjacency graph edges in layer $\ell$. Suppose layer $i$ is to be inserted between two existing layers, $b$ (below) and $a$ (above). Then, since we are cloning one of the two existing layers, either $n_i = n_b$ and $e_i = e_b$, or $n_i = n_a$ and $e_i = e_a$. In either case, the complexity of cloning the partitioning graph is $\Theta(e_i)$. Observe in passing that $n_i \in O(e_i)$, since the adjacency graph is connected, so there is no need to include $n_i$ when analysing the complexity of the cloning process. Forest links must then be added between layers $b$ and $i$, and layers $i$ and $a$. There are $\Theta(n_b)$ of the former, and $\Theta(n_i)$ of the latter (consider connecting each of the nodes in the two layers to its parent in the layer above). So the cost of adding the links is $\Theta(n_b + n_i)$. This is $\Theta(n_b)$, since $n_b \ge n_i$. The overall complexity is thus $\Theta(e_i + n_b)$. (If we are cloning the layer below, whether because there is no layer above or otherwise, this simplifies to $\Theta(e_b)$. If we are cloning the layer above, and there is a layer below, it becomes $\Theta(e_a + n_b)$. If we are cloning the layer above and there is no layer below, this simplifies to $\Theta(e_a)$.)
+
+\end{itemize}
+
+% TODO: fig:ipfs-algorithms-layercloning
+
+\paragraph{Layer Deletion}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{delete_layer(layer)}
+
+\item \emph{Description}. Any layer except the lowest can be deleted from the hierarchy (for example, see Figure~\ref{fig:ipfs-algorithms-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{PG}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
+
+\item \emph{Usage}. Used to delete a layer -- perhaps because it contains no objects of semantic interest.
+
+\item \emph{Complexity}. Suppose layer $d$ is to be deleted and that it lies between two other layers, $b$ (below) and $a$ (above). The complexity of removing the partitioning graph from $\textit{PG}$ is $\Theta(1)$. The forest links between layers $b$ and $d$, and layers $d$ and $a$ must then be deleted. This has complexity $\Theta(n_b + n_d)$, which simplifies to $\Theta(n_b)$ since $n_b \ge n_d$. Finally, forest links must be added between layers $b$ and $a$. This has complexity $\Theta(n_b)$. The overall complexity of the whole algorithm is thus $\Theta(n_b)$. (If, instead of there being layers above and below that being deleted, there is only a layer below, the complexity is still $\Theta(n_b)$.)
+
+\end{itemize}
+
+% TODO: fig:ipfs-algorithms-layerdeletion
+
+\paragraph{Node Splitting}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{split_node(node, $\{\mbox{group}_1,\ldots,\mbox{group}_k\}$) $\rightarrow$ \{Node\}}
+
+\item \emph{Description}. Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes. It returns the nodes created by the split. The process (see Figure~\ref{fig:ipfs-algorithms-nodesplitting} for an illustrated example) involves the following steps:
+
+%-
+\begin{enumerate}
+
+\item Check the precondition that the node to be split is not in the lowest layer of the hierarchy.
+
+\item Check the precondition that each group containing more than one child node is contiguous. This can be done with a simple flooding algorithm on the partitioning graph of the child layer (the layer containing the nodes in the groups). Starting from the first node in the group, recursively visit adjacent nodes that are in the group and have not yet been seen. The process terminates when either the entire group has been visited (in which case the group is contiguous), or when there are no more nodes to which to recurse and not every node in the group has yet been visited (in which case the group is not contiguous).
+
+\item Delete the node being split from the forest.
+
+%--
+\begin{enumerate}
+
+\item Remove all forest links of the form $(c,\mbox{node})$ or $(\mbox{node},p)$ from $\textit{FL}$. These are the links connecting the node to its children and parent (if any), respectively.
+
+\item Remove the node from the partitioning graph for its layer in $\textit{PG}$.
+
+%---
+\begin{enumerate}
+
+\item Remove every edge connected to the node from $E$.
+\item Remove the node from the node set $N$.
+\item Remove the corresponding property value set from $\textit{VS}$.
+
+\end{enumerate}
+%---
+
+\end{enumerate}
+%--
+
+\item Create new nodes in the split node's layer for each of the specified groups.
+
+%--
+\begin{enumerate}
+
+\item Add the nodes to the node set $N$ of the partitioning graph for the layer.
+\item Add forest links between the new nodes and the parent of the node which was split (if any).
+\item Add forest links between the child nodes in each group and the newly-created parent node for their group.
+\item Calculate the property value sets for each of the new nodes from those of their children, and add them to $\textit{VS}$.
+\item Add partitioning graph edges as necessary to connect the new nodes to the rest of the graph. The necessary edges can be obtained by propagating edges upwards from the partitioning graph of the child layer. Specifically, consider all edges connected to the nodes in the child groups: if there is an edge between one of these children $c$ and another node $x$ in the child layer, there should be an edge between $\mbox{parent}(c)$ and $\mbox{parent}(x)$ in the layer above, provided that $\mbox{parent}(c) \ne \mbox{parent}(x)$. In practice, there may be many edges in the child layer that induce the same edge in the layer above, but the latter should only be added once. The weight on the new edge should be calculated from the weights on all the child edges that induced it (note that it is at this point that the second requirement on the weight function for the partition forest becomes relevant: it must be possible to calculate the weight on the edge between two nodes from only the weights on the edges between their respective children in the child layer). How that actually happens depends on how a specific application chooses to define its weight function. In the case of the `lowest pass point' weight function we will see in Chapter~\ref{chap:segmentation}, the weight on the edge between two parent nodes is simply the minimum of the weights on the edges between their respective children, but any number of other weight functions are possible.
+
+\end{enumerate}
+%--
+
+\item Return the new nodes.
+
+\end{enumerate}
+%-
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+% TODO: fig:ipfs-algorithms-nodesplitting
+
+\paragraph{Sibling Node Merging}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{merge_sibling_nodes($\{\mbox{node}_1,\ldots,\mbox{node}_k\}$) $\rightarrow$ Node}
+
+\item \emph{Description}. Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-algorithms-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest). The algorithm takes as input the set of sibling nodes to be merged, and proceeds as follows:
+
+%-
+\begin{enumerate}
+
+\item Check the precondition that the nodes to be merged are not in the lowest layer of the hierarchy.
+
+\item Check the precondition that the nodes are all siblings of each other.
+
+\item Check the precondition that the union of the objects represented by the nodes is a contiguous object (this can be done using the method described in Step 2 the \emph{Node Splitting} process, above).
+
+\item Set the parent link of every node in the set $\bigcup_{i=2}^k \mbox{children}(\mbox{node}_i)$ to point to $\mbox{node}_1$. If the nodes have a parent, $p$, remove the forest links $\{(\mbox{node}_i, p) \; | \; i \in \{2,\ldots,k\}\}$ from $\textit{FL}$.
+
+\item Update the partitioning graph for the nodes' layer in $\textit{PG}$.
+
+%--
+\begin{enumerate}
+
+\item Remove every edge between two of the nodes being merged from $E$.
+\item Replace every edge of the form $(\{\mbox{node}_i, m\}, w)$ -- where $2 \le i \le k$ and $m$ is not one of the nodes being merged -- with one of the form $(\{node_1, m\}, w)$.
+\item Remove nodes $\mbox{node}_2,\ldots,\mbox{node}_k$ from the node set $N$.
+\item Remove their corresponding property value sets from $\textit{VS}$.
+\item Recalculate the property value set for $\mbox{node}_1$ from the property value sets of its children.
+
+\end{enumerate}
+%--
+
+\item Return the result of the merge (i.e.~$\mbox{node}_1$).
+
+\end{enumerate}
+%-
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+% TODO: fig:ipfs-algorithms-siblingnodemerging
+
+\subsubsection{Zipping Algorithms}
+
+\paragraph{Unzipping}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{unzip_node(node, toLayer) $\rightarrow$ \{Chain\}}
+
+\item \emph{Description}. A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration.
+
+The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains, which can be passed to the zipping algorithm described below in order to undo the operation. A chain is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length, but they all start in the same layer of the hierarchy.
+
+The unzipping process involves the following steps:
+
+%-
+\begin{enumerate}
+
+\item Let $cur$ be the node to be unzipped, and $C = \emptyset$ be the initial set of chains.
+
+\item While the layer of $cur$ is less than the specified higher layer and $cur$ has a parent:
+
+%--
+\begin{enumerate}
+
+\item Let $p = \mbox{parent}(cur)$ and $S = \mbox{children}(p) \; \backslash \; cur$.
+\item Calculate $\textit{CCS}$, the connected components of $S$.
+\item Invoke \texttt{split_node($p$, $\textit{CCS} \cup \{\{cur\}\}$)} and let $R$ denote the set of returned nodes.
+\item For each chain $c \in C$:
+
+%---
+\begin{enumerate}
+
+\item Let $h$ be the head of $c$.
+\item Prepend $\mbox{parent}(h)$ to $c$ and remove it from $R$ (it must be in $R$ because of the way the algorithm works).
+
+\end{enumerate}
+%---
+
+\item For each remaining node in $R$, add a new singleton chain containing it to $C$.
+\item Set $cur = \mbox{parent}(cur)$.
+
+\end{enumerate}
+%--
+
+\item Return $C$.
+
+\end{enumerate}
+%-
+
+See Figure~\ref{fig:ipfs-algorithms-unzipping} for an example.
+
+% TODO: fig:ipfs-algorithms-unzipping
+
+\item \emph{Usage}. Used primarily as a sub-routine for the higher-level and applied algorithms.
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+\paragraph{Zipping}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{zip_chains($\{\mbox{chain}_1,\ldots,\mbox{chain}_k\}$) $\rightarrow$ (Node, Integer)}
+
+\item \emph{Description}. A set of chains of nodes that all start in the same layer can be zipped together, an operation that is effectively a multi-layer sibling node merge. When performed on the results of an unzip, this effectively undoes that operation.
+
+In order for the operation to be valid, the preconditions for every sibling node merge to be performed must be satisfied. (These must be checked in advance if the intention is, as is likely the case, to implement zipping as an atomic operation.) The first precondition, that we are not trying to merge nodes in the lowest layer of the hierarchy, can be easily enforced by ensuring that no node in any of the chains is from the lowest layer. The second precondition, that nodes to be merged are siblings of each other, can be enforced by checking that the highest nodes in each of the chains share a common parent (we will see when the algorithm is presented that there is no need to check that other corresponding nodes in the chains are siblings -- merging their parents in the previous iteration of the loop will automatically guarantee that they share the same parent). The third precondition, that the union of the objects represented by the nodes to be merged in each case will be contiguous, is harder to check efficiently: in the worst case, it is necessary to perform a contiguity check (as described earlier) for each set of nodes to be merged. Nevertheless, it is worth noting that enforcing the preconditions explicitly in the zipping operation has benefits beyond making it possible to implement the operation atomically. The checks here can entirely replace those which would otherwise be performed in the merge operations themselves, and in the case of all but the third precondition involve less work because they exploit our knowledge about the sequence of merges to be performed.
+
+With the preconditions enforced, the zipping process itself is actually rather straightforward. It takes as input $k$ chains $[n_{1h},\ldots,n_{1\ell_1}], \ldots, [n_{kh},\ldots,n_{k\ell_k}]$, zips them together and returns a pair consisting of a node and a layer index, namely the parameters which we would need to pass to \texttt{unzip_node} in order to undo the operation. The algorithm is as follows:
+
+\begin{enumerate}
+
+\item Let $\ell_{\mbox{min}} = \min_{i=1}^k \ell_i$ and check the precondition that $\ell_{\mbox{min}} > 1$, i.e.~that none of the nodes to be merged is in the lowest layer of the hierarchy.
+
+\item Check the precondition that the nodes $n_{1h},\ldots,n_{kh}$ are siblings.
+
+\item Let $S_i = \{n_{ji} \; | \; j \in [1,k] \mbox{ and } i \le \ell_j\}$ be the set of sibling nodes to be merged in layer $i$ and check the precondition that, for each $i \in [\ell_{\mbox{min}},h]$, the nodes in $S_i$ are contiguous.
+
+\item For $i = h$ down to $\ell_{\mbox{min}}$, perform a sibling node merge on the nodes in $S_i$ as just defined.
+
+\item Return the pair $(\mbox{node},h)$, where $\mbox{node}$ is the result of the sibling node merge in layer $\ell_{\mbox{min}}$.
+
+\end{enumerate}
+
+An example zipping operation is illustrated in Figure~\ref{fig:ipfs-algorithms-zipping}.
+
+% TODO: fig:ipfs-algorithms-zipping
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+\subsubsection{Higher-Level Algorithms}
+
+\paragraph{Non-Sibling Node Merging}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{merge_nonsibling_nodes($\{\mbox{node}_1,\ldots,\mbox{node}_n\}$) $\rightarrow$ \{Node\}}
+
+\item \emph{Description}. TODO
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+\paragraph{Parent Switching}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{switch_parent(node, newParent)}
+
+\item \emph{Description}. TODO
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+\subsubsection{Applied Algorithms}
+
+\paragraph{Feature Identification}
+
+\begin{itemize}
+
+\item \emph{Interface}. \texttt{identify_feature(node, feature)}
+
+\item \emph{Description}. TODO
+
+\item \emph{Usage}. TODO
+
+\item \emph{Complexity}. TODO
+
+\end{itemize}
+
+\subsection{Selection Algorithms}
+
+\subsubsection{Overview}
+
+TODO
+
+\subsubsection{Add To Selection}
+
+TODO
+
+\subsubsection{Remove From Selection}
+
+TODO
+
+\subsubsection{View Selection At Layer}
+
+TODO
+
+%---
+\section{Chapter Summary}
+
+TODO

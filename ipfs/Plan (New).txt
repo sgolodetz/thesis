@@ -130,19 +130,19 @@ Plan
 >> Definition
 > Interacting with Partition Forests
 >> Overview
-   - Description of how a system might fit together, UML diagram, etc.
-   - Discussion of the command management system (details -> appendix)
+   * Description of how a system might fit together, UML diagram, etc.
+   * Discussion of the command management system (details -> appendix)
 >> The partition forest data structure and its algorithms
-   - Stuff about layers, properties, etc. should go in here
+   * Stuff about layers, properties, etc. should go in here
 >>> Core Algorithms
-    - The theorems above should go in here somewhere
+    * The theorems above should go in here somewhere
 >>> Zipping Algorithms
 >>> Higher-Level Algorithms
 >> The selection data structure and its algorithms
 >> The multi-feature selection data structure and its algorithms
 > Results
-  - Table of complexity results for easy reference
-  - Running times on real examples
+  * Table of complexity results for easy reference
+  * Running times on real examples
 > Chapter Summary
 
 ================
@@ -152,7 +152,7 @@ Algorithm Layout
 Each explicit algorithm (i.e. one where the command is specified explicitly) needs to have:
 
 - Description
-- User Interface (how the user can specify the parameters to the algorithm)
+- Example User Interface (how the user can specify the parameters to the algorithm in the case of images)
 - Pseudo-code for the command (including checking the preconditions)
 - Pseudo-code for the execution step
 - Pseudo-code for the undo step (unless presented as an execution step elsewhere)
@@ -163,7 +163,7 @@ Each explicit algorithm (i.e. one where the command is specified explicitly) nee
 Each other algorithm needs to have:
 
 - Description
-- User Interface
+- Example User Interface
 - Pseudo-code for the execution step (the undo takes care of itself)
 - Complexity analysis for checking the preconditions
 - Complexity analysis for the execution step
