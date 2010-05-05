@@ -1,0 +1,170 @@
+###################################
+Partition Forest Chapter - New Plan
+###################################
+
+====
+Aims
+====
+
+------------------------------------------------------------------------------------------------
+Present the overall design of a system using a partition forest to represent an aggregate object
+------------------------------------------------------------------------------------------------
+
+* Use a UML diagram
+
+-----------------------------------------------------------------------------
+Present the following data structures and algorithms (incl. how to undo them)
+-----------------------------------------------------------------------------
+
+* ICommandManager, BasicCommandManager, UndoableCommandManager
+
+* IForestLayer
+
+* Leaf layer (concept) -- use ImageLeafLayer as an example
+
+* Branch layer (concept) -- use ImageBranchLayer as an example
+
+* Leaf properties (concept) -- use PixelProperties as an example
+
+* Branch properties (concept) -- use RegionProperties as an example
+
+* PartitionForest
+
+clone_layer & clone_layer_impl
+delete_layer & delete_layer_impl & undelete_layer_impl
+merge_nonsibling_nodes
+merge_sibling_nodes & merge_sibling_nodes_impl
+parent_switch
+split_node & split_node_impl
+unzip_node
+zip_chains
+
+-> Appendix
+
+ancestor_of (trivial)
+are_connected
+children_of (trivial)
+find_common_ancestor_layer
+find_common_ancestor_layer_and_new_chain
+find_connected_component
+find_connected_components
+parent_of (trivial)
+
+* PartitionForestSelection
+
+add_node
+layer_was_cloned (trivial)
+layer_was_undeleted
+layer_will_be_deleted
+node_was_split (trivial)
+nodes_will_be_merged & nodes_were_merged
+redo_modification (trivial)
+remove_node
+undo_modification (trivial)
+view_at_layer
+
+-> Appendix
+
+clear (trivial)
+consolidate_node
+consolidate_upwards_from_node
+contains
+deconsolidate_node
+descendants_in_layer
+descendants_in_selection
+empty (trivial)
+erase_node (trivial)
+find_ancestor_in_selection
+in_selection (trivial)
+insert_node (trivial)
+is_multi_layer (trivial)
+split_selection
+toggle_node (trivial)
+
+* PartitionForestMultiFeatureSelection
+
+features_of
+identify_feature
+unidentify_feature
+
+-> Appendix
+
+clear_all (trivial)
+clear_feature (trivial)
+empty (trivial)
+
+-------------------------------------------------------------------------
+Analyse the complexity of the algorithms and provide sample running times
+-------------------------------------------------------------------------
+
+* In terms of organisation, there are so many algorithms that the analysis should probably be per-algorithm rather than in a huge block at the end (although a table showing them all might be nice)
+
+----------------------------------------
+Prove some theorems about the algorithms
+----------------------------------------
+
+1) You can construct any partition forest over a particular set of parameters by starting from the leaf layer and using only clone_layer and merge_sibling_nodes (they are sufficient). They are also the minimum necessary (you can't get rid of either of them and still be able to do it).
+
+2) You can change any partition forest over a particular set of parameters into any other partition forest over those same set of parameters using just three operations: clone_layer, delete_layer and merge_sibling_nodes. All three are also necessary.
+
+Sufficiency Proof:
+- Trivial given (1), since you just delete all the layers above the leaf layer and then apply (1) to get the output forest you want.
+
+Necessity Proof:
+- If you get rid of clone_layer, you can't possibly transform to a forest with more layers than currently present
+- If you get rid of delete_layer, you can't possibly transform to a forest with fewer layers than currently present
+- If you get rid of merge_sibling_nodes, you can't alter any of the layers
+- Thus they are all individually necessary
+
+Conclusion:
+- clone_layer, delete_layer and merge_sibling_nodes are technically the only operations you need to allow unrestricted editing of the forest
+- However, being more practical about it, it's important to have split_node as well for efficiency reasons (which is why I include it as a core algorithm)
+
+====
+Plan
+====
+
+> Chapter Overview
+> What is a Partition Forest?
+>> Concept
+>> Definition
+> Interacting with Partition Forests
+>> Overview
+   - Description of how a system might fit together, UML diagram, etc.
+   - Discussion of the command management system (details -> appendix)
+>> The partition forest data structure and its algorithms
+   - Stuff about layers, properties, etc. should go in here
+>>> Core Algorithms
+    - The theorems above should go in here somewhere
+>>> Zipping Algorithms
+>>> Higher-Level Algorithms
+>> The selection data structure and its algorithms
+>> The multi-feature selection data structure and its algorithms
+> Results
+  - Table of complexity results for easy reference
+  - Running times on real examples
+> Chapter Summary
+
+================
+Algorithm Layout
+================
+
+Each explicit algorithm (i.e. one where the command is specified explicitly) needs to have:
+
+- Description
+- User Interface (how the user can specify the parameters to the algorithm)
+- Pseudo-code for the command (including checking the preconditions)
+- Pseudo-code for the execution step
+- Pseudo-code for the undo step (unless presented as an execution step elsewhere)
+- Complexity analysis for checking the preconditions
+- Complexity analysis for the execution step
+- Complexity analysis for the undo step (unless analysed elsewhere)
+
+Each other algorithm needs to have:
+
+- Description
+- User Interface
+- Pseudo-code for the execution step (the undo takes care of itself)
+- Complexity analysis for checking the preconditions
+- Complexity analysis for the execution step
+- Complexity analysis for the undo step
