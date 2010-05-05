@@ -545,6 +545,49 @@ TODO
 \begin{lstlisting}[style=Default]
 function parent_switch
 :	(node : NodeID; newParent : int; checkPreconditions : CheckPreconditions) $\to \emptyset$
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that the node itself is a valid node.
+		var layerN : ForestLayer? := checked_forest_layer(node.layer());
+		if layerN = null or not layerN.has_node(node.index()) then throw;
+
+		// Check that the proposed new parent is a valid node.
+		var layerP : BranchLayer? := checked_branch_layer(node.layer() + 1);
+		if layerP = null or not layerP.has_node(newParent) then throw;
+
+		// Check that the node is adjacent to at least one child of its proposed new
+		// parent.
+		var adjacent : bool := false;
+		for each c : int $\in$ layerP.node_children(newParent)
+			if layerN.has_edge(node.index(), c) then
+				adjacent := true;
+				break;
+		if not adjacent then throw;
+
+	begin_command_sequence();
+
+	// Find the common ancestor layer of the old and new parents, and the chain
+	// leading down to the new parent.
+	var layerN : ForestLayer := forest_layer(node.layer());
+	var oldParent : int := layerN.node_parent(node.index());
+	var commonAncestorLayer : int;
+	var newChain : Chain;
+	(commonAncestorLayer, newChain) =
+		find_common_ancestor_layer_and_new_chain(oldParent, newParent, node.layer() + 1);
+
+	// Unzip the node to the layer below the common ancestor layer.
+	var unzipResult : Vector<Chain>;
+	unzipResult := unzip_node(node, commonAncestorLayer - 1, DO_NOT_CHECK_PRECONDITIONS);
+
+	// Zip the chain leading upwards from the node being moved to the new chain to
+	// complete the parent switch. Note that the old chain required is the first
+	// chain in the unzip result by construction -- the unzipping implementation.
+	var chains : Vector<Chain>;
+	chains.push_back(unzipResult.front());
+	chains.push_back(newChain);
+	zip_chains(chains, DO_NOT_CHECK_PRECONDITIONS);
+
+	end_command_sequence();
 \end{lstlisting}
 \end{stulisting}
 
