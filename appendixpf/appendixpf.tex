@@ -1,0 +1,144 @@
+\chapter{Partition Forests -- Support Algorithms}
+
+%---
+\section{The Forest Data Structure}
+
+\paragraph{Ancestor Of}
+
+\begin{stulisting}[H]
+\caption{Forest : Ancestor Of Implementation}
+\begin{lstlisting}[style=Default]
+function ancestor_of
+:	(node : NodeID; layerIndex : int) $\to$ NodeID
+
+	if layerIndex < node.layer() or layerIndex > highest_layer() then throw;
+
+	var cur : NodeID := node;
+	while cur.layer() < layerIndex
+		var layer : IForestLayer := forest_layer(cur.layer());
+		cur := NodeID(cur.layer() + 1, layer.node_parent(cur.index());
+	return cur;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Are Connected}
+
+\begin{stulisting}[H]
+\caption{Forest : Are Connected Implementation}
+\begin{lstlisting}[style=Default]
+function are_connected
+:	(nodes : Set<int>; layerIndex : int) $\to$ bool
+
+	if nodes.empty() then return false;
+
+	find_connected_component(ref nodes, layerIndex);
+
+	// If no nodes remain after finding the first connected component, the nodes must
+	// be connected, and vice-versa.
+	return nodes.empty();
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Children Of}
+
+\begin{stulisting}[H]
+\caption{Forest : Children Of Implementation}
+\begin{lstlisting}[style=Default]
+function children_of
+:	(node : NodeID) $\to$ Set<NodeID>
+
+	// Special case: nodes in the leaf layer have no children.
+	if node.layer() = 0 then return {};
+
+	var layer : BranchLayer? := checked_branch_layer(node.layer());
+	if layer = null or not layer.has_node(node.index()) then throw;
+
+	var result : Set<NodeID>;
+	var childLayerIndex : int := node.layer() - 1;
+	for each c : int $\in$ layer.node_children(node.index());
+		result.insert(NodeID(childLayerIndex, c));
+	return result;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Find Common Ancestor Layer}
+
+\begin{stulisting}[H]
+\caption{Forest : Find Common Ancestor Layer Implementation}
+\begin{lstlisting}[style=Default]
+function find_common_ancestor_layer
+:	(component : Set<int>; layerIndex : int) $\to$ int
+
+	var curs : Set<int> := component;
+	while layerIndex $\le$ highest_layer() and curs.size() > 1
+		var layer : ForestLayer := forest_layer(layerIndex);
+		var parents : Set<int>;
+		for each n : int $\in$ curs
+			parents.insert(layer.node_parent(n));
+		curs := parents;
+		layerIndex := layerIndex + 1;
+	return layerIndex;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Find Common Ancestor Layer And New Chain}
+
+\begin{stulisting}[H]
+\caption{Forest : Find Common Ancestor Layer And New Chain Implementation}
+\begin{lstlisting}[style=Default]
+function find_common_ancestor_layer_and_new_chain
+:	(oldParent : int; newParent : int; layerIndex : int) $\to$ (int,Chain)
+
+	var newChain : Chain;
+	var curOld, curNew : int := oldParent, newParent;
+	while layerIndex $\le$ highest_layer() and curOld $\ne$ curNew
+		newChain.push_front(NodeID(layerIndex, curNew));
+		var layer : ForestLayer := forest_layer(layerIndex);
+		curOld := layer.node_parent(curOld);
+		curNew := layer.node_parent(curNew);
+		layerIndex := layerIndex + 1;
+	return (layerIndex, newChain);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Find Connected Component}
+
+\begin{stulisting}[H]
+\caption{Forest : Find Connected Component Implementation}
+\begin{lstlisting}[style=Default]
+function find_connected_component
+:	(nodes : ref Set<int>; layerIndex : int) $\to$ Set<int>
+
+	var result : Set<int>;
+	var layer : ForestLayer := forest_layer(layerIndex);
+	var seed : int := lowest_int(nodes);
+	nodes.erase(seed);
+
+	var q : Queue<int>;
+	q.push(seed);
+	while not q.empty()
+		var n : int := q.pop();
+		result.insert(n);
+		for each e : Edge $\in$ layer.adjacent_edges(n)
+			var other : int := other_end(e, n);
+			if nodes.contains(other) then
+				q.push(other);
+				nodes.erase(other);
+	return result;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Find Connected Components}
+
+\begin{stulisting}[H]
+\caption{Forest : Find Connected Components Implementation}
+\begin{lstlisting}[style=Default]
+function find_connected_components
+:	(nodes : Set<int>; layerIndex : int) $\to$ Vector<Set<int>>
+
+	var result : Vector<Set<int>>;
+	while not nodes.empty()
+		result.push_back(find_connected_component(nodes, layerIndex));
+	return result;
+\end{lstlisting}
+\end{stulisting}
