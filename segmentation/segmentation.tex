@@ -794,6 +794,8 @@ Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterf
 %--
 \begin{enumerate}
 
+\item The algorithm is run recursively on all the child edges.
+
 \item A child edge with minimum value is chosen (if one or more of the children with minimum value is a guard edge, one of those is chosen in preference to a non-guard). This is then referred to as the `lowest child'. The value on the current edge is compared to the value on the lowest child. If its value is less than that of the lowest child, it is marked as a non-guard edge; otherwise it is marked as a guard and the lowest child is marked as a non-guard.
 
 \item All non-guard children are now elided.
