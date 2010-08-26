@@ -143,7 +143,7 @@ It is possible to construct any partition forest for a particular object by star
 \end{proof}
 
 \begin{proof}
-(Necessity) Without the clone layer operation (or an equivalent way of creating new layers), it is impossible to create partition forests with more than one layer. Without the merge sibling nodes operation (or an equivalent way of merging nodes in a given layer), it is impossible to create non-trivial branch nodes.\qed
+(Necessity) Without the clone layer operation (or an equivalent way of creating new layers), it is impossible to create partition forests with more than one layer. Without the merge sibling nodes operation (or an equivalent way of merging nodes in a given layer), it is impossible to create non-trivial branch nodes. $\Box$
 \end{proof}
 
 \noindent Given this, it is simple to extend it to transformations between arbitrary partition forests over the same object:
@@ -158,10 +158,20 @@ It is possible to transform any partition forest $F$ for a particular object int
 \end{proof}
 
 \begin{proof}
-(Necessity) Without the clone layer operation, it is impossible to transform to a forest with more layers than currently present. Without the delete layer operation, it is impossible to transform to a forest with fewer layers than currently present. Without the merge sibling nodes operation, it is impossible to alter any of the layers. All three operations are thus individually necessary.\qed
+(Necessity) Without the clone layer operation, it is impossible to transform to a forest with more layers than currently present. Without the delete layer operation, it is impossible to transform to a forest with fewer layers than currently present. Without the merge sibling nodes operation, it is impossible to alter any of the layers. All three operations are thus individually necessary. $\Box$
 \end{proof}
 
-\noindent Theorem~\ref{thrm:ipfs-transformation} proves that only three core operations are strictly necessary to allow partition forests to be edited arbitrarily. However, in practice it is vitally important to also directly support node splitting as a core operation if efficient editing is desired (it is technically possible to split a node by reconstructing its entire layer, but this is clearly impractical). For this reason, the core partition forest algorithms are defined as (1) layer cloning, (2) layer deletion, (3) sibling node merging and (4) node splitting. Each of these operations is now examined in detail. Since they were ultimately designed for use as part of an interactive system for image analysis, a sample user interface for each operation is presented in that context (where relevant). The descriptions also focus not only on how each operation can be executed, but also on how it can be undone, and on what preconditions need checking before it is executed.
+\noindent Theorem~\ref{thrm:ipfs-transformation} proves that only three core operations are strictly necessary to allow partition forests to be edited arbitrarily. However, in practice it is vitally important to also directly support node splitting as a core operation if efficient editing is desired (it is technically possible to split a node by reconstructing its entire layer, but this is clearly impractical). For this reason, the core partition forest algorithms are defined as (1) layer cloning, (2) layer deletion, (3) sibling node merging and (4) node splitting. Each of these operations is now examined in detail. Since they were ultimately designed for use as part of an interactive system for image analysis, a sample user interface for each operation is presented in that context (where relevant). The descriptions also focus not only on how each operation can be executed, but also on how it can be undone, and on what preconditions need checking before it is executed. When analysing the complexity of the algorithms, I make the following assumptions about the data structures used:
+
+\begin{itemize}
+\item The forest layers are stored in some sort of resizeable array (for example, a std::vector in C++).
+\item The nodes in the forest's leaf layer are also stored in some sort of array (not necessarily resizeable). This makes particular sense for image partition forests, where the leaf layer contains the regular grid of pixels in the image.
+\item The nodes in the forest's branch layers are stored in some sort of tree-based map (for example, a std::map in C++).
+\item Edges in the leaf layer are created on-the-fly -- it would be unnecessarily costly to store all the edges between adjacent image pixels, for example.
+\item Edges in other layers are stored using some sort of tree-based data structure (such as the multi-index container provided in C++'s Boost libraries).
+\end{itemize}
+
+\noindent All of these data structures are assumed to provide their usual complexity guarantees (e.g.~logarithmic lookup for tree-based maps, etc.)
 
 \subsubsection{Layer Cloning}
 
@@ -185,7 +195,9 @@ The only precondition that needs checking for layer cloning is that the clonee (
 
 Pseudo-code to execute a clone layer command is shown in Listing~\ref{code:ipfs-forest-clonelayerimpl}. The essence of the approach taken is simple: clone the graph of the layer below, then update the forest links between the clone layer and the layers below and above it. In order to implement the algorithm efficiently, however, it is important to employ a sensible iterator-based interface to the nodes in each forest layer: this allows us to iterate over the nodes in a layer in linear time and avoid the costly node lookups that might otherwise be necessary. Thus, in the pseudo-code, we iterate simultaneously over the nodes in the clonee layer and the clone, first propagating each parent link from the clonee node up to the clone node, then linking the corresponding nodes in the clonee and the clone together.
 
-To analyse the complexity of the algorithm, we proceed as follows. Firstly, let $n_\ell$ be the number of nodes and $e_\ell$ be the number of adjacency graph edges in layer $\ell$. Suppose layer $c$ is to be inserted above layer $b$ and below layer $a$ (if it exists). Then evidently $n_c = n_b$ and $e_c = e_b$. The complexity of cloning $b$'s partitioning graph is $\Theta(e_b)$. (We observe in passing that $n_b \in O(e_b)$, since the adjacency graph is connected, so there is no need to include $n_b$ when analysing the complexity of the cloning process.) Forest links must then be added between layers $b$ and $c$, and $c$ and $a$, if $a$ exists. In either case, there is a constant amount of work to do for each of the $n_b$ nodes in layer $c$ (see pseudo-code), so the amount of work done updating the forest links is $\Theta(n_b)$. The overall complexity of the algorithm is thus $\Theta(e_b + n_b) = \Theta(e_b)$.
+TODO
+
+%To analyse the complexity of the algorithm, we proceed as follows. Firstly, let $n_\ell$ be the number of nodes and $e_\ell$ be the number of adjacency graph edges in layer $\ell$. Suppose layer $c$ is to be inserted above layer $b$ and below layer $a$ (if it exists). Then evidently $n_c = n_b$ and $e_c = e_b$. The complexity of cloning $b$'s partitioning graph is $\Theta(e_b)$. (We observe in passing that $n_b \in O(e_b)$, since the adjacency graph is connected, so there is no need to include $n_b$ when analysing the complexity of the cloning process.) Forest links must then be added between layers $b$ and $c$, and $c$ and $a$, if $a$ exists. In either case, there is a constant amount of work to do for each of the $n_b$ nodes in layer $c$ (see pseudo-code), so the amount of work done updating the forest links is $\Theta(n_b)$. The overall complexity of the algorithm is thus $\Theta(e_b + n_b) = \Theta(e_b)$.
 
 \begin{stulisting}[p]
 \caption{Forest : Clone Layer Implementation}
@@ -243,4 +255,46 @@ The only precondition that needs checking for layer deletion is that the layer b
 
 \paragraph{Executing the Command}
 
+Pseudo-code to execute a delete layer command is shown in Listing~\ref{code:ipfs-forest-deletelayerimpl}. The idea is to update the forest links between the layers on either side of the layer to be deleted and then remove the layer itself from the forest. Specifically, if $D$ is the layer being deleted, $B$ is the layer below it and $A$ is the layer above (if it exists), then each node in $B$ should have its parent link updated to point to its grandparent in layer $A$. The grandparent nodes in $A$ should similarly have their child links updated to point to their grandchildren in layer $B$. To implement this efficiently, it is important to avoid calculating the grandchildren of nodes in $A$ explicitly. This is most easily arranged by iterating over the grandchildren and updating the grandparents during the course of the iteration (see pseudo-code). It is important to return the deleted layer (unchanged) at the end of the process, because it must be cached if we are to support undo.
+
 TODO
+
+%In terms of complexity, we can neglect the cost of actually erasing the layer from the forest (with a na\"ive implementation, this can be linear in the number of layers in the forest, but that number is rarely greater than $10$ for the domains in which partition forests see use). The dominant cost of deleting a layer is in updating the forest links. We use the same notation for node and edge counts as in the layer cloning analysis. The first loop in the pseudo-code (which clears the child sets in layer $A$) is $\Theta(n_a)$, i.e.~linear in the number of nodes in layer $A$. TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Delete Layer Implementation}
+\label{code:ipfs-forest-deletelayerimpl}
+\begin{lstlisting}[style=Default]
+function delete_layer_impl
+:	(indexD : int) $\to$ BranchLayer
+
+	listeners.layer_will_be_deleted(indexD);
+
+	// Note: We denote the layer to be deleted as D, the layer below as B, and the
+	// layer above (if any) as A.
+
+	// The parent of each node in layer B should be set to the parent of its parent
+	// in layer D. Conversely, the child set of each node in layer A (if any) should
+	// be set to the union of the child sets of its children in layer D. This is
+	// accomplished in two stages: firstly, the child sets of the nodes in layer A
+	// are cleared; secondly, we iterate over the nodes in layer B and update their
+	// parent links to point to their grandparents in A, adding corresponding child
+	// links from the grandparents in layer A as we do so.
+	var layerA : BranchLayer? = checked_branch_layer(indexD + 1);
+	if layerA $\ne$ null then
+		for each n : BranchNode $\in$ layerA.branch_nodes()
+			n.set_children({});
+
+	var layerD : BranchLayer = branch_layer(indexD);
+	var layerB : ForestLayer = forest_layer(indexD - 1);
+	for each n : Node $\in$ layerB.nodes()
+		var grandparentA : int := layerD.node_parent(n.parent());
+		n.set_parent(grandparentA);
+		if layerA $\ne$ null then
+			layerA.node_children(grandparentA).insert(n.index());
+
+	erase_branch_layer(indexD);
+	listeners.layer_was_deleted(indexD);
+	return layerD;
+\end{lstlisting}
+\end{stulisting}
