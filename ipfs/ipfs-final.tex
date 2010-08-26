@@ -161,8 +161,86 @@ It is possible to transform any partition forest $F$ for a particular object int
 (Necessity) Without the clone layer operation, it is impossible to transform to a forest with more layers than currently present. Without the delete layer operation, it is impossible to transform to a forest with fewer layers than currently present. Without the merge sibling nodes operation, it is impossible to alter any of the layers. All three operations are thus individually necessary.\qed
 \end{proof}
 
-\noindent Theorem~\ref{thrm:ipfs-transformation} proves that only three core operations are strictly necessary to allow partition forests to be edited arbitrarily. However, in practice it is vitally important to also directly support node splitting as a core operation if efficient editing is desired (it is technically possible to split a node by reconstructing its entire layer, but this is clearly impractical). For this reason, the core partition forest algorithms are defined as (1) layer cloning, (2) layer deletion, (3) sibling node merging and (4) node splitting. Each of these operations is now examined in detail.
+\noindent Theorem~\ref{thrm:ipfs-transformation} proves that only three core operations are strictly necessary to allow partition forests to be edited arbitrarily. However, in practice it is vitally important to also directly support node splitting as a core operation if efficient editing is desired (it is technically possible to split a node by reconstructing its entire layer, but this is clearly impractical). For this reason, the core partition forest algorithms are defined as (1) layer cloning, (2) layer deletion, (3) sibling node merging and (4) node splitting. Each of these operations is now examined in detail. Since they were ultimately designed for use as part of an interactive system for image analysis, a sample user interface for each operation is presented in that context (where relevant). The descriptions also focus not only on how each operation can be executed, but also on how it can be undone, and on what preconditions need checking before it is executed.
 
 \subsubsection{Layer Cloning}
+
+\paragraph{Description}
+
+New layers can be inserted anywhere in the forest by cloning the layer below the insertion point (for example, see Figure~\ref{fig:ipfs-algorithms-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{PG}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
+
+\paragraph{User Interface for Image Analysis}
+
+The simplest user interface just allows the user to clone the current layer by (for example) clicking on a menu item (see Figure~\ref{fig:ipfs-algorithms-layercloning-gui}). After cloning the layer, the interface can display the clone so that the user can begin working with it immediately. An alternative would be to allow the user to clone any layer in the forest by displaying a dialog box allowing them to choose the layer to be cloned, but in my view the former approach is more intuitive.
+
+%---
+\stufigex{height=5cm}{ipfs/ipfs-algorithms-layercloning-gui.png}{The user interface for layer cloning: a simple menu item allowing the current layer to be cloned.}{fig:ipfs-algorithms-layercloning-gui}{h}
+%---
+
+\paragraph{Precondition Checking}
+
+The only precondition that needs checking for layer cloning is that the clonee (the layer being cloned) exists. This can be trivially checked in $\Theta(1)$ time. Note that if the clone layer command is invoked from the user interface, the layer will inevitably exist (and we can skip the check), since the layer currently being viewed exists by definition.
+
+\paragraph{Executing the Command}
+
+Pseudo-code to execute a clone layer command is shown in Listing~\ref{code:ipfs-forest-clonelayerimpl}. The essence of the approach taken is simple: clone the graph of the layer below, then update the forest links between the clone layer and the layers below and above it. In order to implement the algorithm efficiently, however, it is important to employ a sensible iterator-based interface to the nodes in each forest layer: this allows us to iterate over the nodes in a layer in linear time and avoid the costly node lookups that might otherwise be necessary. Thus, in the pseudo-code, we iterate simultaneously over the nodes in the clonee layer and the clone, first propagating each parent link from the clonee node up to the clone node, then linking the corresponding nodes in the clonee and the clone together.
+
+To analyse the complexity of the algorithm, we proceed as follows. Firstly, let $n_\ell$ be the number of nodes and $e_\ell$ be the number of adjacency graph edges in layer $\ell$. Suppose layer $c$ is to be inserted above layer $b$ and below layer $a$ (if it exists). Then evidently $n_c = n_b$ and $e_c = e_b$. The complexity of cloning $b$'s partitioning graph is $\Theta(e_b)$. (We observe in passing that $n_b \in O(e_b)$, since the adjacency graph is connected, so there is no need to include $n_b$ when analysing the complexity of the cloning process.) Forest links must then be added between layers $b$ and $c$, and $c$ and $a$, if $a$ exists. In either case, there is a constant amount of work to do for each of the $n_b$ nodes in layer $c$ (see pseudo-code), so the amount of work done updating the forest links is $\Theta(n_b)$. The overall complexity of the algorithm is thus $\Theta(e_b + n_b) = \Theta(e_b)$.
+
+\begin{stulisting}[p]
+\caption{Forest : Clone Layer Implementation}
+\label{code:ipfs-forest-clonelayerimpl}
+\begin{lstlisting}[style=Default]
+function clone_layer_impl
+: (indexB : int) $\to \emptyset$
+
+	// Note: We denote the layer being cloned as B and insert the clone layer C
+	// above it.
+
+	// Clone the graph of the layer below to make a new layer and insert it.
+	var layerB : ForestLayer := forest_layer(indexB);
+	var layerC : BranchLayer := clone_graph(layerB);
+	insert_branch_layer(indexB + 1, layerC);
+
+	// Copy the parent links from layer B to layer C, then update the links between
+	// B and C to make corresponding nodes in each link to each other.
+	var bt : NodeIterator := layerB.nodes_begin();
+	var bend : NodeIterator := layerB.nodes_end();
+	var ct : BranchNodeIterator := layerC.branch_nodes_begin();
+	var cend : BranchNodeIterator := layerC.branch_nodes_end();
+
+	while ct $\ne$ cend
+		ct.set_parent(bt.parent());
+		bt.set_parent(bt.index());
+		ct.set_children({bt.index()});
+		bt := next(bt), ct := next(ct);
+
+	listeners.layer_was_cloned(indexB);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Undoing the Command}
+
+A clone layer command can be undone by simply deleting the clone (see Listing~\ref{code:ipfs-forest-deletelayerimpl} for pseudo-code). The complexity of this will be analysed later.
+
+\subsubsection{Layer Deletion}
+
+\paragraph{Description}
+
+Any layer except the lowest can be deleted from the hierarchy (for example, see Figure~\ref{fig:ipfs-algorithms-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{PG}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
+
+\paragraph{User Interface for Image Analysis}
+
+As with layer cloning, the simplest user interface just allows the user to delete the current layer by clicking on a menu item (see Figure~\ref{fig:ipfs-algorithms-layerdeletion-gui}).
+
+%---
+\stufigex{height=5cm}{ipfs/ipfs-algorithms-layerdeletion-gui.png}{The user interface for layer deletion: a simple menu item allowing the current layer to be deleted.}{fig:ipfs-algorithms-layerdeletion-gui}{h}
+%---
+
+\paragraph{Precondition Checking}
+
+The only precondition that needs checking for layer deletion is that the layer being deleted is a branch layer. This is trivial to check in $\Theta(1)$ time. (Depending on the design of the overall application, it may be necessary to make layer deletion slightly more constrained. For instance, an application that shows only branch layers may want to prevent the user from deleting the last branch layer, even though it's perfectly fine when viewed strictly from a partition forest perspective. Regardless, though, the required checks remain trivial.)
+
+\paragraph{Executing the Command}
 
 TODO
