@@ -1,0 +1,958 @@
+\chapter{Partition Forests}
+\label{chap:ipfs}
+
+%---
+\section{Chapter Overview}
+
+In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a hierarchical representation for aggregate objects, and discusses how an interactive system might be designed to work with them. In the course of this, I present a set of novel algorithms I have developed that facilitate interactive editing of a partition forest and selection of nodes at multiple levels within it. I also show how identified features can be marked in the forest. This lays the foundation for the following two chapters, which describe how partition forests can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}).
+
+%---
+\section{What is a Partition Forest?}
+
+\subsection{Concept}
+
+A partition forest is in essence a hierarchy of adjacency graphs that all partition the same object (the sense in which a graph can partition an object will be formalised in \S\ref{sec:ipfs-definition}). The object itself can be anything that can be divided into pieces, whether that be an image, a road network or an organisation. As was seen in \S\ref{sec:background-partitionhierarchies}, partition forests (whether called by that name or otherwise) have been widely used as a hierarchical representation for images. However, surprisingly little attention has been devoted to how to edit them post-construction (with perhaps the notable exception being Nacken's work in \cite{nacken95}).
+
+\newpage
+
+The key components that make up a partition forest are illustrated in Figure~\ref{fig:ipfs-concept}, which shows a partition forest that might be constructed for a simple $4 \times 4$ image. A forest is made up of a number of layers, each of which is an adjacency graph representing a partition of an object (in this case, the image). Each partition is refined by the next highest partition, in the sense that each node in partition $i+1$ is the union of some of the nodes in partition $i$.
+
+The nodes in each layer represent groups of the smallest sub-objects into which the represented object can be divided (in this case, each node represents an image region, consisting of a group of pixels), and can have layer-dependent properties associated with them (shown as blue text in the figure). Properties of nodes in the leaf layer can be assigned arbitrarily, but properties of nodes in branch layers must be functions of the properties of their children in the layer below (this will be defined formally in \S\ref{sec:ipfs-definition}). In this example, a single, arbitrary value has been associated with each node in the leaf layer of the forest. Nodes in higher layers have been given a `mean value' property that is calculated from the values of the subsumed leaf nodes.
+
+Each layer also contains edges between nodes that are in some sense adjacent (in the case of images, this is defined in such a way that the nodes are considered adjacent if their corresponding regions are adjacent in the image). Each edge has an associated value (shown as underlined text in the figure). The values on the edges in the leaf layer can be assigned according to any scheme desired -- in this example, they represent the height of the `lowest pass point' between adjacent nodes, based on the values associated with the pixels. The value on an edge between a pair of nodes in a branch layer must be a function of the values on any edges between their respective children in the layer below (again, this will be defined formally in \S\ref{sec:ipfs-definition}). In this example, the value on an edge between two nodes, $u$ and $v$, in a branch layer is calculated to be the smallest value on any edge between a child of $u$ and a child of $v$, in keeping with the lowest pass idea above.
+
+In addition to the forest layers themselves, a partition forest also contains forest links that join the nodes in adjacent layers together (the coloured, dashed lines in the figure). In particular, there is a link between each node and the node that contains it in the layer above. These links naturally define parent/child relationships between forest nodes.
+
+%---
+\stufigex{height=24cm}{ipfs/ipfs-concept.png}{The concept of a partition forest (see main text for discussion)}{fig:ipfs-concept}{p}
+%---
+
+\subsection{Definition}
+\label{sec:ipfs-definition}
+
+Abstracting away from the intuitive description of partition forests just given, it is possible to define them more formally as follows:
+
+\begin{definition}
+An \textbf{object} is a non-empty set of basic components which together form a contiguous whole. (For example, a contiguous image region would be a non-empty set of pixels.)
+\end{definition}
+
+\begin{definition}
+A set of k objects $\{o'_1,\ldots,o'_k\}$ \textbf{partitions} an object $o$ iff $\bigcup_i o'_i = o$ and $\forall i,j \cdot o'_i \cap o'_j = \emptyset$. We write the relation as $\mathcal{P}(\{o'_1,\ldots,o'_k\}, o)$.
+\end{definition}
+
+\begin{definition}
+Given an object $o$, and two objects sets $O'_f = \{o'_{f1},\ldots,o'_{fk_f}\}$ and $O'_c = \{o'_{c1},\ldots,o'_{ck_c}\}$, satisfying $\mathcal{P}(O'_f,o)$ and $\mathcal{P}(O'_c,o)$, we say that $O'_c$ is a \textbf{coarser partition} of $o$ than $O'_f$ (written $O'_f \sqsubseteq O'_c$) iff for every object $o'_{ci} \in O'_c$ there exists a subset $S_i \subseteq O'_f$ such that $\mathcal{P}(S_i,o'_{ci})$. (In other words, $O'_f$ is a partition of $o$ in which each individual object in $O'_c$ has itself been partitioned.)
+\end{definition}
+
+\begin{definition}
+Letting $\mbox{adj}_o(o'_i, o'_j)$ denote that sub-objects $o'_i$ and $o'_j$ are (in some sense) adjacent in an object $o$, we define a \textbf{weight function} $w_o$ for $o$ to be a function of type $\mathbb{P}(o) \times \mathbb{P}(o) \to \mathbb{R}^+$ that satisfies the following two requirements:
+%
+\begin{enumerate}
+
+\item $w_o(o'_i, o'_j) \ne \infty$ when, and only when, $adj_o(o'_i, o'_j)$ is true
+
+\item Given any sets $S_i$ and $S_j$ satisfying $\mathcal{P}(S_i,o'_i)$ and $\mathcal{P}(S_j,o'_j)$, the value $w_o(o'_i, o'_j)$ is a function of only the values in the set $\{w_o(s_i, s_j) \; | \; s_i \in S_i, \; s_j \in S_j\}$.
+
+\end{enumerate}
+
+\end{definition}
+
+\begin{definition}
+A \textbf{property set} is an ordered set (a tuple) of properties, each of which is a function that maps an object to a value (the types of the values may differ). For example, in the context of imaging it would be possible to have an area property that calculates the area of a given image region in pixels.
+\end{definition}
+
+\begin{definition}
+Given a property set $P = (p_1,\ldots,p_k)$ and an object $o$, the \textbf{property value set} $V_P(o)$ is the ordered set that results from applying each property in $P$ to the object $o$, namely $(p_1(o),\ldots,p_k(o))$.
+\end{definition}
+
+\begin{definition}
+We call a property set $P$ \textbf{directly calculable} from a property set $P'$ iff, for any given set of sub-objects $O'$ and object $o$ satisfying $\mathcal{P}(O',o)$, the property value set $V_P(o)$ is a function of only the property value sets in $\{V_{P'}(o') \; | \; o' \in O'\}$. We write this relation as $P' \hookrightarrow P$.
+\end{definition}
+
+\begin{definition}
+A \textbf{partition node} is a node in a partition forest. Each node $n$ represents a given object, denoted as $\mbox{obj}(n)$. The set of objects represented by a node set $N$ can be denoted as $\mbox{Objs}(N)$.
+\end{definition}
+
+\begin{definition}
+A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(\{n_i,n_j\},w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \in N \mbox{ and } n_i \ne n_j\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \in N)$.
+\end{definition}
+
+\begin{definition}
+Given:
+
+%-
+\begin{enumerate}
+
+\item An object $o$
+\item A non-empty tuple $\textit{NS} = (N_1,\ldots,N_k)$, where:
+
+%--
+\begin{enumerate}
+
+\item $\forall N_i \in \textit{NS} \cdot \mathcal{P}(\mbox{Objs}(N_i),o)$
+\item $\mbox{Objs}(N_1) \sqsubseteq \ldots \sqsubseteq \mbox{Objs}(N_k)$ 
+\item $\forall n \in N_1 \cdot |\mbox{obj}(n)| = 1$
+
+\end{enumerate}
+%--
+
+\item A weight function $w_o$ for $o$
+\item A non-empty tuple $\textit{PS} = (P_1,\ldots,P_k)$ satisfying $P_1 \hookrightarrow \ldots \hookrightarrow P_k$
+
+\end{enumerate}
+%-
+
+\noindent We define the \textbf{partition forest} $PF_{\textit{NS},w_o,\textit{PS}}(o)$ to be the pair $(\textit{FL},\textit{PG})$, in which:
+
+\begin{itemize}
+
+\item $\textit{FL}$ is a set of forest links, defined as:
+%
+\[
+\{(n_c,n_p) \; | \; n_c, n_p \in N_1,\ldots,N_k \mbox{ and } n_c \ne n_p \mbox{ and } \mbox{obj}(n_c) \subseteq \mbox{obj}(n_p)\}
+\]
+
+\item $\textit{PG}$ is an ordered set of partitioning graphs of $o$, defined as:
+%
+\[
+(G(N_1,w_o,P_1),\ldots,G(N_k,w_o,P_k))
+\]
+
+\end{itemize}
+
+\end{definition}
+
+\noindent We can also define a parent/child relation between nodes, namely that $p = \mbox{parent}(c)$ iff $(c,p) \in \textit{FL}$. (This is equivalent to saying $c \in \mbox{children}(p)$.)
+
+%---
+\section{Interacting with Partition Forests}
+
+\subsection{Overview}
+
+TODO
+
+%---
+\stufigex{width=\linewidth}{ipfs/ipfs-interaction-uml.png}{TODO}{fig:ipfs-interaction-uml}{p}
+%---
+
+\subsection{The Forest Data Structure}
+
+TODO
+
+\subsubsection{Core Algorithms}
+
+TODO
+
+\paragraph{Clone Layer}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Clone Layer Implementation}
+\label{code:ipfs-forest-clonelayerimpl}
+\begin{lstlisting}[style=Default]
+function clone_layer_impl
+: (indexB : int) $\to \emptyset$
+
+	// Note: We denote the layer being cloned as B and insert the clone layer C
+	// above it.
+
+	// Clone the graph of the layer below to make a new layer and insert it.
+	var layerB : ForestLayer := forest_layer(indexB);
+	var layerC : BranchLayer := clone_graph(layerB);
+	insert_branch_layer(indexB + 1, layerC);
+
+	// Copy the parent links from layer B to layer C, then update the links between
+	// B and C to make corresponding nodes in each link to each other.
+	var bt : NodeIterator := layerB.nodes_begin();
+	var bend : NodeIterator := layerB.nodes_end();
+	var ct : BranchNodeIterator := layerC.branch_nodes_begin();
+	var cend : BranchNodeIterator := layerC.branch_nodes_end();
+
+	while bt $\ne$ bend
+		ct.set_parent(bt.parent());
+		bt.set_parent(bt.index());
+		ct.set_children({bt.index()});
+
+	listeners.layer_was_cloned(indexB);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Delete Layer}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Delete Layer Implementation}
+\label{code:ipfs-forest-deletelayerimpl}
+\begin{lstlisting}[style=Default]
+function delete_layer_impl
+:	(indexD : int) $\to$ BranchLayer
+
+	listeners.layer_will_be_deleted(indexD);
+
+	// Note: We denote the layer to be deleted as D, the layer below as B, and the
+	// layer above (if any) as A.
+
+	// The parent of each node in layer B should be set to the parent of its parent
+	// in layer D. Conversely, the child set of each node in layer A (if any) should
+	// be set to the union of the child sets of its children in layer D. This is
+	// accomplished in two stages: firstly, the child sets of the nodes in layer A
+	// are cleared; secondly, we iterate over the nodes in layer B and update their
+	// parent links to point to their grandparents in A, adding corresponding child
+	// links from the grandparents in layer A as we do so.
+	var layerA : BranchLayer? = checked_branch_layer(indexD + 1);
+	if layerA $\ne$ null then
+		for each n : BranchNode $\in$ layerA.branch_nodes()
+			n.set_children({});
+
+	var layerD : BranchLayer = branch_layer(indexD);
+	var layerB : ForestLayer = forest_layer(indexD - 1);
+	for each n : Node $\in$ layerB.nodes()
+		var grandparentA : int := layerD.node_parent(n.parent());
+		n.set_parent(grandparentA);
+		if layerA $\ne$ null then
+			layerA.node_children(grandparentA).insert(n.index());
+
+	erase_branch_layer(indexD);
+	listeners.layer_was_deleted(indexD);
+	return layerD;
+
+\end{lstlisting}
+\end{stulisting}
+
+\begin{stulisting}[p]
+\caption{Forest : Undelete Layer Implementation}
+\label{code:ipfs-forest-undeletelayerimpl}
+\begin{lstlisting}[style=Default]
+function undelete_layer_impl
+:	(indexD : int; layerD : BranchLayer) $\to \emptyset$
+
+	// Note: We denote the layer which has been deleted as D, the layer below as B,
+	// and the layer above (if any) as A.
+
+	// Insert the deleted layer back into the hierarchy.
+	insert_branch_layer(indexD, layerD);
+
+	// Recreate the parent links in layer B and the child links in layer A (provided
+	// that it exists).
+	var layerA : BranchLayer? := checked_branch_layer(indexD + 1);
+	if layerA $\ne$ null then
+		for each n : BranchNode $\in$ layerA.branch_nodes()
+			n.set_children({});
+
+	var layerB : ForestLayer := forest_layer(indexD - 1);
+	for each n : BranchNode $\in$ layerD.branch_nodes()
+		for each c : int $\in$ n.children()
+			layerB.set_node_parent(c, n.index());
+		if layerA $\ne$ null then layerA.node_children(n.parent()).insert(n.index());
+
+	listeners.layer_was_undeleted(indexD);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Split Node}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Split Node Implementation}
+\label{code:ipfs-forest-splitnodeimpl}
+\begin{lstlisting}[style=Default]
+function split_node_impl
+:	(node : NodeID; groups : Vector<Set<int>>) $\to$ Set<NodeID>
+
+	var layerA : BranchLayer? := checked_branch_layer(node.layer() + 1);
+	var layerS : BranchLayer := branch_layer(node.layer());
+	var layerB : ForestLayer := forest_layer(node.layer() - 1);
+
+	// Step 1: Delete the node being split from the forest.
+
+	// Remove any forest links which reference the node.
+	for each c : int $\in$ layerS.node_children(node.index())
+		layerB.set_node_parent(c, -1);
+
+	var parentIndex : int := layerS.node_parent(node.index());
+	if layerA $\ne$ null then layerA.node_children(parentIndex).erase(node.index());
+
+	// Remove the node from its partitioning graph.
+	layerS.remove_node(node.index());
+
+	// Step 2: Add new nodes for each of the groups to the split layer, along with
+	// the appropriate forest links.
+	var newNodes : Set<NodeID>;
+	for each group : Set<int> $\in$ groups
+		var groupIndex : int := lowest_int(group);	// note that group is non-empty
+		newNodes.insert(NodeID(node.layer(), groupIndex));
+		layerS.set_node_properties(groupIndex, layerB.combine_properties(group));
+		layerS.set_node_children(groupIndex, group);
+		layerS.set_node_parent(groupIndex, parentIndex);
+		for each n : int $\in$ group
+			layerB.set_node_parent(n, groupIndex);
+		if layerA $\ne$ null then layerA.node_children(parentIndex).insert(groupIndex);
+
+	// Step 3: Propagate the necessary edges from the child layer to the split layer.
+	for each group : Set<int> $\in$ groups
+		for each n : int $\in$ group
+			for each e : Edge $\in$ layerB.adjacent_edges(n)
+				var parentU : int := layerB.node_parent(e.u())
+				var parentV : int := layerB.node_parent(e.v());
+				if parentU $\ne$ parentV then
+					layerS.update_edge_weight(parentU, parentV, e.weight());
+
+	listeners.node_was_split(node, newNodes);
+	return newNodes;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Merge Sibling Nodes}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Merge Sibling Nodes Implementation}
+\label{code:ipfs-forest-mergesiblingnodesimpl}
+\begin{lstlisting}[style=Default]
+function merge_sibling_nodes_impl
+:	(nodes : Set<NodeID>) $\to$ NodeID
+
+	listeners.node_will_be_merged(nodes);
+
+	var canonical : NodeID := lowest_indexed_node(nodes);
+	var others : Set<NodeID> := nodes $\backslash$ {canonical};
+	var layerM : BranchLayer := branch_layer(canonical.layer());
+	var layerB : ForestLayer := forest_layer(canonical.layer() - 1);
+
+	// Step 1: Reconfigure the forest links.
+
+	// Set the parent links of the children of the other nodes to point to the
+	// canonical node, and conversely add the children of the other nodes as
+	// children of the canonical node.
+	var canonicalChildren : ref Set<int> := layerM.node_children(canonical.index());
+	for each n : NodeID $\in$ others
+		for each c : int $\in$ layerM.node_children(n.index())
+			layerB.set_node_parent(c, canonical.index());
+			canonicalChildren.insert(c);
+
+	// If we are not in the highest layer of the hierarchy, remove the child links
+	// between the common parent and the other nodes.
+	if canonical.layer() $\ne$ highest_layer() then
+		var layerA : BranchLayer := branch_layer(canonical.layer() + 1);
+		var parentIndex : int := layerM.node_parent(canonical.index());
+		var parentChildren : ref Set<int> := layerA.node_children(parentIndex);
+		for each n : NodeID $\in$ others
+			parentChildren.erase(node.index());
+
+	// Step 2: Recalculate the adjacent edges and properties for the canonical node.
+
+	// Update the edges of the canonical node based on those of the other nodes.
+	for each n : NodeID $\in$ others
+		for each e : Edge $\in$ layerM.adjacent_edges(n.index());
+			var otherEnd : int := other_end(e, n.index());
+			if otherEnd $\ne$ canonical.index() then
+				layerM.update_edge_weight(canonical.index(), otherEnd, e.weight());
+
+	// Recalculate the properties for the canonical node.
+	var ps : BranchProperties := layerB.combine_properties(canonicalChildren);
+	layerM.set_node_properties(canonical.index(), ps);
+
+	// Step 3: Remove the other merged nodes (note that this also removes their
+	// adjacent edges).
+	for each n : NodeID $\in$ others
+		layerM.remove_node(n.index());
+
+	listeners.nodes_were_merged(nodes, canonical);
+	return canonical;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Discussion}
+
+TODO
+
+\subsubsection{Zipping Algorithms}
+
+TODO
+
+\paragraph{Unzip Node}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Unzip Node Implementation}
+\label{code:ipfs-forest-unzipnode}
+\begin{lstlisting}[style=Default]
+function unzip_node
+:	(node : NodeID; toLayer : int; checkPreconditions : CheckPreconditions) $\to$ Vector<Chain>
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that the specified node is valid.
+		var layer : ForestLayer? := checked_forest_layer(node.layer());
+		if layer = null or not layer.has_node(node.index()) then throw;
+
+		// Check that the specified layer is within the right range.
+		if toLayer < node.layer() or toLayer > highest_layer() then throw;
+
+	begin_command_sequence();
+
+	var chains : Vector<Chain>;
+
+	// Ensure that the chain leading up from the node being unzipped is the first
+	// chain in the returned vector. The chain shouldn't actually contain the node
+	// itself, so we will remove it before returning (below).
+	var primaryChain : Chain;
+	primaryChain.push_back(node);
+	chains.push_back(primaryChain);
+
+	var cur : NodeID := node;
+	while cur.layer() $\ne$ toLayer
+		var parent : NodeID := parent_of(cur);
+		var parentLayer : BranchLayer := branch_layer(parent.layer());
+		var siblings : Set<int> := parentLayer.node_children(parent.index()) $\backslash$ {cur};
+
+		// Calculate the connected components of the siblings.
+		var ccs : Vector<Set<int>> := find_connected_components(siblings, cur.layer());
+
+		// Add in the component {cur} and split the parent node.
+		ccs.push_back({cur});
+		var result : Set<NodeID> := split_node(parent, ccs, DO_NOT_CHECK_PRECONDITIONS);
+
+		// Update the chains.
+		for each chain : Chain $\in$ chains
+			var h : PFNodeID := chain.front();	// the head of the chain
+			var p : PFNodeID := parent_of(h);
+			chain.push_front(p);
+			result.erase(p);
+
+		for each n : NodeID $\in$ result
+			var chain : Chain;
+			chain.push_back(n);
+			chains.push_back(chain);
+
+		// Note: Not necessarily the same as the parent before split_node was invoked!
+		cur := parent_of(cur);
+
+	// The first chain incorrectly contains the node being unzipped as its last node
+	// at this point (we added it above to make sure that the chain from that node
+	// was the first in the vector), so we remove it.
+	chains.front().pop_back();
+
+	end_command_sequence();
+	return chains;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Zip Chains}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Zip Chains Implementation}
+\label{code:ipfs-forest-zipchains}
+\begin{lstlisting}[style=Default]
+function zip_chains
+:	(chains : Vector<Chain>; checkPreconditions : CheckPreconditions) $\to$ (NodeID, int)
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that there are chains to zip.
+		if chains.empty() then throw;
+
+		// Check that each chain is non-empty and doesn't extend down as far as the
+		// bottom layer of the hierarchy.
+		var lowLayer : int := $\infty$;
+		for each chain : Chain $\in$ chains
+			if chain.empty() then throw;
+			if chain.back().layer() = 0 then throw;
+			lowLayer := min(lowLayer, chain.back().layer());
+
+		// Check that the highest nodes in the chains are siblings of each other.
+		var commonParent : NodeID := parent_of(chains[0].front());
+		for each chain : Chain $\in$ chains[1..]
+			if parent_of(chain.front()) $\ne$ commonParent then throw;
+
+		// Check that the sets of nodes to be merged in each layer are connected.
+		var highLayer : int := chains[0].front().layer();
+		for layer : int := highLayer down to lowLayer
+			var nodes : Set<int>;
+			for each chain $\in$ chains
+				if highLayer - layer < chain.size() then
+					nodes.insert(chain[highLayer - layer].index());
+			if not are_connected(nodes, layer) then throw;
+
+	begin_command_sequence();
+
+	// Find the high and low layers of the chains.
+	var highLayer : int := chains[0].front().layer();
+	var lowLayer : int := $\infty$;
+	for each chain $\in$ chains
+		lowLayer = min(lowLayer, chain.back().layer());
+
+	// Perform a sibling node merge on the nodes in each layer, starting from the
+	// high layer and working downwards.
+	var mergeResult : NodeID;
+	for layer : int := highLayer down to lowLayer
+		var nodes : Set<NodeID>;
+		for each chain $\in$ chains
+			if highLayer - layer < chain.size() then
+				nodes.insert(NodeID(layer, chain[highLayer - layer].index()));
+		mergeResult := merge_sibling_nodes(nodes, DO_NOT_CHECK_PRECONDITIONS);
+
+	end_command_sequence();
+	return (mergeResult, highLayer);
+\end{lstlisting}
+\end{stulisting}
+
+\subsubsection{Higher-Level Algorithms}
+
+\paragraph{Merge Non-Sibling Nodes}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Merge Non-Sibling Nodes Implementation}
+\label{code:ipfs-forest-mergenonsiblingnodes}
+\begin{lstlisting}[style=Default]
+function merge_nonsibling_nodes
+:	(nodes : Set<NodeID>; checkPreconditions : CheckPreconditions) $\to$ Set<NodeID>
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that there are nodes to be merged.
+		if nodes.empty() then throw;
+
+		// Check that the nodes to be merged are valid and are all in the same
+		// (non-lowest) layer of the hierarchy.
+		var commonLayer : int := lowest_indexed_node(nodes).layer();
+		if commonLayer = 0 then throw;
+		for each n : NodeID $\in$ nodes
+			if n.layer() $\ne$ commonLayer then throw;
+			var layer : ForestLayer? := checked_forest_layer(n.layer());
+			if layer = null or not layer.has_node(n.index()) then throw;
+
+	begin_command_sequence();
+
+	var mergedNodes : Set<NodeID>;
+
+	// Calculate the connected components of the nodes to be merged.
+	var layerIndex : int := lowest_indexed_node(nodes).layer();
+	var indices : Set<int>;
+	for each n : NodeID $\in$ nodes
+		indices.insert(n.index());
+	var ccs : Vector<Set<int>> := find_connected_components(indices, layerIndex);
+
+	// Arrange for the nodes in each connected component of size > 1 to be merged.
+	for each component : Set<int> $\in$ ccs
+		if component.size() = 1 then continue;	// nothing to do
+
+		// Find the layer to which the nodes need to be unzipped, namely the layer
+		// below the nodes' common ancestor.
+		var toLayer : int := find_common_ancestor_layer(component, layerIndex) - 1;
+
+		// Unzip each node in the component to the specified layer, in each case
+		// keeping the chain that corresponds to the unzipped node itself, which (by
+		// construction) will be the first one in the returned vector. Since we want
+		// the actual nodes (and not just the nodes above them in their chains) to be
+		// merged, we add them to the ends of their respective chains here as well.
+		var chains : Vector<Chain>;
+		for each n : int $\in$ component
+			var node : NodeID := NodeID(layerIndex, n);
+			var unzipResult : Vector<Chain>;
+			unzipResult := unzip_node(node, toLayer, DO_NOT_CHECK_PRECONDITIONS);
+			chains.push_back(unzipResult.front());
+			chains.back().push_back(node);
+
+		// Zip the chains together to effectuate the merge, and store the resulting
+		// node.
+		mergedNodes.insert(zip_chains(chains, DO_NOT_CHECK_PRECONDITIONS).first);
+
+	end_command_sequence();
+	return mergedNodes;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Parent Switch}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Parent Switch Implementation}
+\label{code:ipfs-forest-parentswitch}
+\begin{lstlisting}[style=Default]
+function parent_switch
+:	(node : NodeID; newParent : int; checkPreconditions : CheckPreconditions) $\to \emptyset$
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that the node itself is a valid node.
+		var layerN : ForestLayer? := checked_forest_layer(node.layer());
+		if layerN = null or not layerN.has_node(node.index()) then throw;
+
+		// Check that the proposed new parent is a valid node.
+		var layerP : BranchLayer? := checked_branch_layer(node.layer() + 1);
+		if layerP = null or not layerP.has_node(newParent) then throw;
+
+		// Check that the node is adjacent to at least one child of its proposed new
+		// parent.
+		var adjacent : bool := false;
+		for each c : int $\in$ layerP.node_children(newParent)
+			if layerN.has_edge(node.index(), c) then
+				adjacent := true;
+				break;
+		if not adjacent then throw;
+
+	begin_command_sequence();
+
+	// Find the common ancestor layer of the old and new parents, and the chain
+	// leading down to the new parent.
+	var layerN : ForestLayer := forest_layer(node.layer());
+	var oldParent : int := layerN.node_parent(node.index());
+	var commonAncestorLayer : int;
+	var newChain : Chain;
+	(commonAncestorLayer, newChain) =
+		find_common_ancestor_layer_and_new_chain(oldParent, newParent, node.layer() + 1);
+
+	// Unzip the node to the layer below the common ancestor layer.
+	var unzipResult : Vector<Chain>;
+	unzipResult := unzip_node(node, commonAncestorLayer - 1, DO_NOT_CHECK_PRECONDITIONS);
+
+	// Zip the chain leading upwards from the node being moved to the new chain to
+	// complete the parent switch. Note that the old chain required is the first
+	// chain in the unzip result by construction -- the unzipping implementation.
+	var chains : Vector<Chain>;
+	chains.push_back(unzipResult.front());
+	chains.push_back(newChain);
+	zip_chains(chains, DO_NOT_CHECK_PRECONDITIONS);
+
+	end_command_sequence();
+\end{lstlisting}
+\end{stulisting}
+
+\subsection{The Selection Data Structure}
+
+TODO
+
+\subsubsection{Core Algorithms}
+
+TODO
+
+\paragraph{Add Node}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Add Node Implementation}
+\label{code:ipfs-selection-addnodeimpl}
+\begin{lstlisting}[style=Default]
+function add_node_impl
+:	(node : NodeID) $\to$ Modification
+
+	/*
+	Cases:
+
+	- The node is already part of the selection (do nothing)
+	- An ancestor of the node is already part of the selection (do nothing)
+	- One or more descendants of the node are already part of the selection (erase
+	  them and insert this instead)
+	- Otherwise (insert the node as usual)
+	*/
+
+	var modification : Modification;
+
+	// Note that this handles the first two cases.
+	if contains(node) then return modification;	// return an empty Modification
+
+	// If there are descendants, erase them.
+	var descendants : List<NodeID> := descendants_in_selection(node);
+	for each d $\in$ descendants
+		erase_node(d, ref modification);
+
+	insert_node(node, ref modification);
+
+	// Note: This is designed to work even if the node actually has no parent.
+	consolidate_upwards_from_node(forest().parent_of(node), ref modification);
+
+	return modification;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Remove Node}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Remove Node Implementation}
+\label{code:ipfs-selection-removenodeimpl}
+\begin{lstlisting}[style=Default]
+function remove_node_impl
+:	(node : NodeID) $\to$ Modification
+
+	var modification : Modification;
+
+	// Case 1: The node itself is in the selection.
+	if in_selection(node) then
+		erase_node(node, ref modification);
+		return modification;
+
+	// Case 2: An ancestor of the node is in the selection.
+	var trail : Stack<NodeID>;
+	var ancestor : NodeID := find_ancestor_in_selection(node, ref trail);
+	if ancestor.valid() then
+		split_selection(trail, ref modification);
+		erase_node(node, ref modification);
+		return modification;
+
+	// Case 3: One or more descendants of the node are in the selection.
+	var descendants : List<NodeID> := descendants_in_selection(node);
+	for each d $\in$ descendants
+		erase_node(d, ref modification);
+	return modification;
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{View at Layer}
+
+TODO (and remark that the real implementation uses iterators)
+
+\begin{stulisting}[p]
+\caption{Forest Selection : View at Layer Implementation}
+\label{code:ipfs-selection-viewatlayer}
+\begin{lstlisting}[style=Default]
+function view_at_layer
+:	(layerIndex : int) $\to$ Vector<NodeID>
+
+	var nodes : Vector<NodeID>;
+
+	// If the selection contains any node in a higher layer than that specified,
+	// add its descendants in the specified layer to the result.
+	for i : int := highest_layer() down to layerIndex + 1
+		for each n : NodeID $\in$ layer(i).nodes()
+			append(ref nodes, descendants_in_layer(n, layerIndex);
+
+	// Directly add all nodes in layers no greater than that specified to the result.
+	for i : int := layerIndex down to 0
+		append(ref nodes, layer(i).nodes());
+
+	return nodes;
+\end{lstlisting}
+\end{stulisting}
+
+\subsubsection{Undo/Redo Algorithms}
+
+TODO
+
+\paragraph{Undo Modification}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Undo Modification Implementation}
+\label{code:ipfs-selection-undomodification}
+\begin{lstlisting}[style=Default]
+function undo_modification
+:	(modification : Modification) $\to \emptyset$
+
+	for each n : NodeID $\in$ modification.erased_nodes()
+		insert_node(n, null);
+	for each n : NodeID $\in$ modification.inserted_nodes()
+		erase_node(n, null);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Redo Modification}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Redo Modification Implementation}
+\label{code:ipfs-selection-redomodification}
+\begin{lstlisting}[style=Default]
+function redo_modification
+:	(modification : Modification) $\to \emptyset$
+
+	for each n : NodeID $\in$ modification.erased_nodes()
+		erase_node(n, null);
+	for each n : NodeID $\in$ modification.inserted_nodes()
+		insert_node(n, null);
+\end{lstlisting}
+\end{stulisting}
+
+\subsubsection{Listening Algorithms}
+
+TODO
+
+\paragraph{Layer Was Cloned}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Layer Was Cloned Implementation}
+\label{code:ipfs-selection-layerwascloned}
+\begin{lstlisting}[style=Default]
+function layer_was_cloned
+:	(index : int) $\to \emptyset$
+
+	// The desired effect is to insert a layer above the one specified and migrate
+	// any selected nodes upwards to the new layer. This can be achieved most easily
+	// by simply inserting an empty layer below the one being cloned, as here.
+	var emptyLayer : SelectionLayer;
+	insert_layer(index, emptyLayer);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Layer Was Undeleted}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Layer Was Undeleted Implementation}
+\label{code:ipfs-selection-layerwasundeleted}
+\begin{lstlisting}[style=Default]
+function layer_was_undeleted
+:	(index : int) $\to \emptyset$
+
+	// Re-add the layer itself.
+	var emptyLayer : SelectionLayer;
+	insert_layer(index, emptyLayer);
+
+	// Construct the set of parents of selected nodes in the layer below.
+	var parents : Set<NodeID>;
+	for each n : NodeID $\in$ layer(index - 1).nodes()
+		parents.insert(forest().parent_of(n));
+
+	// Consolidate each of these parents in turn.
+	for each p : NodeID $\in$ parents
+		consolidate_node(p, null);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Layer Will Be Deleted}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Layer Will Be Deleted Implementation}
+\label{code:ipfs-selection-layerwillbedeleted}
+\begin{lstlisting}[style=Default]
+function layer_will_be_deleted
+:	(index : int) $\to \emptyset$
+
+	// Replace any nodes in the specified layer with their children in the layer below.
+	for each n : NodeID $\in$ layer(index).nodes()
+		deconsolidate_node(n, null);
+
+	// Delete the layer itself.
+	erase_layer(index);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Node Was Split}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Node Was Split Implementation}
+\label{code:ipfs-selection-nodewassplit}
+\begin{lstlisting}[style=Default]
+function node_was_split
+:	(node : NodeID; results : Set<NodeID>) $\to \emptyset$
+
+	if in_selection(node) then
+		erase_node(node, null);
+		for each r : NodeID $\in$ results
+			insert_node(r, null);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Nodes Will Be Merged / Nodes Were Merged}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Nodes Will Be Merged / Nodes Were Merged Implementation}
+\label{code:ipfs-selection-nodesmerged}
+\begin{lstlisting}[style=Default]
+function nodes_will_be_merged
+:	(nodes : Set<NodeID>) $\to \emptyset$
+
+	// Replace any selected nodes with their children in the layer below.
+	for each n : NodeID $\in$ nodes
+		if in_selection(n) then
+			deconsolidate_node(n, null);
+
+function nodes_were_merged
+:	(nodes : Set<NodeID>; result : NodeID) $\to \emptyset$
+
+	// Consolidate the node resulting from the merge. Note that the selection of this
+	// node's ancestors in the forest will be unchanged by the merge, so we don't need
+	// to consolidate those.
+	consolidate_node(result, null);
+\end{lstlisting}
+\end{stulisting}
+
+\subsection{The Multi-Feature Selection Data Structure}
+
+TODO
+
+\paragraph{Identify Feature}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Multi-Feature Selection : Identify Feature Implementation}
+\label{code:ipfs-mfs-identifyfeature}
+\begin{lstlisting}[style=Default]
+function identify_feature
+:	(node : NodeID; featureID : FeatureID) $\to \emptyset$
+
+	var selection : Selection? := find_selection(featureID);
+	if selection = null then
+		selection := new Selection(forest());
+		selection.set_command_manager(command_manager());
+		forest().add_listener(selection);
+		insert_selection(featureID, selection);
+	selection.add_node(node);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Unidentify Feature}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Multi-Feature Selection : Unidentify Feature Implementation}
+\label{code:ipfs-mfs-unidentifyfeature}
+\begin{lstlisting}[style=Default]
+function unidentify_feature
+:	(node : NodeID; featureID : FeatureID) $\to \emptyset$
+
+	var selection : Selection? := find_selection(featureID);
+	if selection $\ne$ null then selection.remove_node(node);
+\end{lstlisting}
+\end{stulisting}
+
+\paragraph{Features Of}
+
+TODO
+
+\begin{stulisting}[p]
+\caption{Multi-Feature Selection : Features Of Implementation}
+\label{code:ipfs-mfs-featuresof}
+\begin{lstlisting}[style=Default]
+function features_of
+:	(node : NodeID) $\to$ Vector<FeatureID>
+
+	var features : Vector<FeatureID>;
+	for each (featureID, selection) : (FeatureID, Selection) $\in$ selections()
+		if selection.contains(node) then
+			features.push_back(featureID);
+	return features;
+\end{lstlisting}
+\end{stulisting}
+
+%---
+\section{Results}
+
+TODO
+
+%---
+\section{Chapter Summary}
+
+TODO

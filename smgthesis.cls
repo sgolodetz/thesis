@@ -135,6 +135,20 @@
 	\end{figure}
 }
 
+% Define theorem-related environments, etc. (see http://www.maths.tcd.ie/~dwilkins/LaTeXPrimer/Theorems.html)
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\renewenvironment{proof}[1][Proof]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\renewcommand{\qed}{\nobreak \ifvmode \relax \else
+      \ifdim\lastskip<1.5em \hskip-\lastskip
+      \hskip1.5em plus0em minus0.5em \fi \nobreak
+      \vrule height0.75em width0.5em depth0.25em\fi}
+
 % Define the thesis environment
 \newtheorem*{thesis}{Thesis}
 
