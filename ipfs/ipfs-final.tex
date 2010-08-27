@@ -126,6 +126,7 @@ Given:
 
 %---
 \section{Mutating Algorithms for Partition Forests}
+\label{sec:ipfs-mutatingalgorithms}
 
 Partition forests, as presented thus far, are a useful hierarchical representation for aggregate objects, but they are \emph{static}: that is, once a partition forest has been constructed for a given object, it does not change. This can be problematic, because constructing a perfect forest is potentially hard, and the number of possible forests for a given object is (at least theoretically) infinite. Even being more practical, and imposing the reasonable condition that every edge in the adjacency graph for the forest's leaf layer should have been elided (merging the two nodes it joins) by branch layer $E$, where $E$ is the total number of edges in the leaf adjacency graph, we can observe that there are still $E^2$ possible forests for an object (the $E^2$ comes from choosing a layer between $1$ and $E$ inclusive at which each leaf layer edge is removed by merging the nodes it joins). Putting this into context, that means that for a $4$-connected image of size $r \times c$, there are $(4rc - 2(r+c))^2$ possible partition forests (over a million possibilities for a $512 \times 512$ image). There is therefore a pressing need for mutating algorithms that allow us to transform one partition forest into another, in order to allow a user to work around potential issues with the initial partition forest construction. In this section, I present a hierarchy of novel algorithms (see Figure~\ref{?}) that allow users to edit partition forests, thereby changing them from being merely a static data structure into being a dynamic one.
 
@@ -233,7 +234,7 @@ function clone_layer_impl
 
 \paragraph{Undoing the Command}
 
-A clone layer command can be undone by simply deleting the clone (see Listing~\ref{code:ipfs-forest-deletelayerimpl} for pseudo-code). The complexity of this will be analysed later.
+A clone layer command can be undone by simply deleting the clone (see Listing~\ref{code:ipfs-forest-deletelayerimpl} for pseudo-code). The complexity of this is analysed in the next section.
 
 \subsubsection{Layer Deletion}
 
@@ -257,9 +258,7 @@ The only precondition that needs checking for layer deletion is that the layer b
 
 Pseudo-code to execute a delete layer command is shown in Listing~\ref{code:ipfs-forest-deletelayerimpl}. The idea is to update the forest links between the layers on either side of the layer to be deleted and then remove the layer itself from the forest. Specifically, if $D$ is the layer being deleted, $B$ is the layer below it and $A$ is the layer above (if it exists), then each node in $B$ should have its parent link updated to point to its grandparent in layer $A$. The grandparent nodes in $A$ should similarly have their child links updated to point to their grandchildren in layer $B$. To implement this efficiently, it is important to avoid calculating the grandchildren of nodes in $A$ explicitly. This is most easily arranged by iterating over the grandchildren and updating the grandparents during the course of the iteration (see pseudo-code). It is important to return the deleted layer (unchanged) at the end of the process, because it must be cached if we are to support undo.
 
-TODO
-
-%In terms of complexity, we can neglect the cost of actually erasing the layer from the forest (with a na\"ive implementation, this can be linear in the number of layers in the forest, but that number is rarely greater than $10$ for the domains in which partition forests see use). The dominant cost of deleting a layer is in updating the forest links. We use the same notation for node and edge counts as in the layer cloning analysis. The first loop in the pseudo-code (which clears the child sets in layer $A$) is $\Theta(n_a)$, i.e.~linear in the number of nodes in layer $A$. TODO
+We use the same notation to analyse the complexity as in the layer cloning analysis. The first loop in the pseudo-code (which clears the child sets in layer $A$) does a constant amount of work for each node in layer $A$ and is thus $O(n_a)$. Each iteration of the second loop (which updates the forest links) does an $O(\log n_d)$ lookup in layer $D$ to find the grandparent of $n$, sets $n$'s parent in constant time and then potentially does an $O(\log n_a)$ lookup on layer $A$, followed by an insertion into the set of child nodes of the grandparent node. The overall work done by the loop excluding the final insertions is $O(n_b (\log n_d + \log n_a)) = O(n_b \log n_d)$, since $n_a \le n_d$. The cost of the insertions depends on the distribution of the child nodes and how they are stored. If child nodes are stored as resizeable arrays, then each insertion is amortized constant time and the total cost of all the insertions is amortized $O(n_b)$. (If, however, tree-based sets are used, and all the child nodes have the same grandparent, the total cost ends up being $O(\log n_b!)$, i.e.~the cost of inserting $n_b$ elements one by one into a tree-based set.) Assuming the former, the total amortized complexity of the second loop is $O(n_b \log n_d) + O(n_b) = O(n_b \log n_d)$. Finally, the complexity of actually erasing the layer from the forest is amortized constant time. The total amortized complexity of the algorithm as a whole is therefore $O(n_a) + O(n_b \log n_d) + O(1) = O(n_b \log n_d)$, since $n_a \le n_b$.
 
 \begin{stulisting}[p]
 \caption{Forest : Delete Layer Implementation}
@@ -298,3 +297,117 @@ function delete_layer_impl
 	return layerD;
 \end{lstlisting}
 \end{stulisting}
+
+\paragraph{Undoing the Command}
+
+Pseudo-code to undo a delete layer command is shown in Listing~\ref{code:ipfs-forest-undeletelayerimpl}. TODO
+
+\begin{stulisting}[p]
+\caption{Forest : Undelete Layer Implementation}
+\label{code:ipfs-forest-undeletelayerimpl}
+\begin{lstlisting}[style=Default]
+function undelete_layer_impl
+:	(indexD : int; layerD : BranchLayer) $\to \emptyset$
+
+	// Note: We denote the layer which has been deleted as D, the layer below as B,
+	// and the layer above (if any) as A.
+
+	// Insert the deleted layer back into the hierarchy.
+	insert_branch_layer(indexD, layerD);
+
+	// Recreate the parent links in layer B and the child links in layer A (provided
+	// that it exists).
+	var layerA : BranchLayer? := checked_branch_layer(indexD + 1);
+	if layerA $\ne$ null then
+		for each n : BranchNode $\in$ layerA.branch_nodes()
+			n.set_children({});
+
+	var layerB : ForestLayer := forest_layer(indexD - 1);
+	for each n : BranchNode $\in$ layerD.branch_nodes()
+		for each c : int $\in$ n.children()
+			layerB.set_node_parent(c, n.index());
+		if layerA $\ne$ null then layerA.node_children(n.parent()).insert(n.index());
+
+	listeners.layer_was_undeleted(indexD);
+\end{lstlisting}
+\end{stulisting}
+
+\subsubsection{Sibling Node Merging}
+
+\paragraph{Description}
+
+Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-algorithms-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest).
+
+\paragraph{User Interface for Image Analysis}
+
+Although it is a crucial operation, it doesn't make sense to expose sibling-only node merging in the interface, since that would require the user to keep track of which nodes share the same forest parent. A much better solution (shown later) is to expose the more intuitive operation that merges arbitrary nodes in the same layer into their connected components.
+
+\paragraph{Precondition Checking}
+
+TODO
+
+\paragraph{Executing the Command}
+
+TODO
+
+\paragraph{Undoing the Command}
+
+TODO
+
+\subsubsection{Node Splitting}
+
+\paragraph{Description}
+
+Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) An example is shown in Figure~\ref{fig:ipfs-algorithms-nodesplitting}.
+
+\paragraph{User Interface for Image Analysis}
+
+The user interface for node splitting is necessarily more complicated than that for earlier operations, because the user needs to be able to indicate the way in which a node should be split. As illustrated in Figure~\ref{fig:ipfs-algorithms-nodesplitting-gui}, this is a multi-step operation. The user initially selects and marks a node to be split, then defines the components into which it should be split by iteratively selecting and marking connected subgroups of its children. (If a mistake is made, it is possible to remove a subgroup and try again, although this is not illustrated for space reasons.) Finally, the user `finalizes' the split and the desired changes are made to the forest.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Select the node to be split in the forest]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-a.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Mark it to be split by clicking the menu item]
+	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-b.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After marking it, its children will be highlighted]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-c.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Select the child nodes in a subgroup]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-d.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Add the subgroup by clicking the menu item]
+	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-e.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Each subgroup will be assigned a different colour]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-f.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Repeat (d)-(f) to add other subgroups, then finalize the split by clicking the menu item]
+	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-g.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[The node will be split as indicated]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-h.png}}%
+\caption{The user interface for node splitting}
+\label{fig:ipfs-algorithms-nodesplitting-gui}
+\end{stusubfig}
+%---
+
+\paragraph{Precondition Checking}
+
+TODO
