@@ -300,7 +300,11 @@ function delete_layer_impl
 
 \paragraph{Undoing the Command}
 
-Pseudo-code to undo a delete layer command is shown in Listing~\ref{code:ipfs-forest-undeletelayerimpl}. TODO
+Pseudo-code to undo a delete layer command is shown in Listing~\ref{code:ipfs-forest-undeletelayerimpl}. The algorithm reinserts the deleted layer $D$ (cached during deletion) back into the forest, then recreates the forest links in the layers below ($B$) and above ($A$, where applicable) the deletion point, using the links in the deleted layer to discover which links to add.
+
+(It is worth observing that undeleting a layer in an interactive system may not necessarily be as simple as this. One good reason for deleting a layer is to save memory, in particular the substantial amount of memory associated with the textures that display the partition forest to the user. Caching these textures when deleting a layer would in this case defeat the point of deleting the layer in the first place. A compromise solution is to cache the layer itself, but delete the textures -- we then arrange to recreate the textures from scratch in the event that the layer is undeleted.)
+
+In terms of complexity, the reinsertion of the deleted layer takes amortized constant time. The first loop of the pseudo-code (which clears the child sets of all the nodes in layer $A$) takes $O(n_a)$ time. To analyse the remainder of the algorithm, observe that line $20$ (which sets the parent of a node looked up in layer $B$) executes $n_b$ times, making the cost of the inner loop $O(n_b \log n_b)$ when $B$ is a branch layer. Line $21$ (which does a lookup in layer $A$ and then an insertion into a child set) is executed $n_d$ times. The total cost of the lookups is $O(n_d \log n_a)$. Assuming the child sets are implemented sensibly, each insertion is amortized constant time, making the amortized cost of all the insertions $O(n_d)$. So the overall cost of lines $17-21$ is $O(n_b \log n_b + n_d \log n_a + n_d) = O(n_b \log n_b)$, since $n_b \ge n_d \ge n_a$. The total cost of the entire algorithm is thus also $O(n_b \log n_b)$.
 
 \begin{stulisting}[p]
 \caption{Forest : Undelete Layer Implementation}
@@ -524,3 +528,21 @@ function split_node_impl
 \paragraph{Undoing the Command}
 
 To undo a split node command, it is enough to just re-merge the results of the split using a sibling node merge (see Listing~\ref{code:ipfs-algorithms-mergesiblingnodesimpl} for pseudo-code).
+
+\subsection{Zipping Algorithms}
+
+Whilst the core mutating algorithms provide all that is theoretically required for partition forest editing, certain operations are nevertheless tedious for the user to perform using only these primitives. For instance, it seems intuitively sensible that the user should be able to merge not only nodes that are siblings in the forest, but any nodes that are adjacent in the graph for their forest layer. Such `higher-level' algorithms, however, require more substantial changes to the structure of the forest; in particular, they require changes to be made in more than one layer.
+
+In order to facilitate the implementation of such algorithms, it is helpful to introduce two intermediary forest operations that I call \emph{unzip node} (or just \emph{unzipping}) and \emph{zip chains} (or just \emph{zipping}). These are respectively multi-layer split and merge operations on the forest, and can be implemented in terms of their lower-level counterparts. In fact, such an approach is not only possible but advisable, since it can be used to avoid writing special code to undo the operations. The key is to introduce an entity called a \emph{command sequence guard}. This is created at the start of a composite operation like an unzip, and informs the application's command manager that a command sequence is about to start (in C++, this would happen in the constructor for the guard). The relevant lower-level commands are then executed, after which the guard is destroyed again, informing the application's command manager that the command sequence has ended (in C++, this would happen in the guard's destructor). Undoing the composite operation is then a simple matter of undoing the lower-level commands in reverse order, something that can be easily handled by any decent command manager implementation. Bearing this in mind, we can now examine each of the zipping algorithms in detail.
+
+\subsubsection{Unzipping}
+
+\paragraph{Description}
+
+A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration. See Figure~\ref{fig:ipfs-algorithms-unzipping} for an example.
+
+% TODO: fig:ipfs-algorithms-unzipping
+
+\paragraph{User Interface for Image Analysis}
+
+TODO
