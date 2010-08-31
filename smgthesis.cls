@@ -271,4 +271,20 @@ stepnumber=1,
 tabsize=4
 }
 
+% For function prototypes (e.g. in the partition forests chapter)
+\lstdefinestyle{Prototype}{
+abovecaptionskip=0.5cm,
+backgroundcolor=\color{cyan},
+basicstyle=\small\ttfamily\color{white},
+belowcaptionskip=0.5cm,
+belowskip=0.5cm,
+commentstyle=\color{darkgreen},
+language=C++,
+numbers=none,
+mathescape=true,
+showstringspaces=false,
+stepnumber=1,
+tabsize=4
+}
+
 }

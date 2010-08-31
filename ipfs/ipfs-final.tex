@@ -180,6 +180,12 @@ It is possible to transform any partition forest $F$ for a particular object int
 
 New layers can be inserted anywhere in the forest by cloning the layer below the insertion point (for example, see Figure~\ref{fig:ipfs-algorithms-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{PG}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
 
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+void clone_layer(int indexB);
+\end{lstlisting}
+
 \paragraph{User Interface for Image Analysis}
 
 The simplest user interface just allows the user to clone the current layer by (for example) clicking on a menu item (see Figure~\ref{fig:ipfs-algorithms-layercloning-gui}). After cloning the layer, the interface can display the clone so that the user can begin working with it immediately. An alternative would be to allow the user to clone any layer in the forest by displaying a dialog box allowing them to choose the layer to be cloned, but in my view the former approach is more intuitive.
@@ -241,6 +247,12 @@ A clone layer command can be undone by simply deleting the clone (see Listing~\r
 \paragraph{Description}
 
 Any layer except the lowest can be deleted from the hierarchy (for example, see Figure~\ref{fig:ipfs-algorithms-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{PG}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+void delete_layer(int indexD);
+\end{lstlisting}
 
 \paragraph{User Interface for Image Analysis}
 
@@ -342,13 +354,28 @@ function undelete_layer_impl
 
 Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-algorithms-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest).
 
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+NodeID merge_sibling_nodes(const set<NodeID>& nodes);
+\end{lstlisting}
+
 \paragraph{User Interface for Image Analysis}
 
 Although it is a crucial operation, it doesn't make sense to expose sibling-only node merging in the interface, since that would require the user to keep track of which nodes share the same forest parent. A much better solution (shown later) is to expose the more intuitive operation that merges arbitrary nodes in the same layer into their connected components.
 
 \paragraph{Precondition Checking}
 
-TODO
+The following preconditions must be checked for sibling node merging (see the pseudo-code in Listing~\ref{code:ipfs-algorithms-mergesiblingnodes} for the method):
+
+\begin{enumerate}
+
+\item There must be more than one node to be merged. (This can be trivially checked in $O(1)$ time.)
+\item None of the nodes must be in the lowest layer of the forest. (This can be checked in time linear in the number of nodes.)
+\item The nodes must share a common parent in the forest. Note that this implies that they must all be in the same layer. (Assuming the $k$ nodes share a common layer $\ell$, then the cost of looking up the parent for each node is $O(\log n_\ell)$, whence the total cost of this check is $O(k \log n_\ell)$.)
+\item The union of the objects represented by the nodes to be merged must be connected. (TODO)
+
+\end{enumerate}
 
 \paragraph{Executing the Command}
 
@@ -363,6 +390,13 @@ TODO
 \paragraph{Description}
 
 Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) An example is shown in Figure~\ref{fig:ipfs-algorithms-nodesplitting}.
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+set<NodeID> split_node(const NodeID& node,
+                       const vector<set<int> >& groups);
+\end{lstlisting}
 
 \paragraph{User Interface for Image Analysis}
 
@@ -420,7 +454,7 @@ The following preconditions must be checked for node splitting (see the pseudo-c
 
 \item The node to be split must not be in the leaf layer of the forest. (This can be trivially checked in $O(1)$ time.)
 \item The node to be split must exist. (This can be checked in $O(1)$ time for the leaf layer, and $O(\log n_\ell)$ time for branch layer $\ell$.)
-\item There must be more than one subgroup. (This can be trivially check in $O(1)$ time.)
+\item There must be more than one subgroup. (This can be trivially checked in $O(1)$ time.)
 \item The subgroups must partition the children of the node being split. (This can be checked in time $O(\log C!)$, where $C$ is the number of children, since each inner loop iteration involves a logarithmic amount of work on a set whose size decreases linearly from $C$ to $1$, and $\sum_{i=1}^C \log i = \log C!$.)
 \item Each of the subgroups must be non-empty and connected. (Each of the $G$ groups requires $O(1)$ time for the non-empty check, and TODO.)
 
@@ -543,6 +577,66 @@ A node in any layer of the hierarchy can be unzipped to a specified higher layer
 
 % TODO: fig:ipfs-algorithms-unzipping
 
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+typedef deque<NodeID> Chain;
+vector<Chain> unzip_node(const NodeID& node, int toLayer);
+\end{lstlisting}
+
 \paragraph{User Interface for Image Analysis}
 
 TODO
+
+\paragraph{Precondition Checking}
+
+The following preconditions must be checked for unzipping:
+
+\begin{enumerate}
+
+\item The node being unzipped must exist. (This can be checked in $O(1)$ time for the leaf layer, and $O(\log n_\ell)$ time for branch layer $\ell$.)
+\item If $L$ is the layer containing the node being unzipped, and $H$ is the highest layer in the partition forest, then the index of the layer to which to unzip must be in the range $[L,H]$. (This can be trivially checked in $O(1)$ time.)
+
+\end{enumerate}
+
+\paragraph{Executing the Command}
+
+TODO
+
+\paragraph{Undoing the Command}
+
+TODO
+
+\subsubsection{Zipping}
+
+\paragraph{Description}
+
+TODO
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+pair<NodeID,int> zip_chains(const vector<Chain>& chains);
+\end{lstlisting}
+
+\paragraph{User Interface for Image Analysis}
+
+It doesn't make sense to expose zipping as part of the user interface, since the inputs it requires (node chains) are too cumbersome for the user to be asked to provide directly. More usable operations such as parent switching (described in the next section), that use zipping internally, should be exposed instead.
+
+\paragraph{Precondition Checking}
+
+TODO
+
+\paragraph{Executing the Command}
+
+TODO
+
+\paragraph{Undoing the Command}
+
+TODO
+
+\subsection{Higher-Level Algorithms}
+
+Having discussed unzipping and zipping in the previous section, we are now in a position to implement two higher-level partition forest algorithms that are of great practical use. The first of these is the previously-mentioned merging operation that allows the user to merge nodes based on their adjacency in their forest layer (i.e.~in an imaging context, their spatial adjacency within the image) rather than whether or not they share a common forest parent. As observed earlier, this is the `intuitive' merging operation that the user wants to perform on forest nodes (see e.g.~Figure~\ref{fig:ipfs-algorithms-nonsiblingnodemerging-motivation}), but it is a difficult operation to implement without the machinery provided by the zipping algorithms.
+
+The second higher-level algorithm that we can now implement is parent switching, the problem tackled in a more constrained manner by Peter Nacken in \cite{nacken95}. TODO
