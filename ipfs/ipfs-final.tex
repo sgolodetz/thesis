@@ -1,15 +1,19 @@
 \chapter{Partition Forests}
 \label{chap:ipfs}
 
-%---
+%##################################################################################################
 \section{Chapter Overview}
+%##################################################################################################
 
 In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a hierarchical representation for aggregate objects in general, and images in particular. I present a hierarchy of novel editing algorithms for partition forests, and propose partition forest selection and partition forest multi-feature selection data structures to support subtree-based selection and identification of nodes within forests. I further show how these features can be integrated into a graphical user interface for working with image partition forests (that is, partition forests in an imaging context). This lays the foundation for the following two chapters, which describe how partition forests can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}).
 
-%---
+%##################################################################################################
 \section{What is a Partition Forest?}
+%##################################################################################################
 
+%################################################
 \subsection{Concept}
+%################################################
 
 A partition forest is in essence a hierarchy of adjacency graphs that all partition the same object (the sense in which a graph can partition an object will be formalised in \S\ref{sec:ipfs-definition}). The object itself can be anything that can be divided into pieces, whether that be an image, a road network or an organisation. As was seen in \S\ref{sec:background-partitionhierarchies}, partition forests (whether called by that name or otherwise) have been widely used as a hierarchical representation for images. However, surprisingly little attention has been devoted to how to edit them post-construction (with perhaps the notable exception being Nacken's work in \cite{nacken95}).
 
@@ -27,8 +31,10 @@ In addition to the forest layers themselves, a partition forest also contains fo
 \stufigex{height=24cm}{ipfs/ipfs-concept.png}{The concept of a partition forest (see main text for discussion)}{fig:ipfs-concept}{p}
 %---
 
+%################################################
 \subsection{Definition}
 \label{sec:ipfs-definition}
+%################################################
 
 It is possible to define partition forests more formally as follows:
 
@@ -124,13 +130,16 @@ Given:
 
 \noindent We can also define a parent/child relation between nodes, namely that $p = \mbox{parent}(c)$ iff $(c,p) \in \textit{FL}$. (This is equivalent to saying $c \in \mbox{children}(p)$.)
 
-%---
+%##################################################################################################
 \section{Mutating Algorithms for Partition Forests}
 \label{sec:ipfs-mutatingalgorithms}
+%##################################################################################################
 
 Partition forests, as presented thus far, are a useful hierarchical representation for aggregate objects, but they are \emph{static}: that is, once a partition forest has been constructed for a given object, it does not change. This can be problematic, because constructing a perfect forest is potentially hard, and the number of possible forests for a given object is (at least theoretically) infinite. Even being more practical, and imposing the reasonable condition that every edge in the adjacency graph for the forest's leaf layer should have been elided (merging the two nodes it joins) by branch layer $E$, where $E$ is the total number of edges in the leaf adjacency graph, we can observe that there are still $E^2$ possible forests for an object (the $E^2$ comes from choosing a layer between $1$ and $E$ inclusive at which each leaf layer edge is removed by merging the nodes it joins). Putting this into context, that means that for a $4$-connected image of size $w \times h$, there are $(4wh - 2(w+h))^2$ possible partition forests (over a million possibilities for a $512 \times 512$ image). There is therefore a pressing need for mutating algorithms that allow us to transform one partition forest into another, in order to allow a user to work around potential issues with the initial partition forest construction. In this section, I present a hierarchy of novel algorithms (see Figure~\ref{?}) that allow users to edit partition forests, thereby changing them from being merely a static data structure into being a dynamic one.
 
+%################################################
 \subsection{Core Algorithms}
+%################################################
 
 In order to be able to transform a partition forest for an object $o$ into any other partition forest for $o$, a certain minimal set of forest operations must be possible. Specifically, it must be possible to clone and delete forest layers, and merge sibling forest nodes (nodes that share the same parent). To show that these are both necessary and sufficient, we first prove the following theorem:
 
@@ -174,11 +183,27 @@ It is possible to transform any partition forest $F$ for a particular object int
 
 \noindent All of these data structures are assumed to provide their usual complexity guarantees (e.g.~logarithmic lookup for tree-based maps, etc.)
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Layer Cloning}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \paragraph{Description}
 
 New layers can be inserted anywhere in the forest by cloning the layer below the insertion point (for example, see Figure~\ref{fig:ipfs-forest-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{PG}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Before cloning layer 2]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-layercloning-a-hierarchy.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After cloning layer 2]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-layercloning-b-hierarchy.png}}%
+\caption{An example of layer cloning.}
+\label{fig:ipfs-forest-layercloning}
+\end{stusubfig}
+%---
 
 \paragraph{C++ Method Interface}
 
@@ -207,7 +232,7 @@ TODO
 %To analyse the complexity of the algorithm, we proceed as follows. Firstly, let $n_\ell$ be the number of nodes and $e_\ell$ be the number of adjacency graph edges in layer $\ell$. Suppose layer $c$ is to be inserted above layer $b$ and below layer $a$ (if it exists). Then evidently $n_c = n_b$ and $e_c = e_b$. The complexity of cloning $b$'s partitioning graph is $\Theta(e_b)$. (We observe in passing that $n_b \in O(e_b)$, since the adjacency graph is connected, so there is no need to include $n_b$ when analysing the complexity of the cloning process.) Forest links must then be added between layers $b$ and $c$, and $c$ and $a$, if $a$ exists. In either case, there is a constant amount of work to do for each of the $n_b$ nodes in layer $c$ (see pseudo-code), so the amount of work done updating the forest links is $\Theta(n_b)$. The overall complexity of the algorithm is thus $\Theta(e_b + n_b) = \Theta(e_b)$.
 
 \begin{stulisting}[p]
-\caption{Forest : Clone Layer Implementation}
+\caption{Forest : Layer Cloning Implementation}
 \label{code:ipfs-forest-clonelayerimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-clonelayerimpl.lst}
 \end{stulisting}
@@ -216,11 +241,27 @@ TODO
 
 A clone layer command can be undone by simply deleting the clone (see Listing~\ref{code:ipfs-forest-deletelayerimpl} for pseudo-code). The complexity of this is analysed in the next section.
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Layer Deletion}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \paragraph{Description}
 
 Any layer except the lowest can be deleted from the hierarchy (for example, see Figure~\ref{fig:ipfs-forest-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{PG}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Before deleting layer 1]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-layerdeletion-a-hierarchy.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After deleting layer 1]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-layerdeletion-b-hierarchy.png}}%
+\caption{An example of layer deletion.}
+\label{fig:ipfs-forest-layerdeletion}
+\end{stusubfig}
+%---
 
 \paragraph{C++ Method Interface}
 
@@ -247,7 +288,7 @@ Pseudo-code to execute a delete layer command is shown in Listing~\ref{code:ipfs
 We use the same notation to analyse the complexity as in the layer cloning analysis. The first loop in the pseudo-code (which clears the child sets in layer $A$) does a constant amount of work for each node in layer $A$ and is thus $O(n_a)$. Each iteration of the second loop (which updates the forest links) does an $O(\log n_d)$ lookup in layer $D$ to find the grandparent of $n$, sets $n$'s parent in constant time and then potentially does an $O(\log n_a)$ lookup on layer $A$, followed by an insertion into the set of child nodes of the grandparent node. The overall work done by the loop excluding the final insertions is $O(n_b (\log n_d + \log n_a)) = O(n_b \log n_d)$, since $n_a \le n_d$. The cost of the insertions depends on the distribution of the child nodes and how they are stored. If child nodes are stored as resizeable arrays, then each insertion is amortized constant time and the total cost of all the insertions is amortized $O(n_b)$. (If, however, tree-based sets are used, and all the child nodes have the same grandparent, the total cost ends up being $O(\log n_b!)$, i.e.~the cost of inserting $n_b$ elements one by one into a tree-based set.) Assuming the former, the total amortized complexity of the second loop is $O(n_b \log n_d) + O(n_b) = O(n_b \log n_d)$. Finally, the complexity of actually erasing the layer from the forest is amortized constant time. The total amortized complexity of the algorithm as a whole is therefore $O(n_a) + O(n_b \log n_d) + O(1) = O(n_b \log n_d)$, since $n_a \le n_b$.
 
 \begin{stulisting}[p]
-\caption{Forest : Delete Layer Implementation}
+\caption{Forest : Layer Deletion Implementation}
 \label{code:ipfs-forest-deletelayerimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-deletelayerimpl.lst}
 \end{stulisting}
@@ -261,12 +302,14 @@ Pseudo-code to undo a delete layer command is shown in Listing~\ref{code:ipfs-fo
 In terms of complexity, the reinsertion of the deleted layer takes amortized constant time. The first loop of the pseudo-code (which clears the child sets of all the nodes in layer $A$) takes $O(n_a)$ time. To analyse the remainder of the algorithm, observe that line $20$ (which sets the parent of a node looked up in layer $B$) executes $n_b$ times, making the cost of the inner loop $O(n_b \log n_b)$ when $B$ is a branch layer. Line $21$ (which does a lookup in layer $A$ and then an insertion into a child set) is executed $n_d$ times. The total cost of the lookups is $O(n_d \log n_a)$. Assuming the child sets are implemented sensibly, each insertion is amortized constant time, making the amortized cost of all the insertions $O(n_d)$. So the overall cost of lines $17-21$ is $O(n_b \log n_b + n_d \log n_a + n_d) = O(n_b \log n_b)$, since $n_b \ge n_d \ge n_a$. The total cost of the entire algorithm is thus also $O(n_b \log n_b)$.
 
 \begin{stulisting}[p]
-\caption{Forest : Undelete Layer Implementation}
+\caption{Forest : Layer Undeletion Implementation}
 \label{code:ipfs-forest-undeletelayerimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-undeletelayerimpl.lst}
 \end{stulisting}
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Sibling Node Merging}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \paragraph{Description}
 
@@ -303,7 +346,9 @@ TODO
 
 TODO
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Node Splitting}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \paragraph{Description}
 
@@ -381,7 +426,7 @@ The following preconditions must be checked for node splitting (see the pseudo-c
 When implementing node splitting in a user interface like the one described above, these preconditions should be checked by the interface, not by the forest at the time of finalizing the split. The user should not, for example, have the option of adding invalid subgroups or finalizing a split without defining any subgroups.
 
 \begin{stulisting}[p]
-\caption{Forest : Split Node Precondition Checking}
+\caption{Forest : Node Splitting Precondition Checking}
 \label{code:ipfs-forest-splitnode}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-splitnode.lst}
 \end{stulisting}
@@ -391,7 +436,7 @@ When implementing node splitting in a user interface like the one described abov
 Pseudo-code to execute a split node command is shown in Listing~\ref{code:ipfs-forest-splitnodeimpl}. TODO
 
 \begin{stulisting}[p]
-\caption{Forest : Split Node Implementation}
+\caption{Forest : Node Splitting Implementation}
 \label{code:ipfs-forest-splitnodeimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-splitnodeimpl.lst}
 \end{stulisting}
@@ -400,13 +445,17 @@ Pseudo-code to execute a split node command is shown in Listing~\ref{code:ipfs-f
 
 To undo a split node command, it is enough to just re-merge the results of the split using a sibling node merge (see Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl} for pseudo-code).
 
+%################################################
 \subsection{Zipping Algorithms}
+%################################################
 
 Whilst the core mutating algorithms provide all that is theoretically required for partition forest editing, certain operations are nevertheless tedious for the user to perform using only these primitives. For instance, it seems intuitively sensible that the user should be able to merge not only nodes that are siblings in the forest, but any nodes that are adjacent in the graph for their forest layer. Such `higher-level' algorithms, however, require more substantial changes to the structure of the forest; in particular, they require changes to be made in more than one layer.
 
 In order to facilitate the implementation of such algorithms, it is helpful to introduce two intermediary forest operations that I call \emph{unzip node} (or just \emph{unzipping}) and \emph{zip chains} (or just \emph{zipping}). These are respectively multi-layer split and merge operations on the forest, and can be implemented in terms of their lower-level counterparts. In fact, such an approach is not only possible but advisable, since it can be used to avoid writing special code to undo the operations. The key is to introduce an entity called a \emph{command sequence guard}. This is created at the start of a composite operation like an unzip, and informs the application's command manager that a command sequence is about to start (in C++, this would happen in the constructor for the guard). The relevant lower-level commands are then executed, after which the guard is destroyed again, informing the application's command manager that the command sequence has ended (in C++, this would happen in the guard's destructor). Undoing the composite operation is then a simple matter of undoing the lower-level commands in reverse order, something that can be easily handled by any decent command manager implementation. Bearing this in mind, we can now examine each of the zipping algorithms in detail.
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Unzipping}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \paragraph{Description}
 
@@ -488,7 +537,9 @@ TODO
 
 TODO
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Zipping}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \paragraph{Description}
 
@@ -516,7 +567,9 @@ TODO
 
 TODO
 
+%################################################
 \subsection{Higher-Level Algorithms}
+%################################################
 
 Having discussed unzipping and zipping in the previous section, we are now in a position to implement two higher-level partition forest algorithms that are of great practical use. The first of these is the previously-mentioned merging operation that allows the user to merge nodes based on their adjacency in their forest layer (i.e.~in an imaging context, their spatial adjacency within the image) rather than whether or not they share a common forest parent. As observed earlier, this is the `intuitive' merging operation that the user wants to perform on forest nodes (see e.g.~Figure~\ref{fig:ipfs-forest-nonsiblingnodemerging-motivation}), but it is a difficult operation to implement without the machinery provided by the zipping algorithms.
 
