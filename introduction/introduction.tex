@@ -44,6 +44,25 @@ I have implemented all of the described techniques and algorithms in C++. Specif
 The final system, \emph{millipede}, is built using a cross-platform build framework called CMake, and runs on Microsoft Windows, Linux and Mac OS X (see Figure~\ref{fig:introduction-millipede-seg}). It allows the user to segment a CT (or MRI) series either as a 3D volume, or by axial, coronal or sagittal slices, in all cases producing a single image partition forest for the entire image. Among many other improvements, it supports far better automatic feature identification in 3D and has built-in tools for validation. It can also visualize the feature identification results as a Phong-lit 3D mesh (see Figure~\ref{fig:introduction-millipede-vis}).
 
 %---
+\begin{stusubfig}{p}
+	\subfigure[\emph{millipede} running on Microsoft Windows]
+	{\includegraphics[width=.6\linewidth]{introduction/introduction-millipede-seg-windows.png}}%
+	%
+	\\
+	%
+	\subfigure[\emph{millipede} running on Linux (Ubuntu)]
+	{\includegraphics[width=.6\linewidth]{introduction/introduction-millipede-seg-linux.png}}%
+	%
+	\\
+	%
+	\subfigure[\emph{millipede} running on Mac OS X (Snow Leopard)]
+	{\includegraphics[width=.6\linewidth]{introduction/introduction-millipede-seg-macosx.png}}%
+\caption{The final segmentation system I developed, known as \emph{millipede}, is cross-platform.}
+\label{fig:introduction-millipede-seg}
+\end{stusubfig}
+%---
+
+%---
 \stufigex{height=6cm}{introduction/introduction-millipede-vis.png}{Visualizing the results of the automatic feature identification techniques in \emph{millipede} as a Phong-lit 3D mesh. Six features are visible: the aorta (red), right kidney (yellow), liver (purple), ribs (pale green), spine (pale blue) and spinal cord (slightly darker blue).}{fig:introduction-millipede-vis}{t}
 %---
 
