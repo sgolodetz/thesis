@@ -315,6 +315,20 @@ In terms of complexity, the reinsertion of the deleted layer takes amortized con
 
 Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-forest-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest).
 
+%---
+\begin{stusubfig}{p}
+	\subfigure[Before merging nodes (2,0) and (2,6).]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-siblingnodemerging-a-hierarchy.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After merging nodes (2,0) and (2,6).]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-siblingnodemerging-b-hierarchy.png}}%
+\caption{An example of sibling node merging.}
+\label{fig:ipfs-forest-siblingnodemerging}
+\end{stusubfig}
+%---
+
 \paragraph{C++ Method Interface}
 
 \begin{lstlisting}[style=Prototype]
