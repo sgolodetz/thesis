@@ -1,0 +1,36 @@
+function split_node
+:	(node : NodeID; groups : Vector<Set<int>>;
+	 checkPreconditions : CheckPreconditions) $\to$ Set<NodeID>
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that the node to be split is not in the lowest layer.
+		if node.layer() = 0 then throw;
+
+		// Check that the node to be split is valid.
+		var layer : BranchLayer? := checked_branch_layer(node.layer());
+		if layer = null or not layer.has_node(node.index()) then throw;
+
+		// Check that the groups partition the children of the node.
+		var children : Set<int> := layer.node_children(node.index());
+		for each group : Set<int> $\in$ groups
+			for each childIndex : int $\in$ group
+				if children.contains(childIndex) then
+					children.erase(childIndex);
+				else
+					throw;
+		if children $\ne$ {} then throw;
+
+		// Check that each of the split groups is non-empty and connected.
+		for each group : Set<int> $\in$ groups
+			if group = {} then throw;
+			if not are_connected(group, node.layer() - 1) then throw;
+
+	// We only need to split the node if there's more than one group.
+	if #groups $\ne$ 1 then
+		var command : SplitNodeCommand := make_split_node_command(node, groups);
+		command_manager().execute(command);
+		return command.result();
+	else
+		var result : Set<NodeID>;
+		result.insert(node);
+		return result;

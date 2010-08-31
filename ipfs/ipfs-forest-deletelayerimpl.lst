@@ -1,0 +1,31 @@
+function delete_layer_impl
+:	(indexD : int) $\to$ BranchLayer
+
+	listeners.layer_will_be_deleted(indexD);
+
+	// Note: We denote the layer to be deleted as D, the layer below as B, and the
+	// layer above (if any) as A.
+
+	// The parent of each node in layer B should be set to the parent of its parent
+	// in layer D. Conversely, the child set of each node in layer A (if any) should
+	// be set to the union of the child sets of its children in layer D. This is
+	// accomplished in two stages: firstly, the child sets of the nodes in layer A
+	// are cleared; secondly, we iterate over the nodes in layer B and update their
+	// parent links to point to their grandparents in A, adding corresponding child
+	// links from the grandparents in layer A as we do so.
+	var layerA : BranchLayer? := checked_branch_layer(indexD + 1);
+	if layerA $\ne$ null then
+		for each n : BranchNode $\in$ layerA.branch_nodes()
+			n.set_children({});
+
+	var layerD : BranchLayer := branch_layer(indexD);
+	var layerB : ForestLayer := forest_layer(indexD - 1);
+	for each n : Node $\in$ layerB.nodes()
+		var grandparentA : int := layerD.node_parent(n.parent());
+		n.set_parent(grandparentA);
+		if layerA $\ne$ null then
+			layerA.node_children(grandparentA).insert(n.index());
+
+	erase_branch_layer(indexD);
+	listeners.layer_was_deleted(indexD);
+	return layerD;

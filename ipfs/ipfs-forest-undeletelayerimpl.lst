@@ -1,0 +1,23 @@
+function undelete_layer_impl
+:	(indexD : int; layerD : BranchLayer) $\to \emptyset$
+
+	// Note: We denote the layer which has been deleted as D, the layer below as B,
+	// and the layer above (if any) as A.
+
+	// Insert the deleted layer back into the hierarchy.
+	insert_branch_layer(indexD, layerD);
+
+	// Recreate the parent links in layer B and the child links in layer A (provided
+	// that it exists).
+	var layerA : BranchLayer? := checked_branch_layer(indexD + 1);
+	if layerA $\ne$ null then
+		for each n : BranchNode $\in$ layerA.branch_nodes()
+			n.set_children({});
+
+	var layerB : ForestLayer := forest_layer(indexD - 1);
+	for each n : BranchNode $\in$ layerD.branch_nodes()
+		for each c : int $\in$ n.children()
+			layerB.set_node_parent(c, n.index());
+		if layerA $\ne$ null then layerA.node_children(n.parent()).insert(n.index());
+
+	listeners.layer_was_undeleted(indexD);

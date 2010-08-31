@@ -1,0 +1,43 @@
+function split_node_impl
+:	(node : NodeID; groups : Vector<Set<int>>) $\to$ Set<NodeID>
+
+	var layerA : BranchLayer? := checked_branch_layer(node.layer() + 1);
+	var layerS : BranchLayer := branch_layer(node.layer());
+	var layerB : ForestLayer := forest_layer(node.layer() - 1);
+
+	// Step 1: Delete the node being split from the forest.
+
+	// Remove any forest links which reference the node.
+	for each c : int $\in$ layerS.node_children(node.index())
+		layerB.set_node_parent(c, -1);
+
+	var parentIndex : int := layerS.node_parent(node.index());
+	if layerA $\ne$ null then layerA.node_children(parentIndex).erase(node.index());
+
+	// Remove the node from its partitioning graph.
+	layerS.remove_node(node.index());
+
+	// Step 2: Add new nodes for each of the groups to the split layer, along with
+	// the appropriate forest links.
+	var newNodes : Set<NodeID>;
+	for each group : Set<int> $\in$ groups
+		var groupIndex : int := lowest_int(group);	// note that group is non-empty
+		newNodes.insert(NodeID(node.layer(), groupIndex));
+		layerS.set_node_properties(groupIndex, layerB.combine_properties(group));
+		layerS.set_node_children(groupIndex, group);
+		layerS.set_node_parent(groupIndex, parentIndex);
+		for each n : int $\in$ group
+			layerB.set_node_parent(n, groupIndex);
+		if layerA $\ne$ null then layerA.node_children(parentIndex).insert(groupIndex);
+
+	// Step 3: Propagate the necessary edges from the child layer to the split layer.
+	for each group : Set<int> $\in$ groups
+		for each n : int $\in$ group
+			for each e : Edge $\in$ layerB.adjacent_edges(n)
+				var parentU : int := layerB.node_parent(e.u())
+				var parentV : int := layerB.node_parent(e.v());
+				if parentU $\ne$ parentV then
+					layerS.update_edge_weight(parentU, parentV, e.weight());
+
+	listeners.node_was_split(node, newNodes);
+	return newNodes;

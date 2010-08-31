@@ -1,0 +1,25 @@
+function clone_layer_impl
+: (indexB : int) $\to \emptyset$
+
+	// Note: We denote the layer being cloned as B and insert the clone layer C
+	// above it.
+
+	// Clone the graph of the layer below to make a new layer and insert it.
+	var layerB : ForestLayer := forest_layer(indexB);
+	var layerC : BranchLayer := clone_graph(layerB);
+	insert_branch_layer(indexB + 1, layerC);
+
+	// Copy the parent links from layer B to layer C, then update the links between
+	// B and C to make corresponding nodes in each link to each other.
+	var bt : NodeIterator := layerB.nodes_begin();
+	var bend : NodeIterator := layerB.nodes_end();
+	var ct : BranchNodeIterator := layerC.branch_nodes_begin();
+	var cend : BranchNodeIterator := layerC.branch_nodes_end();
+
+	while ct $\ne$ cend
+		ct.set_parent(bt.parent());
+		bt.set_parent(bt.index());
+		ct.set_children({bt.index()});
+		bt := next(bt), ct := next(ct);
+
+	listeners.layer_was_cloned(indexB);

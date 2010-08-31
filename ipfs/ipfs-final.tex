@@ -209,33 +209,7 @@ TODO
 \begin{stulisting}[p]
 \caption{Forest : Clone Layer Implementation}
 \label{code:ipfs-forest-clonelayerimpl}
-\begin{lstlisting}[style=Default]
-function clone_layer_impl
-: (indexB : int) $\to \emptyset$
-
-	// Note: We denote the layer being cloned as B and insert the clone layer C
-	// above it.
-
-	// Clone the graph of the layer below to make a new layer and insert it.
-	var layerB : ForestLayer := forest_layer(indexB);
-	var layerC : BranchLayer := clone_graph(layerB);
-	insert_branch_layer(indexB + 1, layerC);
-
-	// Copy the parent links from layer B to layer C, then update the links between
-	// B and C to make corresponding nodes in each link to each other.
-	var bt : NodeIterator := layerB.nodes_begin();
-	var bend : NodeIterator := layerB.nodes_end();
-	var ct : BranchNodeIterator := layerC.branch_nodes_begin();
-	var cend : BranchNodeIterator := layerC.branch_nodes_end();
-
-	while ct $\ne$ cend
-		ct.set_parent(bt.parent());
-		bt.set_parent(bt.index());
-		ct.set_children({bt.index()});
-		bt := next(bt), ct := next(ct);
-
-	listeners.layer_was_cloned(indexB);
-\end{lstlisting}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-clonelayerimpl.lst}
 \end{stulisting}
 
 \paragraph{Undoing the Command}
@@ -275,39 +249,7 @@ We use the same notation to analyse the complexity as in the layer cloning analy
 \begin{stulisting}[p]
 \caption{Forest : Delete Layer Implementation}
 \label{code:ipfs-forest-deletelayerimpl}
-\begin{lstlisting}[style=Default]
-function delete_layer_impl
-:	(indexD : int) $\to$ BranchLayer
-
-	listeners.layer_will_be_deleted(indexD);
-
-	// Note: We denote the layer to be deleted as D, the layer below as B, and the
-	// layer above (if any) as A.
-
-	// The parent of each node in layer B should be set to the parent of its parent
-	// in layer D. Conversely, the child set of each node in layer A (if any) should
-	// be set to the union of the child sets of its children in layer D. This is
-	// accomplished in two stages: firstly, the child sets of the nodes in layer A
-	// are cleared; secondly, we iterate over the nodes in layer B and update their
-	// parent links to point to their grandparents in A, adding corresponding child
-	// links from the grandparents in layer A as we do so.
-	var layerA : BranchLayer? := checked_branch_layer(indexD + 1);
-	if layerA $\ne$ null then
-		for each n : BranchNode $\in$ layerA.branch_nodes()
-			n.set_children({});
-
-	var layerD : BranchLayer := branch_layer(indexD);
-	var layerB : ForestLayer := forest_layer(indexD - 1);
-	for each n : Node $\in$ layerB.nodes()
-		var grandparentA : int := layerD.node_parent(n.parent());
-		n.set_parent(grandparentA);
-		if layerA $\ne$ null then
-			layerA.node_children(grandparentA).insert(n.index());
-
-	erase_branch_layer(indexD);
-	listeners.layer_was_deleted(indexD);
-	return layerD;
-\end{lstlisting}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-deletelayerimpl.lst}
 \end{stulisting}
 
 \paragraph{Undoing the Command}
@@ -321,31 +263,7 @@ In terms of complexity, the reinsertion of the deleted layer takes amortized con
 \begin{stulisting}[p]
 \caption{Forest : Undelete Layer Implementation}
 \label{code:ipfs-forest-undeletelayerimpl}
-\begin{lstlisting}[style=Default]
-function undelete_layer_impl
-:	(indexD : int; layerD : BranchLayer) $\to \emptyset$
-
-	// Note: We denote the layer which has been deleted as D, the layer below as B,
-	// and the layer above (if any) as A.
-
-	// Insert the deleted layer back into the hierarchy.
-	insert_branch_layer(indexD, layerD);
-
-	// Recreate the parent links in layer B and the child links in layer A (provided
-	// that it exists).
-	var layerA : BranchLayer? := checked_branch_layer(indexD + 1);
-	if layerA $\ne$ null then
-		for each n : BranchNode $\in$ layerA.branch_nodes()
-			n.set_children({});
-
-	var layerB : ForestLayer := forest_layer(indexD - 1);
-	for each n : BranchNode $\in$ layerD.branch_nodes()
-		for each c : int $\in$ n.children()
-			layerB.set_node_parent(c, n.index());
-		if layerA $\ne$ null then layerA.node_children(n.parent()).insert(n.index());
-
-	listeners.layer_was_undeleted(indexD);
-\end{lstlisting}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-undeletelayerimpl.lst}
 \end{stulisting}
 
 \subsubsection{Sibling Node Merging}
@@ -465,44 +383,7 @@ When implementing node splitting in a user interface like the one described abov
 \begin{stulisting}[p]
 \caption{Forest : Split Node Precondition Checking}
 \label{code:ipfs-forest-splitnode}
-\begin{lstlisting}[style=Default]
-function split_node
-:	(node : NodeID; groups : Vector<Set<int>>;
-	 checkPreconditions : CheckPreconditions) $\to$ Set<NodeID>
-
-	if checkPreconditions = CHECK_PRECONDITIONS then
-		// Check that the node to be split is not in the lowest layer.
-		if node.layer() = 0 then throw;
-
-		// Check that the node to be split is valid.
-		var layer : BranchLayer? := checked_branch_layer(node.layer());
-		if layer = null or not layer.has_node(node.index()) then throw;
-
-		// Check that the groups partition the children of the node.
-		var children : Set<int> := layer.node_children(node.index());
-		for each group : Set<int> $\in$ groups
-			for each childIndex : int $\in$ group
-				if children.contains(childIndex) then
-					children.erase(childIndex);
-				else
-					throw;
-		if children $\ne$ {} then throw;
-
-		// Check that each of the split groups is non-empty and connected.
-		for each group : Set<int> $\in$ groups
-			if group = {} then throw;
-			if not are_connected(group, node.layer() - 1) then throw;
-
-	// We only need to split the node if there's more than one group.
-	if #groups $\ne$ 1 then
-		var command : SplitNodeCommand := make_split_node_command(node, groups);
-		command_manager().execute(command);
-		return command.result();
-	else
-		var result : Set<NodeID>;
-		result.insert(node);
-		return result;
-\end{lstlisting}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-splitnode.lst}
 \end{stulisting}
 
 \paragraph{Executing the Command}
@@ -512,51 +393,7 @@ Pseudo-code to execute a split node command is shown in Listing~\ref{code:ipfs-f
 \begin{stulisting}[p]
 \caption{Forest : Split Node Implementation}
 \label{code:ipfs-forest-splitnodeimpl}
-\begin{lstlisting}[style=Default]
-function split_node_impl
-:	(node : NodeID; groups : Vector<Set<int>>) $\to$ Set<NodeID>
-
-	var layerA : BranchLayer? := checked_branch_layer(node.layer() + 1);
-	var layerS : BranchLayer := branch_layer(node.layer());
-	var layerB : ForestLayer := forest_layer(node.layer() - 1);
-
-	// Step 1: Delete the node being split from the forest.
-
-	// Remove any forest links which reference the node.
-	for each c : int $\in$ layerS.node_children(node.index())
-		layerB.set_node_parent(c, -1);
-
-	var parentIndex : int := layerS.node_parent(node.index());
-	if layerA $\ne$ null then layerA.node_children(parentIndex).erase(node.index());
-
-	// Remove the node from its partitioning graph.
-	layerS.remove_node(node.index());
-
-	// Step 2: Add new nodes for each of the groups to the split layer, along with
-	// the appropriate forest links.
-	var newNodes : Set<NodeID>;
-	for each group : Set<int> $\in$ groups
-		var groupIndex : int := lowest_int(group);	// note that group is non-empty
-		newNodes.insert(NodeID(node.layer(), groupIndex));
-		layerS.set_node_properties(groupIndex, layerB.combine_properties(group));
-		layerS.set_node_children(groupIndex, group);
-		layerS.set_node_parent(groupIndex, parentIndex);
-		for each n : int $\in$ group
-			layerB.set_node_parent(n, groupIndex);
-		if layerA $\ne$ null then layerA.node_children(parentIndex).insert(groupIndex);
-
-	// Step 3: Propagate the necessary edges from the child layer to the split layer.
-	for each group : Set<int> $\in$ groups
-		for each n : int $\in$ group
-			for each e : Edge $\in$ layerB.adjacent_edges(n)
-				var parentU : int := layerB.node_parent(e.u())
-				var parentV : int := layerB.node_parent(e.v());
-				if parentU $\ne$ parentV then
-					layerS.update_edge_weight(parentU, parentV, e.weight());
-
-	listeners.node_was_split(node, newNodes);
-	return newNodes;
-\end{lstlisting}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-splitnodeimpl.lst}
 \end{stulisting}
 
 \paragraph{Undoing the Command}
