@@ -274,8 +274,7 @@ tabsize=4
 % For function prototypes (e.g. in the partition forests chapter)
 \lstdefinestyle{Prototype}{
 abovecaptionskip=0.5cm,
-backgroundcolor=\color{cyan},
-basicstyle=\small\ttfamily\color{white},
+basicstyle=\small\ttfamily,
 belowcaptionskip=0.5cm,
 belowskip=0.5cm,
 commentstyle=\color{darkgreen},

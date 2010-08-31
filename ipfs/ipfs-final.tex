@@ -191,7 +191,7 @@ void clone_layer(int indexB);
 The simplest user interface just allows the user to clone the current layer by (for example) clicking on a menu item (see Figure~\ref{fig:ipfs-algorithms-layercloning-gui}). After cloning the layer, the interface can display the clone so that the user can begin working with it immediately. An alternative would be to allow the user to clone any layer in the forest by displaying a dialog box allowing them to choose the layer to be cloned, but in my view the former approach is more intuitive.
 
 %---
-\stufigex{height=5cm}{ipfs/ipfs-algorithms-layercloning-gui.png}{The user interface for layer cloning: a simple menu item allowing the current layer to be cloned.}{fig:ipfs-algorithms-layercloning-gui}{h}
+\stufigex{height=5cm}{ipfs/ipfs-algorithms-layercloning-gui.png}{The user interface for layer cloning: a simple menu item allowing the current layer to be cloned.}{fig:ipfs-algorithms-layercloning-gui}{p}
 %---
 
 \paragraph{Precondition Checking}
@@ -259,7 +259,7 @@ void delete_layer(int indexD);
 As with layer cloning, the simplest user interface just allows the user to delete the current layer by clicking on a menu item (see Figure~\ref{fig:ipfs-algorithms-layerdeletion-gui}).
 
 %---
-\stufigex{height=5cm}{ipfs/ipfs-algorithms-layerdeletion-gui.png}{The user interface for layer deletion: a simple menu item allowing the current layer to be deleted.}{fig:ipfs-algorithms-layerdeletion-gui}{h}
+\stufigex{height=5cm}{ipfs/ipfs-algorithms-layerdeletion-gui.png}{The user interface for layer deletion: a simple menu item allowing the current layer to be deleted.}{fig:ipfs-algorithms-layerdeletion-gui}{p}
 %---
 
 \paragraph{Precondition Checking}
@@ -586,7 +586,51 @@ vector<Chain> unzip_node(const NodeID& node, int toLayer);
 
 \paragraph{User Interface for Image Analysis}
 
-TODO
+The user interface for unzipping is relatively straightforward, as illustrated in Figure~\ref{fig:ipfs-algorithms-unzipping-gui}. The user selects a node, then clicks a menu item to indicate that it should be unzipped. This brings up a dialog box that allows the user to choose the target layer of the unzip. After the user enters the target layer, the node is then unzipped as desired.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Layer 1 before unzipping]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-a.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Layer 2 before unzipping]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-b.png}}%
+	%
+	\\
+	%
+	\subfigure[Layer 3 before unzipping]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-c.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Select a node to unzip]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-d.png}}%
+	%
+	\\
+	%
+	\subfigure[Click the menu item]
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-e.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Enter the target layer]
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-f.png}}%
+	%
+	\\
+	%
+	\subfigure[Layer 2 after unzipping]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-g.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Layer 3 after unzipping]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-h.png}}%
+\caption{The user interface for unzipping}
+\label{fig:ipfs-algorithms-unzipping-gui}
+\end{stusubfig}
+%---
 
 \paragraph{Precondition Checking}
 
