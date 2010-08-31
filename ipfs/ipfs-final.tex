@@ -232,7 +232,7 @@ TODO
 %To analyse the complexity of the algorithm, we proceed as follows. Firstly, let $n_\ell$ be the number of nodes and $e_\ell$ be the number of adjacency graph edges in layer $\ell$. Suppose layer $c$ is to be inserted above layer $b$ and below layer $a$ (if it exists). Then evidently $n_c = n_b$ and $e_c = e_b$. The complexity of cloning $b$'s partitioning graph is $\Theta(e_b)$. (We observe in passing that $n_b \in O(e_b)$, since the adjacency graph is connected, so there is no need to include $n_b$ when analysing the complexity of the cloning process.) Forest links must then be added between layers $b$ and $c$, and $c$ and $a$, if $a$ exists. In either case, there is a constant amount of work to do for each of the $n_b$ nodes in layer $c$ (see pseudo-code), so the amount of work done updating the forest links is $\Theta(n_b)$. The overall complexity of the algorithm is thus $\Theta(e_b + n_b) = \Theta(e_b)$.
 
 \begin{stulisting}[p]
-\caption{Forest : Layer Cloning Implementation}
+\caption{Forest : Layer Cloning : Execution}
 \label{code:ipfs-forest-clonelayerimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-clonelayerimpl.lst}
 \end{stulisting}
@@ -288,7 +288,7 @@ Pseudo-code to execute a delete layer command is shown in Listing~\ref{code:ipfs
 We use the same notation to analyse the complexity as in the layer cloning analysis. The first loop in the pseudo-code (which clears the child sets in layer $A$) does a constant amount of work for each node in layer $A$ and is thus $O(n_a)$. Each iteration of the second loop (which updates the forest links) does an $O(\log n_d)$ lookup in layer $D$ to find the grandparent of $n$, sets $n$'s parent in constant time and then potentially does an $O(\log n_a)$ lookup on layer $A$, followed by an insertion into the set of child nodes of the grandparent node. The overall work done by the loop excluding the final insertions is $O(n_b (\log n_d + \log n_a)) = O(n_b \log n_d)$, since $n_a \le n_d$. The cost of the insertions depends on the distribution of the child nodes and how they are stored. If child nodes are stored as resizeable arrays, then each insertion is amortized constant time and the total cost of all the insertions is amortized $O(n_b)$. (If, however, tree-based sets are used, and all the child nodes have the same grandparent, the total cost ends up being $O(\log n_b!)$, i.e.~the cost of inserting $n_b$ elements one by one into a tree-based set.) Assuming the former, the total amortized complexity of the second loop is $O(n_b \log n_d) + O(n_b) = O(n_b \log n_d)$. Finally, the complexity of actually erasing the layer from the forest is amortized constant time. The total amortized complexity of the algorithm as a whole is therefore $O(n_a) + O(n_b \log n_d) + O(1) = O(n_b \log n_d)$, since $n_a \le n_b$.
 
 \begin{stulisting}[p]
-\caption{Forest : Layer Deletion Implementation}
+\caption{Forest : Layer Deletion : Execution}
 \label{code:ipfs-forest-deletelayerimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-deletelayerimpl.lst}
 \end{stulisting}
@@ -302,7 +302,7 @@ Pseudo-code to undo a delete layer command is shown in Listing~\ref{code:ipfs-fo
 In terms of complexity, the reinsertion of the deleted layer takes amortized constant time. The first loop of the pseudo-code (which clears the child sets of all the nodes in layer $A$) takes $O(n_a)$ time. To analyse the remainder of the algorithm, observe that line $20$ (which sets the parent of a node looked up in layer $B$) executes $n_b$ times, making the cost of the inner loop $O(n_b \log n_b)$ when $B$ is a branch layer. Line $21$ (which does a lookup in layer $A$ and then an insertion into a child set) is executed $n_d$ times. The total cost of the lookups is $O(n_d \log n_a)$. Assuming the child sets are implemented sensibly, each insertion is amortized constant time, making the amortized cost of all the insertions $O(n_d)$. So the overall cost of lines $17-21$ is $O(n_b \log n_b + n_d \log n_a + n_d) = O(n_b \log n_b)$, since $n_b \ge n_d \ge n_a$. The total cost of the entire algorithm is thus also $O(n_b \log n_b)$.
 
 \begin{stulisting}[p]
-\caption{Forest : Layer Undeletion Implementation}
+\caption{Forest : Layer Deletion : Undo}
 \label{code:ipfs-forest-undeletelayerimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-undeletelayerimpl.lst}
 \end{stulisting}
@@ -352,13 +352,31 @@ The following preconditions must be checked for sibling node merging (see the ps
 
 \end{enumerate}
 
+\begin{stulisting}[p]
+\caption{Forest : Sibling Node Merging : Precondition Checking}
+\label{code:ipfs-forest-mergesiblingnodes}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-mergesiblingnodes.lst}
+\end{stulisting}
+
 \paragraph{Executing the Command}
 
 TODO
 
+\begin{stulisting}[p]
+\caption{Forest : Sibling Node Merging : Execution}
+\label{code:ipfs-forest-mergesiblingnodesimpl}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-mergesiblingnodesimpl.lst}
+\end{stulisting}
+
 \paragraph{Undoing the Command}
 
-TODO
+To undo a sibling node merge command, the intuition is that the node resulting from the merge must be split back into the nodes that were originally merged to create it. As we will see in the next section, however, a node is split not by specifying the \emph{nodes} into which to split it (these do not exist prior to the split, so that approach doesn't work), but by specifying connected groups of the node's children: a parent is generated for each of these groups and the node to be split is replaced with the group parents. For that reason, if we want to be able to undo a sibling node merge then we must store the children of each of the nodes to be merged when we initially execute the command. The merge can then be undone by splitting the merge result back into the components specified by the stored child groups (see Listing~\ref{code:ipfs-forest-mergesiblingnodescommand} for the detailed implementation).
+
+\begin{stulisting}[p]
+\caption{Forest : Sibling Node Merging : Command}
+\label{code:ipfs-forest-mergesiblingnodescommand}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-mergesiblingnodescommand.lst}
+\end{stulisting}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Node Splitting}
@@ -440,7 +458,7 @@ The following preconditions must be checked for node splitting (see the pseudo-c
 When implementing node splitting in a user interface like the one described above, these preconditions should be checked by the interface, not by the forest at the time of finalizing the split. The user should not, for example, have the option of adding invalid subgroups or finalizing a split without defining any subgroups.
 
 \begin{stulisting}[p]
-\caption{Forest : Node Splitting Precondition Checking}
+\caption{Forest : Node Splitting : Precondition Checking}
 \label{code:ipfs-forest-splitnode}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-splitnode.lst}
 \end{stulisting}
@@ -450,7 +468,7 @@ When implementing node splitting in a user interface like the one described abov
 Pseudo-code to execute a split node command is shown in Listing~\ref{code:ipfs-forest-splitnodeimpl}. TODO
 
 \begin{stulisting}[p]
-\caption{Forest : Node Splitting Implementation}
+\caption{Forest : Node Splitting : Execution}
 \label{code:ipfs-forest-splitnodeimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-splitnodeimpl.lst}
 \end{stulisting}
@@ -543,11 +561,7 @@ The following preconditions must be checked for unzipping:
 
 \end{enumerate}
 
-\paragraph{Executing the Command}
-
-TODO
-
-\paragraph{Undoing the Command}
+\paragraph{Implementation}
 
 TODO
 
@@ -573,11 +587,7 @@ It doesn't make sense to expose zipping as part of the user interface, since the
 
 TODO
 
-\paragraph{Executing the Command}
-
-TODO
-
-\paragraph{Undoing the Command}
+\paragraph{Implementation}
 
 TODO
 
@@ -587,4 +597,28 @@ TODO
 
 Having discussed unzipping and zipping in the previous section, we are now in a position to implement two higher-level partition forest algorithms that are of great practical use. The first of these is the previously-mentioned merging operation that allows the user to merge nodes based on their adjacency in their forest layer (i.e.~in an imaging context, their spatial adjacency within the image) rather than whether or not they share a common forest parent. As observed earlier, this is the `intuitive' merging operation that the user wants to perform on forest nodes (see e.g.~Figure~\ref{fig:ipfs-forest-nonsiblingnodemerging-motivation}), but it is a difficult operation to implement without the machinery provided by the zipping algorithms.
 
-The second higher-level algorithm that we can now implement is parent switching, the problem tackled in a more constrained manner by Peter Nacken in \cite{nacken95}. TODO
+The second higher-level algorithm that we can now implement is parent switching, the problem tackled in a more constrained manner by Peter Nacken in \cite{nacken95}. This operation mutates the forest so as to move a node from being the child of one parent to the child of another parent. As discussed in \S\ref{sec:background-partitionhierarchies}, there are two cases when this is problematic: (1) when the node is not adjacent to its new parent and (2) when moving the node would divide its old parent. Nacken's approach prevents nodes being moved in either of these two cases. There is clearly nothing that can be done about case (1) -- if the node is not adjacent to its new parent, then it can never be combined with the new parent's children to form a valid node. However, we will see that it is possible to use the zipping algorithms described here to develop a less constrained version of parent switching that still works in case (2) situations. (It should nevertheless be noted that Nacken's original analysis is entirely correct: it is not possible to switch the parent of a node in case (2) whilst keeping the old parent intact. The approach which I will describe circumvents this problem by allowing the old parent to be fragmented by the switch operation.)
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Non-Sibling Node Merging}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\paragraph{Description}
+
+TODO
+
+\paragraph{C++ Method Interface}
+
+TODO
+
+\paragraph{User Interface for Image Analysis}
+
+TODO
+
+\paragraph{Precondition Checking}
+
+TODO
+
+\paragraph{Implementation}
+
+TODO

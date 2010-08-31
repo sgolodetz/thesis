@@ -1,0 +1,31 @@
+function merge_sibling_nodes
+:	(nodes : Set<NodeID>; checkPreconditions : CheckPreconditions) $\to$ NodeID
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that there are nodes to be merged.
+		if nodes = {} then throw;
+
+		// Check that the nodes are not in the lowest layer of the forest and that they
+		// have a common parent. (Note that checking their parents also implicitly
+		// checks whether the nodes themselves are valid.) Checking the parent of the
+		// first node against itself is redundant, but it makes the code simpler and
+		// clearer.
+		var nodeIndices : Set<int>;
+		var lowestIndexedNode : NodeID := lowest_indexed_node(nodes);
+		var commonParent : NodeID := parent_of(lowestIndexedNode);
+		for each n $\in$ nodes
+			if n.layer() = 0 then throw;
+			if parent_of(n) $\ne$ commonParent then throw;
+			nodeIndices.insert(n.index());
+
+		// Check that the union of the objects represented by the nodes to be merged is
+		// connected.
+		if not are_connected(nodeIndices, lowestIndexedNode.layer()) then throw;
+
+	// We only need to merge the nodes if there's more than one of them.
+	if #nodes > 1 then
+		var command : MergeSiblingNodesCommand := make_merge_sibling_nodes_command(nodes);
+		command_manager().execute(command);
+		return command.result();
+	else
+		return lowestIndexedNode;

@@ -1,0 +1,50 @@
+function merge_sibling_nodes_impl
+:	(nodes : Set<NodeID>) $\to$ NodeID
+
+	listeners.node_will_be_merged(nodes);
+
+	var canonical : NodeID := lowest_indexed_node(nodes);
+	var others : Set<NodeID> := nodes $\backslash$ {canonical};
+	var layerM : BranchLayer := branch_layer(canonical.layer());
+	var layerB : ForestLayer := forest_layer(canonical.layer() - 1);
+
+	// Step 1: Reconfigure the forest links.
+
+	// Set the parent links of the children of the other nodes to point to the
+	// canonical node, and conversely add the children of the other nodes as
+	// children of the canonical node.
+	var canonicalChildren : ref Set<int> := layerM.node_children(canonical.index());
+	for each n : NodeID $\in$ others
+		for each c : int $\in$ layerM.node_children(n.index())
+			layerB.set_node_parent(c, canonical.index());
+			canonicalChildren.insert(c);
+
+	// If we are not in the highest layer of the hierarchy, remove the child links
+	// between the common parent and the other nodes.
+	if canonical.layer() $\ne$ highest_layer() then
+		var layerA : BranchLayer := branch_layer(canonical.layer() + 1);
+		var parentIndex : int := layerM.node_parent(canonical.index());
+		var parentChildren : ref Set<int> := layerA.node_children(parentIndex);
+		for each n : NodeID $\in$ others
+			parentChildren.erase(node.index());
+
+	// Step 2: Recalculate the adjacent edges and properties for the canonical node.
+
+	// Update the edges of the canonical node based on those of the other nodes.
+	for each n : NodeID $\in$ others
+		for each e : Edge $\in$ layerM.adjacent_edges(n.index());
+			var otherEnd : int := other_end(e, n.index());
+			if otherEnd $\ne$ canonical.index() then
+				layerM.update_edge_weight(canonical.index(), otherEnd, e.weight());
+
+	// Recalculate the properties for the canonical node.
+	var ps : BranchProperties := layerB.combine_properties(canonicalChildren);
+	layerM.set_node_properties(canonical.index(), ps);
+
+	// Step 3: Remove the other merged nodes (note that this also removes their
+	// adjacent edges).
+	for each n : NodeID $\in$ others
+		layerM.remove_node(n.index());
+
+	listeners.nodes_were_merged(nodes, canonical);
+	return canonical;
