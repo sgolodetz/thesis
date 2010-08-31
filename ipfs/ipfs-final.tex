@@ -178,7 +178,7 @@ It is possible to transform any partition forest $F$ for a particular object int
 
 \paragraph{Description}
 
-New layers can be inserted anywhere in the forest by cloning the layer below the insertion point (for example, see Figure~\ref{fig:ipfs-algorithms-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{PG}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
+New layers can be inserted anywhere in the forest by cloning the layer below the insertion point (for example, see Figure~\ref{fig:ipfs-forest-layercloning}). A partition forest is guaranteed to have at least one layer at all times, so there will always be an existing layer to clone. In terms of the earlier partition forest definition, this has the effect of inserting a copy of the partitioning graph into the set $\textit{PG}$, and adding to $\textit{FL}$ the appropriate forest links between nodes in the inserted layer and those in the layer(s) adjacent to it.
 
 \paragraph{C++ Method Interface}
 
@@ -188,10 +188,10 @@ void clone_layer(int indexB);
 
 \paragraph{User Interface for Image Analysis}
 
-The simplest user interface just allows the user to clone the current layer by (for example) clicking on a menu item (see Figure~\ref{fig:ipfs-algorithms-layercloning-gui}). After cloning the layer, the interface can display the clone so that the user can begin working with it immediately. An alternative would be to allow the user to clone any layer in the forest by displaying a dialog box allowing them to choose the layer to be cloned, but in my view the former approach is more intuitive.
+The simplest user interface just allows the user to clone the current layer by (for example) clicking on a menu item (see Figure~\ref{fig:ipfs-forest-layercloning-gui}). After cloning the layer, the interface can display the clone so that the user can begin working with it immediately. An alternative would be to allow the user to clone any layer in the forest by displaying a dialog box allowing them to choose the layer to be cloned, but in my view the former approach is more intuitive.
 
 %---
-\stufigex{height=5cm}{ipfs/ipfs-algorithms-layercloning-gui.png}{The user interface for layer cloning: a simple menu item allowing the current layer to be cloned.}{fig:ipfs-algorithms-layercloning-gui}{p}
+\stufigex{height=5cm}{ipfs/ipfs-forest-layercloning-gui.png}{The user interface for layer cloning: a simple menu item allowing the current layer to be cloned.}{fig:ipfs-forest-layercloning-gui}{p}
 %---
 
 \paragraph{Precondition Checking}
@@ -246,7 +246,7 @@ A clone layer command can be undone by simply deleting the clone (see Listing~\r
 
 \paragraph{Description}
 
-Any layer except the lowest can be deleted from the hierarchy (for example, see Figure~\ref{fig:ipfs-algorithms-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{PG}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
+Any layer except the lowest can be deleted from the hierarchy (for example, see Figure~\ref{fig:ipfs-forest-layerdeletion}). In terms of the partition forest definition, this has the effect of removing both the specified partitioning graph from $\textit{PG}$ and the forest links referencing the deleted layer from $\textit{FL}$, and adding new forest links where necessary between any layers on either side of the one being removed.
 
 \paragraph{C++ Method Interface}
 
@@ -256,10 +256,10 @@ void delete_layer(int indexD);
 
 \paragraph{User Interface for Image Analysis}
 
-As with layer cloning, the simplest user interface just allows the user to delete the current layer by clicking on a menu item (see Figure~\ref{fig:ipfs-algorithms-layerdeletion-gui}).
+As with layer cloning, the simplest user interface just allows the user to delete the current layer by clicking on a menu item (see Figure~\ref{fig:ipfs-forest-layerdeletion-gui}).
 
 %---
-\stufigex{height=5cm}{ipfs/ipfs-algorithms-layerdeletion-gui.png}{The user interface for layer deletion: a simple menu item allowing the current layer to be deleted.}{fig:ipfs-algorithms-layerdeletion-gui}{p}
+\stufigex{height=5cm}{ipfs/ipfs-forest-layerdeletion-gui.png}{The user interface for layer deletion: a simple menu item allowing the current layer to be deleted.}{fig:ipfs-forest-layerdeletion-gui}{p}
 %---
 
 \paragraph{Precondition Checking}
@@ -352,7 +352,7 @@ function undelete_layer_impl
 
 \paragraph{Description}
 
-Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-algorithms-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest).
+Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-forest-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest).
 
 \paragraph{C++ Method Interface}
 
@@ -366,7 +366,7 @@ Although it is a crucial operation, it doesn't make sense to expose sibling-only
 
 \paragraph{Precondition Checking}
 
-The following preconditions must be checked for sibling node merging (see the pseudo-code in Listing~\ref{code:ipfs-algorithms-mergesiblingnodes} for the method):
+The following preconditions must be checked for sibling node merging (see the pseudo-code in Listing~\ref{code:ipfs-forest-mergesiblingnodes} for the method):
 
 \begin{enumerate}
 
@@ -389,7 +389,7 @@ TODO
 
 \paragraph{Description}
 
-Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) An example is shown in Figure~\ref{fig:ipfs-algorithms-nodesplitting}.
+Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) An example is shown in Figure~\ref{fig:ipfs-forest-nodesplitting}.
 
 \paragraph{C++ Method Interface}
 
@@ -400,49 +400,49 @@ set<NodeID> split_node(const NodeID& node,
 
 \paragraph{User Interface for Image Analysis}
 
-The user interface for node splitting is necessarily more complicated than that for earlier operations, because the user needs to be able to indicate the way in which a node should be split. As illustrated in Figure~\ref{fig:ipfs-algorithms-nodesplitting-gui}, this is a multi-step operation. The user initially selects and marks a node to be split, then defines the components into which it should be split by iteratively selecting and marking connected subgroups of its children. (If a mistake is made, it is possible to remove a subgroup and try again, although this is not illustrated for space reasons.) As the illustrated example implies, any remaining unmarked children will be automatically divided into subgroups by finding their connected components (this substantially reduces the work that has to be done by the user). Finally, the user `finalizes' the split and the desired changes are made to the forest.
+The user interface for node splitting is necessarily more complicated than that for earlier operations, because the user needs to be able to indicate the way in which a node should be split. As illustrated in Figure~\ref{fig:ipfs-forest-nodesplitting-gui}, this is a multi-step operation. The user initially selects and marks a node to be split, then defines the components into which it should be split by iteratively selecting and marking connected subgroups of its children. (If a mistake is made, it is possible to remove a subgroup and try again, although this is not illustrated for space reasons.) As the illustrated example implies, any remaining unmarked children will be automatically divided into subgroups by finding their connected components (this substantially reduces the work that has to be done by the user). Finally, the user `finalizes' the split and the desired changes are made to the forest.
 
 %---
 \begin{stusubfig}{p}
 	\subfigure[Select the node to be split in the forest]
-	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-a.png}}%
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-nodesplitting-gui-a.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Mark it to be split by clicking the menu item]
-	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-b.png}}%
+	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-forest-nodesplitting-gui-b.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After marking it, its children will be highlighted]
-	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-c.png}}%
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-nodesplitting-gui-c.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Select the child nodes in a subgroup]
-	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-d.png}}%
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-nodesplitting-gui-d.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Add the subgroup by clicking the menu item]
-	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-e.png}}%
+	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-forest-nodesplitting-gui-e.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Each subgroup will be assigned a different colour]
-	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-f.png}}%
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-nodesplitting-gui-f.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Repeat (d)-(f) to add other subgroups, then finalize the split by clicking the menu item]
-	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-g.png}}%
+	{\includegraphics[width=.5\linewidth]{ipfs/ipfs-forest-nodesplitting-gui-g.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[The node will be split as indicated]
-	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-algorithms-nodesplitting-gui-h.png}}%
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-nodesplitting-gui-h.png}}%
 \caption{The user interface for node splitting}
-\label{fig:ipfs-algorithms-nodesplitting-gui}
+\label{fig:ipfs-forest-nodesplitting-gui}
 \end{stusubfig}
 %---
 
@@ -561,7 +561,7 @@ function split_node_impl
 
 \paragraph{Undoing the Command}
 
-To undo a split node command, it is enough to just re-merge the results of the split using a sibling node merge (see Listing~\ref{code:ipfs-algorithms-mergesiblingnodesimpl} for pseudo-code).
+To undo a split node command, it is enough to just re-merge the results of the split using a sibling node merge (see Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl} for pseudo-code).
 
 \subsection{Zipping Algorithms}
 
@@ -573,9 +573,9 @@ In order to facilitate the implementation of such algorithms, it is helpful to i
 
 \paragraph{Description}
 
-A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration. See Figure~\ref{fig:ipfs-algorithms-unzipping} for an example.
+A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration. See Figure~\ref{fig:ipfs-forest-unzipping} for an example.
 
-% TODO: fig:ipfs-algorithms-unzipping
+% TODO: fig:ipfs-forest-unzipping
 
 \paragraph{C++ Method Interface}
 
@@ -586,49 +586,49 @@ vector<Chain> unzip_node(const NodeID& node, int toLayer);
 
 \paragraph{User Interface for Image Analysis}
 
-The user interface for unzipping is relatively straightforward, as illustrated in Figure~\ref{fig:ipfs-algorithms-unzipping-gui}. The user selects a node, then clicks a menu item to indicate that it should be unzipped. This brings up a dialog box that allows the user to choose the target layer of the unzip. After the user enters the target layer, the node is then unzipped as desired.
+The user interface for unzipping is relatively straightforward, as illustrated in Figure~\ref{fig:ipfs-forest-unzipping-gui}. The user selects a node, then clicks a menu item to indicate that it should be unzipped. This brings up a dialog box that allows the user to choose the target layer of the unzip. After the user enters the target layer, the node is then unzipped as desired.
 
 %---
 \begin{stusubfig}{p}
 	\subfigure[Layer 1 before unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-a.png}}%
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-a.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Layer 2 before unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-b.png}}%
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-b.png}}%
 	%
 	\\
 	%
 	\subfigure[Layer 3 before unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-c.png}}%
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-c.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Select a node to unzip]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-d.png}}%
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-d.png}}%
 	%
 	\\
 	%
 	\subfigure[Click the menu item]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-e.png}}%
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-unzipping-gui-e.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Enter the target layer]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-f.png}}%
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-unzipping-gui-f.png}}%
 	%
 	\\
 	%
 	\subfigure[Layer 2 after unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-g.png}}%
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-g.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[Layer 3 after unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-algorithms-unzipping-gui-h.png}}%
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-h.png}}%
 \caption{The user interface for unzipping}
-\label{fig:ipfs-algorithms-unzipping-gui}
+\label{fig:ipfs-forest-unzipping-gui}
 \end{stusubfig}
 %---
 
@@ -681,6 +681,6 @@ TODO
 
 \subsection{Higher-Level Algorithms}
 
-Having discussed unzipping and zipping in the previous section, we are now in a position to implement two higher-level partition forest algorithms that are of great practical use. The first of these is the previously-mentioned merging operation that allows the user to merge nodes based on their adjacency in their forest layer (i.e.~in an imaging context, their spatial adjacency within the image) rather than whether or not they share a common forest parent. As observed earlier, this is the `intuitive' merging operation that the user wants to perform on forest nodes (see e.g.~Figure~\ref{fig:ipfs-algorithms-nonsiblingnodemerging-motivation}), but it is a difficult operation to implement without the machinery provided by the zipping algorithms.
+Having discussed unzipping and zipping in the previous section, we are now in a position to implement two higher-level partition forest algorithms that are of great practical use. The first of these is the previously-mentioned merging operation that allows the user to merge nodes based on their adjacency in their forest layer (i.e.~in an imaging context, their spatial adjacency within the image) rather than whether or not they share a common forest parent. As observed earlier, this is the `intuitive' merging operation that the user wants to perform on forest nodes (see e.g.~Figure~\ref{fig:ipfs-forest-nonsiblingnodemerging-motivation}), but it is a difficult operation to implement without the machinery provided by the zipping algorithms.
 
 The second higher-level algorithm that we can now implement is parent switching, the problem tackled in a more constrained manner by Peter Nacken in \cite{nacken95}. TODO
