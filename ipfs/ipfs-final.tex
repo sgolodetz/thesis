@@ -183,6 +183,8 @@ It is possible to transform any partition forest $F$ for a particular object int
 
 \noindent All of these data structures are assumed to provide their usual complexity guarantees (e.g.~logarithmic lookup for tree-based maps, etc.)
 
+\newpage
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Layer Cloning}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -240,6 +242,9 @@ TODO
 \paragraph{Undoing the Command}
 
 A clone layer command can be undone by simply deleting the clone (see Listing~\ref{code:ipfs-forest-deletelayerimpl} for pseudo-code). The complexity of this is analysed in the next section.
+
+\afterpage{\clearpage}
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Layer Deletion}
@@ -310,6 +315,9 @@ TODO
 \label{code:ipfs-forest-undeletelayerimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-undeletelayerimpl.lst}
 \end{stulisting}
+
+\afterpage{\clearpage}
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Sibling Node Merging}
@@ -399,6 +407,9 @@ To undo a sibling node merge command, the intuition is that the node resulting f
 \label{code:ipfs-forest-mergesiblingnodescommand}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-mergesiblingnodescommand.lst}
 \end{stulisting}
+
+\afterpage{\clearpage}
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Node Splitting}
@@ -525,6 +536,9 @@ TODO
 
 To undo a split node command, it is enough to just re-merge the results of the split using a sibling node merge (see Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl} for pseudo-code).
 
+\afterpage{\clearpage}
+\newpage
+
 %################################################
 \subsection{Zipping Algorithms}
 %################################################
@@ -532,6 +546,8 @@ To undo a split node command, it is enough to just re-merge the results of the s
 Whilst the core mutating algorithms provide all that is theoretically required for partition forest editing, certain operations are nevertheless tedious for the user to perform using only these primitives. For instance, it seems intuitively sensible that the user should be able to merge not only nodes that are siblings in the forest, but any nodes that are adjacent in the graph for their forest layer. Such `higher-level' algorithms, however, require more substantial changes to the structure of the forest; in particular, they require changes to be made in more than one layer.
 
 In order to facilitate the implementation of such algorithms, it is helpful to introduce two intermediary forest operations that I call \emph{unzip node} (or just \emph{unzipping}) and \emph{zip chains} (or just \emph{zipping}). These are respectively multi-layer split and merge operations on the forest, and can be implemented in terms of their lower-level counterparts. In fact, such an approach is not only possible but advisable, since it can be used to avoid writing special code to undo the operations. The key is to introduce an entity called a \emph{command sequence guard}. This is created at the start of a composite operation like an unzip, and informs the application's command manager that a command sequence is about to start (in C++, this would happen in the constructor for the guard). The relevant lower-level commands are then executed, after which the guard is destroyed again, informing the application's command manager that the command sequence has ended (in C++, this would happen in the guard's destructor). Undoing the composite operation is then a simple matter of undoing the lower-level commands in reverse order, something that can be easily handled by any decent command manager implementation. Bearing this in mind, we can now examine each of the zipping algorithms in detail.
+
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Unzipping}
@@ -619,6 +635,9 @@ TODO
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-unzipnode.lst}
 \end{stulisting}
 
+\afterpage{\clearpage}
+\newpage
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Zipping}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -651,6 +670,9 @@ TODO
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-zipchains.lst}
 \end{stulisting}
 
+\afterpage{\clearpage}
+\newpage
+
 %################################################
 \subsection{Higher-Level Algorithms}
 %################################################
@@ -658,6 +680,8 @@ TODO
 Having discussed unzipping and zipping in the previous section, we are now in a position to implement two higher-level partition forest algorithms that are of great practical use. The first of these is the previously-mentioned merging operation that allows the user to merge nodes based on their adjacency in their forest layer (i.e.~in an imaging context, their spatial adjacency within the image) rather than whether or not they share a common forest parent. As observed earlier, this is the `intuitive' merging operation that the user wants to perform on forest nodes (see e.g.~Figure~\ref{fig:ipfs-forest-nonsiblingnodemerging-motivation}), but it is a difficult operation to implement without the machinery provided by the zipping algorithms.
 
 The second higher-level algorithm that we can now implement is parent switching, the problem tackled in a more constrained manner by Peter Nacken in \cite{nacken95}. This operation mutates the forest so as to move a node from being the child of one parent to the child of another parent. As discussed in \S\ref{sec:background-partitionhierarchies}, there are two cases when this is problematic: (1) when the node is not adjacent to its new parent and (2) when moving the node would divide its old parent. Nacken's approach prevents nodes being moved in either of these two cases. There is clearly nothing that can be done about case (1) -- if the node is not adjacent to its new parent, then it can never be combined with the new parent's children to form a valid node. However, we will see that it is possible to use the zipping algorithms described here to develop a less constrained version of parent switching that still works in case (2) situations. (It should nevertheless be noted that Nacken's original analysis is entirely correct: it is not possible to switch the parent of a node in case (2) whilst keeping the old parent intact. The approach which I will describe circumvents this problem by allowing the old parent to be fragmented by the switch operation.)
+
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Non-Sibling Node Merging}
@@ -685,6 +709,9 @@ TODO
 
 TODO
 
+\afterpage{\clearpage}
+\newpage
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Parent Switching}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -708,5 +735,21 @@ TODO
 TODO
 
 \paragraph{Implementation}
+
+TODO
+
+\newpage
+
+%##################################################################################################
+\section{Partition Forest Selections}
+%##################################################################################################
+
+In order for users to interact with partition forests, they must be able to select parts of them with which to work (we have seen examples of this when describing the mutating algorithms in the previous section). It is in principle easy enough to manage the selection of individual nodes -- by maintaining a set of currently selected nodes, for instance -- and this suffices when selecting nodes in a single layer of the forest. However, in an interactive system, there are times when it is desirable to be able to manage the selection of nodes in multiple layers of the hierarchy -- for instance, the user may wish to select a large region in one layer and then refine it by deselecting some of its children in the layer below (see Figure~\ref{?}). For this, the simplistic approach is insufficient, because it ignores the forest's hierarchical structure. In particular, with this scheme, the selection of a node in one layer does not imply that its children in the layer below are also selected -- so it is impossible to deselect some of them as desired. Furthermore, the simple approach allows the simultaneous selection of a node and some (but not all) of its descendants, making the selection system unintuitive and hard to use (if the user chooses to deselect a node, it is rather confusing if some of it remains selected afterwards).
+
+For this reason, it is necessary to introduce a more sophisticated approach to partition forest selection that takes hierarchy into account. In what follows, I therefore present a novel data structure and algorithms for partition forest selection that treat the selection of a node as implicitly selecting the subtree of which it is the root, without an implementation having to explicitly maintain the set of selected nodes in the subtree (which would be prohibitively expensive). This solves both of the problems described above. I also describe how partition forest selections should be updated in response to changes to the partition forest to which they refer (implemented in practice using the standard \emph{observer} pattern \cite{gamma95}) -- this is clearly crucially important when implementing an interactive system, especially since the selections could otherwise end up referring to forest nodes that no longer exist.
+
+%################################################
+\subsection{Data Structure}
+%################################################
 
 TODO
