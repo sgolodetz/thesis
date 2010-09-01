@@ -1,0 +1,57 @@
+function unzip_node
+:	(node : NodeID; toLayer : int; checkPreconditions : CheckPreconditions) $\to$ Vector<Chain>
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that the specified node is valid.
+		var layer : ForestLayer? := checked_forest_layer(node.layer());
+		if layer = null or not layer.has_node(node.index()) then throw;
+
+		// Check that the specified layer is within the right range.
+		if toLayer < node.layer() or toLayer > highest_layer() then throw;
+
+	"begin_command_sequence();" // handled by the command sequence guard
+
+	var chains : Vector<Chain>;
+
+	// Ensure that the chain leading up from the node being unzipped is the first
+	// chain in the returned vector. The chain shouldn't actually contain the node
+	// itself, so we will remove it before returning (below).
+	var primaryChain : Chain;
+	primaryChain.push_back(node);
+	chains.push_back(primaryChain);
+
+	var cur : NodeID := node;
+	while cur.layer() $\ne$ toLayer
+		var parent : NodeID := parent_of(cur);
+		var parentLayer : BranchLayer := branch_layer(parent.layer());
+		var siblings : Set<int> := parentLayer.node_children(parent.index()) $\backslash$ {cur};
+
+		// Calculate the connected components of the siblings.
+		var ccs : Vector<Set<int>> := find_connected_components(siblings, cur.layer());
+
+		// Add in the component {cur} and split the parent node.
+		ccs.push_back({cur});
+		var result : Set<NodeID> := split_node(parent, ccs, DO_NOT_CHECK_PRECONDITIONS);
+
+		// Update the chains.
+		for each chain : Chain $\in$ chains
+			var h : PFNodeID := chain.front();	// the head of the chain
+			var p : PFNodeID := parent_of(h);
+			chain.push_front(p);
+			result.erase(p);
+
+		for each n : NodeID $\in$ result
+			var chain : Chain;
+			chain.push_back(n);
+			chains.push_back(chain);
+
+		// Note: Not necessarily the same as the parent before split_node was invoked!
+		cur := parent_of(cur);
+
+	// The first chain incorrectly contains the node being unzipped as its last node
+	// at this point (we added it above to make sure that the chain from that node
+	// was the first in the vector), so we remove it.
+	chains.front().pop_back();
+
+	"end_command_sequence();" // handled by the command sequence guard
+	return chains;

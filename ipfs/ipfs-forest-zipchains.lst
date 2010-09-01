@@ -1,0 +1,49 @@
+function zip_chains
+:	(chains : Vector<Chain>; checkPreconditions : CheckPreconditions) $\to$ (NodeID, int)
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that there are chains to zip.
+		if chains.empty() then throw;
+
+		// Check that each chain is non-empty and doesn't extend down as far as the
+		// bottom layer of the hierarchy.
+		var lowLayer : int := $\infty$;
+		for each chain : Chain $\in$ chains
+			if chain.empty() then throw;
+			if chain.back().layer() = 0 then throw;
+			lowLayer := min(lowLayer, chain.back().layer());
+
+		// Check that the highest nodes in the chains are siblings of each other.
+		var commonParent : NodeID := parent_of(chains[0].front());
+		for each chain : Chain $\in$ chains[1..]
+			if parent_of(chain.front()) $\ne$ commonParent then throw;
+
+		// Check that the sets of nodes to be merged in each layer are connected.
+		var highLayer : int := chains[0].front().layer();
+		for layer : int := highLayer down to lowLayer
+			var nodes : Set<int>;
+			for each chain $\in$ chains
+				if highLayer - layer < chain.size() then
+					nodes.insert(chain[highLayer - layer].index());
+			if not are_connected(nodes, layer) then throw;
+
+	"begin_command_sequence();" // handled by the command sequence guard
+
+	// Find the high and low layers of the chains.
+	var highLayer : int := chains[0].front().layer();
+	var lowLayer : int := $\infty$;
+	for each chain $\in$ chains
+		lowLayer = min(lowLayer, chain.back().layer());
+
+	// Perform a sibling node merge on the nodes in each layer, starting from the
+	// high layer and working downwards.
+	var mergeResult : NodeID;
+	for layer : int := highLayer down to lowLayer
+		var nodes : Set<NodeID>;
+		for each chain $\in$ chains
+			if highLayer - layer < chain.size() then
+				nodes.insert(NodeID(layer, chain[highLayer - layer].index()));
+		mergeResult := merge_sibling_nodes(nodes, DO_NOT_CHECK_PRECONDITIONS);
+
+	"end_command_sequence();" // handled by the command sequence guard
+	return (mergeResult, highLayer);
