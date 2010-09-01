@@ -317,14 +317,24 @@ Sibling nodes in any layer of the hierarchy other than the lowest can be merged 
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Before merging nodes (2,0) and (2,6).]
+	\subfigure[The forest before the merge.]
 	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-siblingnodemerging-a-hierarchy.png}}%
 	%
 	\hspace{8mm}%
 	%
-	\subfigure[After merging nodes (2,0) and (2,6).]
+	\subfigure[The layer 2 graph before the merge.]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-siblingnodemerging-a-graph2.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[The forest after the merge.]
 	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-siblingnodemerging-b-hierarchy.png}}%
-\caption{An example of sibling node merging.}
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[The layer 2 graph after the merge.]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-siblingnodemerging-b-graph2.png}}%
+\caption{An example of sibling node merging: merging nodes (2,0) and (2,6).}
 \label{fig:ipfs-forest-siblingnodemerging}
 \end{stusubfig}
 %---
@@ -385,6 +395,30 @@ To undo a sibling node merge command, the intuition is that the node resulting f
 \paragraph{Description}
 
 Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) An example is shown in Figure~\ref{fig:ipfs-forest-nodesplitting}.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The forest before the split.]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-nodesplitting-a-hierarchy.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[The layer 1 graph before the split.]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-nodesplitting-a-graph1.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[The forest after the split.]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-nodesplitting-b-hierarchy.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[The layer 1 graph after the split.]
+	{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-nodesplitting-b-graph1.png}}%
+\caption{An example of node splitting: splitting node (1,0) into two.}
+\label{fig:ipfs-forest-nodesplitting}
+\end{stusubfig}
+%---
 
 \paragraph{C++ Method Interface}
 
@@ -609,7 +643,35 @@ TODO
 
 \paragraph{C++ Method Interface}
 
+\begin{lstlisting}[style=Prototype]
+set<NodeID> merge_nonsibling_nodes(const set<NodeID>& nodes);
+\end{lstlisting}
+
+\paragraph{User Interface for Image Analysis}
+
 TODO
+
+\paragraph{Precondition Checking}
+
+TODO
+
+\paragraph{Implementation}
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Parent Switching}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\paragraph{Description}
+
+TODO
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+void parent_switch(const PFNodeID& node, int newParent);
+\end{lstlisting}
 
 \paragraph{User Interface for Image Analysis}
 
