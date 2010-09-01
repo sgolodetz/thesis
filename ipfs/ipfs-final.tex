@@ -382,6 +382,8 @@ As a result of merging the other nodes into the canonical node, the latter may g
 
 Finally, Step 3 removes the non-canonical nodes. In the pseudo-code given (based on my implementation in \emph{millipede}), this also has the effect of removing any edges adjacent to those nodes -- if an alternative implementation strategy is chosen, however, these may need to be removed manually.
 
+TODO
+
 \begin{stulisting}[p]
 \caption{Forest : Sibling Node Merging : Execution}
 \label{code:ipfs-forest-mergesiblingnodesimpl}
@@ -509,7 +511,9 @@ When implementing node splitting in a user interface like the one described abov
 
 \paragraph{Executing the Command}
 
-Pseudo-code to execute a split node command is shown in Listing~\ref{code:ipfs-forest-splitnodeimpl}. TODO
+Pseudo-code to execute a split node command is shown in Listing~\ref{code:ipfs-forest-splitnodeimpl}. In Step 1, the node to be split is deleted from the forest -- this involves removing the forest links that connect the node to its parent and children, and removing the node itself from the partitioning graph for its forest layer (in the pseudo-code, removing the node from the graph also removes its adjacent edges). In Step 2, each of the groups of children that define a node resulting from the split is used to generate a new node in the split layer (a parent for the group). This new node has the index of the lowest-indexed child node (for instance, the parent of nodes $(1,5)$, $(1,3)$ and $(1,7)$ in a hypothetical forest would be denoted $(2,3)$). Its properties are calculated by combining those of its children in the usual way. Forest links are added to connect the new node to its children in the group and its parent in the layer above (namely the parent of the node that is being split). Finally, in Step 3, the adjacency graph for the split layer is locally reconstructed around the nodes resulting from the split (it was locally destroyed when the node being split was removed) -- this is done by considering all the edges adjacent to any of the split node's children, and propagating them upwards to the split layer. For instance, if node $p_1$ in the split layer has children $c_1$ and $c_2$, and node $p_2$ in the split layer has children $c_3$ and $c_4$, and the only edges between children of $p_1$ and $p_2$ are $(\{c_1,c_3\}, w_{13})$ and $(\{c_2,c_4\}, w_{24})$, then this induces an edge $(\{p_1,p_2\}, f(w_{13}, w_{24}))$ in the split layer, where $f$ is some appropriate function on edge weights, such as $\min$ in the case of a lowest pass point approach.
+
+TODO
 
 \begin{stulisting}[p]
 \caption{Forest : Node Splitting : Execution}
