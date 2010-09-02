@@ -545,7 +545,7 @@ To undo a split node command, it is enough to just re-merge the results of the s
 
 Whilst the core mutating algorithms provide all that is theoretically required for partition forest editing, certain operations are nevertheless tedious for the user to perform using only these primitives. For instance, it seems intuitively sensible that the user should be able to merge not only nodes that are siblings in the forest, but any nodes that are adjacent in the graph for their forest layer. Such `higher-level' algorithms, however, require more substantial changes to the structure of the forest; in particular, they require changes to be made in more than one layer.
 
-In order to facilitate the implementation of such algorithms, it is helpful to introduce two intermediary forest operations that I call \emph{unzip node} (or just \emph{unzipping}) and \emph{zip chains} (or just \emph{zipping}). These are respectively multi-layer split and merge operations on the forest, and can be implemented in terms of their lower-level counterparts. In fact, such an approach is not only possible but advisable, since it can be used to avoid writing special code to undo the operations. The key is to introduce an entity called a \emph{command sequence guard}. This is created at the start of a composite operation like an unzip, and informs the application's command manager that a command sequence is about to start (in C++, this would happen in the constructor for the guard). The relevant lower-level commands are then executed, after which the guard is destroyed again, informing the application's command manager that the command sequence has ended (in C++, this would happen in the guard's destructor). Undoing the composite operation is then a simple matter of undoing the lower-level commands in reverse order, something that can be easily handled by any decent command manager implementation. Bearing this in mind, we can now examine each of the zipping algorithms in detail.
+In order to facilitate the implementation of such algorithms, it is helpful to introduce two intermediary forest operations that I call \emph{unzip node} (or just \emph{unzipping}) and \emph{zip chains} (or just \emph{zipping}). These are respectively multi-layer split and merge operations on the forest, and can be implemented in terms of their lower-level counterparts. In fact, such an approach is not only possible but advisable, since it can be used to avoid writing special code to undo the operations. The key is to introduce an entity called a \emph{listener-alerting command sequence guard}. This is created at the start of a composite operation like an unzip, and informs both the application's command manager and any listeners that a command sequence is about to start (in C++, this would happen in the constructor for the guard). The relevant lower-level commands are then executed, after which the guard is destroyed again, informing the application's command manager and any listeners that the command sequence has ended (in C++, this would happen in the guard's destructor). Undoing the composite operation is then a simple matter of undoing the lower-level commands in reverse order, something that can be easily handled by any decent command manager implementation. Bearing this in mind, we can now examine each of the zipping algorithms in detail.
 
 \newpage
 
@@ -746,10 +746,61 @@ TODO
 
 In order for users to interact with partition forests, they must be able to select parts of them with which to work (we have seen examples of this when describing the mutating algorithms in the previous section). It is in principle easy enough to manage the selection of individual nodes -- by maintaining a set of currently selected nodes, for instance -- and this suffices when selecting nodes in a single layer of the forest. However, in an interactive system, there are times when it is desirable to be able to manage the selection of nodes in multiple layers of the hierarchy -- for instance, the user may wish to select a large region in one layer and then refine it by deselecting some of its children in the layer below (see Figure~\ref{?}). For this, the simplistic approach is insufficient, because it ignores the forest's hierarchical structure. In particular, with this scheme, the selection of a node in one layer does not imply that its children in the layer below are also selected -- so it is impossible to deselect some of them as desired. Furthermore, the simple approach allows the simultaneous selection of a node and some (but not all) of its descendants, making the selection system unintuitive and hard to use (if the user chooses to deselect a node, it is rather confusing if some of it remains selected afterwards).
 
-For this reason, it is necessary to introduce a more sophisticated approach to partition forest selection that takes hierarchy into account. In what follows, I therefore present a novel data structure and algorithms for partition forest selection that treat the selection of a node as implicitly selecting the subtree of which it is the root, without an implementation having to explicitly maintain the set of selected nodes in the subtree (which would be prohibitively expensive). This solves both of the problems described above. I also describe how partition forest selections should be updated in response to changes to the partition forest to which they refer (implemented in practice using the standard \emph{observer} pattern \cite{gamma95}) -- this is clearly crucially important when implementing an interactive system, especially since the selections could otherwise end up referring to forest nodes that no longer exist.
+For this reason, it is necessary to introduce a more sophisticated approach to partition forest selection that takes hierarchy into account. In what follows, I therefore describe a novel data structure and algorithms for partition forest selection (expanding on work originally presented in \cite{gvcispa09}) that treat the selection of a node as implicitly selecting the subtree of which it is the root, without an implementation having to explicitly maintain the set of selected nodes in the subtree (which would be prohibitively expensive). This solves both of the problems described above. I also describe how partition forest selections should be updated in response to changes to the partition forest to which they refer (implemented in practice using the standard \emph{observer} pattern \cite{gamma95}) -- this is clearly crucially important when implementing an interactive system, especially since the selections could otherwise end up referring to forest nodes that no longer exist.
 
 %################################################
 \subsection{Data Structure}
 %################################################
 
-TODO
+The partition forest selection data structure should contain an array of sets of node indices, one per forest layer, and some type of pointer to the partition forest to which it corresponds.\footnote{The actual code also contains a pointer to the application's command manager and a `composite listener' to allow observers to listen to changes in the selection, but these are implementation details.} In C++, this can be implemented as follows (noting that \texttt{shared_ptr} is a kind of reference-counted smart pointer):
+
+\begin{lstlisting}[style=Default,language=C++]
+template <typename LeafLayer, typename BranchLayer>
+class PartitionForestSelection
+{
+	typedef set<int> Layer;
+
+	vector<Layer> nodes;
+	shared_ptr<PartitionForest<LeafLayer,BranchLayer>> forest;
+
+	//...
+};
+\end{lstlisting}
+
+In order to derive a datatype invariant, we observe that the selection of a set of nodes in multiple layers of the forest corresponds to the selection of a set of pixels (or voxels, in 3D) in the forest's leaf layer (see Figure~\ref{?}). Moreover, all selections of nodes that correspond to the same selection of pixels are equivalent: they are selecting the same regions of the underlying image. However, for each selection of pixels $S$, there is a unique minimal selection of nodes in the forest that partitions $S$: that is, whose nodes cover $S$ and do not mutually overlap (see Figure~\ref{?}). We define this to be the \emph{minimal node representation} of $S$, denoted $\textbf{MNR}(S)$. This is the ideal representation for partition forest selections, because it contains all the information necessary and in the most compact form possible. We therefore represent selections in this manner, effectively introducing the datatype invariant that \emph{if a node is part of the selection representation, then no ancestor or descendant of it is also part of the representation}. The \texttt{nodes} member of the above data structure will be used to maintain precisely the nodes in $\textbf{MNR}(S)$, for whatever $S$ we happen to want to select at the time.
+
+%################################################
+\subsection{Algorithms: Overview}
+%################################################
+
+Having defined the partition forest selection data structure, and in particular the way in which selections are represented, we next turn to the algorithms that should be implemented for partition forest selections. These can be divided into three groups:
+
+\begin{enumerate}
+
+\item The \emph{core} algorithms implement basic functionality: \texttt{select_node} and \texttt{deselect_node} allow the selection and deselection of individual nodes, respectively, whilst \texttt{view_at_layer} allows the selection to be viewed at a specific forest layer (all nodes in higher layers are replaced with their descendants in the chosen layer).
+
+\item The \emph{listening} algorithms listen to the partition forest to which the selection corresponds, and update the selection in response to any changes. The selection needs to change in response to each of the core partition forest algorithms: layer cloning (\texttt{layer_was_cloned}), layer deletion/undeletion (\texttt{layer_will_be_deleted} and \texttt{layer_was_undeleted}), sibling node merging (\texttt{nodes_will_be_merged} and \texttt{nodes_were_merged}) and node splitting (\texttt{node_was_split}). It should be noted that because the remaining partition forest algorithms were implemented in terms of the core algorithms, there is no need for additional algorithms that update the selection in response to e.g.~unzipping or parent switching. This is a major advantage of the implementation technique chosen.
+
+\item Finally, the \emph{binary set} algorithms allow selections to be combined (i.e.~unioned) and subtracted from each other: we will see later (particularly in Chapter~\ref{chap:assessment}) that this functionality is important because it allows feature selections to be compared in order to validate them.
+
+\end{enumerate}
+
+%################################################
+\subsection{Core Algorithms}
+%################################################
+
+TODO: select_node, deselect_node, view_at_layer
+
+%The core algorithms for partition forest selections are those providing the ability to select and 
+
+%################################################
+\subsection{Listening Algorithms}
+%################################################
+
+TODO: layer_was_cloned, layer_was_undeleted, layer_will_be_deleted, node_was_split, nodes_will_be_merged, nodes_were_merged
+
+%################################################
+\subsection{Binary Set Algorithms}
+%################################################
+
+TODO: combine, subtract

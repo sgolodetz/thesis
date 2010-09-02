@@ -794,6 +794,8 @@ function layer_was_cloned
 	// by simply inserting an empty layer below the one being cloned, as here.
 	var emptyLayer : SelectionLayer;
 	insert_layer(index, emptyLayer);
+
+	listeners.selection_changed();
 \end{lstlisting}
 \end{stulisting}
 
@@ -820,6 +822,8 @@ function layer_was_undeleted
 	// Consolidate each of these parents in turn.
 	for each p : NodeID $\in$ parents
 		consolidate_node(p, null);
+
+	listeners.selection_changed();
 \end{lstlisting}
 \end{stulisting}
 
@@ -840,6 +844,8 @@ function layer_will_be_deleted
 
 	// Delete the layer itself.
 	erase_layer(index);
+
+	listeners.selection_changed();
 \end{lstlisting}
 \end{stulisting}
 
@@ -854,10 +860,17 @@ TODO
 function node_was_split
 :	(node : NodeID; results : Set<NodeID>) $\to \emptyset$
 
+	// Step 1: If the node being split was itself in the selection, replace it with the results of the split.
 	if in_selection(node) then
 		erase_node(node, null);
 		for each r : NodeID $\in$ results
 			insert_node(r, null);
+
+	// Step 2: Consolidate the individual result nodes. (This is important when the split results from an unzip.)
+	for each r : NodeID $\in$ results
+		consolidate_node(r, null);
+
+	listeners.selection_changed();
 \end{lstlisting}
 \end{stulisting}
 
@@ -877,6 +890,8 @@ function nodes_will_be_merged
 		if in_selection(n) then
 			deconsolidate_node(n, null);
 
+	listeners.selection_changed();
+
 function nodes_were_merged
 :	(nodes : Set<NodeID>; result : NodeID) $\to \emptyset$
 
@@ -884,6 +899,8 @@ function nodes_were_merged
 	// node's ancestors in the forest will be unchanged by the merge, so we don't need
 	// to consolidate those.
 	consolidate_node(result, null);
+
+	listeners.selection_changed();
 \end{lstlisting}
 \end{stulisting}
 
