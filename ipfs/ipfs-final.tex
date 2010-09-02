@@ -767,7 +767,7 @@ class PartitionForestSelection
 };
 \end{lstlisting}
 
-In order to derive a datatype invariant, we observe that the selection of a set of nodes in multiple layers of the forest corresponds to the selection of a set of pixels (or voxels, in 3D) in the forest's leaf layer (see Figure~\ref{?}). Moreover, all selections of nodes that correspond to the same selection of pixels are equivalent: they are selecting the same regions of the underlying image. However, for each selection of pixels $S$, there is a unique minimal selection of nodes in the forest that partitions $S$: that is, whose nodes cover $S$ and do not mutually overlap (see Figure~\ref{?}). We define this to be the \emph{minimal node representation} of $S$, denoted $\textbf{MNR}(S)$. This is the ideal representation for partition forest selections, because it contains all the information necessary and in the most compact form possible. We therefore represent selections in this manner, effectively introducing the datatype invariant that \emph{if a node is part of the selection representation, then no ancestor or descendant of it is also part of the representation}. The \texttt{nodes} member of the above data structure will be used to maintain precisely the nodes in $\textbf{MNR}(S)$, for whatever $S$ we happen to want to select at the time.
+The \texttt{nodes} data member will contain nodes that represent the selection, but many representations are possible. Specifically, we note that the selection of a set of nodes in multiple layers of the forest corresponds to the selection of a set of pixels (or voxels, in 3D) in the forest's leaf layer (see Figure~\ref{?}). This is a many-to-one relationship: there are many node selections that correspond to the same pixel selection (it is possible to define an equivalence relation that makes all the node selections corresponding to the selection of a particular set of pixels equivalent). However, we are only interested in non-redundant representations of the pixel selection: more precisely, in sets of nodes that partition the pixel selection (they cover all the pixels and do not overlap). As Figure~\ref{?} illustrates, there are still many sets of nodes that would satisfy this criterion for a given pixel selection, but there is always a unique, smallest set (in particular, the one where the nodes chosen are in the highest forest layers possible). We describe this as the \emph{minimal node representation} of a given pixel selection $S$, and denote it $\textbf{MNR}(S)$. This is the ideal representation for partition forest selections, because it contains all the information necessary and in the most compact form possible. We thus maintain precisely the nodes in $\textbf{MNR}(S)$ in the \texttt{nodes} data member, for whatever $S$ happens to be selected at the time.
 
 %################################################
 \subsection{Algorithms: Overview}
@@ -777,11 +777,11 @@ Having defined the partition forest selection data structure, and in particular 
 
 \begin{enumerate}
 
-\item The \emph{core} algorithms implement basic functionality: \texttt{select_node} and \texttt{deselect_node} allow the selection and deselection of individual nodes, respectively, whilst \texttt{view_at_layer} allows the selection to be viewed at a specific forest layer (all nodes in higher layers are replaced with their descendants in the chosen layer).
+\item The \textbf{core} algorithms implement basic functionality: the \emph{node selection} and \emph{node deselection} algorithms allow the selection and deselection of individual nodes, respectively, whilst the \emph{view at layer} algorithm allows the selection to be viewed at a specific forest layer (all nodes in higher layers are replaced with their descendants in the chosen layer).
 
-\item The \emph{listening} algorithms listen to the partition forest to which the selection corresponds, and update the selection in response to any changes. The selection needs to change in response to each of the core partition forest algorithms: layer cloning (\texttt{layer_was_cloned}), layer deletion/undeletion (\texttt{layer_will_be_deleted} and \texttt{layer_was_undeleted}), sibling node merging (\texttt{nodes_will_be_merged} and \texttt{nodes_were_merged}) and node splitting (\texttt{node_was_split}). It should be noted that because the remaining partition forest algorithms were implemented in terms of the core algorithms, there is no need for additional algorithms that update the selection in response to e.g.~unzipping or parent switching. This is a major advantage of the implementation technique chosen.
+\item The \textbf{listening} algorithms listen to the partition forest to which the selection corresponds, and update the selection in response to any changes. The selection needs to change in response to each of the core partition forest algorithms: layer cloning, layer deletion/undeletion, sibling node merging and node splitting. It should be noted that because the remaining partition forest algorithms were implemented in terms of the core algorithms, there is no need for additional algorithms that update the selection in response to e.g.~unzipping or parent switching. This is a major advantage of the implementation technique chosen.
 
-\item Finally, the \emph{binary set} algorithms allow selections to be combined (i.e.~unioned) and subtracted from each other: we will see later (particularly in Chapter~\ref{chap:assessment}) that this functionality is important because it allows feature selections to be compared in order to validate them.
+\item Finally, the \textbf{binary set} algorithms allow selections to be combined (i.e.~unioned) and subtracted from each other: we will see later (particularly in Chapter~\ref{chap:assessment}) that this functionality is important because it allows feature selections to be compared in order to validate them.
 
 \end{enumerate}
 
@@ -789,18 +789,72 @@ Having defined the partition forest selection data structure, and in particular 
 \subsection{Core Algorithms}
 %################################################
 
-TODO: select_node, deselect_node, view_at_layer
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Node Selection}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%The core algorithms for partition forest selections are those providing the ability to select and 
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Node Deselection}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{View At Layer}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
 
 %################################################
 \subsection{Listening Algorithms}
 %################################################
 
-TODO: layer_was_cloned, layer_was_undeleted, layer_will_be_deleted, node_was_split, nodes_will_be_merged, nodes_were_merged
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Layer Was Cloned}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Layer Will Be Deleted / Layer Was Undeleted}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Nodes Will Be Merged / Nodes Were Merged}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Node Was Split}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
 
 %################################################
 \subsection{Binary Set Algorithms}
 %################################################
 
-TODO: combine, subtract
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Combine Selections}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Subtract Selections}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+\newpage
+
+%##################################################################################################
+\section{Partition Forest Multi-Feature Selections}
+%##################################################################################################
+
+TODO
