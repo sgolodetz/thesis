@@ -857,4 +857,63 @@ TODO
 \section{Partition Forest Multi-Feature Selections}
 %##################################################################################################
 
-TODO
+When using partition forests for image analysis, the user must be able to identify features within a forest (e.g.~that a particular node is part of the liver, etc.). In order to make this possible, it is necessary to introduce another new data structure called a \emph{partition forest multi-feature selection}. This is in essence just a map from features to partition forest selections -- in other words, a separate selection is maintained for each interesting feature. (Thus features are allowed to overlap, since the same node can appear in the selections of more than one feature.) In C++, this can be implemented as follows:
+
+\begin{lstlisting}[style=Default,language=C++]
+template <typename LeafLayer, typename BranchLayer, typename Feature>
+class PartitionForestMultiFeatureSelection
+{
+	map<Feature,shared_ptr<PartitionForestSelection<LeafLayer,BranchLayer>>> selections;
+	shared_ptr<PartitionForest<LeafLayer,BranchLayer>> forest;
+
+	//...
+};
+\end{lstlisting}
+
+\noindent Multi-feature selections should support a variety of operations, most notably:
+
+\begin{itemize}
+\item Identifying and unidentifying nodes as specific features.
+\item Clearing the selections of specific features.
+\item Looking up the features corresponding to a particular node.
+\item Combining and subtracting multi-feature selections (important for validation purposes).
+\end{itemize}
+
+\noindent All of these can be implemented straightforwardly in terms of their selection counterparts. For example, the following pseudo-code shows how a node can be identified as a feature:
+
+\begin{lstlisting}[style=Default]
+function identify_node
+:	(node : NodeID; feature : Feature) $\to$ $\emptyset$
+	selection(feature).select_node(node);
+\end{lstlisting}
+
+\noindent Since the implementations are essentially trivial, they will not be presented here: instead, full pseudo-code may be found in Appendix~\ref{?}. It is, however, useful to see an example of how multi-feature selections work. In Figure~\ref{fig:ipfs-mfs-example}, forest nodes can be identified as being either \emph{green} or \emph{blue}. If nodes $(1,6)$ and $(2,0)$ are identified as being green nodes, and nodes $(1,2)$ and $(2,6)$ are identified as being blue nodes, then the multi-feature selection is as shown in the final sub-figure. A feature look-up on any descendant of $(2,0)$ (inclusive) will yield \{green\}, one on any descendant of $(1,2)$ (inclusive) will yield \{blue\}, and one on any descendant of $(2,6)$ (inclusive) will yield \{green,blue\}.
+
+%---
+\begin{stusubfig}{h}
+	\subfigure[The initial forest]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-a.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After identifying $(1,6)$ as green.]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-b.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After identifying $(2,0)$ as green.]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-c.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After identifying $(1,2)$ as blue.]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-d.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After identifying $(2,6)$ as blue.]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-e.png}}%
+\caption{A multi-feature selection example: filled nodes are part of the actual representation, whilst circled nodes are implicitly identified. The cyan nodes in (e) are identified as both green and blue.}
+\label{fig:ipfs-mfs-example}
+\end{stusubfig}
+%---

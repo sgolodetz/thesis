@@ -1,0 +1,43 @@
+graph
+{
+	node [shape=circle, style=filled, label=""];
+
+	n4_0 [label="(4,0)", fillcolor="white"];
+	n3_0 [label="(3,0)", color="green", fillcolor="green"];
+	n3_2 [label="(3,2)", fillcolor="white"];
+	n2_0 [label="(2,0)", color="green", fillcolor="white"];
+	n2_2 [label="(2,2)", fillcolor="white"];
+	n2_6 [label="(2,6)", color="green", fillcolor="white"];
+	n1_0 [label="(1,0)", color="green", fillcolor="white"];
+	n1_2 [label="(1,2)", color="blue", fillcolor="blue"];
+	n1_6 [label="(1,6)", color="green", fillcolor="white"];
+	n1_8 [label="(1,8)", fillcolor="white"];
+	n0_0 [label="(0,0)", color="green", fillcolor="white"];
+	n0_1 [label="(0,1)", color="green", fillcolor="white"];
+	n0_2 [label="(0,2)", color="blue", fillcolor="white"];
+	n0_3 [label="(0,3)", color="green", fillcolor="white"];
+	n0_4 [label="(0,4)", color="green", fillcolor="white"];
+	n0_5 [label="(0,5)", color="blue", fillcolor="white"];
+	n0_6 [label="(0,6)", color="green", fillcolor="white"];
+	n0_7 [label="(0,7)", color="green", fillcolor="white"];
+	n0_8 [label="(0,8)", fillcolor="white"];
+
+	n4_0 -- n3_0;
+	n4_0 -- n3_2;
+	n3_0 -- n2_0;
+	n3_2 -- n2_2;
+	n3_0 -- n2_6;
+	n2_0 -- n1_0;
+	n2_2 -- n1_2;
+	n2_6 -- n1_6;
+	n2_2 -- n1_8;
+	n1_0 -- n0_0;
+	n1_0 -- n0_1;
+	n1_2 -- n0_2;
+	n1_0 -- n0_3;
+	n1_0 -- n0_4;
+	n1_2 -- n0_5;
+	n1_6 -- n0_6;
+	n1_6 -- n0_7;
+	n1_8 -- n0_8;
+}
