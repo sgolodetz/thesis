@@ -857,6 +857,10 @@ TODO
 \section{Partition Forest Multi-Feature Selections}
 %##################################################################################################
 
+%################################################
+\subsection{Overview}
+%################################################
+
 When using partition forests for image analysis, the user must be able to identify features within a forest (e.g.~that a particular node is part of the liver, etc.). In order to make this possible, it is necessary to introduce another new data structure called a \emph{partition forest multi-feature selection}. This is in essence just a map from features to partition forest selections -- in other words, a separate selection is maintained for each interesting feature. (Thus features are allowed to overlap, since the same node can appear in the selections of more than one feature.) In C++, this can be implemented as follows:
 
 \begin{lstlisting}[style=Default,language=C++]
@@ -887,33 +891,45 @@ function identify_node
 	selection(feature).select_node(node);
 \end{lstlisting}
 
-\noindent Since the implementations are essentially trivial, they will not be presented here: instead, full pseudo-code may be found in Appendix~\ref{?}. It is, however, useful to see an example of how multi-feature selections work. In Figure~\ref{fig:ipfs-mfs-example}, forest nodes can be identified as being either \emph{green} or \emph{blue}. If nodes $(1,6)$ and $(2,0)$ are identified as being green nodes, and nodes $(1,2)$ and $(2,6)$ are identified as being blue nodes, then the multi-feature selection is as shown in the final sub-figure. A feature look-up on any descendant of $(2,0)$ (inclusive) will yield \{green\}, one on any descendant of $(1,2)$ (inclusive) will yield \{blue\}, and one on any descendant of $(2,6)$ (inclusive) will yield \{green,blue\}.
+\noindent Since the implementations are essentially trivial, they will not be presented here: instead, full pseudo-code may be found in Appendix~\ref{?}. It is, however, useful to see an example of how multi-feature selections work. In Figure~\ref{fig:ipfs-mfs-example}, forest nodes can be identified as being either \emph{green} or \emph{blue}. If nodes $(1,6)$ and $(2,0)$ are identified as being green nodes, and nodes $(1,2)$ and $(2,6)$ are identified as being blue nodes, then the multi-feature selection is as shown in the final sub-figure. A feature look-up on $(3,0)$ or any descendant of $(2,0)$ (inclusive) will yield \{green\}, one on any descendant of $(1,2)$ (inclusive) will yield \{blue\}, and one on any descendant of $(2,6)$ (inclusive) will yield \{green,blue\}.
 
 %---
 \begin{stusubfig}{h}
 	\subfigure[The initial forest]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-a.png}}%
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-a.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After identifying $(1,6)$ as green.]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-b.png}}%
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-b.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After identifying $(2,0)$ as green.]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-c.png}}%
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-c.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After identifying $(1,2)$ as blue.]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-d.png}}%
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-d.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After identifying $(2,6)$ as blue.]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-e.png}}%
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-e.png}}%
 \caption{A multi-feature selection example: filled nodes are part of the actual representation, whilst circled nodes are implicitly identified. The cyan nodes in (e) are identified as both green and blue.}
 \label{fig:ipfs-mfs-example}
 \end{stusubfig}
 %---
+
+%################################################
+\subsection{User Interface}
+%################################################
+
+TODO
+
+%##################################################################################################
+\section{Chapter Summary}
+%##################################################################################################
+
+In this chapter, the partition forest, partition forest selection and partition forest multi-feature selection data structures were introduced, together with their accompanying algorithms. It was also shown how they could be integrated into a graphical user interface for image analysis. This lays the groundwork for Chapters~\ref{chap:segmentation} and \ref{chap:featureid}, which respectively discuss how to construct partition forests from images and how to use them to identify features therein.
