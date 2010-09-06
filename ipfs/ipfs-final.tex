@@ -325,7 +325,7 @@ TODO
 
 \paragraph{Description}
 
-Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). An example is shown in Figure~\ref{fig:ipfs-forest-siblingnodemerging}. A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest).
+Sibling nodes in any layer of the hierarchy other than the lowest can be merged provided that the union of the objects they represent is contiguous (this condition ensures that the new node post-merging still represents a valid object). A set of nodes are siblings if they either all have the same parent, or all have no parent (the latter case occurs when the nodes are in the top layer of the hierarchy, when they are all implicitly children of the top-level object represented by the partition forest -- e.g.~the whole image in the case of an image partition forest). The algorithm takes as input the set of sibling nodes to be merged, and returns the node resulting from the merge. An example is shown in Figure~\ref{fig:ipfs-forest-siblingnodemerging}.
 
 %---
 \begin{stusubfig}{p}
@@ -417,7 +417,7 @@ To undo a sibling node merge command, the intuition is that the node resulting f
 
 \paragraph{Description}
 
-Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) An example is shown in Figure~\ref{fig:ipfs-forest-nodesplitting}.
+Nodes in any layer of the hierarchy other than the lowest can be split into multiple nodes representing smaller objects. (Note that the definition of objects requires that each of these smaller objects must be contiguous.) The algorithm takes as input the node to be split, and a set of groups of the node's children into which to split it, where each group is a set of child nodes. It returns the nodes created by the split. An example is shown in Figure~\ref{fig:ipfs-forest-nodesplitting}.
 
 %---
 \begin{stusubfig}{p}
@@ -559,6 +559,8 @@ A node in any layer of the hierarchy can be unzipped to a specified higher layer
 
 % TODO: fig:ipfs-forest-unzipping
 
+The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains (which could in theory be passed to the zipping algorithm described below in order to undo the operation, although undo is actually handled automatically when unzipping is implementing as a composite operation). A \emph{chain} is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length, but they all start in the same layer of the hierarchy.
+
 \paragraph{C++ Method Interface}
 
 \begin{lstlisting}[style=Prototype]
@@ -644,11 +646,12 @@ TODO
 
 \paragraph{Description}
 
-TODO
+A set of node chains (see the description of unzipping for a definition) that all start in the same layer can be zipped together, an operation that is effectively a multi-layer sibling node merge. When performed on the results of an unzip, this effectively undoes that operation. The zipping algorithm takes as input $k$ chains $[n_{1h},\ldots,n_{1\ell_1}], \ldots, [n_{kh},\ldots,n_{k\ell_k}]$ and returns a pair consisting of a node and a layer index, namely the parameters that we would need to pass to \texttt{unzip_node} in order to undo the operation. See Figure~\ref{?} for an example.
 
 \paragraph{C++ Method Interface}
 
 \begin{lstlisting}[style=Prototype]
+typedef deque<NodeID> Chain;
 pair<NodeID,int> zip_chains(const vector<Chain>& chains);
 \end{lstlisting}
 
@@ -658,7 +661,27 @@ It doesn't make sense to expose zipping as part of the user interface, since the
 
 \paragraph{Precondition Checking}
 
-TODO
+The preconditions to be checked for zipping can be deduced from the preconditions required by the sibling node merges in terms of which it is implemented. There are at least two reasons for enforcing the preconditions at the zip level, rather than letting them be checked internally by the merges:
+
+\begin{enumerate}
+
+\item Zipping should be an \emph{atomic} forest operation -- that is, if the zip fails, the forest should be unchanged. Checking at the merge level can result in the zip being aborted after changes have been made to the forest, potentially leaving it in an inconsistent state.
+
+\item Checking at the zip level is slightly more efficient -- in particular, we can exploit our knowledge about the sequence of merges to be performed in order to avoid checking in all but the top-most layer that the nodes to be merged are siblings.
+
+\end{enumerate}
+
+\noindent The following checks are thus necessary (see Listing~\ref{code:ipfs-forest-zipchains} for pseudo-code):
+
+\begin{enumerate}
+
+\item There must be chains to zip.
+\item Each chain must be non-empty and consist only of valid nodes.
+\item No chain must extend down as far as the leaf layer of the forest (this guarantees that we will not be trying to merge leaf layer nodes).
+\item The highest nodes in the chains must be siblings of each other (there is no need to check that other corresponding nodes in the chains are siblings -- merging their parents in the previous iteration of the loop will automatically guarantee that they share the same parent).
+\item The sets of nodes to be merged in each layer must be connected.
+
+\end{enumerate}
 
 \paragraph{Implementation}
 
