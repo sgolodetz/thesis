@@ -1,0 +1,54 @@
+function merge_nonsibling_nodes
+:	(nodes : Set<NodeID>; checkPreconditions : CheckPreconditions) $\to$ Set<NodeID>
+
+	if checkPreconditions = CHECK_PRECONDITIONS then
+		// Check that there are nodes to be merged.
+		if nodes.empty() then throw;
+
+		// Check that the nodes to be merged are valid and are all in the same
+		// (non-lowest) layer of the hierarchy.
+		var commonLayer : int := lowest_indexed_node(nodes).layer();
+		if commonLayer = 0 then throw;
+		for each n : NodeID $\in$ nodes
+			if n.layer() $\ne$ commonLayer then throw;
+			var layer : ForestLayer? := checked_forest_layer(n.layer());
+			if layer = null or not layer.has_node(n.index()) then throw;
+
+	"begin_command_sequence();" // handled by the command sequence guard
+
+	var mergedNodes : Set<NodeID>;
+
+	// Calculate the connected components of the nodes to be merged.
+	var layerIndex : int := lowest_indexed_node(nodes).layer();
+	var indices : Set<int>;
+	for each n : NodeID $\in$ nodes
+		indices.insert(n.index());
+	var ccs : Vector<Set<int>> := find_connected_components(indices, layerIndex);
+
+	// Arrange for the nodes in each connected component of size > 1 to be merged.
+	for each component : Set<int> $\in$ ccs
+		if component.size() = 1 then continue;	// nothing to do
+
+		// Find the layer to which the nodes need to be unzipped, namely the layer
+		// below the nodes' common ancestor.
+		var toLayer : int := find_common_ancestor_layer(component, layerIndex) - 1;
+
+		// Unzip each node in the component to the specified layer, in each case
+		// keeping the chain that corresponds to the unzipped node itself, which (by
+		// construction) will be the first one in the returned vector. Since we want
+		// the actual nodes (and not just the nodes above them in their chains) to be
+		// merged, we add them to the ends of their respective chains here as well.
+		var chains : Vector<Chain>;
+		for each n : int $\in$ component
+			var node : NodeID := NodeID(layerIndex, n);
+			var unzipResult : Vector<Chain>;
+			unzipResult := unzip_node(node, toLayer, DO_NOT_CHECK_PRECONDITIONS);
+			chains.push_back(unzipResult.front());
+			chains.back().push_back(node);
+
+		// Zip the chains together to effectuate the merge, and store the resulting
+		// node.
+		mergedNodes.insert(zip_chains(chains, DO_NOT_CHECK_PRECONDITIONS).first);
+
+	"end_command_sequence();" // handled by the command sequence guard
+	return mergedNodes;

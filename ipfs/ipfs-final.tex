@@ -739,6 +739,12 @@ The great advantage of non-sibling node merging over sibling node merging is tha
 
 TODO
 
+\begin{stulisting}[p]
+\caption{Forest : Non-Sibling Node Merging : Implementation}
+\label{code:ipfs-forest-mergenonsiblingnodes}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-mergenonsiblingnodes.lst}
+\end{stulisting}
+
 \afterpage{\clearpage}
 \newpage
 
@@ -748,7 +754,7 @@ TODO
 
 \paragraph{Description}
 
-TODO
+A node in any layer of the hierarchy except the highest can be moved from being the child of its parent node to being the child of another node in the layer above, provided that it is adjacent to at least one child of its new parent. It is possible that moving the node may cause some of its old ancestors to become disconnected. If this happens, what remains of each old ancestor is split into its connected components. The algorithm takes as input the node to be moved and the index of its new parent node in the layer above. See Figure~\ref{?} for an example.
 
 \paragraph{C++ Method Interface}
 
@@ -762,12 +768,27 @@ TODO
 
 \paragraph{Precondition Checking}
 
-TODO
+There are three preconditions that must be checked for parent switching (see Listing~\ref{code:ipfs-forest-parentswitch} for pseudo-code):
+
+\begin{enumerate}
+
+\item The node being moved must exist. (TODO)
+\item The proposed new parent must exist.
+\item The node must be adjacent to at least one child of its proposed new parent.
+
+\end{enumerate}
 
 \paragraph{Implementation}
 
 TODO
 
+\begin{stulisting}[p]
+\caption{Forest : Parent Switch : Implementation}
+\label{code:ipfs-forest-parentswitch}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-parentswitch.lst}
+\end{stulisting}
+
+\afterpage{\clearpage}
 \newpage
 
 %##################################################################################################
