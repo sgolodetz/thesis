@@ -559,7 +559,7 @@ A node in any layer of the hierarchy can be unzipped to a specified higher layer
 
 % TODO: fig:ipfs-forest-unzipping
 
-The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains (which could in theory be passed to the zipping algorithm described below in order to undo the operation, although undo is actually handled automatically when unzipping is implementing as a composite operation). A \emph{chain} is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length, but they all start in the same layer of the hierarchy.
+The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains that could in theory be passed to the zipping algorithm described below in order to undo the operation, although undo is actually handled automatically when unzipping is implementing as a composite operation. A \emph{chain} is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length, but they all start in the same layer of the hierarchy.
 
 \paragraph{C++ Method Interface}
 
@@ -675,10 +675,10 @@ The preconditions to be checked for zipping can be deduced from the precondition
 
 \begin{enumerate}
 
-\item There must be chains to zip.
-\item Each chain must be non-empty and consist only of valid nodes.
-\item No chain must extend down as far as the leaf layer of the forest (this guarantees that we will not be trying to merge leaf layer nodes).
-\item The highest nodes in the chains must be siblings of each other (there is no need to check that other corresponding nodes in the chains are siblings -- merging their parents in the previous iteration of the loop will automatically guarantee that they share the same parent).
+\item There must be chains to zip. (This can be trivially checked in $O(1)$ time.)
+\item Each chain must be non-empty and consist only of valid nodes (TODO).
+\item No chain must extend down as far as the leaf layer of the forest -- this guarantees that we will not be trying to merge leaf layer nodes.
+\item The highest nodes in the chains must be siblings of each other. Note that there is no need to check that other corresponding nodes in the chains are siblings, as merging their parents in the previous iteration of the loop will automatically guarantee that they share the same parent.
 \item The sets of nodes to be merged in each layer must be connected.
 
 \end{enumerate}
@@ -712,7 +712,7 @@ The second higher-level algorithm that we can now implement is parent switching,
 
 \paragraph{Description}
 
-TODO
+A set of arbitrary nodes in any layer of the hierarchy other than the lowest can be divided into its connected components, each of which can then be merged. Since each component is connected, the result of each merge represents a valid object. From the user's perspective, this is a far more intuitive merge operation than sibling node merging: they simply have to indicate a set of nodes in a particular layer, and these are then merged into as few connected components as possible, based on their adjacency in the layer's graph. There is no requirement that the selected nodes are connected, or that they share a common parent (thus the user is freed from having to think about the structure of the forest when performing a merge). The algorithm takes as input the set of nodes to be merged, and returns the set of nodes resulting from merging each of the input's connected components (i.e.~there is one output node for each connected component of the input). An example is shown in Figure~\ref{?}.
 
 \paragraph{C++ Method Interface}
 
@@ -722,11 +722,18 @@ set<NodeID> merge_nonsibling_nodes(const set<NodeID>& nodes);
 
 \paragraph{User Interface for Image Analysis}
 
-TODO
+The user interface for non-sibling node merging is very simple, as illustrated in Figure~\ref{?}. The user selects some nodes, then clicks a menu item to merge them.
 
 \paragraph{Precondition Checking}
 
-TODO
+The great advantage of non-sibling node merging over sibling node merging is that it has fewer preconditions; in fact, it owes its existence to the need to provide a less-constrained, more user-friendly merging algorithm for partition forest. It is therefore unsurprising that its preconditions are a strict subset of those of sibling node merging:
+
+\begin{enumerate}
+
+\item There must be more than one node to be merged. (This can be trivially checked in $O(1)$ time.)
+\item None of the nodes must be in the lowest layer of the forest. (This can be checked in time linear in the number of nodes.)
+
+\end{enumerate}
 
 \paragraph{Implementation}
 
