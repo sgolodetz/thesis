@@ -722,7 +722,31 @@ set<NodeID> merge_nonsibling_nodes(const set<NodeID>& nodes);
 
 \paragraph{User Interface for Image Analysis}
 
-The user interface for non-sibling node merging is very simple, as illustrated in Figure~\ref{?}. The user selects some nodes, then clicks a menu item to merge them.
+The user interface for non-sibling node merging is very simple, as illustrated in Figure~\ref{fig:ipfs-forest-nonsiblingnodemerging-gui}. The user selects some nodes, then clicks a menu item to merge them.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Layer 2 before merging]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-gui-a.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Select the nodes to be merged]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-gui-b.png}}%
+	%
+	\\
+	%
+	\subfigure[Click the menu item]
+	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-gui-c.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Layer 2 after merging]
+	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-gui-d.png}}%
+\caption{The user interface for non-sibling node merging.}
+\label{fig:ipfs-forest-nonsiblingnodemerging-gui}
+\end{stusubfig}
+%---
 
 \paragraph{Precondition Checking}
 
@@ -765,6 +789,50 @@ void parent_switch(const PFNodeID& node, int newParent);
 \paragraph{User Interface for Image Analysis}
 
 TODO
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Layer 1 before parent switching]
+	{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-parentswitch-gui-a.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Layer 2 before parent switching]
+	{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-parentswitch-gui-b.png}}%
+	%
+	\\
+	%
+	\subfigure[Select the child of the switch]
+	{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-parentswitch-gui-c.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Mark it using the menu item]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-parentswitch-gui-d.png}}%
+	%
+	\\
+	%
+	\subfigure[Potential new parents are highlighted in green]
+	{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-parentswitch-gui-e.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Select a new parent]
+	{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-parentswitch-gui-f.png}}%
+	%
+	\\
+	%
+	\subfigure[Perform the switch using the menu item]
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-parentswitch-gui-g.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[Layer 2 after the switch]
+	{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-parentswitch-gui-h.png}}%
+\caption{The user interface for parent switching.}
+\label{fig:ipfs-forest-parentswitch-gui}
+\end{stusubfig}
+%---
 
 \paragraph{Precondition Checking}
 
