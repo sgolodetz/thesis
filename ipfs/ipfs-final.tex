@@ -557,7 +557,31 @@ In order to facilitate the implementation of such algorithms, it is helpful to i
 
 A node in any layer of the hierarchy can be unzipped to a specified higher layer (or the top of the hierarchy). This essentially `separates out' the branch from the higher layer down to the specified node: it is effectively a multi-layer split, with a set containing the node in question as one of the groups at each stage. The key issue that has to be addressed in order to make this work is the need to find the other groups for each split: the algorithm presented here solves this problem by defining the other groups to be the connected components of what is left after removing the node being unzipped from consideration. See Figure~\ref{fig:ipfs-forest-unzipping} for an example.
 
-% TODO: fig:ipfs-forest-unzipping
+%---
+\begin{stusubfig}{p}
+	\subfigure[Initial hierarchy]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-unzipping-a-hierarchy.png}}%
+	\hspace{8mm}%
+	\subfigure[After splitting $(1,2)$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-unzipping-b-hierarchy.png}}%
+	\\
+	\subfigure[After splitting $(2,2)$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-unzipping-c-hierarchy.png}}%
+	\hspace{8mm}%
+	\subfigure[After splitting $(3,2)$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-unzipping-d-hierarchy.png}}%
+	\\
+	\subfigure[Initial layer $1$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-a-graph1.png}}%
+	\hspace{8mm}%
+	\subfigure[Initial layer $2$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-a-graph2.png}}%
+	\hspace{8mm}%
+	\subfigure[Initial layer $3$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-a-graph3.png}}%
+	\\
+	\subfigure[Resulting layer $1$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-b-graph1.png}}%
+	\hspace{8mm}%
+	\subfigure[Resulting layer $2$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-c-graph2.png}}%
+	\hspace{8mm}%
+	\subfigure[Resulting layer $3$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-d-graph3.png}}%
+\caption{An example of unzipping: unzipping node $(0,5)$ to layer $3$}
+\label{fig:ipfs-forest-unzipping}
+\end{stusubfig}
+%---
 
 The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains that could in theory be passed to the zipping algorithm described below in order to undo the operation, although undo is actually handled automatically when unzipping is implementing as a composite operation. A \emph{chain} is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length, but they all start in the same layer of the hierarchy.
 
@@ -574,43 +598,21 @@ The user interface for unzipping is relatively straightforward, as illustrated i
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Layer 1 before unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-a.png}}%
-	%
+	\subfigure[Layer 1 before unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-a.png}}%
 	\hspace{8mm}%
-	%
-	\subfigure[Layer 2 before unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-b.png}}%
-	%
+	\subfigure[Layer 2 before unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-b.png}}%
 	\\
-	%
-	\subfigure[Layer 3 before unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-c.png}}%
-	%
+	\subfigure[Layer 3 before unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-c.png}}%
 	\hspace{8mm}%
-	%
-	\subfigure[Select a node to unzip]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-d.png}}%
-	%
+	\subfigure[Select a node to unzip]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-d.png}}%
 	\\
-	%
-	\subfigure[Click the menu item]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-unzipping-gui-e.png}}%
-	%
+	\subfigure[Click the menu item]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-unzipping-gui-e.png}}%
 	\hspace{8mm}%
-	%
-	\subfigure[Enter the target layer]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-unzipping-gui-f.png}}%
-	%
+	\subfigure[Enter the target layer]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-unzipping-gui-f.png}}%
 	\\
-	%
-	\subfigure[Layer 2 after unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-g.png}}%
-	%
+	\subfigure[Layer 2 after unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-g.png}}%
 	\hspace{8mm}%
-	%
-	\subfigure[Layer 3 after unzipping]
-	{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-h.png}}%
+	\subfigure[Layer 3 after unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-h.png}}%
 \caption{The user interface for unzipping}
 \label{fig:ipfs-forest-unzipping-gui}
 \end{stusubfig}
@@ -628,6 +630,10 @@ The following preconditions must be checked for unzipping:
 \end{enumerate}
 
 \paragraph{Implementation}
+
+Pseudo-code implementing the unzipping algorithm is shown in Listing~\ref{code:ipfs-forest-unzipnode}. As the algorithm progresses, we keep track of node chains that represent the strands being unzipped: these will be what is eventually returned as the result. In each iteration of the loop, we keep track of a `current' node, initially the input node. We determine the siblings of this node (defined to be the other children of its parent) and calculate their connected components. To these we add a singleton component containing the current node itself. We then split the parent of the current node into the specified components, update the aforementioned chains and repeat the process with the parent of the current node. The loop terminates when we reach the user-specified target layer.
+
+The construction of the chains is the most interesting part of the algorithm. TODO
 
 TODO
 
