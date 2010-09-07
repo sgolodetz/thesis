@@ -652,7 +652,33 @@ TODO
 
 \paragraph{Description}
 
-A set of node chains (see the description of unzipping for a definition) that all start in the same layer can be zipped together, an operation that is effectively a multi-layer sibling node merge. When performed on the results of an unzip, this effectively undoes that operation. The zipping algorithm takes as input $k$ chains $[n_{1h},\ldots,n_{1\ell_1}], \ldots, [n_{kh},\ldots,n_{k\ell_k}]$ and returns a pair consisting of a node and a layer index, namely the parameters that we would need to pass to \texttt{unzip_node} in order to undo the operation. See Figure~\ref{?} for an example.
+A set of node chains (see the description of unzipping for a definition) that all start in the same layer can be zipped together, an operation that is effectively a multi-layer sibling node merge. When performed on the results of an unzip, this effectively undoes that operation. The zipping algorithm takes as input $k$ chains $[n_{1h},\ldots,n_{1\ell_1}], \ldots, [n_{kh},\ldots,n_{k\ell_k}]$ and returns a pair consisting of a node and a layer index, namely the parameters that we would need to pass to \texttt{unzip_node} in order to undo the operation. See Figure~\ref{fig:ipfs-forest-zipping} for an example.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Initial hierarchy]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-zipping-a-hierarchy.png}}%
+	\hspace{8mm}%
+	\subfigure[After merging layer $3$ nodes]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-zipping-b-hierarchy.png}}%
+	\\
+	\subfigure[After merging layer $2$ nodes]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-zipping-c-hierarchy.png}}%
+	\hspace{8mm}%
+	\subfigure[After merging layer $1$ nodes]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-zipping-d-hierarchy.png}}%
+	\\
+	\subfigure[Initial layer $1$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-a-graph1.png}}%
+	\hspace{8mm}%
+	\subfigure[Initial layer $2$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-a-graph2.png}}%
+	\hspace{8mm}%
+	\subfigure[Initial layer $3$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-a-graph3.png}}%
+	\\
+	\subfigure[Resulting layer $1$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-d-graph1.png}}%
+	\hspace{8mm}%
+	\subfigure[Resulting layer $2$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-c-graph2.png}}%
+	\hspace{8mm}%
+	\subfigure[Resulting layer $3$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-b-graph3.png}}%
+\caption{An example of zipping: zipping together the four chains $[(3,0), (2,6), (1,6)]$, $[(3,2), (2,2)]$, $[(3,5), (2,5)]$ and $[(3,8), (2,8), (1,8)]$}
+\label{fig:ipfs-forest-zipping}
+\end{stusubfig}
+%---
 
 \paragraph{C++ Method Interface}
 
