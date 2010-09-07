@@ -583,7 +583,7 @@ A node in any layer of the hierarchy can be unzipped to a specified higher layer
 \end{stusubfig}
 %---
 
-The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains that could in theory be passed to the zipping algorithm described below in order to undo the operation, although undo is actually handled automatically when unzipping is implementing as a composite operation. A \emph{chain} is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length, but they all start in the same layer of the hierarchy.
+The algorithm takes as input the node to be unzipped and the (higher) layer to which to unzip it. It returns a set of chains that could in theory be passed to the zipping algorithm described below in order to undo the operation, although undo is actually handled automatically when unzipping is implemented as a composite operation. A \emph{chain} is a sequence of nodes $[n_h,\ldots,n_\ell]$, where $h \ge \ell$, $n_i$ is in layer $i$ and $\forall i \in [\ell,h) \cdot \mbox{parent}(n_i) = n_{i+1}$. It should be noted that the chains returned by the unzipping algorithm are not necessarily all of the same length, but they all start in the same layer of the hierarchy.
 
 \paragraph{C++ Method Interface}
 
