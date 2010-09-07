@@ -691,6 +691,8 @@ The preconditions to be checked for zipping can be deduced from the precondition
 
 \paragraph{Implementation}
 
+Pseudo-code for the zipping algorithm is shown in Listing~\ref{code:ipfs-forest-zipchains}. The actual implementation is entirely straightforward (all the real work is in checking the preconditions). We start by determining the high and low layers of the chains. All the chains share the same high layer, so it suffices to take the high layer of the first chain in the array. The low layer is determined by a simple minimum element operation on the low layers of each of the individual chains. For each of the layers, from the top down, the relevant nodes are then extracted from the chains and merged using sibling node merging (note that there is no need to re-check the preconditions for each merge).
+
 TODO
 
 \begin{stulisting}[p]
