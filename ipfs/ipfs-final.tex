@@ -135,7 +135,11 @@ Given:
 \label{sec:ipfs-mutatingalgorithms}
 %##################################################################################################
 
-Partition forests, as presented thus far, are a useful hierarchical representation for aggregate objects, but they are \emph{static}: that is, once a partition forest has been constructed for a given object, it does not change. This can be problematic, because constructing a perfect forest is potentially hard, and the number of possible forests for a given object is (at least theoretically) infinite. Even being more practical, and imposing the reasonable condition that every edge in the adjacency graph for the forest's leaf layer should have been elided (merging the two nodes it joins) by branch layer $E$, where $E$ is the total number of edges in the leaf adjacency graph, we can observe that there are still $E^2$ possible forests for an object (the $E^2$ comes from choosing a layer between $1$ and $E$ inclusive at which each leaf layer edge is removed by merging the nodes it joins). Putting this into context, that means that for a $4$-connected image of size $w \times h$, there are $(4wh - 2(w+h))^2$ possible partition forests (over a million possibilities for a $512 \times 512$ image). There is therefore a pressing need for mutating algorithms that allow us to transform one partition forest into another, in order to allow a user to work around potential issues with the initial partition forest construction. In this section, I present a hierarchy of novel algorithms (see Figure~\ref{?}) that allow users to edit partition forests, thereby changing them from being merely a static data structure into being a dynamic one.
+Partition forests, as presented thus far, are a useful hierarchical representation for aggregate objects, but they are \emph{static}: that is, once a partition forest has been constructed for a given object, it does not change. This can be problematic, because constructing a perfect forest is potentially hard, and the number of possible forests for a given object is (at least theoretically) infinite. Even being more practical, and imposing the reasonable condition that every edge in the adjacency graph for the forest's leaf layer should have been elided (merging the two nodes it joins) by branch layer $E$, where $E$ is the total number of edges in the leaf adjacency graph, we can observe that there are still $E^2$ possible forests for an object (the $E^2$ comes from choosing a layer between $1$ and $E$ inclusive at which each leaf layer edge is removed by merging the nodes it joins). Putting this into context, that means that for a $4$-connected image of size $w \times h$, there are $(4wh - 2(w+h))^2$ possible partition forests (over a million possibilities for a $512 \times 512$ image). There is therefore a pressing need for mutating algorithms that allow us to transform one partition forest into another, in order to allow a user to work around potential issues with the initial partition forest construction. In this section, I present a hierarchy of novel algorithms (see Figure~\ref{fig:ipfs-forest-mutatingalgorithms}) that allow users to edit partition forests, thereby changing them from being merely a static data structure into being a dynamic one.
+
+%---
+\stufigex{height=13cm}{ipfs/ipfs-forest-mutatingalgorithms.png}{The hierarchy of mutating algorithms for partition forests}{fig:ipfs-forest-mutatingalgorithms}{t}
+%---
 
 %################################################
 \subsection{Core Algorithms}
@@ -635,13 +639,15 @@ Pseudo-code implementing the unzipping algorithm is shown in Listing~\ref{code:i
 
 The construction of the chains is the most interesting part of the algorithm. The way this works is most easily demonstrated by stepping through the unzipping example illustrated in Figure~\ref{fig:ipfs-forest-unzipping}. Initially, the array of chains is initialised with a singleton chain containing only the node being unzipped: in this case $(0,5)$.\footnote{This is an implementation trick that ensures that the chain leading up from the node being unzipped is the first chain in the array: this allows it to be easily identified by other algorithms that need ready access to it, such as \texttt{merge_nonsibling_nodes} (they would otherwise have to search through all the chains to find it). The final chain should not contain the actual node being unzipped (only the nodes above it), so in practice we remove it from the end of the chain again before returning.} During each iteration of the loop, each node resulting from that iteration's split node operation will either be used to augment an existing chain, or to add a new one: specifically, each existing chain is prepended with the parent of its head node, which is then removed from the set of nodes resulting from the split (it is guaranteed to be present because of the way the algorithm works); the remaining nodes resulting from the split are then used to create new singleton chains. In this example, the first iteration of the loop (in which \texttt{cur} = $(0,5)$, \texttt{parent} = $(1,2)$, \texttt{components} = $[\{2\}, \{5\}]$ and \texttt{result} = $\{(1,2), (1,5)\}$) results in \texttt{chains} being set to $[[(1,5), (0,5)], [(1,2)]]$. The second iteration (in which \texttt{cur} = $(1,5)$, \texttt{parent} = $(2,2)$, \texttt{components} = $[\{2\}, \{5\}, \{8\}]$ and \texttt{result} = $\{(2,2), (2,5), (2,8)\}$) results in \texttt{chains} being set to $[[(2,5), (1,5), (0,5)], [(2,2), (1,2)], [(2,8)]]$. The third iteration (in which \texttt{cur} = $(2,5)$, \texttt{parent} = $(3,2)$, \texttt{components} = $[\{2\}, \{5\}, \{8\}]$ and \texttt{result} = $\{(3,2), (3,5), (3,8)\}$) results in \texttt{chains} being set to $[[(3,5), (2,5), (1,5), (0,5)], [(3,2), (2,2), (1,2)], [(3,8), (2,8)]]$. Finally, $(0,5)$ is removed from the first chain, leaving the final chains to be returned by the algorithm as $[[(3,5), (2,5), (1,5)], [(3,2), (2,2), (1,2)], [(3,8), (2,8)]]$.
 
-TODO
-
 \begin{stulisting}[p]
 \caption{Forest : Unzipping : Implementation}
 \label{code:ipfs-forest-unzipnode}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-unzipnode.lst}
 \end{stulisting}
+
+\paragraph{Complexity Analysis}
+
+TODO
 
 \afterpage{\clearpage}
 \newpage
@@ -719,13 +725,15 @@ The preconditions to be checked for zipping can be deduced from the precondition
 
 Pseudo-code for the zipping algorithm is shown in Listing~\ref{code:ipfs-forest-zipchains}. The actual implementation is entirely straightforward (all the real work is in checking the preconditions). We start by determining the high and low layers of the chains. All the chains share the same high layer, so it suffices to take the high layer of the first chain in the array. The low layer is determined by a simple minimum element operation on the low layers of each of the individual chains. For each of the layers, from the top down, the relevant nodes are then extracted from the chains and merged using sibling node merging (note that there is no need to re-check the preconditions for each merge).
 
-TODO
-
 \begin{stulisting}[p]
 \caption{Forest : Zipping : Implementation}
 \label{code:ipfs-forest-zipchains}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-zipchains.lst}
 \end{stulisting}
+
+\paragraph{Complexity Analysis}
+
+TODO
 
 \afterpage{\clearpage}
 \newpage
@@ -811,13 +819,19 @@ The great advantage of non-sibling node merging over sibling node merging is tha
 
 \paragraph{Implementation}
 
-TODO
+Pseudo-code to implement non-sibling node merging is shown in Listing~\ref{code:ipfs-forest-mergenonsiblingnodes}. The first step is to calculate the connected components of the input nodes: each connected component of size $> 1$ will be merged into one result node. To actually perform the merging for each connected component, we determine the common ancestor of the component's nodes. Each node is then unzipped to the layer below that containing the ancestor. In each case we keep track of the chain of nodes leading back down to the node being unzipped, appending the actual node being unzipped to the chain in each case (it would not otherwise be present). Finally, all of these chains are zipped together to merge the nodes in the connected component together.
+
+For the example given in Figure~\ref{fig:ipfs-forest-nonsiblingnodemerging}, the connected components of the input nodes are $\{(1,0), (1,2)\}$ and $\{(1,6), (1,8)\}$. Both $(1,0)$ and $(1,2)$ are unzipped to layer $2$, the layer below their common ancestor $(3,0)$. The strands thus created are then zipped together, resulting in $(1,0)$ and $(1,2)$ being merged in layer $1$. An analogous process is used to merge $(1,6)$ and $(1,8)$.
 
 \begin{stulisting}[p]
 \caption{Forest : Non-Sibling Node Merging : Implementation}
 \label{code:ipfs-forest-mergenonsiblingnodes}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-mergenonsiblingnodes.lst}
 \end{stulisting}
+
+\paragraph{Complexity Analysis}
+
+TODO
 
 \afterpage{\clearpage}
 \newpage
@@ -924,15 +938,25 @@ There are three preconditions that must be checked for parent switching (see Lis
 
 Pseudo-code to implement parent switching is shown in Listing~\ref{code:ipfs-forest-parentswitch}. The first step is to determine the common ancestor of the current and new parents of the node being moved (in the example, this would be the common ancestor of $(1,3)$ and $(1,0)$, namely $(3,0)$). In the process of doing so, we make sure to keep track of the chain of nodes leading down from the common ancestor (non-inclusive) to the new parent (in the example, this would be $[(2,0), (1,0)]$). The node being moved is then unzipped to the layer below the common ancestor, and its chain leading down from the common ancestor (non-inclusive) must then be zipped to the chain leading down the new parent. This completes the move.
 
-TODO
-
 \begin{stulisting}[p]
 \caption{Forest : Parent Switching : Implementation}
 \label{code:ipfs-forest-parentswitch}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-parentswitch.lst}
 \end{stulisting}
 
+\paragraph{Complexity Analysis}
+
+TODO
+
 \afterpage{\clearpage}
+\newpage
+
+%################################################
+\subsection{Summary}
+%################################################
+
+TODO: Summarise the algorithms and their complexities
+
 \newpage
 
 %##################################################################################################
