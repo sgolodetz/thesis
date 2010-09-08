@@ -36,7 +36,7 @@ function parent_switch
 
 	// Zip the chain leading upwards from the node being moved to the new chain to
 	// complete the parent switch. Note that the old chain required is the first
-	// chain in the unzip result by construction -- the unzipping implementation.
+	// chain in the unzip result by construction -- see the unzipping implementation.
 	var chains : Vector<Chain>;
 	chains.push_back(unzipResult.front());
 	chains.push_back(newChain);

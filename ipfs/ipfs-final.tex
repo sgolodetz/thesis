@@ -862,7 +862,7 @@ void parent_switch(const PFNodeID& node, int newParent);
 
 \paragraph{User Interface for Image Analysis}
 
-TODO
+Like the user interface for node splitting, the interface for parent switching requires multiple steps (see Figure~\ref{fig:ipfs-forest-parentswitch-gui}). The user first selects the node whose parent is to be changed (the child in the switch operation) and marks it using a menu item. This causes the viewed layer to be changed to the layer above and its potential new parents to be highlighted (the potential new parents are the nodes in the layer above that have a child adjacent to the node being switched, excluding the node's current parent). The user selects one of these as the new parent and marks it using another menu item, thus effectuating the switch.
 
 %---
 \begin{stusubfig}{p}
@@ -922,10 +922,12 @@ There are three preconditions that must be checked for parent switching (see Lis
 
 \paragraph{Implementation}
 
+Pseudo-code to implement parent switching is shown in Listing~\ref{code:ipfs-forest-parentswitch}. The first step is to determine the common ancestor of the current and new parents of the node being moved (in the example, this would be the common ancestor of $(1,3)$ and $(1,0)$, namely $(3,0)$). In the process of doing so, we make sure to keep track of the chain of nodes leading down from the common ancestor (non-inclusive) to the new parent (in the example, this would be $[(2,0), (1,0)]$). The node being moved is then unzipped to the layer below the common ancestor, and its chain leading down from the common ancestor (non-inclusive) must then be zipped to the chain leading down the new parent. This completes the move.
+
 TODO
 
 \begin{stulisting}[p]
-\caption{Forest : Parent Switch : Implementation}
+\caption{Forest : Parent Switching : Implementation}
 \label{code:ipfs-forest-parentswitch}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-parentswitch.lst}
 \end{stulisting}
