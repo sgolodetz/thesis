@@ -746,7 +746,23 @@ The second higher-level algorithm that we can now implement is parent switching,
 
 \paragraph{Description}
 
-A set of arbitrary nodes in any layer of the hierarchy other than the lowest can be divided into its connected components, each of which can then be merged. Since each component is connected, the result of each merge represents a valid object. From the user's perspective, this is a far more intuitive merge operation than sibling node merging: they simply have to indicate a set of nodes in a particular layer, and these are then merged into as few connected components as possible, based on their adjacency in the layer's graph. There is no requirement that the selected nodes are connected, or that they share a common parent (thus the user is freed from having to think about the structure of the forest when performing a merge). The algorithm takes as input the set of nodes to be merged, and returns the set of nodes resulting from merging each of the input's connected components (i.e.~there is one output node for each connected component of the input). An example is shown in Figure~\ref{?}.
+A set of arbitrary nodes in any layer of the hierarchy other than the lowest can be divided into its connected components, each of which can then be merged. Since each component is connected, the result of each merge represents a valid object. From the user's perspective, this is a far more intuitive merge operation than sibling node merging: they simply have to indicate a set of nodes in a particular layer, and these are then merged into as few connected components as possible, based on their adjacency in the layer's graph. There is no requirement that the selected nodes are connected, or that they share a common parent (thus the user is freed from having to think about the structure of the forest when performing a merge). The algorithm takes as input the set of nodes to be merged, and returns the set of nodes resulting from merging each of the input's connected components (i.e.~there is one output node for each connected component of the input). An example is shown in Figure~\ref{fig:ipfs-forest-nonsiblingnodemerging}.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Initial hierarchy]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-a-hierarchy.png}}%
+	\hspace{8mm}%
+	\subfigure[After unzipping $(1,0)$ and $(1,2)$ to layer $2$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-c-hierarchy.png}}%
+	\\
+	\subfigure[{After zipping $[(2,0), (1,0)]$ and $[(2,2), (1,2)]$}]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-d-hierarchy.png}}%
+	\hspace{8mm}%
+	\subfigure[After unzipping $(1,6)$ and $(1,8)$ to layer $2$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-f-hierarchy.png}}%
+	\\
+	\subfigure[{After zipping $[(2,6), (1,6)]$ and $[(2,8), (1,8)]$}]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-nonsiblingnodemerging-g-hierarchy.png}}%
+\caption{An example of non-sibling node merging: merging nodes $(1,0)$, $(1,2)$, $(1,6)$ and $(1,8)$}
+\label{fig:ipfs-forest-nonsiblingnodemerging}
+\end{stusubfig}
+%---
 
 \paragraph{C++ Method Interface}
 
