@@ -828,7 +828,31 @@ TODO
 
 \paragraph{Description}
 
-A node in any layer of the hierarchy except the highest can be moved from being the child of its parent node to being the child of another node in the layer above, provided that it is adjacent to at least one child of its new parent. It is possible that moving the node may cause some of its old ancestors to become disconnected. If this happens, what remains of each old ancestor is split into its connected components. The algorithm takes as input the node to be moved and the index of its new parent node in the layer above. See Figure~\ref{?} for an example.
+A node in any layer of the hierarchy except the highest can be moved from being the child of its parent node to being the child of another node in the layer above, provided that it is adjacent to at least one child of its new parent. It is possible that moving the node may cause some of its old ancestors to become disconnected. If this happens, what remains of each old ancestor is split into its connected components. The algorithm takes as input the node to be moved and the index of its new parent node in the layer above. See Figure~\ref{fig:ipfs-forest-parentswitch} for an example.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial hierarchy]{\includegraphics[width=.5\linewidth]{ipfs/ipfs-forest-parentswitch-a-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[Layer $1$ graph]{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-parentswitch-a-graph1.png}}%
+	\hspace{4mm}%
+	\subfigure[Layer $2$ graph]{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-parentswitch-a-graph2.png}}%
+	\\
+	\subfigure[After unzipping $(0,4)$ to layer $2$]{\includegraphics[width=.5\linewidth]{ipfs/ipfs-forest-parentswitch-b-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[Layer $1$ graph]{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-parentswitch-b-graph1.png}}%
+	\hspace{4mm}%
+	\subfigure[Layer $2$ graph]{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-parentswitch-b-graph2.png}}%
+	\\
+	\subfigure[{After zipping $[(2,0), (1,0)]$ with $[(2,4), (1,4)]$}]{\includegraphics[width=.5\linewidth]{ipfs/ipfs-forest-parentswitch-c-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[Layer $1$ graph]{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-parentswitch-c-graph1.png}}%
+	\hspace{4mm}%
+	\subfigure[Layer $2$ graph]{\includegraphics[width=.2\linewidth]{ipfs/ipfs-forest-parentswitch-c-graph2.png}}%
+\caption{An example of parent switching: switching $(0,4)$'s parent to $(1,0)$}
+\label{fig:ipfs-forest-parentswitch}
+\end{stusubfig}
+%---
 
 \paragraph{C++ Method Interface}
 
