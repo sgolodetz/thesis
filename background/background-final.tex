@@ -28,17 +28,17 @@ In principle, thresholding segmentation methods are quite simple. The idea is to
 %---
 \begin{stusubfig}{p}
 	\subfigure[The original image]
-	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-binaryexample-a.png}}%
+	{\includegraphics[height=.2\textheight]{background/background-segmentation-thresholding-binaryexample-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The thresholded image]
-	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-binaryexample-b.png}}%
+	{\includegraphics[height=.2\textheight]{background/background-segmentation-thresholding-binaryexample-b.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The image histogram and threshold (at grey value $125$)]
-	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-binaryexample-c.png}}%
+	{\includegraphics[height=.2\textheight]{background/background-segmentation-thresholding-binaryexample-c.png}}%
 \caption{Segmenting the brighter of two adjacent objects in an 8-bit greyscale image using binary thresholding (the objects are easily separated in this case because the distribution of grey values in the image is bimodal)}
 \label{fig:background-segmentation-thresholding-binaryexample}
 \end{stusubfig}
@@ -47,12 +47,12 @@ In principle, thresholding segmentation methods are quite simple. The idea is to
 %---
 \begin{stusubfig}{p}
 	\subfigure[Segmenting Figure~\ref{fig:background-segmentation-thresholding-binaryexample}(a) with a threshold of $175$ leads to undersegmentation]
-	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-inaccurate-a.png}}%
+	{\includegraphics[height=.2\textheight]{background/background-segmentation-thresholding-inaccurate-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[Conversely, segmenting it with a threshold of $75$ leads to oversegmentation]
-	{\includegraphics[height=.35\linewidth]{background/background-segmentation-thresholding-inaccurate-b.png}}%
+	{\includegraphics[height=.2\textheight]{background/background-segmentation-thresholding-inaccurate-b.png}}%
 \caption{Misplaced thresholds lead to inaccurate segmentations}
 \label{fig:background-segmentation-thresholding-inaccurate}
 \end{stusubfig}
@@ -82,8 +82,6 @@ and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in th
 
 \item \emph{Spatial methods.} An example of a spatial thresholding method is Wu et al.'s approach in \cite{wu82}. This first constructs a quadtree from the image by splitting image regions until they have a low standard deviation (where they define `low' in terms of the standard deviation of the image as a whole). This divides the image into square blocks of various different sizes. The observation is that the smaller blocks tend to be near the boundaries between foreground and background in the image -- the quadtree can thus be used as a way of estimating where these boundaries are. Having classified the pixels in the image in this way, it is possible to construct a histogram of the grey values of non-boundary pixels in the image, which it is hoped will be more bimodal than the histogram of the grey values in the image as a whole. A threshold can then be placed at the deepest point in the value between the two modes. Alternatively, a histogram of the boundary pixels can be constructed, which it is hoped will be unimodal, and a threshold can be placed at the mean of this histogram instead.
 
-\newpage
-
 \item \emph{Local / adaptive methods.} These vary the threshold for each pixel location in the image. Two examples of this are the methods of Bernsen \cite{bernsen86} and Niblack \cite{niblack86}. As described by Trier and Jain in \cite{trier95}, Bernsen's method takes the highest and lowest grey values, $g_{\mbox{max}}$ and $g_{\mbox{min}}$, in a suitably-sized window around each pixel, and uses them to calculate a contrast measure $C = g_{\mbox{max}} - g_{\mbox{min}}$. If $C$ is less than some user-specified value, the local neighbourhood around the pixel is taken to be uniform, and an appropriate choice is made about whether the pixel should be classified as background or foreground (in \cite{trier95}, pixels were always classified as background in this case). Otherwise, a threshold value $T = (g_{\mbox{max}} + g_{\mbox{min}}) / 2$ is calculated, and the pixel is classified as foreground if its value is greater than $T$, and background if not. Niblack's method, by contrast, bases its decision on the mean and standard deviation of the grey values in the local neighbourhood around a pixel. In particular, if $m$ is the local mean and $s$ the local standard deviation, Niblack's method calculates a local threshold $T = m + ks$, where $k$ is a (negative) user-specified parameter. Again, a pixel is classified as foreground iff its grey value is greater than $T$.
 
 \end{enumerate}
@@ -97,8 +95,6 @@ and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in th
 \item It is by no means the case that acceptable threshold locations always exist. If the grey value ranges of different objects of interest significantly overlap, it may be impossible to separate them using thresholding alone.
 
 \end{itemize}
-
-\newpage
 
 \noindent These limitations can in some cases be overcome by combining thresholding with other techniques. For instance, the results of thresholding often have gaps in them, which can sometimes be filled in by carefully applying various morphological operators (e.g. morphological opening and closing). Luc Soler's team \cite{soler01} made use of thresholding (as one technique among many) and achieved excellent automatic segmentation results for the liver. However, they did not use thresholding on its own. For instance, they segmented bones by thresholding for bright areas and then keeping only those which were near to the fat tissue (which had already been segmented). Simple thresholding alone would have been insufficient for the task, since structures such as the aorta also appeared bright on the contrast-enhanced images.
 
@@ -189,8 +185,6 @@ There are two main approaches in the literature for dealing with this problem, n
 In situations where neither is the case, however, the alternative approach of hierarchical segmentation can be used. As one might expect, the general idea here is to take the oversegmented result of running the watershed transform on an image, and perform several iterations of region merging to produce a hierarchy of gradually coarser partitions of the original image. As will be illustrated in far more detail in Chapter~\ref{chap:segmentation}, this is exactly the sort of approach taken by the waterfall transform \cite{beucher90,marcotegui05}: what is unique about the waterfall, however, is that each of its iterations in which it merges regions together is itself a watershed transform.
 
 As will be discussed in Chapter~\ref{chap:methodology}, the hierarchical approach to watershed segmentation is interesting for a couple of reasons: on the one hand, it produces, without requiring a great deal of manual fine-tuning, segmentations which, whilst not perfect, are often quite reasonable to a first approximation; on the other hand, the hierarchy of partitions of the image it produces can be turned into a tree structure (see \S\ref{sec:background-partitionhierarchies}) which is amenable to further editing, allowing any flaws in the initial segmentation to be corrected in an intuitive manner. These two qualities make this approach eminently suitable in situations where automated solutions are desirable but interactive control remains important.
-
-\newpage
 
 \subsection{Deformable Models}
 
@@ -375,8 +369,6 @@ P(x_i = \ell) = a_{i,\ell}.
 %
 In other words, the probability of the correct segmentation result for a given voxel being $\ell$ is given by the $\ell^{th}$ component of the probabilistic atlas at that location. With this link made, the result determined will depend on both the atlas and the observed data.
 
-\newpage
-
 \subsubsection{Neural Network Techniques}
 
 Neural networks (NNs) can be used to segment images in a number of ways. A simple NN technique can be found in \cite{tsai94}, where Tsai and Tanahashi use a feed-forward network to classify each pixel into one of three classes (liver, boundary or non-liver) according to the grey-level histogram of the 7x7 region centred on the pixel. (In practice, they use a histogram with 16 grey levels instead of 256, to avoid a proliferation of input nodes in the NN.) The schematic of how this works (borrowed from their paper) is shown in Figure~\ref{fig:background-segmentation-neuralnets-tsai}. The NN is initially trained by picking a suitable image from the middle of the volume and marking a significant number of training regions for each class. The well-known back-propagation algorithm for NNs \cite{aima} is used to update the weights on the network arcs accordingly.
@@ -398,8 +390,6 @@ A more up-to-date (and more complicated) NN scheme can be found in \cite{lee03}.
 %\subsubsection{Statistical Methods}
 
 %TODO: \cite{touhami05}
-
-\newpage
 
 \subsection{Clustering}
 

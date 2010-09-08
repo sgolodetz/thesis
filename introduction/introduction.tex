@@ -7,17 +7,17 @@ Nevertheless, an ability to solve these problems, even in an imperfect way, is o
 
 This thesis dissertation is about tackling the segmentation and feature identification problems for a particular type of medical image, namely computerised tomography (CT) scans of a patient's abdomen. The first practical CT scanner was developed in 1971 by Sir Godfrey Hounsfield, working at the EMI Central Research Laboratories in Hayes, UK.\footnote{Credit for the CT technique is also due to Allan McLeod Cormack of Tufts University in Massachusetts in the United States, who independently developed the theory underpinning CT in the late 1950s and early 1960s. Both men shared the 1979 Nobel Prize in Physiology or Medicine.} CT scanners work using X-rays (see Figure~\ref{fig:introduction-ctscanning}) and produce images whose pixels are scalar values on a scale of radiodensity known (after Sir Godfrey) as the Hounsfield scale. They are used extensively in modern medical practice, both for diagnosing illness and for evaluating a patient's response to therapy.
 
-My underlying interest is in renal (kidney) cancers, in the diagnosis of which CT scanners are generally used to produce images of the abdomen (see Figure~\ref{fig:introduction-labelledabdominalscan}). Whilst less prevalent than some other types of cancer -- notably breast, lung, colorectal and prostate -- renal cancers nevertheless kill thousands of people a year in the UK.\footnote{According to Cancer Research UK \cite{cruk-kidneycancermortality}, 3752 people died from a kidney cancer in the UK in 2007, the most recent year for which published statistics are currently available.} An ability to visualize the state of a renal cancer patient's abdominal organs in 3D can provide doctors with an extra tool when making important decisions about how best to treat the patient. In a similar vein, being able to calculate the volume of a renal tumour can help doctors track changes over time that may be relevant when evaluating a patient's response to therapy. For these, and other, applications, finding a way to segment and identify features in abdominal CT scans is a key prerequisite.
-
 %---
 \stufigex{height=8cm}{introduction/introduction-labelledabdominalscan.png}{An abdominal CT scan of a patient with a large renal tumour on their left kidney. Some of the key features in the scan are labelled.}{fig:introduction-labelledabdominalscan}{t}
 %---
 
-Given the relevance of the abdominal CT segmentation and feature identification problems, it is unsurprising that significant research effort has been devoted to them in recent years. Approaches range from semi-automatic \cite{?}, where the user is an active participant in the segmentation process, to fully-automatic, where abdominal features are extracted with no relevant user interaction. Two particularly noteworthy fully-automatic methods are \cite{campadelli09} and \cite{shimizu07}. In \cite{campadelli09}, Campadelli et al.\ described a grey-level based framework that allowed them to automatically extract the bones, heart, kidneys, liver (including its blood vessels) and spleen from CT scans (e.g.~see Figure~\ref{fig:introduction-campadelli}), an approach they tested on images from 100 patients. Full validation was done for the liver and spleen, by comparing the output to three expert ground truth segmentations, with excellent results being achieved for those organs. In \cite{shimizu07}, Shimizu et al.\ proposed an atlas-guided approach that attempted to automatically extract twelve abdominal features (aorta, gallbladder, heart, inferior vena cava, left kidney, liver, oesophagus, pancreas, portal vein, right kidney, spleen and stomach). Whilst they only tested their approach on images from 10 patients, they achieved promising results for most of the major organs (see Figure~\ref{fig:introduction-shimizu}). One slight downside is the significant amount of computing power used by their approach (a message passing interface (MPI) implementation running on 16 2.8GHz CPUs, each with 4GB of memory), although it seems plausible that this could be reduced.
+My underlying interest is in renal (kidney) cancers, in the diagnosis of which CT scanners are generally used to produce images of the abdomen (see Figure~\ref{fig:introduction-labelledabdominalscan}). Whilst less prevalent than some other types of cancer -- notably breast, lung, colorectal and prostate -- renal cancers nevertheless kill thousands of people a year in the UK.\footnote{According to Cancer Research UK \cite{cruk-kidneycancermortality}, 3752 people died from a kidney cancer in the UK in 2007, the most recent year for which published statistics are currently available.} An ability to visualize the state of a renal cancer patient's abdominal organs in 3D can provide doctors with an extra tool when making important decisions about how best to treat the patient. In a similar vein, being able to calculate the volume of a renal tumour can help doctors track changes over time that may be relevant when evaluating a patient's response to therapy. For these, and other, applications, finding a way to segment and identify features in abdominal CT scans is a key prerequisite.
 
 %---
 \stufigex{height=6cm}{introduction/introduction-campadelli.png}{An example output of the fully-automatic technique to identify abdominal organs described in \cite{campadelli09} (extracted from Figure 7 of that paper), showing the excellent results they obtained when automatically extracting the bones, heart and kidneys.}{fig:introduction-campadelli}{t}
 %---
+
+Given the relevance of the abdominal CT segmentation and feature identification problems, it is unsurprising that significant research effort has been devoted to them in recent years. Approaches range from semi-automatic \cite{?}, where the user is an active participant in the segmentation process, to fully-automatic, where abdominal features are extracted with no relevant user interaction. Two particularly noteworthy fully-automatic methods are \cite{campadelli09} and \cite{shimizu07}. In \cite{campadelli09}, Campadelli et al.\ described a grey-level based framework that allowed them to automatically extract the bones, heart, kidneys, liver (including its blood vessels) and spleen from CT scans (e.g.~see Figure~\ref{fig:introduction-campadelli}), an approach they tested on images from $100$ patients. Full validation was done for the liver and spleen, by comparing the output to three expert ground truth segmentations, with excellent results being achieved for those organs. In \cite{shimizu07}, Shimizu et al.\ proposed an atlas-guided approach that attempted to automatically extract twelve abdominal features (aorta, gallbladder, heart, inferior vena cava, left kidney, liver, oesophagus, pancreas, portal vein, right kidney, spleen and stomach). Whilst they only tested their approach on images from $10$ patients, they achieved promising results for most of the major organs (see Figure~\ref{fig:introduction-shimizu}). One slight downside is the significant amount of computing power used by their approach (a message passing interface (MPI) implementation running on $16$ 2.8GHz CPUs, each with 4GB of memory), although it seems plausible that this could be reduced.
 
 %---
 \stufigex{height=6cm}{introduction/introduction-shimizu.png}{An example output of the fully-automatic technique to identify abdominal organs described in \cite{shimizu07} (extracted from Figure 8 of that paper). Twelve features have been identified: the aorta (pink), gallbladder (light green), heart (yellow), inferior vena cava (red), left kidney (light orange), liver (maroon), oesophagus (purple), pancreas (green), portal vein (light blue), right kidney (orange), spleen (white) and stomach (blue).}{fig:introduction-shimizu}{t}
@@ -41,26 +41,26 @@ I have implemented all of the described techniques and algorithms in C++. Specif
 \stufigex{width=.95\linewidth}{introduction/introduction-centipede.png}{Automatically identifying the ribs and spine in \emph{centipede} and visualizing the feature labelling as a wireframe 3D mesh -- the visible features are the aorta (red), liver (purple), right kidney (yellow) and spine (white).}{fig:introduction-centipede}{t}
 %---
 
-The final system, \emph{millipede}, is built using a cross-platform build framework called CMake, and runs on Microsoft Windows, Linux and Mac OS X (see Figure~\ref{fig:introduction-millipede-seg}). It allows the user to segment a CT (or MRI) series either as a 3D volume, or by axial, coronal or sagittal slices, in all cases producing a single image partition forest for the entire image. Among many other improvements, it supports far better automatic feature identification in 3D and has built-in tools for validation. It can also visualize the feature identification results as a Phong-lit 3D mesh (see Figure~\ref{fig:introduction-millipede-vis}).
-
 %---
 \begin{stusubfig}{p}
 	\subfigure[\emph{millipede} running on Microsoft Windows]
-	{\includegraphics[width=.6\linewidth]{introduction/introduction-millipede-seg-windows.png}}%
+	{\includegraphics[height=.25\textheight]{introduction/introduction-millipede-seg-windows.png}}%
 	%
-	\\
+	\\ \vspace{5mm}
 	%
 	\subfigure[\emph{millipede} running on Linux (Ubuntu)]
-	{\includegraphics[width=.6\linewidth]{introduction/introduction-millipede-seg-linux.png}}%
+	{\includegraphics[height=.25\textheight]{introduction/introduction-millipede-seg-linux.png}}%
 	%
-	\\
+	\\ \vspace{5mm}
 	%
 	\subfigure[\emph{millipede} running on Mac OS X (Snow Leopard)]
-	{\includegraphics[width=.6\linewidth]{introduction/introduction-millipede-seg-macosx.png}}%
+	{\includegraphics[height=.25\textheight]{introduction/introduction-millipede-seg-macosx.png}}%
 \caption{The final segmentation system I developed, known as \emph{millipede}, is cross-platform.}
 \label{fig:introduction-millipede-seg}
 \end{stusubfig}
 %---
+
+The final system, \emph{millipede}, is built using a cross-platform build framework called CMake, and runs on Microsoft Windows, Linux and Mac OS X (see Figure~\ref{fig:introduction-millipede-seg}). It allows the user to segment a CT (or MRI) series either as a 3D volume, or by axial, coronal or sagittal slices, in all cases producing a single image partition forest for the entire image. Among many other improvements, it supports far better automatic feature identification in 3D and has built-in tools for validation. It can also visualize the feature identification results as a Phong-lit 3D mesh (see Figure~\ref{fig:introduction-millipede-vis}).
 
 %---
 \stufigex{height=6cm}{introduction/introduction-millipede-vis.png}{Visualizing the results of the automatic feature identification techniques in \emph{millipede} as a Phong-lit 3D mesh. Six features are visible: the aorta (red), right kidney (yellow), liver (purple), ribs (pale green), spine (pale blue) and spinal cord (slightly darker blue).}{fig:introduction-millipede-vis}{t}

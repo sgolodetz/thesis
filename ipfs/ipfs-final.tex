@@ -17,8 +17,6 @@ In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the
 
 A partition forest is in essence a hierarchy of adjacency graphs that all partition the same object (the sense in which a graph can partition an object will be formalised in \S\ref{sec:ipfs-definition}). The object itself can be anything that can be divided into pieces, whether that be an image, a road network or an organisation. As was seen in \S\ref{sec:background-partitionhierarchies}, partition forests (whether called by that name or otherwise) have been widely used as a hierarchical representation for images. However, surprisingly little attention has been devoted to how to edit them post-construction (with perhaps the notable exception being Nacken's work in \cite{nacken95}).
 
-\newpage
-
 The key components that make up a partition forest are illustrated in Figure~\ref{fig:ipfs-concept}, which shows a partition forest that might be constructed for a simple $4 \times 4$ image. A forest is made up of a number of layers, each of which is an adjacency graph representing a partition of an object (in this case, the image). Each partition is refined by the next highest partition, in the sense that each node in partition $i+1$ is the union of some of the nodes in partition $i$.
 
 The nodes in each layer represent groups of the smallest sub-objects into which the represented object can be divided (in this case, each node represents an image region, consisting of a group of pixels), and can have layer-dependent properties associated with them (shown as blue text in the figure). Properties of nodes in the leaf layer can be assigned arbitrarily, but properties of nodes in branch layers must be functions of the properties of their children in the layer below (this will be defined formally in \S\ref{sec:ipfs-definition}). In this example, a single, arbitrary value has been associated with each node in the leaf layer of the forest. Nodes in higher layers have been given a `mean value' property that is calculated from the values of the subsumed leaf nodes.
@@ -28,7 +26,7 @@ Each layer also contains edges between nodes that are in some sense adjacent (in
 In addition to the forest layers themselves, a partition forest also contains forest links that join the nodes in adjacent layers together (the coloured, dashed lines in the figure). In particular, there is a link between each node and the node that contains it in the layer above. These links naturally define parent/child relationships between forest nodes.
 
 %---
-\stufigex{height=24cm}{ipfs/ipfs-concept.png}{The concept of a partition forest (see main text for discussion)}{fig:ipfs-concept}{p}
+\stufigex{height=22cm}{ipfs/ipfs-concept.png}{The concept of a partition forest (see main text for discussion)}{fig:ipfs-concept}{p}
 %---
 
 %################################################
@@ -200,12 +198,12 @@ New layers can be inserted anywhere in the forest by cloning the layer below the
 %---
 \begin{stusubfig}{p}
 	\subfigure[Before cloning layer 2]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-layercloning-a-hierarchy.png}}%
+	{\includegraphics[width=10cm]{ipfs/ipfs-forest-layercloning-a-hierarchy.png}}%
 	%
-	\hspace{8mm}%
+	\\
 	%
 	\subfigure[After cloning layer 2]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-layercloning-b-hierarchy.png}}%
+	{\includegraphics[width=10cm]{ipfs/ipfs-forest-layercloning-b-hierarchy.png}}%
 \caption{An example of layer cloning.}
 \label{fig:ipfs-forest-layercloning}
 \end{stusubfig}
@@ -222,7 +220,7 @@ void clone_layer(int indexB);
 The simplest user interface just allows the user to clone the current layer by (for example) clicking on a menu item (see Figure~\ref{fig:ipfs-forest-layercloning-gui}). After cloning the layer, the interface can display the clone so that the user can begin working with it immediately. An alternative would be to allow the user to clone any layer in the forest by displaying a dialog box allowing them to choose the layer to be cloned, but in my view the former approach is more intuitive.
 
 %---
-\stufigex{height=5cm}{ipfs/ipfs-forest-layercloning-gui.png}{The user interface for layer cloning: a simple menu item allowing the current layer to be cloned.}{fig:ipfs-forest-layercloning-gui}{p}
+\stufigex{height=6cm}{ipfs/ipfs-forest-layercloning-gui.png}{The user interface for layer cloning: a simple menu item allowing the current layer to be cloned.}{fig:ipfs-forest-layercloning-gui}{p}
 %---
 
 \paragraph{Precondition Checking}
@@ -261,12 +259,12 @@ Any layer except the lowest can be deleted from the hierarchy (for example, see 
 %---
 \begin{stusubfig}{p}
 	\subfigure[Before deleting layer 1]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-layerdeletion-a-hierarchy.png}}%
+	{\includegraphics[width=10cm]{ipfs/ipfs-forest-layerdeletion-a-hierarchy.png}}%
 	%
-	\hspace{8mm}%
+	\\
 	%
 	\subfigure[After deleting layer 1]
-	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-layerdeletion-b-hierarchy.png}}%
+	{\includegraphics[width=10cm]{ipfs/ipfs-forest-layerdeletion-b-hierarchy.png}}%
 \caption{An example of layer deletion.}
 \label{fig:ipfs-forest-layerdeletion}
 \end{stusubfig}
@@ -571,17 +569,17 @@ A node in any layer of the hierarchy can be unzipped to a specified higher layer
 	\hspace{8mm}%
 	\subfigure[After splitting $(3,2)$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-unzipping-d-hierarchy.png}}%
 	\\
-	\subfigure[Initial layer $1$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-a-graph1.png}}%
+	\subfigure[Initial layer $1$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-a-graph1.png}}%
 	\hspace{8mm}%
-	\subfigure[Initial layer $2$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-a-graph2.png}}%
+	\subfigure[Initial layer $2$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-a-graph2.png}}%
 	\hspace{8mm}%
-	\subfigure[Initial layer $3$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-a-graph3.png}}%
+	\subfigure[Initial layer $3$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-a-graph3.png}}%
 	\\
-	\subfigure[Resulting layer $1$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-b-graph1.png}}%
+	\subfigure[Resulting layer $1$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-b-graph1.png}}%
 	\hspace{8mm}%
-	\subfigure[Resulting layer $2$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-c-graph2.png}}%
+	\subfigure[Resulting layer $2$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-c-graph2.png}}%
 	\hspace{8mm}%
-	\subfigure[Resulting layer $3$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-d-graph3.png}}%
+	\subfigure[Resulting layer $3$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-d-graph3.png}}%
 \caption{An example of unzipping: unzipping node $(0,5)$ to layer $3$}
 \label{fig:ipfs-forest-unzipping}
 \end{stusubfig}
@@ -602,21 +600,21 @@ The user interface for unzipping is relatively straightforward, as illustrated i
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Layer 1 before unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-a.png}}%
+	\subfigure[Layer 1 before unzipping]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-gui-a.png}}%
 	\hspace{8mm}%
-	\subfigure[Layer 2 before unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-b.png}}%
+	\subfigure[Layer 2 before unzipping]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-gui-b.png}}%
 	\\
-	\subfigure[Layer 3 before unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-c.png}}%
+	\subfigure[Layer 3 before unzipping]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-gui-c.png}}%
 	\hspace{8mm}%
-	\subfigure[Select a node to unzip]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-d.png}}%
+	\subfigure[Select a node to unzip]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-gui-d.png}}%
 	\\
-	\subfigure[Click the menu item]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-unzipping-gui-e.png}}%
+	\subfigure[Click the menu item]{\includegraphics[width=.35\linewidth]{ipfs/ipfs-forest-unzipping-gui-e.png}}%
 	\hspace{8mm}%
-	\subfigure[Enter the target layer]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-forest-unzipping-gui-f.png}}%
+	\subfigure[Enter the target layer]{\includegraphics[width=.35\linewidth]{ipfs/ipfs-forest-unzipping-gui-f.png}}%
 	\\
-	\subfigure[Layer 2 after unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-g.png}}%
+	\subfigure[Layer 2 after unzipping]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-gui-g.png}}%
 	\hspace{8mm}%
-	\subfigure[Layer 3 after unzipping]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-forest-unzipping-gui-h.png}}%
+	\subfigure[Layer 3 after unzipping]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-unzipping-gui-h.png}}%
 \caption{The user interface for unzipping}
 \label{fig:ipfs-forest-unzipping-gui}
 \end{stusubfig}
@@ -662,25 +660,25 @@ A set of node chains (see the description of unzipping for a definition) that al
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Initial hierarchy]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-zipping-a-hierarchy.png}}%
+	\subfigure[Initial hierarchy]{\includegraphics[width=.43\linewidth]{ipfs/ipfs-forest-zipping-a-hierarchy.png}}%
 	\hspace{8mm}%
-	\subfigure[After merging layer $3$ nodes]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-zipping-b-hierarchy.png}}%
+	\subfigure[After merging layer $3$ nodes]{\includegraphics[width=.43\linewidth]{ipfs/ipfs-forest-zipping-b-hierarchy.png}}%
 	\\
-	\subfigure[After merging layer $2$ nodes]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-zipping-c-hierarchy.png}}%
+	\subfigure[After merging layer $2$ nodes]{\includegraphics[width=.43\linewidth]{ipfs/ipfs-forest-zipping-c-hierarchy.png}}%
 	\hspace{8mm}%
-	\subfigure[After merging layer $1$ nodes]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-forest-zipping-d-hierarchy.png}}%
+	\subfigure[After merging layer $1$ nodes]{\includegraphics[width=.43\linewidth]{ipfs/ipfs-forest-zipping-d-hierarchy.png}}%
 	\\
-	\subfigure[Initial layer $1$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-a-graph1.png}}%
+	\subfigure[Initial layer $1$ graph]{\includegraphics[width=.24\linewidth,height=.26\linewidth]{ipfs/ipfs-forest-zipping-a-graph1.png}}%
 	\hspace{8mm}%
-	\subfigure[Initial layer $2$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-a-graph2.png}}%
+	\subfigure[Initial layer $2$ graph]{\includegraphics[width=.24\linewidth,height=.26\linewidth]{ipfs/ipfs-forest-zipping-a-graph2.png}}%
 	\hspace{8mm}%
-	\subfigure[Initial layer $3$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-a-graph3.png}}%
+	\subfigure[Initial layer $3$ graph]{\includegraphics[width=.24\linewidth,height=.26\linewidth]{ipfs/ipfs-forest-zipping-a-graph3.png}}%
 	\\
-	\subfigure[Resulting layer $1$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-d-graph1.png}}%
+	\subfigure[Resulting layer $1$ graph]{\includegraphics[width=.24\linewidth,height=.26\linewidth]{ipfs/ipfs-forest-zipping-d-graph1.png}}%
 	\hspace{8mm}%
-	\subfigure[Resulting layer $2$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-c-graph2.png}}%
+	\subfigure[Resulting layer $2$ graph]{\includegraphics[width=.24\linewidth,height=.26\linewidth]{ipfs/ipfs-forest-zipping-c-graph2.png}}%
 	\hspace{8mm}%
-	\subfigure[Resulting layer $3$ graph]{\includegraphics[width=.25\linewidth]{ipfs/ipfs-forest-zipping-b-graph3.png}}%
+	\subfigure[Resulting layer $3$ graph]{\includegraphics[width=.24\linewidth,height=.26\linewidth]{ipfs/ipfs-forest-zipping-b-graph3.png}}%
 \caption{An example of zipping: zipping together the four chains $[(3,0), (2,6), (1,6)]$, $[(3,2), (2,2)]$, $[(3,5), (2,5)]$ and $[(3,8), (2,8), (1,8)]$}
 \label{fig:ipfs-forest-zipping}
 \end{stusubfig}
@@ -1115,27 +1113,27 @@ function identify_node
 %---
 \begin{stusubfig}{h}
 	\subfigure[The initial forest]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-a.png}}%
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-a.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After identifying $(1,6)$ as green.]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-b.png}}%
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-b.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After identifying $(2,0)$ as green.]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-c.png}}%
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-c.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After identifying $(1,2)$ as blue.]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-d.png}}%
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-d.png}}%
 	%
 	\hspace{8mm}%
 	%
 	\subfigure[After identifying $(2,6)$ as blue.]
-	{\includegraphics[width=.4\linewidth]{ipfs/ipfs-mfs-example-e.png}}%
+	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-e.png}}%
 \caption{A multi-feature selection example: filled nodes are part of the actual representation, whilst circled nodes are implicitly identified. The cyan nodes in (e) are identified as both green and blue.}
 \label{fig:ipfs-mfs-example}
 \end{stusubfig}

@@ -1,10 +1,10 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{smgthesis}
 
-% Forward all options to the report class
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
+% Forward all options to the book class
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{book}}
 \ProcessOptions\relax
-\LoadClass[a4paper,12pt]{report}
+\LoadClass[a4paper,12pt]{book}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Required Packages %%%
@@ -18,6 +18,7 @@
 \RequirePackage{color}
 \RequirePackage{enumitem}
 \RequirePackage{epigraph}
+\RequirePackage{fancyhdr}
 \RequirePackage{float}
 \RequirePackage{graphicx}
 %\RequirePackage[draft]{graphicx}
@@ -108,6 +109,17 @@
 %%% Environments %%%
 %%%%%%%%%%%%%%%%%%%%
 
+% Define the abstract environment (it's not included in the book class)
+\newenvironment{abstract}
+{
+	\cleardoublepage\null\vfill\begin{center}\bfseries\abstractname\end{center}
+}
+{
+	\vfill\null
+}
+
+\newcommand\abstractname{Abstract}
+
 % Define the centreditemize environment
 \newenvironment{centreditemize}
 {
@@ -167,7 +179,7 @@
 
 % Set the paper size and margins
 \setpapersize{A4}
-\setmargnohfrb{2cm}{2cm}{2cm}{2cm}
+\setmargrb{2cm}{2cm}{2cm}{2cm}
 
 % Change the ways headings are formatted (based on the definitions in report.cls)
 \renewcommand\section{\@startsection{section}{1}

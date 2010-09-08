@@ -6,6 +6,8 @@
 
 \begin{document}
 
+\pagestyle{empty}
+
 %%%%%%%%%%%%%%%%%%
 %%% Title Page %%%
 %%%%%%%%%%%%%%%%%%
@@ -30,27 +32,29 @@
 
 \doublespacing								% change the line spacing to double-spaced
 \dropchapter{-2cm}						% get rid of the unnecessary space before chapter titles
-\pagestyle{plain}							% add page numbers
-\addtolength{\footskip}{10mm}	% stop the page numbers overlapping the text at the bottom of the page
 
 \input{abstract}
 
 \part{Background}
 
-%\input{introduction/introduction}
-%\input{background/background}
-%\input{methodology/methodology}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[R]{\slshape \leftmark}
+
+\input{introduction/introduction}
+\input{background/background}
+\input{methodology/methodology}
 
 \part{Segmentation and Feature Identification}
 
 \input{ipfs/ipfs}
-%\input{segmentation/segmentation}
-%\input{featureid/featureid}
+\input{segmentation/segmentation}
+\input{featureid/featureid}
 
 \part{Assessment}
 
-%\input{criticalassessment/criticalassessment}
-%\input{conclusions/conclusions}
+\input{criticalassessment/criticalassessment}
+\input{conclusions/conclusions}
 
 \appendix
 
@@ -59,8 +63,8 @@
 
 \part{Appendices}
 
-%\input{appendixds/appendixds}
-%\input{appendixpf/appendixpf}
+\input{appendixds/appendixds}
+\input{appendixpf/appendixpf}
 
 \printindex
 
