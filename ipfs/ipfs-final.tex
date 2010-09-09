@@ -1071,15 +1071,57 @@ TODO
 
 \paragraph{Description}
 
-TODO
+Any node in the partition forest can be removed from the selection. This has the effect of ensuring that the entire subtree below the input node in the forest is deselected. The algorithm takes a single node as input, and returns the modification this caused to the selection.
 
 \paragraph{C++ Method Interface}
 
-TODO
+\begin{lstlisting}[style=Prototype]
+Modification deselect_node(const PFNodeID& node);
+\end{lstlisting}
 
 \paragraph{Implementation}
 
+As with node selection, there are the same four cases to deal with when removing a node from the selection:
+
+\begin{enumerate}
+
+\item The node itself is in the representation.
+\item An ancestor of the node is in the representation.
+\item One or more descendants of the node is in the representation.
+\item Neither the node nor any of its ancestors or descendants is in the representation.
+
+\end{enumerate}
+
+\noindent Case $1$ is trivial: we can simply remove the node from the representation directly. Case $4$ is likewise trivial, as the selection does not even need to be modified. In Case $3$, it suffices to enumerate all the descendants of the node that are in the representation and remove them all.
+
+The more interesting case is Case $2$, in which one of the node's ancestors is in the selection representation. In that case, we must find the \emph{trail} of nodes in the forest leading from the ancestor in question to the node itself (non-inclusive). We then replace all the nodes on this trail (from the ancestor downwards) with their children until the node we want to deselect is part of the representation, at which point we can simply remove it. An example of this process is shown in Figure~\ref{fig:ipfs-selection-nodedeselection}. In this case, the selected ancestor is $(3,0)$ and the trail is $[(3,0), (2,0), (1,2)]$. Each of the nodes on the trail are split in turn. Eventually, $(0,3)$ is in the representation, and can be removed. Pseudo-code for the main algorithm is shown in Listing~\ref{code:ipfs-selection-deselectnodeimpl}; pseudo-code for the subsidiary processes can be found in Appendix~\ref{?}.
+
 TODO
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial selection]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-e-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After splitting $(3,0)$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-d-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After splitting $(2,0)$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-c-hierarchy.png}}%
+	\\
+	\subfigure[After splitting $(1,2)$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-b-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After removing $(0,3)$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-a-hierarchy.png}}%
+\caption{An example of node deselection: removing $(0,3)$ from the selection}
+\label{fig:ipfs-selection-nodedeselection}
+\end{stusubfig}
+%---
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Node Deselection : Implementation}
+\label{code:ipfs-selection-deselectnodeimpl}
+\lstinputlisting[style=Default]{ipfs/ipfs-selection-deselectnodeimpl.lst}
+\end{stulisting}
+
+\afterpage{\clearpage}
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{View At Layer}

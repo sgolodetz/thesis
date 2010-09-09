@@ -1,0 +1,30 @@
+function deselect_node_impl
+:	(node : NodeID) $\to$ Modification
+
+	var modification : Modification;
+
+	// Case 1: The node itself is in the representation.
+	if in_representation(node) then
+		erase_node(node, ref modification);
+		listeners.node_was_deselected(node);
+		return modification;
+
+	// Case 2: An ancestor of the node is in the representation.
+	var trail : Stack<NodeID>;
+	var ancestor : NodeID := find_ancestor_in_representation(node, ref trail);
+	if ancestor.valid() then
+		split_selection(trail, ref modification);
+		erase_node(node, ref modification);
+		listeners.node_was_deselected(node);
+		return modification;
+
+	// Case 3: One or more descendants of the node are in the representation.
+	var descendants : List<NodeID> := descendants_in_representation(node);
+	if not descendants.empty() then
+		for each d $\in$ descendants
+			erase_node(d, ref modification);
+		listeners.node_was_deselected(node);
+		return modification;
+
+	// Case 4: Neither the node nor any of its ancestors or descendants is in the representation.
+	return modification;
