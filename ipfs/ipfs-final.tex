@@ -1225,7 +1225,7 @@ TODO
 \subsubsection{Undo Modification}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As previously mentioned, the \emph{node selection} and \emph{node deselection} algorithms return selection modifications that can be used to undo their effects. The algorithm reinserts nodes that were erased from the representation, and removes nodes that were inserted:
+As previously mentioned, the \emph{node selection} and \emph{node deselection} algorithms return selection modifications that can be used to undo their effects. The \emph{undo modification} algorithm reinserts nodes that were erased from the representation, and removes nodes that were inserted:
 
 \begin{lstlisting}[style=Default]
 function undo_modification
@@ -1238,11 +1238,13 @@ function undo_modification
 	listeners.modification_undone(modification);
 \end{lstlisting}
 
+\noindent TODO
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Redo Modification}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Selection modifications that were undone by \texttt{undo_modification} can also be redone (there is no need to execute the original command a second time, which would involve recalculating the necessary nodes to erase/insert). The algorithms re-erases any nodes in the \texttt{erased} set, and re-inserts any nodes in the \texttt{inserted} set:
+Selection modifications that were undone by \emph{undo modification} can also be redone (there is no need to execute the original command a second time, which would involve recalculating the necessary nodes to erase/insert). The \emph{redo modification} algorithm re-erases any nodes in the \texttt{erased} set, and re-inserts any nodes in the \texttt{inserted} set:
 
 \begin{lstlisting}[style=Default]
 function redo_modification
@@ -1255,6 +1257,8 @@ function redo_modification
 	listeners.modification_redone(modification);
 \end{lstlisting}
 
+\noindent TODO
+
 \newpage
 
 %################################################
@@ -1265,10 +1269,79 @@ function redo_modification
 \subsubsection{Layer Was Cloned}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+\paragraph{Description}
+
+When a layer in the forest is cloned, the selection representation must have an additional layer added to it, and any selected nodes in the cloned layer must be migrated to the layer above. For instance, if the node $(2,0)$ is in the representation, and layer $2$ is cloned, then an identical layer $3$ will be inserted above it. If that happens, the selections of $(2,0)$ and $(3,0)$ will be equivalent, except that $(3,0)$ is higher in the forest. We must thus replace $(2,0)$ with $(3,0)$ in the representation.
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+void layer_was_cloned(int index);
+\end{lstlisting}
+
+\paragraph{Implementation}
+
+Rather than inserting the new layer into the selection representation above the cloned layer, and then migrating any nodes upwards, the actual implementation instead inserts an empty layer into the representation below the cloned layer:
+
+\begin{lstlisting}[style=Default]
+function layer_was_cloned
+:	(index : int) $\to \emptyset$
+
+	// The desired effect is to insert a layer above the one specified and migrate
+	// any selected nodes upwards to the new layer. This can be achieved most easily
+	// by simply inserting an empty layer below the one being cloned, as here.
+	var emptyLayer : SelectionLayer;
+	insert_layer(index, emptyLayer);
+
+	listeners.selection_changed();
+\end{lstlisting}
+
+\noindent This has the effect of pushing any selected nodes in the cloned layer upwards, without extra work being needed to handle them.
+
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\subsubsection{Layer Will Be Deleted / Layer Was Undeleted}
+\subsubsection{Layer Will Be Deleted / Layer Was Deleted}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\paragraph{Description}
+
+When a layer is deleted from the forest, the selection must react by replacing any selected nodes in the deleted layer with their children in the layer below. To do this, it must be informed \emph{before} the layer is actually deleted (i.e.~while it can still query the forest for the children of the selected nodes). An example is shown in Figure~\ref{fig:ipfs-selection-layerwillbedeleted}.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Before deleting layer $2$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-layerwillbedeleted-a-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After deleting layer $2$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-layerwillbedeleted-b-hierarchy.png}}%
+\caption{An example of the layer will be deleted algorithm}
+\label{fig:ipfs-selection-layerwillbedeleted}
+\end{stusubfig}
+%---
+
+\paragraph{C++ Method Interfaces}
+
+\begin{lstlisting}[style=Prototype]
+void layer_will_be_deleted(int index);
+void layer_was_deleted(int index);
+\end{lstlisting}
+
+\paragraph{Implementation}
+
+The implementation is straightforward, as shown in Listing~\ref{code:ipfs-selection-layerwillbedeleted}. Each selected node in the layer to be deleted is first \emph{deconsolidated} (that is, it is replaced in the selection representation by its children in the layer below). The layer itself is then erased from the selection representation. Listeners are only informed after the layer has actually been deleted from the forest (not just the selection), because the forest and selection will temporarily have different numbers of layers until this has been done (as far as listeners are concerned, they must satisfy the invariant of having the same number of layers).
+
+%---
+\begin{stulisting}[p]
+\caption{Forest Selection : Layer Will Be Deleted / Layer Was Deleted : Implementation}
+\label{code:ipfs-selection-layerwillbedeleted}
+\lstinputlisting[style=Default]{ipfs/ipfs-selection-layerwillbedeleted.lst}
+\end{stulisting}
+%---
+
+\afterpage{\clearpage}
+\newpage
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Layer Was Undeleted}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 TODO

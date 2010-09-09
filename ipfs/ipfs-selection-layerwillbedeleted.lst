@@ -1,0 +1,14 @@
+function layer_will_be_deleted
+:	(index : int) $\to \emptyset$
+
+	// Replace any nodes in the specified layer with their children in the layer below.
+	for each n : NodeID $\in$ layer(index).nodes()
+		deconsolidate_node(n, null);
+
+	// Delete the layer itself.
+	erase_layer(index);
+
+function layer_was_deleted
+:	(index : int) $\to \emptyset$
+
+	listeners.selection_changed();
