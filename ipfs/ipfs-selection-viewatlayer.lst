@@ -1,0 +1,16 @@
+function view_at_layer
+:	(layerIndex : int) $\to$ Vector<NodeID>
+
+	var nodes : Vector<NodeID>;
+
+	// If the selection contains any node in a higher layer than that specified,
+	// add its descendants in the specified layer to the result.
+	for i : int := highest_layer() down to layerIndex + 1
+		for each n : NodeID $\in$ layer(i).nodes()
+			append(ref nodes, descendants_in_layer(n, layerIndex));
+
+	// Directly add all nodes in layers no greater than that specified to the result.
+	for i : int := layerIndex down to 0
+		append(ref nodes, layer(i).nodes());
+
+	return nodes;
