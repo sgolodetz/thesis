@@ -1,0 +1,30 @@
+function select_node_impl
+:	(node : NodeID) $\to$ Modification
+
+	/*
+	Cases:
+
+	- The node is already part of the representation (do nothing)
+	- An ancestor of the node is already part of the representation (do nothing)
+	- One or more descendants of the node are already part of the representation
+	  (erase them and insert this instead)
+	- Otherwise (insert the node as usual)
+	*/
+
+	var modification : Modification;
+
+	// Note that this handles the first two cases.
+	if contains(node) then return modification;	// return an empty Modification
+
+	// If there are descendants, erase them.
+	var descendants : List<NodeID> := descendants_in_representation(node);
+	for each d $\in$ descendants
+		erase_node(d, ref modification);
+
+	insert_node(node, ref modification);
+
+	// Note: This is designed to work even if the node actually has no parent.
+	consolidate_upwards_from_node(forest().parent_of(node), ref modification);
+
+	listeners.node_was_selected(node);
+	return modification;

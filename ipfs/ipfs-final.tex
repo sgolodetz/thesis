@@ -988,18 +988,20 @@ class PartitionForestSelection
 The \texttt{nodes} data member will contain nodes that represent the selection, but many representations are possible. Specifically, we note that the selection of a set of nodes in multiple layers of the forest corresponds to the selection of a set of pixels (or voxels, in 3D) in the forest's leaf layer (see Figure~\ref{?}). This is a many-to-one relationship: there are many node selections that correspond to the same pixel selection (it is possible to define an equivalence relation that makes all the node selections corresponding to the selection of a particular set of pixels equivalent). However, we are only interested in non-redundant representations of the pixel selection: more precisely, in sets of nodes that partition the pixel selection (they cover all the pixels and do not overlap). As Figure~\ref{?} illustrates, there are still many sets of nodes that would satisfy this criterion for a given pixel selection, but there is always a unique, smallest set (in particular, the one where the nodes chosen are in the highest forest layers possible). We describe this as the \emph{minimal node representation} of a given pixel selection $S$, and denote it $\textbf{MNR}(S)$. This is the ideal representation for partition forest selections, because it contains all the information necessary and in the most compact form possible. We thus maintain precisely the nodes in $\textbf{MNR}(S)$ in the \texttt{nodes} data member, for whatever $S$ happens to be selected at the time.
 
 %################################################
-\subsection{Algorithms: Overview}
+\subsection{Overview of Algorithms}
 %################################################
 
-Having defined the partition forest selection data structure, and in particular the way in which selections are represented, we next turn to the algorithms that should be implemented for partition forest selections. These can be divided into three groups:
+Having defined the partition forest selection data structure, and in particular the way in which selections are represented, we next turn to the algorithms that should be implemented for partition forest selections. These can be divided into four groups:
 
 \begin{enumerate}
 
 \item The \textbf{core} algorithms implement basic functionality: the \emph{node selection} and \emph{node deselection} algorithms allow the selection and deselection of individual nodes, respectively, whilst the \emph{view at layer} algorithm allows the selection to be viewed at a specific forest layer (all nodes in higher layers are replaced with their descendants in the chosen layer).
 
+\item The \textbf{undo} algorithms, \emph{undo modification} and \emph{redo modification}, allow changes to the selection to be undone/redone.
+
 \item The \textbf{listening} algorithms listen to the partition forest to which the selection corresponds, and update the selection in response to any changes. The selection needs to change in response to each of the core partition forest algorithms: layer cloning, layer deletion/undeletion, sibling node merging and node splitting. It should be noted that because the remaining partition forest algorithms were implemented in terms of the core algorithms, there is no need for additional algorithms that update the selection in response to e.g.~unzipping or parent switching. This is a major advantage of the implementation technique chosen.
 
-\item Finally, the \textbf{binary set} algorithms allow selections to be combined (i.e.~unioned) and subtracted from each other: we will see later (particularly in Chapter~\ref{chap:assessment}) that this functionality is important because it allows feature selections to be compared in order to validate them.
+\item Finally, the \textbf{binary set} algorithms allow selections to be combined (i.e.~unioned) and subtracted from each other: we will see later (particularly in Chapter~\ref{chap:validation}) that this functionality is important because it allows feature selections to be compared in order to validate them.
 
 \end{enumerate}
 
@@ -1011,17 +1013,123 @@ Having defined the partition forest selection data structure, and in particular 
 \subsubsection{Node Selection}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\paragraph{Description}
+
+Any node in the partition forest can be added to the selection. This has the effect of ensuring that the entire subtree below the input node in the forest is selected. The algorithm takes a single node as input, and returns the modification this caused to the selection. A \emph{selection modification} is a pair of node sets -- \texttt{(erased, inserted)} -- containing the specific nodes that were erased from/inserted into the selection representation. It can be passed to the \emph{undo modification} algorithm to undo the changes made to the selection.
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+Modification select_node(const PFNodeID& node);
+\end{lstlisting}
+
+\paragraph{Implementation}
+
+As I originally discussed in \cite{gvcispa09}, there are four cases to deal with when adding a node to the selection:
+
+\begin{enumerate}
+
+\item The node itself is already in the representation (that is, it is itself contained in the \texttt{nodes} data member).
+\item An ancestor of the node is already in the representation.
+\item One or more descendants of the node is already in the representation.
+\item Neither the node nor any of its ancestors or descendants is already in the representation.
+
+\end{enumerate}
+
+\noindent In the first two cases, nothing needs to be done: since either the input node or one of its ancestors is in the representation, all the nodes in the subtree below the input node are already implicitly selected. The third and fourth cases require more work. In the third case, all descendants of the node must first be removed from the representation (and thus added to the \texttt{erased} component of the selection modification). Then, in both cases, the input node itself must be added to the representation (and thus to the \texttt{inserted} component of the selection modification). Finally, a process of \emph{consolidation} must take place to ensure that the representation of the selection is still minimal: this involves replacing any node whose children are all part of the representation with the node itself, until this is no longer possible. In practice, when consolidating after selecting a node, we only need to worry about nodes that are ancestors of the input node -- we thus recursively consolidate upwards from the parent of the input node, terminating when either one of the children of the node currently being examined is not part of the representation, or when we reach the top of the forest. An example illustrating this process is shown in Figure~\ref{fig:ipfs-selection-nodeselection}. After the initial insertion, the selection modification is $(\emptyset,\{(0,3)\})$. As the ancestors are consolidated, it then changes to $(\{(0,2), (0,4)\}, \{(1,2)\})$, $(\{(0,2), (0,4), (1,0)\}, \{(2,0)\})$ and finally $(\{(0,2), (0,4), (1,0), (2,5)\}, \{(3,0)\})$. Pseudo-code for the main algorithm is shown in Listing~\ref{code:ipfs-selection-selectnodeimpl}; pseudo-code for the consolidation process can be found in Appendix~\ref{?}.
+
 TODO
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial selection]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-a-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After adding $(0,3)$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-b-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After consolidating $(1,2)$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-c-hierarchy.png}}%
+	\\
+	\subfigure[After consolidating $(2,0)$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-d-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After consolidating $(3,0)$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeselection-e-hierarchy.png}}%
+\caption{An example of node selection: adding $(0,3)$ to the selection}
+\label{fig:ipfs-selection-nodeselection}
+\end{stusubfig}
+%---
+
+\begin{stulisting}[p]
+\caption{Forest Selection : Node Selection : Implementation}
+\label{code:ipfs-selection-selectnodeimpl}
+\lstinputlisting[style=Default]{ipfs/ipfs-selection-selectnodeimpl.lst}
+\end{stulisting}
+
+\afterpage{\clearpage}
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Node Deselection}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\paragraph{Description}
+
+TODO
+
+\paragraph{C++ Method Interface}
+
+TODO
+
+\paragraph{Implementation}
 
 TODO
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{View At Layer}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\paragraph{Description}
+
+TODO
+
+\paragraph{C++ Method Interface}
+
+TODO
+
+\paragraph{Implementation}
+
+TODO: Don't forget to mention that the real implementation uses iterators
+
+%################################################
+\subsection{Undo Algorithms}
+%################################################
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Undo Modification}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\paragraph{Description}
+
+TODO
+
+\paragraph{C++ Method Interface}
+
+TODO
+
+\paragraph{Implementation}
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Redo Modification}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\paragraph{Description}
+
+TODO
+
+\paragraph{C++ Method Interface}
+
+TODO
+
+\paragraph{Implementation}
 
 TODO
 
@@ -1100,6 +1208,8 @@ class PartitionForestMultiFeatureSelection
 \item Looking up the features corresponding to a particular node.
 \item Combining and subtracting multi-feature selections (important for validation purposes).
 \end{itemize}
+
+\newpage
 
 \noindent All of these can be implemented straightforwardly in terms of their selection counterparts. For example, the following pseudo-code shows how a node can be identified as a feature:
 
