@@ -1225,33 +1225,37 @@ TODO
 \subsubsection{Undo Modification}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\paragraph{Description}
+As previously mentioned, the \emph{node selection} and \emph{node deselection} algorithms return selection modifications that can be used to undo their effects. The algorithm reinserts nodes that were erased from the representation, and removes nodes that were inserted:
 
-TODO
+\begin{lstlisting}[style=Default]
+function undo_modification
+:	(modification : Modification) $\to \emptyset$
 
-\paragraph{C++ Method Interface}
-
-TODO
-
-\paragraph{Implementation}
-
-TODO
+	for each n : NodeID $\in$ modification.erased_nodes()
+		insert_node(n, null);
+	for each n : NodeID $\in$ modification.inserted_nodes()
+		erase_node(n, null);
+	listeners.modification_undone(modification);
+\end{lstlisting}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Redo Modification}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\paragraph{Description}
+Selection modifications that were undone by \texttt{undo_modification} can also be redone (there is no need to execute the original command a second time, which would involve recalculating the necessary nodes to erase/insert). The algorithms re-erases any nodes in the \texttt{erased} set, and re-inserts any nodes in the \texttt{inserted} set:
 
-TODO
+\begin{lstlisting}[style=Default]
+function redo_modification
+:	(modification : Modification) $\to \emptyset$
 
-\paragraph{C++ Method Interface}
+	for each n : NodeID $\in$ modification.erased_nodes()
+		erase_node(n, null);
+	for each n : NodeID $\in$ modification.inserted_nodes()
+		insert_node(n, null);
+	listeners.modification_redone(modification);
+\end{lstlisting}
 
-TODO
-
-\paragraph{Implementation}
-
-TODO
+\newpage
 
 %################################################
 \subsection{Listening Algorithms}
