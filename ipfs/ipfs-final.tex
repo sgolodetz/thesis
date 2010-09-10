@@ -1015,7 +1015,7 @@ The \texttt{nodes} data member will contain nodes that represent the selection, 
 \subsection{Overview of Algorithms}
 %################################################
 
-Having defined the partition forest selection data structure, and in particular the way in which selections are represented, we next turn to the algorithms that should be implemented for partition forest selections. These can be divided into four groups:
+Having defined the partition forest selection data structure, and in particular the way in which selections are represented, we next turn to the algorithms that should be implemented for partition forest selections. These can be divided into three groups:
 
 \begin{enumerate}
 
@@ -1023,9 +1023,7 @@ Having defined the partition forest selection data structure, and in particular 
 
 \item The \textbf{undo} algorithms, \emph{undo modification} and \emph{redo modification}, allow changes to the selection to be undone/redone.
 
-\item The \textbf{listening} algorithms listen to the partition forest to which the selection corresponds, and update the selection in response to any changes. The selection needs to change in response to each of the core partition forest algorithms: layer cloning, layer deletion/undeletion, sibling node merging and node splitting. It should be noted that because the remaining partition forest algorithms were implemented in terms of the core algorithms, there is no need for additional algorithms that update the selection in response to e.g.~unzipping or parent switching. This is a major advantage of the implementation technique chosen.
-
-\item Finally, the \textbf{binary set} algorithms allow selections to be combined (i.e.~unioned) and subtracted from each other: we will see later (particularly in Chapter~\ref{chap:validation}) that this functionality is important because it allows feature selections to be compared in order to validate them.
+\item Finally, the \textbf{listening} algorithms listen to the partition forest to which the selection corresponds, and update the selection in response to any changes. The selection needs to change in response to each of the core partition forest algorithms: layer cloning, layer deletion/undeletion, sibling node merging and node splitting. It should be noted that because the remaining partition forest algorithms were implemented in terms of the core algorithms, there is no need for additional algorithms that update the selection in response to e.g.~unzipping or parent switching. This is a major advantage of the implementation technique chosen.
 
 \end{enumerate}
 
@@ -1488,24 +1486,6 @@ TODO
 %---
 
 \afterpage{\clearpage}
-\newpage
-
-%################################################
-\subsection{Binary Set Algorithms}
-%################################################
-
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\subsubsection{Combine Selections}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-TODO
-
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\subsubsection{Subtract Selections}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-TODO
-
 \newpage
 
 %##################################################################################################
