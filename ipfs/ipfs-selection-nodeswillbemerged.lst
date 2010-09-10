@@ -1,0 +1,15 @@
+function nodes_will_be_merged
+:	(nodes : Set<NodeID>) $\to \emptyset$
+
+	// Replace any of the nodes being merged that are selected with their children.
+	for each n : NodeID $\in$ nodes
+		if in_selection(n) then
+			deconsolidate_node(n, null);
+
+function nodes_were_merged
+:	(nodes : Set<NodeID>; result : NodeID) $\to \emptyset$
+
+	// Consolidate the node resulting from the merge.
+	consolidate_node(result, null);
+
+	listeners.selection_changed();

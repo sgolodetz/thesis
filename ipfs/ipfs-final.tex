@@ -891,7 +891,7 @@ A node in any layer of the hierarchy except the highest can be moved from being 
 \paragraph{C++ Method Interface}
 
 \begin{lstlisting}[style=Prototype]
-void parent_switch(const PFNodeID& node, int newParent);
+void parent_switch(const NodeID& node, int newParent);
 \end{lstlisting}
 
 \paragraph{User Interface for Image Analysis}
@@ -1044,7 +1044,7 @@ Any node in the partition forest can be added to the selection. This has the eff
 \paragraph{C++ Method Interface}
 
 \begin{lstlisting}[style=Prototype]
-Modification select_node(const PFNodeID& node);
+Modification select_node(const NodeID& node);
 \end{lstlisting}
 
 \paragraph{Implementation}
@@ -1102,7 +1102,7 @@ Any node in the partition forest can be removed from the selection. This has the
 \paragraph{C++ Method Interface}
 
 \begin{lstlisting}[style=Prototype]
-Modification deselect_node(const PFNodeID& node);
+Modification deselect_node(const NodeID& node);
 \end{lstlisting}
 
 \paragraph{Implementation}
@@ -1389,7 +1389,54 @@ TODO
 \subsubsection{Nodes Will Be Merged / Nodes Were Merged}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\paragraph{Description}
+
+When sibling nodes in the forest are merged, the selection needs to be informed both before and after it happens. If selected nodes are about to be merged, then they must be deconsolidated, as they will cease to exist once the merge takes place. After the merge, the result node must then be consolidated, as it is possible that all the nodes being merged were selected prior to the merge happening. An example is shown in Figure~\ref{fig:ipfs-selection-nodeswillbemerged}. In (b), the selection is informed that $(1,0)$ and $(1,1)$ are about to be merged, so it deconsolidates $(1,0)$ (as that is currently selected). In (c), the two nodes are then merged. In (d), $(1,0)$ is consolidated, but is not re-selected because $(0,1)$ is not part of the selection. The same thing happens when merging $(1,2)$ and $(1,3)$, except that the consolidation step in (g) replaces $(0,2)$ and $(0,3)$ with $(1,2)$ after the merge, since all of the latter's children are selected.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The original selection]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeswillbemerged-a-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[$(1,0)$ and $(1,1)$ will merge]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeswillbemerged-b-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[$(1,0)$ and $(1,1)$ merge]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeswillbemerged-c-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[$(1,0)$ and $(1,1)$ were merged]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeswillbemerged-d-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[$(1,2)$ and $(1,3)$ will merge]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeswillbemerged-e-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[$(1,2)$ and $(1,3)$ merge]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeswillbemerged-f-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[$(1,2)$ and $(1,3)$ were merged]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-nodeswillbemerged-g-hierarchy.png}}%
+\caption{An example of the nodes will be merged / nodes were merged algorithms}
+\label{fig:ipfs-selection-nodeswillbemerged}
+\end{stusubfig}
+%---
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+void nodes_will_be_merged(const set<NodeID>& nodes);
+void nodes_were_merged(const set<NodeID>& nodes,
+                       const NodeID& result);
+\end{lstlisting}
+
+\paragraph{Implementation}
+
+The implementation, as shown in the pseudo-code in Listing~\ref{code:ipfs-selection-nodeswillbemerged}, is straightforward. Before the merge, we loop through the nodes being merged and deconsolidate them if they are in the selection representation. After the merge, we consolidate the node resulting from the merge and inform any listeners.
+
 TODO
+
+%---
+\begin{stulisting}[p]
+\caption{Forest Selection : Nodes Will Be Merged / Nodes Were Merged : Implementation}
+\label{code:ipfs-selection-nodeswillbemerged}
+\lstinputlisting[style=Default]{ipfs/ipfs-selection-nodeswillbemerged.lst}
+\end{stulisting}
+%---
+
+\afterpage{\clearpage}
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Node Was Split}
