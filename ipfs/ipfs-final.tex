@@ -1310,9 +1310,9 @@ When a layer is deleted from the forest, the selection must react by replacing a
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Before deleting layer $2$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-layerwillbedeleted-a-hierarchy.png}}%
+	\subfigure[Before deleting layer $3$]{\includegraphics[width=.6\linewidth]{ipfs/ipfs-selection-layerwillbedeleted-a-hierarchy.png}}%
 	\hspace{4mm}%
-	\subfigure[After deleting layer $2$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-layerwillbedeleted-b-hierarchy.png}}%
+	\subfigure[After deleting layer $3$]{\includegraphics[width=.6\linewidth]{ipfs/ipfs-selection-layerwillbedeleted-b-hierarchy.png}}%
 \caption{An example of the layer will be deleted algorithm}
 \label{fig:ipfs-selection-layerwillbedeleted}
 \end{stusubfig}
@@ -1344,7 +1344,46 @@ The implementation is straightforward, as shown in Listing~\ref{code:ipfs-select
 \subsubsection{Layer Was Undeleted}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\paragraph{Description}
+
+When a forest layer is undeleted, the selection must do the opposite of what it did when the layer was deleted: that is, after recreating the layer in the selection representation, it must \emph{consolidate} at least the nodes that were previously deconsolidated when the layer was deleted. It could certainly consolidate all the nodes in the newly recreated layer, but that would be wasteful; a better approach is to consolidate only the parents of the selected nodes in the layer below.
+
+An example is shown in Figure~\ref{fig:ipfs-selection-layerwasundeleted}: the only nodes that actually need consolidating are those that were actually selected before the layer deletion (shown in red), but in practice the way the algorithm works means that we also consolidate nodes whose children are not all selected as well (shown in pink). Note that consolidating such nodes involves some redundant checks (as these nodes will not ultimately replace their children in the selection), but this is still far better than consolidating all the nodes in the layer being undeleted.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The original selection]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-layerwasundeleted-a-hierarchy.png}}%
+	\\
+	\subfigure[After deleting layer $2$]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-layerwasundeleted-b-hierarchy.png}}%
+	\\
+	\subfigure[Consolidating the nodes during undeletion]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-layerwasundeleted-c-hierarchy.png}}%
+\caption{An example of the layer was undeleted algorithm}
+\label{fig:ipfs-selection-layerwasundeleted}
+\end{stusubfig}
+%---
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+void layer_was_undeleted(int index);
+\end{lstlisting}
+
+\paragraph{Implementation}
+
+Pseudo-code to implement the algorithm is shown in Listing~\ref{code:ipfs-selection-layerwasundeleted}. First, an empty layer must be re-added to the selection representation in the appropriate place. Then, a set is constructed containing the parents of the selected nodes in the layer below that being undeleted. Finally, each of those parents is consolidated in turn.
+
 TODO
+
+%---
+\begin{stulisting}[p]
+\caption{Forest Selection : Layer Was Undeleted : Implementation}
+\label{code:ipfs-selection-layerwasundeleted}
+\lstinputlisting[style=Default]{ipfs/ipfs-selection-layerwasundeleted.lst}
+\end{stulisting}
+%---
+
+\afterpage{\clearpage}
+\newpage
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Nodes Will Be Merged / Nodes Were Merged}

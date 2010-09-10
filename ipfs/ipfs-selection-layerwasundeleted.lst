@@ -1,0 +1,17 @@
+function layer_was_undeleted
+:	(index : int) $\to \emptyset$
+
+	// Re-add the layer itself.
+	var emptyLayer : SelectionLayer;
+	insert_layer(index, emptyLayer);
+
+	// Construct the set of parents of selected nodes in the layer below.
+	var parents : Set<NodeID>;
+	for each n : NodeID $\in$ layer(index - 1).nodes()
+		parents.insert(forest().parent_of(n));
+
+	// Consolidate each of these parents in turn.
+	for each p : NodeID $\in$ parents
+		consolidate_node(p, null);
+
+	listeners.selection_changed();
