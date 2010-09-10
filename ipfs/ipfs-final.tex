@@ -231,7 +231,7 @@ The only precondition that needs checking for layer cloning is that the clonee (
 
 Pseudo-code to execute a clone layer command is shown in Listing~\ref{code:ipfs-forest-clonelayerimpl}. The essence of the approach taken is simple: clone the graph of the layer below, then update the forest links between the clone layer and the layers below and above it. In order to implement the algorithm efficiently, however, it is important to employ a sensible iterator-based interface to the nodes in each forest layer: this allows us to iterate over the nodes in a layer in linear time and avoid the costly node lookups that might otherwise be necessary. Thus, in the pseudo-code, we iterate simultaneously over the nodes in the clonee layer and the clone, first propagating each parent link from the clonee node up to the clone node, then linking the corresponding nodes in the clonee and the clone together.
 
-TODO
+TODO: Complexity analysis
 
 %To analyse the complexity of the algorithm, we proceed as follows. Firstly, let $n_\ell$ be the number of nodes and $e_\ell$ be the number of adjacency graph edges in layer $\ell$. Suppose layer $c$ is to be inserted above layer $b$ and below layer $a$ (if it exists). Then evidently $n_c = n_b$ and $e_c = e_b$. The complexity of cloning $b$'s partitioning graph is $\Theta(e_b)$. (We observe in passing that $n_b \in O(e_b)$, since the adjacency graph is connected, so there is no need to include $n_b$ when analysing the complexity of the cloning process.) Forest links must then be added between layers $b$ and $c$, and $c$ and $a$, if $a$ exists. In either case, there is a constant amount of work to do for each of the $n_b$ nodes in layer $c$ (see pseudo-code), so the amount of work done updating the forest links is $\Theta(n_b)$. The overall complexity of the algorithm is thus $\Theta(e_b + n_b) = \Theta(e_b)$.
 
@@ -294,7 +294,7 @@ The only precondition that needs checking for layer deletion is that the layer b
 
 Pseudo-code to execute a delete layer command is shown in Listing~\ref{code:ipfs-forest-deletelayerimpl}. The idea is to update the forest links between the layers on either side of the layer to be deleted and then remove the layer itself from the forest. Specifically, if $D$ is the layer being deleted, $B$ is the layer below it and $A$ is the layer above (if it exists), then each node in $B$ should have its parent link updated to point to its grandparent in layer $A$. The grandparent nodes in $A$ should similarly have their child links updated to point to their grandchildren in layer $B$. To implement this efficiently, it is important to avoid calculating the grandchildren of nodes in $A$ explicitly. This is most easily arranged by iterating over the grandchildren and updating the grandparents during the course of the iteration (see pseudo-code). It is important to return the deleted layer (unchanged) at the end of the process, because it must be cached if we are to support undo.
 
-TODO
+TODO: Complexity analysis
 
 %We use the same notation to analyse the complexity as in the layer cloning analysis. The first loop in the pseudo-code (which clears the child sets in layer $A$) does a constant amount of work for each node in layer $A$ and is thus $O(n_a)$. Each iteration of the second loop (which updates the forest links) does an $O(\log n_d)$ lookup in layer $D$ to find the grandparent of $n$, sets $n$'s parent in constant time and then potentially does an $O(\log n_a)$ lookup on layer $A$, followed by an insertion into the set of child nodes of the grandparent node. The overall work done by the loop excluding the final insertions is $O(n_b (\log n_d + \log n_a)) = O(n_b \log n_d)$, since $n_a \le n_d$. The cost of the insertions depends on the distribution of the child nodes and how they are stored. If child nodes are stored as resizeable arrays, then each insertion is amortized constant time and the total cost of all the insertions is amortized $O(n_b)$. (If, however, tree-based sets are used, and all the child nodes have the same grandparent, the total cost ends up being $O(\log n_b!)$, i.e.~the cost of inserting $n_b$ elements one by one into a tree-based set.) Assuming the former, the total amortized complexity of the second loop is $O(n_b \log n_d) + O(n_b) = O(n_b \log n_d)$. Finally, the complexity of actually erasing the layer from the forest is amortized constant time. The total amortized complexity of the algorithm as a whole is therefore $O(n_a) + O(n_b \log n_d) + O(1) = O(n_b \log n_d)$, since $n_a \le n_b$.
 
@@ -312,7 +312,7 @@ Pseudo-code to undo a delete layer command is shown in Listing~\ref{code:ipfs-fo
 
 (It is worth observing that undeleting a layer in an interactive system may not necessarily be as simple as this. One good reason for deleting a layer is to save memory, in particular the substantial amount of memory associated with the textures that display the partition forest to the user. Caching these textures when deleting a layer would in this case defeat the point of deleting the layer in the first place. A compromise solution is to cache the layer itself, but delete the textures -- we then arrange to recreate the textures from scratch in the event that the layer is undeleted.)
 
-TODO
+TODO: Complexity analysis
 
 %In terms of complexity, the reinsertion of the deleted layer takes amortized constant time. The first loop of the pseudo-code (which clears the child sets of all the nodes in layer $A$) takes $O(n_a)$ time. To analyse the remainder of the algorithm, observe that line $20$ (which sets the parent of a node looked up in layer $B$) executes $n_b$ times, making the cost of the inner loop $O(n_b \log n_b)$ when $B$ is a branch layer. Line $21$ (which does a lookup in layer $A$ and then an insertion into a child set) is executed $n_d$ times. The total cost of the lookups is $O(n_d \log n_a)$. Assuming the child sets are implemented sensibly, each insertion is amortized constant time, making the amortized cost of all the insertions $O(n_d)$. So the overall cost of lines $17-21$ is $O(n_b \log n_b + n_d \log n_a + n_d) = O(n_b \log n_b)$, since $n_b \ge n_d \ge n_a$. The total cost of the entire algorithm is thus also $O(n_b \log n_b)$.
 
@@ -390,6 +390,14 @@ The following preconditions must be checked for sibling node merging (see the ps
 \end{stulisting}
 %---
 
+%---
+\begin{stulisting}[p]
+\caption{Forest : Sibling Node Merging : Command}
+\label{code:ipfs-forest-mergesiblingnodescommand}
+\lstinputlisting[style=Default]{ipfs/ipfs-forest-mergesiblingnodescommand.lst}
+\end{stulisting}
+%---
+
 \paragraph{Executing the Command}
 
 Pseudo-code to execute a sibling node merge command is shown in Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl}. Firstly, the mergee node with the lowest index is picked to be the result of the merge (for instance, nodes $(2,2)$, $(2,1)$ and $(2,5)$ in a hypothetical forest would be merged into a new node called $(2,1)$, since $\min(\{2,1,5\}) = 1$). This node is referred to as the `canonical' node in the code.
@@ -400,7 +408,7 @@ As a result of merging the other nodes into the canonical node, the latter may g
 
 Finally, Step 3 removes the non-canonical nodes. In the pseudo-code given (based on my implementation in \emph{millipede}), this also has the effect of removing any edges adjacent to those nodes -- if an alternative implementation strategy is chosen, however, these may need to be removed manually.
 
-TODO
+TODO: Complexity analysis
 
 %---
 \begin{stulisting}[p]
@@ -413,14 +421,6 @@ TODO
 \paragraph{Undoing the Command}
 
 To undo a sibling node merge command, the intuition is that the node resulting from the merge must be split back into the nodes that were originally merged to create it. As we will see in the next section, however, a node is split not by specifying the \emph{nodes} into which to split it (these do not exist prior to the split, so that approach doesn't work), but by specifying connected groups of the node's children: a parent is generated for each of these groups and the node to be split is replaced with the group parents. For that reason, if we want to be able to undo a sibling node merge then we must store the children of each of the nodes to be merged when we initially execute the command. The merge can then be undone by splitting the merge result back into the components specified by the stored child groups (see Listing~\ref{code:ipfs-forest-mergesiblingnodescommand} for the detailed implementation).
-
-%---
-\begin{stulisting}[p]
-\caption{Forest : Sibling Node Merging : Command}
-\label{code:ipfs-forest-mergesiblingnodescommand}
-\lstinputlisting[style=Default]{ipfs/ipfs-forest-mergesiblingnodescommand.lst}
-\end{stulisting}
-%---
 
 \afterpage{\clearpage}
 \newpage
@@ -540,7 +540,7 @@ When implementing node splitting in a user interface like the one described abov
 
 Pseudo-code to execute a split node command is shown in Listing~\ref{code:ipfs-forest-splitnodeimpl}. In Step 1, the node to be split is deleted from the forest -- this involves removing the forest links that connect the node to its parent and children, and removing the node itself from the partitioning graph for its forest layer (in the pseudo-code, removing the node from the graph also removes its adjacent edges). In Step 2, each of the groups of children that define a node resulting from the split is used to generate a new node in the split layer (a parent for the group). This new node has the index of the lowest-indexed child node (for instance, the parent of nodes $(1,5)$, $(1,3)$ and $(1,7)$ in a hypothetical forest would be denoted $(2,3)$). Its properties are calculated by combining those of its children in the usual way. Forest links are added to connect the new node to its children in the group and its parent in the layer above (namely the parent of the node that is being split). Finally, in Step 3, the adjacency graph for the split layer is locally reconstructed around the nodes resulting from the split (it was locally destroyed when the node being split was removed) -- this is done by considering all the edges adjacent to any of the split node's children, and propagating them upwards to the split layer. For instance, if node $p_1$ in the split layer has children $c_1$ and $c_2$, and node $p_2$ in the split layer has children $c_3$ and $c_4$, and the only edges between children of $p_1$ and $p_2$ are $(\{c_1,c_3\}, w_{13})$ and $(\{c_2,c_4\}, w_{24})$, then this induces an edge $(\{p_1,p_2\}, f(w_{13}, w_{24}))$ in the split layer, where $f$ is some appropriate function on edge weights, such as $\min$ in the case of a lowest pass point approach.
 
-TODO
+TODO: Complexity analysis
 
 %---
 \begin{stulisting}[p]
@@ -1027,6 +1027,8 @@ Having defined the partition forest selection data structure, and in particular 
 
 \end{enumerate}
 
+\noindent The \textbf{binary set} algorithms \emph{union selections} and \emph{subtract selections} also need to be implemented if selections are to be compared for validation purposes, but these can be trivially implemented in terms of \emph{node selection} and \emph{node deselection} (see Appendix~\ref{?}).
+
 %################################################
 \subsection{Core Algorithms}
 %################################################
@@ -1060,7 +1062,7 @@ As I originally discussed in \cite{gvcispa09}, there are four cases to deal with
 
 \noindent In the first two cases, nothing needs to be done: since either the input node or one of its ancestors is in the representation, all the nodes in the subtree below the input node are already implicitly selected. The third and fourth cases require more work. In the third case, all descendants of the node must first be removed from the representation (and thus added to the \texttt{erased} component of the selection modification). Then, in both cases, the input node itself must be added to the representation (and thus to the \texttt{inserted} component of the selection modification). Finally, a process of \emph{consolidation} must take place to ensure that the selection is still represented using the hierarchical representation we defined: this involves replacing any node whose children are all part of the representation with the node itself, until this is no longer possible. In practice, when consolidating after selecting a node, we only need to worry about nodes that are ancestors of the input node -- we thus recursively consolidate upwards from the parent of the input node, terminating when either one of the children of the node currently being examined is not part of the representation, or when we reach the top of the forest. An example illustrating this process is shown in Figure~\ref{fig:ipfs-selection-nodeselection}. After the initial insertion, the selection modification is $(\emptyset,\{(0,3)\})$. As the ancestors are consolidated, it then changes to $(\{(0,2), (0,4)\}, \{(1,2)\})$, $(\{(0,2), (0,4), (1,0)\}, \{(2,0)\})$ and finally $(\{(0,2), (0,4), (1,0), (2,5)\}, \{(3,0)\})$. Pseudo-code for the main algorithm is shown in Listing~\ref{code:ipfs-selection-selectnodeimpl}; pseudo-code for the consolidation process can be found in Appendix~\ref{?}.
 
-TODO
+TODO: Complexity analysis
 
 %---
 \begin{stusubfig}{p}
@@ -1120,7 +1122,7 @@ As with node selection, there are the same four cases to deal with when removing
 
 The more interesting case is Case $2$, in which one of the node's ancestors is in the selection representation. In that case, we must find the \emph{trail} of nodes in the forest leading from the ancestor in question to the node itself (non-inclusive). We then replace all the nodes on this trail (from the ancestor downwards) with their children until the node we want to deselect is part of the representation, at which point we can simply remove it. An example of this process is shown in Figure~\ref{fig:ipfs-selection-nodedeselection}. In this case, the selected ancestor is $(3,0)$ and the trail is $[(3,0), (2,0), (1,2)]$. Each of the nodes on the trail is split in turn. Eventually, $(0,3)$ is in the representation, and can be removed. Pseudo-code for the main algorithm is shown in Listing~\ref{code:ipfs-selection-deselectnodeimpl}; pseudo-code for the subsidiary processes can be found in Appendix~\ref{?}.
 
-TODO
+TODO: Complexity analysis
 
 %---
 \begin{stusubfig}{p}
@@ -1192,7 +1194,7 @@ The non-iterator-based implementation of the algorithm is straightforward (see L
 
 Implementing an iterator-based version of the algorithm is only marginally more difficult (see Appendix~\ref{?} for pseudo-code). The key is to first implement a normal iterator that iterates over all the nodes in the representation in order, starting with those in the highest layer. A viewing iterator can then be implemented relatively easily in terms of this.
 
-TODO
+TODO: Complexity analysis
 
 %---
 \begin{stusubfig}{p}
@@ -1236,7 +1238,7 @@ function undo_modification
 	listeners.modification_undone(modification);
 \end{lstlisting}
 
-\noindent TODO
+\noindent TODO: Complexity analysis
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Redo Modification}
@@ -1255,7 +1257,7 @@ function redo_modification
 	listeners.modification_redone(modification);
 \end{lstlisting}
 
-\noindent TODO
+\noindent TODO: Complexity analysis
 
 \newpage
 
@@ -1370,7 +1372,7 @@ void layer_was_undeleted(int index);
 
 Pseudo-code to implement the algorithm is shown in Listing~\ref{code:ipfs-selection-layerwasundeleted}. First, an empty layer must be re-added to the selection representation in the appropriate place. Then, a set is constructed containing the parents of the selected nodes in the layer below that being undeleted. Finally, each of those parents is consolidated in turn.
 
-TODO
+TODO: Complexity analysis
 
 %---
 \begin{stulisting}[p]
@@ -1423,7 +1425,7 @@ void nodes_were_merged(const set<NodeID>& nodes,
 
 The implementation, as shown in the pseudo-code in Listing~\ref{code:ipfs-selection-nodeswillbemerged}, is straightforward. Before the merge, we loop through the nodes being merged and deconsolidate them if they are in the selection representation. After the merge, we consolidate the node resulting from the merge and inform any listeners.
 
-TODO
+TODO: Complexity analysis
 
 %---
 \begin{stulisting}[p]
@@ -1475,7 +1477,7 @@ void node_was_split(const NodeID& node, const set<NodeID>& results);
 
 Pseudo-code to implement the algorithm is shown in Listing~\ref{code:ipfs-selection-nodewassplit}. The method is exactly as described above.
 
-TODO
+TODO: Complexity analysis
 
 %---
 \begin{stulisting}[p]
@@ -1491,10 +1493,6 @@ TODO
 %##################################################################################################
 \section{Partition Forest Multi-Feature Selections}
 %##################################################################################################
-
-%################################################
-\subsection{Overview}
-%################################################
 
 When using partition forests for image analysis, the user must be able to identify features within a forest (e.g.~that a particular node is part of the liver, etc.). In order to make this possible, it is necessary to introduce another new data structure called a \emph{partition forest multi-feature selection}. This is in essence just a map from features to partition forest selections -- in other words, a separate selection is maintained for each interesting feature. (Thus features are allowed to overlap, since the same node can appear in the selections of more than one feature.) In C++, this can be implemented as follows:
 
@@ -1558,12 +1556,6 @@ function identify_node
 \label{fig:ipfs-mfs-example}
 \end{stusubfig}
 %---
-
-%################################################
-\subsection{User Interface}
-%################################################
-
-TODO
 
 %##################################################################################################
 \section{Chapter Summary}
