@@ -26,7 +26,7 @@ Each layer also contains edges between nodes that are in some sense adjacent (in
 In addition to the forest layers themselves, a partition forest also contains forest links that join the nodes in adjacent layers together (the coloured, dashed lines in the figure). In particular, there is a link between each node and the node that contains it in the layer above. These links naturally define parent/child relationships between forest nodes.
 
 %---
-\stufigex{height=22cm}{ipfs/ipfs-concept.png}{The concept of a partition forest (see main text for discussion)}{fig:ipfs-concept}{p}
+\stufigex{height=21cm}{ipfs/ipfs-concept.png}{The concept of a partition forest (see main text for discussion)}{fig:ipfs-concept}{p}
 %---
 
 %################################################
@@ -1458,28 +1458,28 @@ function identify_node
 \noindent Since the implementations are essentially trivial, they will not be presented here: instead, full pseudo-code may be found in Appendix~\ref{?}. It is, however, useful to see an example of how multi-feature selections work. In Figure~\ref{fig:ipfs-mfs-example}, forest nodes can be identified as being either \emph{green} or \emph{blue}. If nodes $(1,6)$ and $(2,0)$ are identified as being green nodes, and nodes $(1,2)$ and $(2,6)$ are identified as being blue nodes, then the multi-feature selection is as shown in the final sub-figure. A feature look-up on $(3,0)$ or any descendant of $(2,0)$ (inclusive) will yield \{green\}, one on any descendant of $(1,2)$ (inclusive) will yield \{blue\}, and one on any descendant of $(2,6)$ (inclusive) will yield \{green,blue\}.
 
 %---
-\begin{stusubfig}{h}
+\begin{stusubfig}{p}
 	\subfigure[The initial forest]
 	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-a.png}}%
 	%
 	\hspace{8mm}%
 	%
-	\subfigure[After identifying $(1,6)$ as green.]
+	\subfigure[After identifying $(1,6)$ as green]
 	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-b.png}}%
 	%
 	\hspace{8mm}%
 	%
-	\subfigure[After identifying $(2,0)$ as green.]
+	\subfigure[After identifying $(2,0)$ as green]
 	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-c.png}}%
 	%
 	\hspace{8mm}%
 	%
-	\subfigure[After identifying $(1,2)$ as blue.]
+	\subfigure[After identifying $(1,2)$ as blue]
 	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-d.png}}%
 	%
 	\hspace{8mm}%
 	%
-	\subfigure[After identifying $(2,6)$ as blue.]
+	\subfigure[After identifying $(2,6)$ as blue]
 	{\includegraphics[width=.45\linewidth]{ipfs/ipfs-mfs-example-e.png}}%
 \caption{A multi-feature selection example: filled nodes are part of the actual representation, whilst circled nodes are implicitly identified. The cyan nodes in (e) are identified as both green and blue.}
 \label{fig:ipfs-mfs-example}

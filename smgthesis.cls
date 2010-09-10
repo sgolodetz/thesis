@@ -22,6 +22,7 @@
 \RequirePackage{float}
 \RequirePackage{graphicx}
 %\RequirePackage[draft]{graphicx}
+%\RequirePackage[pdftex, pdfborder=0]{hyperref}
 
 % Both underscore and hyphenat define a BreakableUnderscore command -- this restores the one from underscore to prevent problems.
 \RequirePackage{savesym}

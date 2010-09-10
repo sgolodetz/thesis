@@ -609,7 +609,7 @@ One method that seeks to solve this problem is the so-called `watershed-from-mar
 
 Marker determination can be either manual or automatic, but both approaches have their problems. In the manual approach, the user simply clicks the interesting local minima and then runs the segmentation. The downside is that the process is not only time-consuming, but non-intuitive: obtaining a desirable segmentation by selecting markers tends to involve a lot of trial-and-error. Automatic approaches are more promising: for example, we could pick the local minima associated with `the n deepest catchment basins' as our markers. The disadvantage in this case is that the results are `all or nothing': a specific automatic marker approach is unlikely to work well for all possible images, and if we get a bad result on a particular image then we have nothing to work with (we are left with a poor segmentation and no obvious way to edit it).
 
-Whilst watershed-from-markers has been used successfully in a variety of situations (e.g.~\cite{chae07,gonzalez07}), the issues just mentioned make it an undesirable approach to use in the context of trying to minimise the amount of user interaction necessary whilst maximising the amount possible (see Chapter~\ref{chap:motivation}). A more usable approach for our purposes is to stick with pre-processing the image as described earlier, but to post-process it afterwards to deal with the oversegmentation. This post-processing comes in the form of a hierarchical watershed-based transform, known as the waterfall.
+Whilst watershed-from-markers has been used successfully in a variety of situations (e.g.~\cite{chae07,gonzalez07}), the issues just mentioned make it an undesirable approach to use in the context of trying to minimise the amount of user interaction necessary whilst maximising the amount possible (see Chapter~\ref{chap:methodology}). A more usable approach for our purposes is to stick with pre-processing the image as described earlier, but to post-process it afterwards to deal with the oversegmentation. This post-processing comes in the form of a hierarchical watershed-based transform, known as the waterfall.
 
 \subsection{Concept}
 
@@ -824,21 +824,21 @@ A case analysis of what is going on should prove illuminating. There are in fact
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Level 7]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-a.png}}%
+	\subfigure[Level 7]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-a.png}}%
 	\hspace{4mm}%
-	\subfigure[Level 6]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-b.png}}%
+	\subfigure[Level 6]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-b.png}}%
 	\hspace{4mm}%
-	\subfigure[Level 5]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-c.png}}%
+	\subfigure[Level 5]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-c.png}}%
 	\hspace{4mm}%
-	\subfigure[Level 4]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-d.png}}%
+	\subfigure[Level 4]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-d.png}}%
+	\\
+	\subfigure[Level 3]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-e.png}}%
 	\hspace{4mm}%
-	\subfigure[Level 3]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-e.png}}%
+	\subfigure[Level 2]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-f.png}}%
 	\hspace{4mm}%
-	\subfigure[Level 2]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-f.png}}%
+	\subfigure[Level 1]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-g.png}}%
 	\hspace{4mm}%
-	\subfigure[Level 1]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-g.png}}%
-	\hspace{4mm}%
-	\subfigure[Result]{\includegraphics[width=.2\linewidth]{segmentation/segmentation-waterfall-nicholls-example-h.png}}%
+	\subfigure[Result]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-h.png}}%
 \caption{Nicholls' algorithm in action (considering all the edges in each level at a time for space reasons): black edges are non-guards, red edges are guards, blue edges are those which have been elided and green edges are ones under active consideration.}
 \label{fig:segmentation-waterfall-nicholls-example}
 \end{stusubfig}
@@ -1048,7 +1048,7 @@ Having compared the three waterfall algorithms in terms of their algorithmic com
 Having now seen how the watershed and waterfall transforms can be implemented, it remains to demonstrate how they can be used to construct an image partition forest as defined in the previous chapter. The first step is to illustrate the sort of IPF we want to create (see Figure~\ref{fig:segmentation-ipfconstruction-goal}). The leaf layer corresponds directly to the original image, in that each node in it corresponds to a pixel in the image. The branch layers represent partitions of the image that become increasingly coarse as we ascend the forest. (Of course, the leaf layer is itself a partition of the image, if a trivial one.)
 
 %---
-\stufigex{height=24cm}{segmentation/segmentation-ipfconstruction-goal.png}{The goal of the IPF construction process: coloured edges represent tree (forest) links between layers, whilst the dotted edges in each layer represent the layer's region adjacency graph}{fig:segmentation-ipfconstruction-goal}{p}
+\stufigex{height=21cm}{segmentation/segmentation-ipfconstruction-goal.png}{The goal of the IPF construction process: coloured edges represent tree (forest) links between layers, whilst the dotted edges in each layer represent the layer's region adjacency graph}{fig:segmentation-ipfconstruction-goal}{p}
 %---
 
 We observe that the watershed process described produces an initial (relatively fine) partition of the image, which is then iteratively refined by the waterfall to give a sequence of ever coarser partitions. The idea, therefore, is that the lowest branch layer of the forest will correspond to the initial partition of the image output by the watershed, with higher branch layers being created by the waterfall.
