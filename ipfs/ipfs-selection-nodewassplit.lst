@@ -1,0 +1,15 @@
+function node_was_split
+:	(node : NodeID; results : Set<NodeID>) $\to \emptyset$
+
+	// Step 1: If the node being split was itself in the representation,
+	//         replace it with the results of the split.
+	if in_selection(node) then
+		erase_node(node, null);
+		for each r : NodeID $\in$ results
+			insert_node(r, null);
+
+	// Step 2: Consolidate the individual result nodes.
+	for each r : NodeID $\in$ results
+		consolidate_node(r, null);
+
+	listeners.selection_changed();

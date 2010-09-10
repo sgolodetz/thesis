@@ -1442,7 +1442,53 @@ TODO
 \subsubsection{Node Was Split}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\paragraph{Description}
+
+When a node in the forest is split, two things must happen:
+
+\begin{enumerate}
+
+\item If the node being split is in the selection representation, it must be replaced with the results of the split.
+\item The nodes resulting from the split must be consolidated.
+
+\end{enumerate}
+
+\noindent An example is shown in Figure~\ref{fig:ipfs-selection-nodewassplit}. A key observation is that whilst it is important to consolidate the nodes resulting from the split themselves (e.g.~$(2,2)$ needs to be consolidated after splitting $(2,2)$ into $(2,2)$ and $(2,4)$, since all of its new children are selected), there is no need to further consolidate any ancestors of the result nodes (so the necessary changes to the selection are entirely local). This is because all the result nodes necessarily have the same parent, and if this was not selected before the split then it still won't be afterwards (forest operations necessitate changes to the \emph{representation} of the selection, but what is actually selected doesn't change).
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The original selection]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-selection-nodewassplit-a-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After splitting $(2,0)$ into $\{0\}$ and $\{1\}$]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-selection-nodewassplit-b-hierarchy.png}}%
+	\hspace{4mm}%
+	\subfigure[After splitting $(2,2)$ into $\{2,3\}$ and $\{4\}$]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-selection-nodewassplit-c-hierarchy.png}}%
+\caption{An example of the node was split algorithm}
+\label{fig:ipfs-selection-nodewassplit}
+\end{stusubfig}
+%---
+
+\paragraph{C++ Method Interface}
+
+\begin{lstlisting}[style=Prototype]
+void node_was_split(const NodeID& node, const set<NodeID>& results);
+\end{lstlisting}
+
+\paragraph{Implementation}
+
+Pseudo-code to implement the algorithm is shown in Listing~\ref{code:ipfs-selection-nodewassplit}. The method is exactly as described above.
+
 TODO
+
+%---
+\begin{stulisting}[p]
+\caption{Forest Selection : Node Was Split : Implementation}
+\label{code:ipfs-selection-nodewassplit}
+\lstinputlisting[style=Default]{ipfs/ipfs-selection-nodewassplit.lst}
+\end{stulisting}
+%---
+
+\afterpage{\clearpage}
+\newpage
 
 %################################################
 \subsection{Binary Set Algorithms}
