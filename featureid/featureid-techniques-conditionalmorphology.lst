@@ -1,0 +1,33 @@
+function morphologically_dilate_nodes<Condition>
+:	(nodes : ref Set<NodeID>; cond : Condition; n : int := 1) $\to$ $\emptyset$
+
+	for k : int := 0 up to n - 1
+		var initialNodes : Set<NodeID> := nodes;
+		for each cur $\in$ initialNodes
+			for each adj $\in$ forest().adjacent_nodes(cur)
+				if cond(forest().branch_properties(adj)) then
+					nodes.insert(adj);
+
+function morphologically_erode_nodes<Condition>
+:	(nodes : ref Set<NodeID>; cond : Condition; n : int := 1) $\to$ $\emptyset$
+
+	for k : int := 0 up to n - 1
+		var initialNodes : Set<NodeID> := nodes;
+		for each cur $\in$ initialNodes
+			for each adj $\in$ forest().adjacent_nodes(cur)
+				var adjProperties : BranchProperties := forest().branch_properties(adj);
+				if not initialNodes.contains(adj) and cond(adjProperties) then
+					nodes.erase(adj);
+					break;
+
+function morphologically_close_nodes<Condition>
+:	(nodes : ref Set<NodeID>; cond : Condition; n : int := 1) $\to$ $\emptyset$
+
+	morphologically_dilate_nodes(nodes, cond, n);
+	morphologically_erode_nodes(nodes, cond, n);
+
+function morphologically_open_nodes<Condition>
+:	(nodes : ref Set<NodeID>; cond : Condition; n : int := 1) $\to$ $\emptyset$
+
+	morphologically_erode_nodes(nodes, cond, n);
+	morphologically_dilate_nodes(nodes, cond, n);

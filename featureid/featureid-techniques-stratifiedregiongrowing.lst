@@ -1,0 +1,38 @@
+function grow_regions<GrowCondition>
+:	(seeds : List<NodeID>; cond : GrowCondition) $\to$ PartitionForestSelection
+
+	var result : PartitionForestSelection := make_selection(forest());
+	for each seed : NodeID $\in$ seeds
+		var region : Set<NodeID> := grow_region(seed, cond);
+		for each n : NodeID $\in$ region
+			result.select_node(n);
+	return result;
+
+function grow_region<GrowCondition>
+:	(seed : NodeID; cond : GrowCondition) $\to$ Set<NodeID>
+
+	var region : Set<NodeID> := { seed };
+	var seen : Set<int> := { seed.index() };
+	var seedProperties : BranchProperties := forest().branch_properties(seed);
+	var overallProperties : BranchProperties := seedProperties;
+	grow_region_from(seed, cond, ref region, ref seen, seedProperties,
+	                 ref overallProperties);
+	return region;
+
+function grow_region_from<GrowCondition>
+:	(cur : NodeID; cond : GrowCondition;
+	 region : ref Set<NodeID>; seen : ref Set<int>;
+	 seedProperties : BranchProperties;
+	 overallProperties : ref BranchProperties)	$\to$ $\emptyset$
+
+	var curProperties : BranchProperties := forest().branch_properties(cur);
+	for each adj $\in$ forest().adjacent_nodes(cur)
+		if seen.contains(adj.index()) then continue;	// skip the node if we've seen it
+
+		seen.insert(adj.index());
+		
+		var adjProperties : BranchProperties := forest().branch_properties(adj);
+		if cond(adj, adjProperties, curProperties, seedProperties, overallProperties) then
+			region.insert(adj);
+			overallProperties := combine_properties({overallProperties, adjProperties});
+			grow_region_from(adj, cond, region, seen, seedProperties, overallProperties);

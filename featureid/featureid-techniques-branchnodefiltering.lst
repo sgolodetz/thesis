@@ -1,0 +1,9 @@
+function filter_branch_nodes<Pred>
+:	(pred : Pred) $\to$ List<NodeID>
+
+	var result : List<NodeID>;
+	for layer : int := $1$ up to forest().highest_layer()
+		for each n : NodeID $\in$ forest().branch_nodes(layer)
+			if pred(n, forest().branch_properties(n)) then
+				result.push_back(n);
+	return result;
