@@ -1,0 +1,41 @@
+function identify_spinal_cord_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+
+	// Step 1: Calculate the combined properties of all nodes marked as spine.
+	var spineProperties : BranchProperties := mfs.properties_of(VERTEBRA);
+
+	// Step 2: Filter for spinal cord nodes based on the location of the spine.
+	var nodes : List<NodeID> := filter_branch_nodes(is_spinal_cord(spineProperties));
+
+	// Step 3: Mark the nodes as spinal cord (and unmark them as spine if necessary).
+	for each n $\in$ nodes
+		mfs.identify_node(n, SPINAL_CORD);
+		mfs.unidentify_node(n, VERTEBRA);
+
+function is_spinal_cord
+:	(spineProperties : BranchProperties;
+	 node : NodeID; properties : BranchProperties) $\to$ bool
+
+	var volumeSize : Vec<int,3> := dicom_volume().size();
+	var minV : int := 300 * volumeSize.z;		// at least 300 voxels per slice
+	var maxV : int := 1000 * volumeSize.z;		// at most 1000 voxels per slice
+	var X_BORDER : int := 5;
+	var Y_BORDER : int := 10;
+
+	return
+	       // Well within the spine.
+	       properties.x_min() $\ge$ spineProperties.x_min() + X_BORDER and
+	       properties.x_max() $\le$ spineProperties.x_max() - X_BORDER and
+	       properties.y_min() $\ge$ spineProperties.y_min() + Y_BORDER and
+	       properties.y_max() $\le$ spineProperties.y_max() - Y_BORDER and
+
+	       // Straddles the spine centroid in the x direction.
+	       properties.x_min() < spineProperties.centroid().x and
+	       properties.x_max() > spineProperties.centroid().x and
+
+	       // Extends through all the slices.
+	       properties.z_min() = 0 and
+	       properties.z_max() = volumeSize.z-1 and
+
+	       // Has a reasonably low grey value and reasonable size.
+	       properties.mean_grey_value() $\le$ 140 and
+	       minV $\le$ properties.voxel_count() $\le$ maxV;
