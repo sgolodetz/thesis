@@ -7,7 +7,7 @@
 
 In the previous chapter, we saw how to construct image partition forests from medical images using the watershed and waterfall transforms from mathematical morphology. This chapter now illustrates how these partition forests can be used when attempting to automatically identify features in abdominal CT scans.
 
-Before looking at how to identify specific features in detail, I first describe a number of techniques that can be used when constructing new feature identifiers. These range from simple techniques, such as filtering the branch nodes of the IPF based on a predicate (i.e.~searching for branch nodes that satisfy certain properties), to more involved and novel techniques such as \emph{stratified region growing}. I then describe two different classes of feature identifier: (1) those that identify features in 2D axial (X-Y) CT slices, as were implemented in my trial system, \emph{centipede}, and described in papers such as \cite{gvccimi08} and \cite{gvcispa09}, and (2) those that identify features in 3D CT volumes, as have been implemented in my final system, \emph{millipede}. (The approaches needed in the two cases have a certain amount in common, but differ in the details: for instance, when identifying the spine in 3D volumes, it is possible to use the property that it is a feature that extends through all the axial slices. This is quite powerful, since few 3D regions will do so. The same approach evidently cannot be used in 2D, since there is only one slice.)
+Before looking at how to identify specific features in detail, I first describe a few important techniques that can be used when constructing new feature identifiers. These range from simple node classification techniques to more novel methods such as \emph{stratified region growing}. I then describe two different classes of feature identifier: (1) those that identify features in 2D axial (X-Y) CT slices, as were implemented in my trial system, \emph{centipede}, and described in papers such as \cite{gvccimi08} and \cite{gvcispa09}, and (2) those that identify features in 3D CT volumes, as have been implemented in my final system, \emph{millipede}. (The approaches needed in the two cases have a certain amount in common, but differ in the details: for instance, when identifying the spine in 3D volumes, it is possible to use the property that it is a feature that extends through all the axial slices. This is quite powerful, since few 3D regions will do so. The same approach evidently cannot be used in 2D, since there is only one slice.)
 
 This lays the foundation for Chapter~\ref{chap:validation}, in which the 3D feature identifiers used in \emph{millipede} will be validated against manually-produced, `gold-standard' results to quantify their accuracy. (The same will not be done for the 2D identifiers in \emph{centipede}, as they have now been superseded by their 3D counterparts; however, the quality of the 2D spine results was categorised to some extent in \cite{gvcispa09}.)
 
@@ -15,15 +15,23 @@ This lays the foundation for Chapter~\ref{chap:validation}, in which the 3D feat
 \section{General Techniques}
 %##################################################################################################
 
-TODO
-
 %Owing to the fact that different features in abdominal CT scans have widely differing properties, it is difficult to construct a framework to enable new feature identifiers to be constructed in anything like a mechanical way -- in general, a certain amount of invention is still required. However, there is nevertheless a great deal of low-level commonality between different identifiers -- while they may not share the same higher-level structure, they all make use of a number of general techniques, e.g.~filtering for regions that satisfy particular properties. This section thus describes these `building blocks', as a necessary precursor to presenting the actual identification algorithms.
 
 %################################################
-\subsection{Branch Node Filtering}
+\subsection{Node Classification}
 %################################################
 
-TODO
+A basic feature identification technique is to filter all the regions in the partition forest for those that satisfy a particular predicate (e.g.~those that have a mean grey value in a certain range). This is extremely simple to implement (see Listing~\ref{code:featureid-techniques-branchnodefiltering}), but can yield surprisingly good results when the features of interest are represented as individual regions in the forest. In terms of computational complexity, it is also an extremely efficient approach, being linear in the number of forest nodes.
+
+The predicate used to decide whether or not a node represents a specific feature can vary in its sophistication. Simple predicates that constrain region properties such as mean grey value, size and location often work surprisingly well, as will be seen when the 3D spine identifier is described later. A slightly more involved approach is to design the predicate using a \emph{Bayesian classifier} (this was used to design the 2D ribs identifier presented in \cite{gvccimi08}). For this, we first select a subset $X_1,\ldots,X_n$ of the region properties maintained for each branch node (for instance, we might select the four properties of \emph{area}, \emph{max grey value}, \emph{mean grey value} and \emph{elongatedness}). Given, for each property $X_i$, a vector containing the probabilities of each value of $X_i$ given that a node is or is not a specific feature -- that is, given $\mathbf{P}(X_i | \textit{Feature})$ for each $X_i$ -- it is possible to calculate a probability indicating the likelihood of a given node being an instance of that feature. Letting $\mathit{feature}$ denote $\mathit{Feature} = \mathit{true}$, $\neg \mathit{feature}$ denote $\mathit{Feature} = \mathit{false}$, and $x_i$ denote an observed value of $X_i$, this probability can be calculated using the equation:
+%
+\[
+P(\mathit{feature}|x_1,\ldots,x_n) = \frac{P(\mathit{feature}) \displaystyle \prod_i P(x_i|\mathit{feature})}{\displaystyle \sum_{f \in \{\mathit{feature},\neg \mathit{feature}\}} \left[ P(f) \displaystyle \prod_i P(x_i|f) \right]}
+\]
+%
+That is, given specific values of the chosen properties at a given node (for instance, an area of $250$, max grey value of $180$, mean grey value of $160$ and elongatedness of $2.5$), this equation will calculate a value giving us some indication of how likely it is that that node represents an instance of the feature in which we're interested. In order to use this to construct the required \emph{boolean} (i.e.~true or false) predicate, we simply choose a threshold probability above which regions qualify as instances of the feature in question. For instance, we could decide that a region represents a rib if the calculated probability of its being a rib (given its properties) is greater than $80\%$.
+
+To make an approach based on Bayesian classification effective, it is important that suitable input probability vectors $\mathbf{P}(X_i | \textit{Feature})$ be available. These can either be defined empirically, or derived from a training set of images. For the 2D ribs identifier that will be described later, the vectors were defined empirically due to the lack of a sufficiently large set of data for training purposes -- the results produced were fairly good, but substantial trial-and-error development work was required. A learning approach is evidently preferable if sufficient data is available, although care must be taken not to over-fit to the training set. The approach taken for the 2D ribs identifier, that of manually defining input probabilities, did not appear to yield significant advantages over simpler, non-Bayesian techniques, and (despite the relatively good results obtained) is probably not a sensible basis for constructing future identifiers. A better method for identifying ribs is described in the section on 3D identifiers.
 
 %---
 \begin{stulisting}[p]
@@ -32,12 +40,6 @@ TODO
 \lstinputlisting[style=Default]{featureid/featureid-techniques-branchnodefiltering.lst}
 \end{stulisting}
 %---
-
-%################################################
-\subsection{Bayesian Classification}
-%################################################
-
-TODO
 
 %################################################
 \subsection{Conditional Morphology}
