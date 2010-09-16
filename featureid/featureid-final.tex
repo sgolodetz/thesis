@@ -5,11 +5,17 @@
 \section{Chapter Overview}
 %##################################################################################################
 
-TODO
+In the previous chapter, we saw how to construct IPFs from medical images. This chapter presents methods for identifying key features in abdominal CT scans using the constructed IPFs. Before looking at how to identify specific features in detail, I first describe a number of techniques that can be used when constructing new feature identifiers. These range from simple techniques, such as filtering the branch nodes of the IPF based on a predicate, to more involved and novel techniques such as \emph{stratified region growing}. I then describe specific methods to identify the ribs and spine in 2D axial slices (these were first presented in \cite{gvccimi08} and \cite{gvcispa09}, respectively). Finally, I present a series of techniques to identify features in 3D volumes. The accuracy of these latter algorithms will be validated against manually-produced, `gold standard' results in Chapter~\ref{chap:validation}.
 
 %##################################################################################################
 \section{General Techniques}
 %##################################################################################################
+
+Owing to the fact that different features in abdominal CT scans have widely differing properties, it is difficult to construct a framework to enable new feature identifiers to be constructed in anything like a mechanical way -- in general, a certain amount of invention is still required. However, there is nevertheless a great deal of low-level commonality between different identifiers -- while they may not share the same higher-level structure, they all make use of a number of general techniques, e.g.~filtering for regions that satisfy particular properties. This section thus describes these `building blocks', as a necessary precursor to presenting the actual identification algorithms.
+
+%################################################
+\subsection{Branch Node Filtering}
+%################################################
 
 TODO
 
@@ -21,19 +27,37 @@ TODO
 \end{stulisting}
 %---
 
-%---
-\begin{stulisting}[p]
-\caption{Stratified Region Growing Implementation}
-\label{code:featureid-techniques-stratifiedregiongrowing}
-\lstinputlisting[style=Default]{featureid/featureid-techniques-stratifiedregiongrowing.lst}
-\end{stulisting}
-%---
+%################################################
+\subsection{Bayesian Classification}
+%################################################
+
+TODO
+
+%################################################
+\subsection{Conditional Morphology}
+%################################################
+
+TODO
 
 %---
 \begin{stulisting}[p]
 \caption{Implementation of Conditional Morphological Operators}
 \label{code:featureid-techniques-conditionalmorphology}
 \lstinputlisting[style=Default]{featureid/featureid-techniques-conditionalmorphology.lst}
+\end{stulisting}
+%---
+
+%################################################
+\subsection{Stratified Region Growing}
+%################################################
+
+TODO
+
+%---
+\begin{stulisting}[p]
+\caption{Stratified Region Growing Implementation}
+\label{code:featureid-techniques-stratifiedregiongrowing}
+\lstinputlisting[style=Default]{featureid/featureid-techniques-stratifiedregiongrowing.lst}
 \end{stulisting}
 %---
 
