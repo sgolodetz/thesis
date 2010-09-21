@@ -96,7 +96,7 @@ As with the image-based dilation described in \cite{gonzalez02}, graph-based dil
 The counterpart of non-structured dilation is non-structured erosion. Given an undirected graph and set $S$ as defined above, the \emph{elementary} non-structured erosion of $S$ is:
 %
 \[
-\epsilon(S) = \{v \in V \; | \; \not\exists u \in V \; \backslash \; S \cdot \{v,u\} \in E\}
+\epsilon(S) = \{v \in S \; | \; \not\exists u \in V \; \backslash \; S \cdot \{v,u\} \in E\}
 \]
 %
 That is, performing an elementary non-structured erosion on $S$ means removing all the boundary nodes from $S$. This is illustrated in Figure~\ref{?}.
