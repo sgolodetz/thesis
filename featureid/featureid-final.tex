@@ -87,13 +87,29 @@ As described in \cite{heijmans92a}, several elementary non-structured dilations 
 \delta^{(n)}(S) = (\underbrace{\delta \bullet \delta \bullet \cdots \bullet \delta}_{n \mbox{ times}})(S)
 \]
 %
-As with the image-based dilation described in \cite{gonzalez02}, the graph-based dilation operator shown here is useful for gap bridging and, to a certain extent, hole filling. Dilations of larger sizes can be used to bridge wider gaps or fill larger holes. However, because it works by expanding boundaries, dilation makes the selection as a whole grow -- whilst it can be used to fill internal holes, it achieves this in a way that drastically changes the size of the overall selection. The closing operator (described later) avoids this problem by first performing a dilation, and then eroding the result. This yields better results in practice, and makes it a preferable tool for hole filling.
+As with the image-based dilation described in \cite{gonzalez02}, graph-based dilation is useful for gap bridging and, to a certain extent, hole filling. Dilations of larger sizes can be used to bridge wider gaps or fill larger holes. However, because it works by expanding boundaries, dilation makes the selection as a whole grow -- whilst it can be used to fill internal holes, it achieves this in a way that drastically changes the size of the overall selection. The closing operator (described later) avoids this problem by first performing a dilation, and then eroding the result. This yields much better results for hole filling.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Non-Structured Erosion}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+The counterpart of non-structured dilation is non-structured erosion. Given an undirected graph and set $S$ as defined above, the \emph{elementary} non-structured erosion of $S$ is:
+%
+\[
+\epsilon(S) = \{v \in V \; | \; \not\exists u \in V \; \backslash \; S \cdot \{v,u\} \in E\}
+\]
+%
+That is, performing an elementary non-structured erosion on $S$ means removing all the boundary nodes from $S$. This is illustrated in Figure~\ref{?}.
+
+% TODO: Figure here
+
+As with dilation, several elementary non-structured erosions can be chained together to give the size $n$ non-structured erosion of $S$:
+%
+\[
+\epsilon^{(n)}(S) = (\underbrace{\epsilon \bullet \epsilon \bullet \cdots \bullet \epsilon}_{n \mbox{ times}})(S)
+\]
+%
+As with the image-based erosion described in \cite{gonzalez02}, graph-based erosion is a useful tool to remove small, irrelevant pieces from the selection. Erosions of larger sizes can be used to remove larger pieces. Erosion can also be combined with dilation to form the higher-level opening and closing operators, described next.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Non-Structured Opening}
