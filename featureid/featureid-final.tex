@@ -74,7 +74,7 @@ Image-based morphological operators are often defined in terms of a tiny shape c
 The first morphological graph operator we will examine, then, is non-structured dilation. Given an undirected graph $G = (V,E)$ and a set $S \subseteq V$ of selected nodes, the \emph{elementary} non-structured dilation of $S$, which we will write as $\delta(S)$ to follow the convention given in \cite{heijmans92a}, is defined as:
 %
 \[
-\delta(S) = \{v \in V \; | \; v \in S \mbox{ or } \exists u \in S \cdot \{v,u\} \in E\}
+\delta(S) = S \cup \{v \in V \; | \; \exists u \in S \cdot \{v,u\} \in E\}
 \]
 %
 In other words, performing an elementary non-structured dilation on a set $S$ of selected nodes means augmenting the selection with those nodes that are directly adjacent to nodes in $S$. This is illustrated in Figure~\ref{?}.
