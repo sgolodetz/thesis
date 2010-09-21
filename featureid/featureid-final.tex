@@ -101,8 +101,6 @@ As described in \cite{heijmans92a}, several elementary non-structured dilations 
 %
 As with the image-based dilation described in \cite{gonzalez02}, graph-based dilation is useful for gap bridging and, to a certain extent, hole filling. Dilations of larger sizes can be used to bridge wider gaps or fill larger holes. However, because it works by expanding boundaries, dilation makes the selection as a whole grow -- whilst it can be used to fill internal holes, it achieves this in a way that drastically changes the size of the overall selection. The closing operator (described later) avoids this problem by first performing a dilation, and then eroding the result. This yields much better results for hole filling.
 
-\afterpage{\clearpage}
-
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Non-Structured Erosion}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
