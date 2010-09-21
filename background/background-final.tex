@@ -15,11 +15,22 @@ The discussion of existing work on partition hierarchies foreshadows the formal 
 
 \subsection{Overview}
 
-The majority of the segmentation techniques in current use can be divided into eight classes: (1) thresholding techniques, which seek to segment an image based on dividing up the histogram of its grey values, (2) region growing techniques, which search for specific features by flooding outwards from one or more initial seed points in the image, (3) morphological techniques such as the watershed transform, which treats an image as a height map and divides it up into catchment basins that we try to ensure correspond to features of interest, (4) deformable models, which start with some arbitrary model of a desired feature and try to deform it to fit the image data, (5) learning techniques, which construct some variety of model based on a set of training images and use it to segment subsequent scans, (6) clustering techniques, which try and cluster objects (in this case image pixels) into groups whose members are mutually similar, but dissimilar to the members of other groups, (7) graph partitioning techniques such as the normalized cuts algorithm, and (8) hybrid techniques, which combine methods from the other classes to produce (what are hopefully good) results for specific applications. Each of these is discussed in more detail in one of the following subsections. The field as a whole is visually depicted in Figure~\ref{fig:background-segmentation-field}.
+The majority of the segmentation techniques in current use can be divided into eight classes:
 
-%---
-\stufigex{height=16cm}{background/background-segmentation-field.png}{The field of image segmentation techniques}{fig:background-segmentation-field}{p}
-%---
+\begin{enumerate}
+
+\item \emph{Thresholding techniques}, which seek to segment an image based on dividing up the histogram of its grey values.
+\item \emph{Region growing techniques}, which search for specific features by flooding outwards from one or more initial seed points in the image.
+\item \emph{Morphological techniques} such as the watershed transform, which treats an image as a height map and divides it up into catchment basins that we try to ensure correspond to features of interest.
+\item \emph{Deformable models}, which start with some arbitrary model of a desired feature and try to deform it to fit the image data.
+\item \emph{Learning techniques}, which construct some variety of model based on a set of training images and use it to segment subsequent scans.
+\item \emph{Clustering techniques}, which try and cluster objects (in this case image pixels) into groups whose members are mutually similar, but dissimilar to the members of other groups.
+\item \emph{Graph partitioning techniques} such as the normalized cuts algorithm.
+\item \emph{Hybrid techniques}, which combine methods from the other classes to produce (what are hopefully good) results for specific applications.
+
+\end{enumerate}
+
+\noindent Each of these is discussed in more detail in one of the following subsections.
 
 \subsection{Thresholding}
 
@@ -422,7 +433,9 @@ The method generally used to try and find $G$ is an heuristic known as Lloyd's a
 
 \end{enumerate}
 
-\noindent Lloyd's algorithm is not guaranteed to find the global optimum for $G$, but it has been shown by Arthur and Vassilvitskii \cite{arthur07} that a careful choice of the initial means can make the algorithm $O(\log k)$-competitive with the optimal clustering.
+\noindent Lloyd's algorithm is not guaranteed to find the global optimum for $G$, but it has been shown by Arthur and Vassilvitskii \cite{arthur07} that a careful choice of the initial means can make the algorithm $O(\log k)$-competitive with an optimal clustering (in other words, if the global optimum for $G$ is $G_\mbox{OPT}$, then the $G$ for the clustering produced by the algorithm satisfies $G / G_{\mbox{OPT}} \in O(\log k)$).
+
+%(Clusterings are evaluated in \cite{arthur07} in terms of a value $\phi$, `the total squared distance between each point and its closest center', where an optimal clustering has value $\phi_{\mbox{OPT}}$ that minimises this quantity. A clustering is $O(\log k)$-competitive if its $\phi$ satisfies $\phi / \phi_{\mbox{OPT}} \in O(\log k)$.)
 
 The key issues when using Lloyd's algorithm to segment images are how to define both the similarity measure and the mean of a set of objects. In some domains, the similarity measure can simply be defined as the distance between objects, and the mean as the average of the objects' positions, but for images this may not produce good results. Instead, similarity measures can be defined which are based not only on the positions of the pixels, but also on their values (for example, see \cite{?}). In such cases, the way in which the mean of a set of objects is defined will vary accordingly.
 
@@ -495,7 +508,7 @@ It is sometimes possible to achieve better results by combining a number of diff
 \stufigex{height=8cm}{background/background-segmentation-hybrid-soler.png}{An automatic 3D reconstruction of patients from medical images, as performed by the IRCAD surgical planning tools developed using the work of Luc Soler et al.\ (the figure is reproduced from \cite{soler-imvie})}{fig:background-segmentation-hybrid-soler}{t}
 %---
 
-Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{ng06}, Ng et al.\ precede a watershed segmentation of MRI images of the head with a K-means clustering step -- this has the effect of hugely reducing the oversegmentation that the watershed would otherwise produce. It is a method that works particularly well for head segmentation, where the number of clusters is well-known a priori (in this case, the authors note that the types of tissue present tend to be `bone, soft tissue, fat and background'). There are several hybrid segmentation methods in \cite{itk}: in one, the authors combine fuzzy connectedness, Voronoi diagram classification and deformable models; in another, they combine Gibbs priors and deformable models. The details of these techniques are beyond the scope of this dissertation, but an implementation of the methods can be found in the freely-available \emph{Insight Toolkit}.
+Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{ng06}, Ng et al.\ precede a watershed segmentation of MRI images of the head with a K-means clustering step -- this has the effect of hugely reducing the oversegmentation that the watershed would otherwise produce. It is a method that works particularly well for head segmentation, where the number of clusters is well-known a priori (in this case, the authors note that the types of tissue present tend to be `bone, soft tissue, fat and background'). There are several hybrid segmentation methods in \cite{itk}: in one, the authors combine fuzzy connectedness, Voronoi diagram classification and deformable models; in another, they combine Gibbs priors and deformable models. The details of these techniques are beyond the scope of this dissertation, but an implementation of the methods can be found in the freely-available \emph{Insight Toolkit} \cite{itk}.
 
 \clearpage
 
