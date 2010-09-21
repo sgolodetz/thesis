@@ -167,6 +167,7 @@ The advantages of region growing methods are that the resultant region is guaran
 Whilst region growing algorithms are guaranteed to produce a connected result, the region may still have holes in the middle of it. Whilst this may be desirable if we really are trying to segment a torus-shaped feature, on the whole it is necessary to post-process the region growing results to remove these holes, e.g.~using morphological closing techniques.
 
 \subsection{Morphological Techniques}
+\label{subsec:background-segmentation-morphology}
 
 Mathematical morphology is a large and rather general field based on lattice theory \cite{goutsias00}. It contains many useful image processing techniques, the majority of which are not relevant for the purposes of this survey, but in segmentation terms its key technique is the watershed transform, originally developed by Serge Beucher \cite{beucher90}.
 

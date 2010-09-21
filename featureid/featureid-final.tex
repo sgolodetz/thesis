@@ -63,6 +63,10 @@ TODO
 \subsection{Conditional Morphology}
 %################################################
 
+As originally mentioned in \S\ref{subsec:background-segmentation-morphology}, there is far more to the field of mathematical morphology than image segmentation techniques such as the watershed transform. Of particular interest for feature identification work are morphological operators such as \emph{dilation}, \emph{erosion}, \emph{opening} and \emph{closing}; closing in particular is a useful tool for filling in holes in identified features (such as those produced by region growing). The canonical formulation of these processes is as operators on binary or grey-scale images, but of more relevance for our purposes is their adaptation to graphs (e.g.~see \cite{heijmans92a}), since the partition forest is essentially a graph hierarchy. We therefore examine only graph-based morphological operators here -- interested readers are encouraged to consult \cite{gonzalez02} for a description of their more conventional, image-based equivalents.
+
+Image-based morphological operators are often defined in terms of a tiny shape called a \emph{structuring element}, for example a $3 \times 3$ square, but non-structured versions are also possible. For graphs, non-structured operators were studied first, with structured operators defined in terms of \emph{structuring graphs} (the graph-based equivalent of structuring elements) introduced later in \cite{heijmans92a}. However, for the feature identification algorithms described in this chapter, the non-structured operators were considered appropriate.
+
 TODO
 
 %---
