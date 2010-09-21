@@ -1,0 +1,87 @@
+graph
+{
+	node [shape=circle, style=solid, color=black, label=""];
+
+	i0 -- i1 -- i2;
+	i3 -- i4 -- i5 -- i6;
+	i7 -- i8 -- i9;
+
+	i0 -- i10 -- i3 -- i11 -- i7;
+
+	//e0 -- i0;
+	//e0 -- i10;
+	e1 -- i0;
+	e1 -- i1;
+	e1 -- i10;
+	e1 -- e2;
+	e1 -- e3;
+	e2 -- i1;
+	e2 -- i2;
+	e3 -- i3;
+	e3 -- i4;
+	e3 -- i10;
+	e3 -- e4;
+	e4 -- i4;
+	e4 -- i5;
+	e4 -- e5;
+	e5 -- i5;
+	e5 -- i6;
+	e6 -- i3;
+	e6 -- i4;
+	e6 -- i11;
+	e6 -- e7;
+	e6 -- e9;
+	e7 -- e8;
+	e7 -- i4;
+	e7 -- i5;
+	e8 -- i5;
+	e8 -- i6;
+	e9 -- i7;
+	e9 -- i8;
+	e9 -- i11;
+	e9 -- e10;
+	e10 -- i8;
+	e10 -- i9;
+	//e11 -- i7;
+	//e11 -- i11;
+
+	o0 -- e1;
+	o0 -- e2;
+	o0 -- e3;
+	o0 -- e4;
+	o0 -- e5;
+	o1 -- e6;
+	o1 -- e7;
+	o1 -- e8;
+	o1 -- e9;
+	o1 -- e10;
+
+	i0 [pos="1,0!", style=filled];
+	i1 [pos="2,0!", style=filled];
+	i2 [pos="3,0!", style=filled];
+	i3 [pos="0,4!", style=filled];
+	i4 [pos="1,4!", style=filled];
+	i5 [pos="2,4!", style=filled];
+	i6 [pos="3,4!", style=filled];
+	i7 [pos="1,8!", style=filled];
+	i8 [pos="2,8!", style=filled];
+	i9 [pos="3,8!", style=filled];
+	i10 [pos="0,2!", style=filled];
+	i11 [pos="0,6!", style=filled];
+
+	//e0 [pos="0,0!", style=filled];
+	e1 [pos="1.5,1!", style=filled, color=red];
+	e2 [pos="2.5,1!", style=filled, color=red];
+	e3 [pos="0.5,3!", style=filled, color=red];
+	e4 [pos="1.5,3!", style=filled, color=red];
+	e5 [pos="2.5,3!", style=filled, color=red];
+	e6 [pos="0.5,5!", style=filled, color=red];
+	e7 [pos="1.5,5!", style=filled, color=red];
+	e8 [pos="2.5,5!", style=filled, color=red];
+	e9 [pos="1.5,7!", style=filled, color=red];
+	e10 [pos="2.5,7!", style=filled, color=red];
+	//e11 [pos="0,8!", style=filled];
+
+	o0 [pos="2,2!"];
+	o1 [pos="2,6!"];
+}

@@ -77,9 +77,21 @@ The first morphological graph operator we will examine, then, is non-structured 
 \delta(S) = S \cup \{v \in V \; | \; \exists u \in S \cdot \{v,u\} \in E\}
 \]
 %
-In other words, performing an elementary non-structured dilation on a set $S$ of selected nodes means augmenting the selection with those nodes that are directly adjacent to nodes in $S$. This is illustrated in Figure~\ref{?}.
+In other words, performing an elementary non-structured dilation on a set $S$ of selected nodes means augmenting the selection with those nodes that are directly adjacent to nodes in $S$. This is illustrated in Figure~\ref{fig:featureid-techniques-dilation}.
 
-% TODO: Figure here
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial selection]
+	{\includegraphics[height=8cm]{featureid/featureid-techniques-dilation-a.png}}%
+	%
+	\hspace{12mm}%
+	%
+	\subfigure[After dilating]
+	{\includegraphics[height=8cm]{featureid/featureid-techniques-dilation-b.png}}%
+\caption{Elementary non-structured morphological dilation on graphs: the black nodes are those initially selected and the blue nodes are those added by the dilation.}
+\label{fig:featureid-techniques-dilation}
+\end{stusubfig}
+%---
 
 As described in \cite{heijmans92a}, several elementary non-structured dilations can also be chained together to give the size $n$ non-structured dilation of $S$:
 %
@@ -88,6 +100,8 @@ As described in \cite{heijmans92a}, several elementary non-structured dilations 
 \]
 %
 As with the image-based dilation described in \cite{gonzalez02}, graph-based dilation is useful for gap bridging and, to a certain extent, hole filling. Dilations of larger sizes can be used to bridge wider gaps or fill larger holes. However, because it works by expanding boundaries, dilation makes the selection as a whole grow -- whilst it can be used to fill internal holes, it achieves this in a way that drastically changes the size of the overall selection. The closing operator (described later) avoids this problem by first performing a dilation, and then eroding the result. This yields much better results for hole filling.
+
+\afterpage{\clearpage}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Non-Structured Erosion}
@@ -99,9 +113,21 @@ The counterpart of non-structured dilation is non-structured erosion. Given an u
 \epsilon(S) = \{v \in S \; | \; \not\exists u \in V \; \backslash \; S \cdot \{v,u\} \in E\}
 \]
 %
-That is, performing an elementary non-structured erosion on $S$ means removing all the boundary nodes from $S$. This is illustrated in Figure~\ref{?}.
+That is, performing an elementary non-structured erosion on $S$ means removing all the boundary nodes from $S$. This is illustrated in Figure~\ref{fig:featureid-techniques-erosion}.
 
-% TODO: Figure here
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial selection]
+	{\includegraphics[height=8cm]{featureid/featureid-techniques-erosion-a.png}\hspace{12mm}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After eroding]
+	{\includegraphics[height=8cm]{featureid/featureid-techniques-erosion-b.png}}%
+\caption{Elementary non-structured morphological erosion on graphs: the black nodes are those initially selected and the red nodes are those removed by the erosion.}
+\label{fig:featureid-techniques-erosion}
+\end{stusubfig}
+%---
 
 As with dilation, several elementary non-structured erosions can be chained together to give the size $n$ non-structured erosion of $S$:
 %
