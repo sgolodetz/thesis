@@ -67,6 +67,44 @@ As originally mentioned in \S\ref{subsec:background-segmentation-morphology}, th
 
 Image-based morphological operators are often defined in terms of a tiny shape called a \emph{structuring element}, for example a $3 \times 3$ square, but non-structured versions are also possible. For graphs, non-structured operators were studied first, with structured operators defined in terms of \emph{structuring graphs} (the graph-based equivalent of structuring elements) introduced later in \cite{heijmans92a}. However, for the feature identification algorithms described in this chapter, the non-structured operators were considered appropriate.
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Non-Structured Dilation}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The first morphological graph operator we will examine, then, is non-structured dilation. Given an undirected graph $G = (V,E)$ and a set $S \subseteq V$ of selected nodes, the \emph{elementary} non-structured dilation of $S$, which we will write as $\delta(S)$ to follow the convention given in \cite{heijmans92a}, is defined as:
+%
+\[
+\delta(S) = \{v \in V \; | \; v \in S \mbox{ or } \exists u \in S \cdot \{v,u\} \in E\}
+\]
+%
+In other words, performing an elementary non-structured dilation on a set $S$ of selected nodes means augmenting the selection with those nodes that are directly adjacent to nodes in $S$. This is illustrated in Figure~\ref{?}.
+
+% TODO: Figure here
+
+As described in \cite{heijmans92a}, several elementary non-structured dilations can also be chained together to give the size $n$ non-structured dilation of $S$:
+%
+\[
+\delta^{(n)}(S) = (\underbrace{\delta \bullet \delta \bullet \cdots \bullet \delta}_{n \mbox{ times}})(S)
+\]
+%
+As with the image-based dilation described in \cite{gonzalez02}, the graph-based dilation operator shown here is useful for gap bridging and, to a certain extent, hole filling. Dilations of larger sizes can be used to bridge wider gaps or fill larger holes. However, because it works by expanding boundaries, dilation makes the selection as a whole grow -- whilst it can be used to fill internal holes, it achieves this in a way that drastically changes the size of the overall selection. The closing operator (described later) avoids this problem by first performing a dilation, and then eroding the result. This yields better results in practice, and makes it a preferable tool for hole filling.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Non-Structured Erosion}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Non-Structured Opening}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Non-Structured Closing}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 TODO
 
 %---
