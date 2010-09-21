@@ -65,7 +65,7 @@ TODO
 
 As originally mentioned in \S\ref{subsec:background-segmentation-morphology}, there is far more to the field of mathematical morphology than image segmentation techniques such as the watershed transform. Of particular interest for feature identification work are morphological operators such as \emph{dilation}, \emph{erosion}, \emph{opening} and \emph{closing}; closing in particular is a useful tool for filling in holes in identified features (such as those produced by region growing). The canonical formulation of these processes is as operators on binary or grey-scale images, but of more relevance for our purposes is their adaptation to graphs (e.g.~see \cite{heijmans92a}), since the partition forest is essentially a graph hierarchy. We therefore examine only graph-based morphological operators here -- interested readers are encouraged to consult \cite{gonzalez02} for a description of their more conventional, image-based equivalents.
 
-Image-based morphological operators are often defined in terms of a tiny shape called a \emph{structuring element}, for example a $3 \times 3$ square, but non-structured versions are also possible. For graphs, non-structured operators were studied first, with structured operators defined in terms of \emph{structuring graphs} (the graph-based equivalent of structuring elements) introduced later in \cite{heijmans92a}. However, for the feature identification algorithms described in this chapter, the non-structured operators were considered appropriate.
+Image-based morphological operators are often defined in terms of a tiny shape called a \emph{structuring element}, for example a $3 \times 3$ square, but non-structured versions are also possible. For graphs, non-structured operators were studied first, with structured operators defined in terms of \emph{structuring graphs} (the graph-based equivalent of structuring elements) introduced later in \cite{heijmans92a}. However, for the feature identification algorithms described in this chapter, the non-structured operators were considered appropriate. As will be described later, the versions we use in practice are actually parameterised by user-specified conditions that control how the process works, but the non-conditional versions will be presented first for the purposes of explication.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Non-Structured Dilation}
@@ -109,19 +109,41 @@ As with dilation, several elementary non-structured erosions can be chained toge
 \epsilon^{(n)}(S) = (\underbrace{\epsilon \bullet \epsilon \bullet \cdots \bullet \epsilon}_{n \mbox{ times}})(S)
 \]
 %
-As with the image-based erosion described in \cite{gonzalez02}, graph-based erosion is a useful tool to remove small, irrelevant pieces from the selection. Erosions of larger sizes can be used to remove larger pieces. Erosion can also be combined with dilation to form the higher-level opening and closing operators, described next.
+As with the image-based erosion described in \cite{gonzalez02}, graph-based erosion is a useful tool to remove small, irrelevant pieces from the selection. Erosions of larger sizes can be used to remove larger pieces. As with dilation, however, erosion seriously affects the size of the overall selection. Whilst this has its uses, there are applications for which the goal is to improve the existing selection without changing its extent too much. For such applications, the higher-level opening and closing operators described next tend to be more useful than dilation and erosion.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Non-Structured Opening}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+The non-structured opening operator of size $n$ first erodes $S$ and then dilates the result:
+%
+\[
+\sigma^{(n)} = \delta^{(n)} \bullet \epsilon^{(n)}
+\]
+%
+The intuition is that this starts by removing small, irrelevant pieces and making larger pieces smaller, and then roughly restores the larger pieces to their original size again (this isn't strictly true, since information is lost when the larger pieces are eroded, but it is a useful way of thinking about it). The way opening works is illustrated in Figure~\ref{?}.
+
+As with the image-based opening described in \cite{gonzalez02}, graph-based opening is useful for things like removing narrow connections between larger pieces of the selection. Somewhat wider connections can be removed by opening with a larger size, but this runs the risk of adversely affecting the rest of the selection.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Non-Structured Closing}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+The counterpart of non-structured opening is non-structured closing. The non-structured closing operator of size $n$ first dilates $S$ and then erodes the result:
+%
+\[
+\kappa^{(n)} = \epsilon^{(n)} \bullet \delta^{(n)}
+\]
+%
+The intuition is that this starts by expanding the boundaries of the selection (including internal boundaries, which fills in holes) and then erodes the remaining boundaries (which we hope are the outer ones) to return the selection to something like its original size (again, this isn't strictly true, but it gives a rough guide to what is happening). The way closing works is illustrated in Figure~\ref{?}.
+
+Closing is a good tool for filling in holes. Larger holes can be filled in by closing with a larger size, but care must again be taken to avoid damaging the rest of the selection.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Conditioning}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The operators as described thus far are useful, but can be quite blunt instruments. For example, dilation takes no account of what is beyond the boundaries when expanding the selection, so it can be difficult to avoid damaging the outer boundary of the selection when trying to fill holes (see Figure~\ref{?}(b)). Better results (see Figure~\ref{?}(c)) can be obtained by allowing the user to specify \emph{conditions} that determine when to allow dilation into or erosion of a graph node, e.g.~that a node beyond the boundary should only be added to the selection during dilation if its mean grey value lies in a particular range. This approach is known (for obvious reasons) as \emph{conditional morphology}; implementations of the conditional morphological operators are shown in Listing~\ref{code:featureid-techniques-conditionalmorphology}. These are the operators that we will use in practice when implementing the 3D feature identifiers described later.
 
 %---
 \begin{stulisting}[p]
