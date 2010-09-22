@@ -177,6 +177,14 @@ The operators as described thus far are useful, but can be quite blunt instrumen
 \end{stulisting}
 %---
 
+%################################################
+\subsection{Connected Component Analysis}
+%################################################
+
+When identifying features, it is sometimes useful to work with the connected components of an intermediate feature selection. For instance, it will be seen later that the 3D ribs identifier first uses stratified region growing to produce an initial selection for the ribs, and then post-processes it, examining each connected component to see how rib-like it is.
+
+Given a set of nodes in a particular layer of the partition forest, it is clearly a simple process to determine their connected components for such processing (see Appendix~\ref{chap:appendixpf} for pseudo-code). However, partition forest selections have a representation that is multi-layer (see Chapter~\ref{chap:ipfs}) -- it is therefore necessary to view the selection at a particular layer so as to ensure that all the nodes being dealt with are at the same level, namely the lowest layer containing a selected node. As explained when it was described, the view at layer algorithm splits higher-level nodes into their descendants in the chosen layer, whilst leaving lower-level nodes alone. The result in this case is thus a set of nodes in a single layer. The connected components of these nodes (and the properties of each component) can then be easily determined.
+
 %##################################################################################################
 \section{Feature Identification in Axial Slices}
 %##################################################################################################
