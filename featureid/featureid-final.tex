@@ -49,7 +49,9 @@ In many ways, node filtering in general can be seen as extending \emph{threshold
 \subsection{Stratified Region Growing}
 %################################################
 
-TODO
+In \S\ref{subsec:background-segmentation-regiongrowing}, we saw a basic implementation of a single-seed region growing algorithm. This was pixel-based -- an individual pixel was chosen as the seed, and a region was then grown from it by choosing whether to add pixels adjacent to the existing region to the selection one at a time based on their pixel properties. However, the same technique can be lifted to the region level -- a region can be chosen as the seed, with surrounding regions then added to it or not based on their region properties (generally speaking, an aggregate of the properties of their pixels).
+
+The idea of stratified region growing is to take this region-level region growing approach and adapt it to work with image partition forests, whose nodes represent regions of an image. Rather than starting from a single seed, stratified region growing first filters the forest's branch nodes for (potentially) multiple seeds in multiple layers of the forest. It then grows a region from each seed in the adjacency graph of the seed's layer. Finally, the regions grown are unioned (e.g.~using a partition forest selection, as it is convenient to do so) to produce the result. See Listing~\ref{code:featureid-techniques-stratifiedregiongrowing} for pseudo-code, and Figure~\ref{?} for an illustration of the process.
 
 %---
 \begin{stulisting}[p]
@@ -58,6 +60,10 @@ TODO
 \lstinputlisting[style=Default]{featureid/featureid-techniques-stratifiedregiongrowing.lst}
 \end{stulisting}
 %---
+
+Stratified region growing is interesting because the regions for the seeds are grown at different scales. One problem with growing regions only at the pixel level is that minor changes to the image (for instance, lowering the grey value of a small number of pixels) can dramatically affect the result. Conversely, running the process only at the level of large regions can result in fine detail being missed -- it can even be impossible to obtain a sensible result if the large regions don't match the feature. If used carefully, stratified region growing (and indeed other methods which operate at more than one scale) can mitigate these problems at least some of the time.
+
+It should be noted that there is room for a certain amount of variation in how the technique is used in practice. For instance, the 2D spine identifier that will be described later (and was originally presented in \cite{gvcispa09}) `validates' the regions grown from individual seeds before adding them to the result. The precise workings of the algorithm itself are also open to modification -- for example, the 2D spine identifier as originally defined doesn't grow regions from seeds that have already been visited during region growing from an earlier seed (though that approach does mean that an ordering must be imposed on the seeds, which makes it difficult to parallelize). For the purposes of this dissertation, however, stratified region growing will refer specifically to the implementation described here, unless otherwise stated (in particular, the 2D spine identifier will be described explicitly as a variant of this approach).
 
 %################################################
 \subsection{Conditional Morphology}
