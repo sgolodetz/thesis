@@ -1,0 +1,64 @@
+function identify_ribs_2d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+	var nodes : List<NodeID> := filter_branch_nodes(is_rib);
+	for each n $\in$ nodes
+		mfs.identify_node(n, RIB);
+
+function is_rib : (node : NodeID; ps : BranchProperties) $\to$ bool
+	var trueFactor : double := 0.5 *	// P(rib)
+	                           area_given_rib(ps.area()) *
+	                           elongatedness_given_rib(ps.elongatedness()) *
+	                           max_grey_value_given_rib(ps.max_grey_value()) *
+	                           mean_grey_value_given_rib(ps.mean_grey_value());
+	var falseFactor : double := 0.5 *	// P(not rib)
+	                            area_given_not_rib(ps.area()) *
+	                            elongatedness_given_not_rib(ps.elongatedness()) *
+	                            max_grey_value_given_not_rib(ps.max_grey_value()) *
+	                            mean_grey_value_given_not_rib(ps.mean_grey_value());
+	var likelihood : double := if trueFactor > $\epsilon$ then trueFactor / (trueFactor + falseFactor)
+	                           else 0;
+	return likelihood > 0.8 and saliency(node, properties) $\ge$ 50;
+
+function saliency : (node : NodeID; ps : BranchProperties) $\to$ double
+	var minDiff : double := $\infty$;
+	for each adj $\in$ forest().adjacent_regions(node)
+		var psAdj : BranchProperties := forest().branch_properties(adj);
+		minDiff := min(minDiff, |ps.mean_grey_value() - psAdj.mean_grey_value()|);
+	return minDiff;
+
+function area_given_rib : (area : double) $\to$ double
+	return rangeswitch area
+		70 $\le$ _ $<$ 180		| (_ - 70) / (180 - 70)
+		180 $\le$ _ $<$ 350		| 1
+		350 $\le$ _ $<$ 400		| (400 - _) / (400 - 350)
+		otherwise		| 0;
+
+function area_given_not_rib : (area : double) $\to$ double
+	return 0.5;
+
+function elongatedness_given_rib : (elongatedness : double) $\to$ double
+	return rangeswitch elongatedness
+		2 $\le$ _ $<$ 2.2		| (_ - 2) / (2.2 - 2)
+		2.2 $\le$ _ $<$ 5.5		| 1
+		5.5 $\le$ _ $<$ 5.7		| (5.7 - _) / (5.7 - 5.5)
+		otherwise		| 0;
+
+function elongatedness_given_not_rib : (elongatedness : double) $\to$ double
+	return 0.2;
+
+function max_grey_value_given_rib : (maxGreyValue : double) $\to$ double
+	return rangeswitch maxGreyValue
+		_ $<$ 225			| 0
+		225 $\le$ _ $<$ 235		| (_ - 225) / (235 - 225)
+		235 $\le$ _			| 1;
+
+function max_grey_value_given_not_rib : (maxGreyValue : double) $\to$ double
+	return 0.3;
+
+function mean_grey_value_given_rib : (meanGreyValue : double) $\to$ double
+	return rangeswitch meanGreyValue
+		_ $<$ 180			| 0
+		180 $\le$ _ $<$ 185		| (_ - 180) / (185 - 180)
+		185 $\le$ _			| 1;
+
+function mean_grey_value_given_not_rib : (meanGreyValue : double) $\to$ double
+	return 0.1;

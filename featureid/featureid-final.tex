@@ -212,13 +212,21 @@ The 2D ribs identifier, a sample result of which was originally presented in \ci
 
 \begin{enumerate}
 
-\item Initially, a Bayesian classifier is used to determine the likelihood (in some sense) of each region in the forest being a rib.
-\item Then, the \emph{saliency} of each region (that is, the minimum difference in mean grey value between the region and its neighbours) is evaluated. Regions whose saliency is less than $50$ (a value determined empirically, bearing in mind that the grey values in the image range between $0$ and $255$) are considered insufficiently salient (i.e.~they do not `stand out' enough relative to their neighbours) and have their likelihood value set to $0$.
-\item Finally, any region with a greater than $80\%$ likelihood of being a rib is added to the final result.
+\item Initially, a Bayesian classifier is used to determine the likelihood (in some sense) of a region in the forest being a rib.
+\item Then, the \emph{saliency} of the region (that is, the minimum difference in mean grey value between the region and its neighbours) is evaluated. Regions whose saliency is less than $50$ (a value determined empirically, bearing in mind that the grey values in the image range between $0$ and $255$) are considered insufficiently salient (i.e.~they do not `stand out' enough relative to their neighbours) and are discarded.
+\item Finally, if the region survives and has a greater than $80\%$ likelihood of being a rib, it is added to the final result.
 
 \end{enumerate}
 
 \noindent The Bayesian classifier itself is based on four properties of the regions involved: their \emph{area}, \emph{elongatedness}, \emph{maximum grey value} and \emph{mean grey value}. TODO
+
+%---
+\begin{stulisting}[p]
+\caption{Ribs Identification in 2D}
+\label{code:featureid-2d-ribsidentification}
+\lstinputlisting[style=Default]{featureid/featureid-2d-ribsidentification.lst}
+\end{stulisting}
+%---
 
 %################################################
 \subsection{Spine Identification}
