@@ -47,6 +47,7 @@ In many ways, node filtering in general can be seen as extending \emph{threshold
 
 %################################################
 \subsection{Stratified Region Growing}
+\label{subsec:featureid-techniques-stratifiedregiongrowing}
 %################################################
 
 In \S\ref{subsec:background-segmentation-regiongrowing}, we saw a basic implementation of a single-seed region growing algorithm. This was pixel-based -- an individual pixel was chosen as the seed, and a region was then grown from it by choosing whether to add pixels adjacent to the existing region to the selection one at a time based on their pixel properties. However, the same technique can be lifted to the region level -- a region can be chosen as the seed, with surrounding regions then added to it or not based on their region properties (generally speaking, an aggregate of the properties of their pixels).
@@ -264,7 +265,56 @@ Pseudo-code for the ribs identifier is shown in Listing~\ref{code:featureid-2d-r
 \subsection{Spine Identification}
 %################################################
 
-TODO
+The 2D spine identifier, originally described in \cite{gvcispa09}, uses a variant of stratified region growing to extract a preliminary feature from the image, and then post-processes it to identify the final vertebra. The outline of the algorithm is as it was described in the paper:
+
+%-
+\begin{enumerate}
+
+\item \textbf{Seed Finding}. Filter for branch nodes that satisfy a user-specified \emph{seed criterion}.
+\item \textbf{Region Growing}. Determine the \emph{preliminary feature} (which will be represented as a partition forest selection) by growing regions from the various seeds.
+
+%--
+\begin{enumerate}
+
+\item Construct a map to indicate whether or not each seed has yet been visited during the region growing process (each seed is initially marked as unvisited).
+\item For each seed:
+
+%---
+\begin{enumerate}
+
+\item If the seed has not already been visited, identify a \emph{potential partial feature} for it by growing a region from it in the adjacency graph for its layer. The region growing process is (as usual) controlled by a user-specified \emph{growing criterion}.
+\item If the potential partial feature satisfies a user-specified \emph{validation criterion}, add its regions to the preliminary feature.
+\item Mark any seeds that were reached from the current seed as having been visited.
+
+\end{enumerate}
+%---
+
+\end{enumerate}
+%--
+
+\item \textbf{Post-Processing}. Remove any regions that were undesirably added by the region growing process (the regions to be removed are chosen via the means of a user-specified \emph{removal criterion}).
+
+%--
+\begin{enumerate}
+
+\item For each region in the representation of the partition forest selection for the preliminary feature:
+
+%---
+\begin{enumerate}
+
+\item If the region satisfies the removal criterion, remove it from the selection (using the node deselection algorithm for partition forest selections).
+\item Otherwise, recurse on its (branch node) children in the forest (if any).
+
+\end{enumerate}
+%---
+
+\end{enumerate}
+%--
+
+\end{enumerate}
+%-
+
+\noindent It will be observed that the first two steps of this algorithm essentially implement a variation of the stratified region growing approach described in \S\ref{subsec:featureid-techniques-stratifiedregiongrowing}. The significant differences are that (a) the approach here keeps track of which seeds have been visited whilst growing regions from other seeds, and avoids growing a region from a seed if it has already been seen, and (b) the region grown from each seed is validated before being added to the preliminary feature. When the algorithm was originally devised, the first of these tweaks was intended to avoid growing similar regions more than once, whilst the second was intended as an alternative to performing connected component analysis on the preliminary feature. With the benefit of hindsight, it is probably better to implement a simpler stratified region growing approach that avoids these complications (and is easier to parallelize), and then perform connected component analysis on the results during post-processing. However, the original approach is described here so as not to affect the validity of the presented results.
 
 \afterpage{\clearpage}
 \newpage
