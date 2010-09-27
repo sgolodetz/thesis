@@ -434,9 +434,7 @@ The method generally used to try and find $G$ is an heuristic known as Lloyd's a
 
 \end{enumerate}
 
-\noindent Lloyd's algorithm is not guaranteed to find the global optimum for $G$, but it has been shown by Arthur and Vassilvitskii \cite{arthur07} that a careful choice of the initial means can make the algorithm $O(\log k)$-competitive with an optimal clustering (in other words, if the global optimum for $G$ is $G_\mbox{OPT}$, then the $G$ for the clustering produced by the algorithm satisfies $G / G_{\mbox{OPT}} \in O(\log k)$).
-
-%(Clusterings are evaluated in \cite{arthur07} in terms of a value $\phi$, `the total squared distance between each point and its closest center', where an optimal clustering has value $\phi_{\mbox{OPT}}$ that minimises this quantity. A clustering is $O(\log k)$-competitive if its $\phi$ satisfies $\phi / \phi_{\mbox{OPT}} \in O(\log k)$.)
+\noindent Lloyd's algorithm is not guaranteed to find the global optimum for $G$, but it has been shown by Arthur and Vassilvitskii \cite{arthur07} that a careful choice of the initial means can make the algorithm $O(\log k)$-competitive with an optimal clustering (in other words, if the global optimum for $G$ is $G_{\mbox{OPT}}$, then the $G$ for the clustering produced by the algorithm satisfies $G / G_{\mbox{OPT}} \in O(\log k)$).
 
 The key issues when using Lloyd's algorithm to segment images are how to define both the similarity measure and the mean of a set of objects. In some domains, the similarity measure can simply be defined as the distance between objects, and the mean as the average of the objects' positions, but for images this may not produce good results. Instead, similarity measures can be defined which are based not only on the positions of the pixels, but also on their values (for example, see \cite{?}). In such cases, the way in which the mean of a set of objects is defined will vary accordingly.
 
