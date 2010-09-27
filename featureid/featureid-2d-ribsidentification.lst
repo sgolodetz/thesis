@@ -16,7 +16,7 @@ function is_rib : (node : NodeID; ps : BranchProperties) $\to$ bool
 	                            mean_grey_value_given_not_rib(ps.mean_grey_value());
 	var likelihood : double := if trueFactor > $\epsilon$ then trueFactor / (trueFactor + falseFactor)
 	                           else 0;
-	return likelihood > 0.8 and saliency(node, properties) $\ge$ 50;
+	return likelihood > 0.8 and saliency(node, ps) $\ge$ 50;
 
 function saliency : (node : NodeID; ps : BranchProperties) $\to$ double
 	var minDiff : double := $\infty$;
