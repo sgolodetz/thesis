@@ -259,13 +259,13 @@ In the present case, we can (for example) define the fuzzy set of regions that h
 \end{stulisting}
 %---
 
-Pseudo-code for the ribs identifier is shown in Listing~\ref{code:featureid-2d-ribsidentification}. As illustrated in Figure~\ref{fig:featureid-2d-ribsidentification-example}, this approach can identify ribs quite well. However, it is evidently somewhat ad-hoc, in that the probability distributions were customised by hand -- a better approach would have been to manually identify the ribs in a training set of image series, and then automatically construct the probability distributions from the marked and unmarked regions. At the time of designing the identifier, this approach was not advisable due to the amount of data I had available at the time (only $3$ series) -- there would have been a serious risk of overfitting to a small number of images. When more data is available, automatically-constructed probability distributions are almost certainly the better option. In practice, however, a much more effective way of improving the identification of the ribs is simply to work with 3D volumes rather than 2D axial slices -- this was the approach used in \emph{millipede}, which will be described in \S\ref{subsec:featureid-3d-ribsidentification}.
+Pseudo-code for the ribs identifier is shown in Listing~\ref{code:featureid-2d-ribsidentification}. As illustrated in Figure~\ref{fig:featureid-2d-ribsidentification-example}, this approach can identify ribs quite well (although some darker ribs, such as that in (a), can be missed). However, it is evidently somewhat ad-hoc, in that the probability distributions were customised by hand -- a better approach would have been to manually identify the ribs in a training set of image series, and then automatically construct the probability distributions from the marked and unmarked regions. At the time of designing the identifier, this approach was not advisable due to the amount of data I had available at the time (only $3$ series) -- there would have been a serious risk of overfitting to a small number of images. When more data is available, automatically-constructed probability distributions are almost certainly the better option. In practice, however, a much more effective way of improving the identification of the ribs is simply to work with 3D volumes rather than 2D axial slices -- this was the approach used in \emph{millipede}, which will be described in \S\ref{subsec:featureid-3d-ribsidentification}.
 
 %################################################
 \subsection{Spine Identification}
 %################################################
 
-The 2D spine identifier, originally described in \cite{gvcispa09}, uses a variant of stratified region growing to extract a preliminary feature from the image, and then post-processes it to identify the final vertebra. The outline of the algorithm is as it was described in the paper:
+The 2D spine identifier, originally described in \cite{gvcispa09}, uses a variant of stratified region growing to extract a preliminary spine feature from the image, and then post-processes it to identify the final vertebra. The outline of the algorithm is as it was described in the paper:
 
 %-
 \begin{enumerate}
@@ -314,7 +314,31 @@ The 2D spine identifier, originally described in \cite{gvcispa09}, uses a varian
 \end{enumerate}
 %-
 
-\noindent It will be observed that the first two steps of this algorithm essentially implement a variation of the stratified region growing approach described in \S\ref{subsec:featureid-techniques-stratifiedregiongrowing}. The significant differences are that (a) the approach here keeps track of which seeds have been visited whilst growing regions from other seeds, and avoids growing a region from a seed if it has already been seen, and (b) the region grown from each seed is validated before being added to the preliminary feature. When the algorithm was originally devised, the first of these tweaks was intended to avoid growing similar regions more than once, whilst the second was intended as an alternative to performing connected component analysis on the preliminary feature. With the benefit of hindsight, it is probably better to implement a simpler stratified region growing approach that avoids these complications (and is easier to parallelize), and then perform connected component analysis on the results during post-processing. However, the original approach is described here so as not to affect the validity of the presented results.
+\noindent Pseudo-code for this process is shown in Listing~\ref{?}. It will be observed that the first two steps of this algorithm essentially implement a variation of the stratified region growing approach described in \S\ref{subsec:featureid-techniques-stratifiedregiongrowing}. The significant differences are that (a) the approach here keeps track of which seeds have been visited whilst growing regions from other seeds, and avoids growing a region from a seed if it has already been seen, and (b) the region grown from each seed is validated before being added to the preliminary feature. When the algorithm was originally devised, the first of these tweaks was intended to avoid growing similar regions more than once, whilst the second was intended as an alternative to performing connected component analysis on the preliminary feature. With the benefit of hindsight, it is potentially better to implement a simpler stratified region growing approach that avoids these complications (and is easier to parallelize), and then perform connected component analysis on the results during post-processing. However, the original approach is described here so as not to affect the validity of the presented results.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Seed Finding}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Region Growing}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Post-Processing}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Results}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
 
 \afterpage{\clearpage}
 \newpage
