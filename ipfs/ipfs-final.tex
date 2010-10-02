@@ -1027,7 +1027,7 @@ Having defined the partition forest selection data structure, and in particular 
 
 \end{enumerate}
 
-\noindent The \textbf{binary set} algorithms \emph{union selections} and \emph{subtract selections} also need to be implemented if selections are to be compared for validation purposes, but these can be trivially implemented in terms of \emph{node selection} and \emph{node deselection} (see Appendix~\ref{?}).
+\noindent The \textbf{binary set} algorithms \emph{union selections} and \emph{subtract selections} also need to be implemented if selections are to be compared for validation purposes, but these can be trivially implemented in terms of \emph{node selection} and \emph{node deselection} (see Appendix~\ref{chap:appendixpf}).
 
 %################################################
 \subsection{Core Algorithms}
@@ -1192,7 +1192,7 @@ ViewNodeConstIterator view_at_layer_cend(int layerIndex);
 
 The non-iterator-based implementation of the algorithm is straightforward (see Listing~\ref{code:ipfs-selection-viewatlayer} for pseudo-code). The first loop iterates through all the layers strictly higher than the one specified and adds the descendants of the selected nodes in the specified layer to the vector of result nodes. The second loop then iterates through all the remaining layers and adds their selected nodes directly to the vector of result nodes. An example showing the results of viewing a selection at a particular layer is shown in Figure~\ref{fig:ipfs-selection-viewatlayer}.
 
-Implementing an iterator-based version of the algorithm is only marginally more difficult (see Appendix~\ref{?} for pseudo-code). The key is to first implement a normal iterator that iterates over all the nodes in the representation in order, starting with those in the highest layer. A viewing iterator can then be implemented relatively easily in terms of this.
+Implementing an iterator-based version of the algorithm is only marginally more difficult (see Appendix~\ref{chap:appendixpf} for pseudo-code). The key is to first implement a normal iterator that iterates over all the nodes in the representation in order, starting with those in the highest layer. A viewing iterator can then be implemented relatively easily in terms of this.
 
 TODO: Complexity analysis
 
@@ -1526,7 +1526,7 @@ function identify_node
 	selection(feature).select_node(node);
 \end{lstlisting}
 
-\noindent Since the implementations are essentially trivial, they will not be presented here: instead, full pseudo-code may be found in Appendix~\ref{?}. It is, however, useful to see an example of how multi-feature selections work. In Figure~\ref{fig:ipfs-mfs-example}, forest nodes can be identified as being either \emph{green} or \emph{blue}. If nodes $(1,6)$ and $(2,0)$ are identified as being green nodes, and nodes $(1,2)$ and $(2,6)$ are identified as being blue nodes, then the multi-feature selection is as shown in the final sub-figure. A feature look-up on $(3,0)$ or any descendant of $(2,0)$ (inclusive) will yield \{green\}, one on any descendant of $(1,2)$ (inclusive) will yield \{blue\}, and one on any descendant of $(2,6)$ (inclusive) will yield \{green,blue\}.
+\noindent Since the implementations are essentially trivial, they will not be presented here: instead, full pseudo-code may be found in Appendix~\ref{chap:appendixpf}. It is, however, useful to see an example of how multi-feature selections work. In Figure~\ref{fig:ipfs-mfs-example}, forest nodes can be identified as being either \emph{green} or \emph{blue}. If nodes $(1,6)$ and $(2,0)$ are identified as being green nodes, and nodes $(1,2)$ and $(2,6)$ are identified as being blue nodes, then the multi-feature selection is as shown in the final sub-figure. A feature look-up on $(3,0)$ or any descendant of $(2,0)$ (inclusive) will yield \{green\}, one on any descendant of $(1,2)$ (inclusive) will yield \{blue\}, and one on any descendant of $(2,6)$ (inclusive) will yield \{green,blue\}.
 
 %---
 \begin{stusubfig}{p}
