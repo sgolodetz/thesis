@@ -365,9 +365,7 @@ Figure~\ref{fig:featureid-2d-spineidentification-seedfinding} illustrates the ar
 \subsubsection{Region Growing}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The stratified region growing method itself has already been described in detail above, but it remains to define a suitable \emph{flooding criterion} to decide whether to add an adjacent region to a partial spine being grown from a particular seed, and a \emph{validation criterion} to decide whether to later add that partial spine to the final selection.
-
-The flooding criterion I defined in \cite{gvcispa09}, which is specific to $512 \times 512$ images, specifies that an adjacent region should be added if:
+The stratified region growing method itself has already been described in detail above, but it remains to define a suitable \emph{flooding criterion} to decide whether to add an adjacent region to a partial spine being grown from a particular seed, and a \emph{validation criterion} to decide whether to later add that partial spine to the final selection. The flooding criterion I defined in \cite{gvcispa09}, which is specific to $512 \times 512$ images, specifies that an adjacent region should be added if:
 %
 \begin{itemize}
 
@@ -384,7 +382,19 @@ The validation criterion for partial spines merely ensures that the centroid $(x
 \subsubsection{Post-Processing}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+Although the stratified region growing process tends to output a preliminary spine that is close to the desired result, it sometimes inadvertently adds regions that should not be part of the spine. Two of the major causes of this are that:
+%
+\begin{enumerate}
+
+\item By performing flooding in multiple layers, we can end up adding large regions with a high mean grey value that contain smaller regions whose own mean grey value is lower (i.e.~the higher-level regions contain some regions that are spine, and some that aren't).
+
+\item In order to capture greyer bits of the spine, it is necessary to set the mean grey value tolerance in the flooding criterion to a relatively low value (so we end up flooding out into surrounding features such as the aorta, whose mean grey values are above the low threshold).
+
+\end{enumerate}
+%
+To deal with these problems, it is necessary to post-process the preliminary feature to remove the regions that should not have been added. To do this, we start at each of the nodes in the representation of the preliminary feature, and check whether it should be removed using a \emph{removal criterion} (described shortly). If so, it is removed and the algorithm continues on to the next node in the representation; if not, the algorithm recurses onto the node's branch node children (if any) and applies the same criterion to them. (Note that, although it is not done here, this process could be readily parallelized if desired, since the subtrees beneath each of the nodes in the representation are mutually independent.)
+
+The removal criterion was formulated as a disjunction of two different cases, one to deal with each of the problems mentioned above. The first problem can be dealt with by removing dark regions (those with a mean grey value $< 150$) of a reasonable size (area $\ge 400$). The second problem can be tackled by removing regions that resemble the aorta by having a cross-sectional area between $400$ and $700$ pixels (inclusive), a mean grey value between $160$ and $180$ (inclusive) and an elongatedness $< 1.5$ (since the aorta appears roughly circular in the axial slices being considered).
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Results}
