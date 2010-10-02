@@ -33,6 +33,7 @@
 
 \RequirePackage{latexsym}										% include extra symbols like \Box and \sqsubset
 \RequirePackage{listings}
+\RequirePackage{lscape}
 \RequirePackage{makeidx} \makeindex
 \RequirePackage{multirow}
 \RequirePackage{setspace}
