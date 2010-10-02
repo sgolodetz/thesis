@@ -1,0 +1,65 @@
+function identify_spine_2d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+
+	var seeds : List<NodeID> := filter_branch_nodes(is_seed);
+	var result : PartitionForestSelection := find_preliminary_feature(seeds);
+	remove_unwanted_regions(result);
+	return result;
+
+function find_preliminary_feature : (seeds : List<NodeID>) $\to$ PartitionForestSelection
+
+	var selection : PartitionForestSelection := make_selection(forest());
+
+	// Create a map of whether or not the seed has yet been reached during the flooding
+	// process (including from another seed).
+	var seedReached : Map<NodeID,bool>;
+	for each seed $\in$ seeds
+		seedReached.insert((seed, false));
+
+	for each (seed, reached) $\in$ seedReached
+		// If the seed has already been reached from another seed during the flooding process
+		// (i.e. they're connected), don't flood from it.
+		if reached then continue;
+
+		// Identify a potential partial feature by flooding out from the seed.
+		var used, partialFeature : Set<NodeID> := \{seed\}, \{seed\};
+		flood_from(seed, used, partialFeature, seed);
+
+		// If the potential partial feature is valid, add it to the feature as a whole.
+		if validate_partial_feature(partialFeature) then
+			for each n $\in$ partialFeature
+				selection.select_node(n);
+
+		// Mark any seeds that were reachable from the current seed, so that we don't process
+		// them again later.
+		for each (seed, reached) $\in$ seedReached
+			if used.contains(seed) then
+				reached := true;
+
+	return selection;
+
+function flood_from
+:	(cur : NodeID; used : ref Set<NodeID>;
+	 partialFeature : ref Set<NodeID>; seed : NodeID) $\to$ $\emptyset$
+
+	var curProperties : BranchProperties := forest().branch_properties(cur);
+	for each adj $\in$ forest().adjacent_nodes(cur)
+		if not used.contains(adj)
+			used.insert(adj);
+			var adjProperties : BranchProperties := forest().branch_properties(adj);
+			if flood_criterion(cur, adj, curProperties, adjProperties, seed) then
+				partialFeature.insert(adj);
+				flood_from(adj, used, partialFeature, seed);
+
+function remove_unwanted_regions : (ref selection : PartitionForestSelection) $\to$ $\emptyset$
+	for each n $\in$ selection.nodes()	// for each node in the selection representation
+		remove_unwanted_regions_below(n, selection);
+
+function remove_unwanted_regions_below
+:	(n : NodeID; ref selection : PartitionForestSelection) $\to$ $\emptyset$
+
+	var properties : BranchProperties := forest().branch_properties(n);
+	if remove_criterion(properties) then
+		selection.deselect_node(n);
+	else
+		for each c $\in$ forest().branch_children_of(n)
+			remove_unwanted_regions_below(c, selection);

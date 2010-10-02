@@ -314,7 +314,15 @@ The 2D spine identifier, originally described in \cite{gvcispa09}, uses a varian
 \end{enumerate}
 %-
 
-\noindent Pseudo-code for this process is shown in Listing~\ref{?}. It will be observed that the first two steps of this algorithm essentially implement a variation of the stratified region growing approach described in \S\ref{subsec:featureid-techniques-stratifiedregiongrowing}. The significant differences are that (a) the approach here keeps track of which seeds have been visited whilst growing regions from other seeds, and avoids growing a region from a seed if it has already been seen, and (b) the region grown from each seed is validated before being added to the preliminary feature. When the algorithm was originally devised, the first of these tweaks was intended to avoid growing similar regions more than once, whilst the second was intended as an alternative to performing connected component analysis on the preliminary feature. With the benefit of hindsight, it is potentially better to implement a simpler stratified region growing approach that avoids these complications (and is easier to parallelize), and then perform connected component analysis on the results during post-processing. However, the original approach is described here so as not to affect the validity of the presented results.
+\noindent Pseudo-code for this process is shown in Listing~\ref{code:featureid-2d-spineidentification}. It will be observed that the first two steps of this algorithm essentially implement a variation of the stratified region growing approach described in \S\ref{subsec:featureid-techniques-stratifiedregiongrowing}. The significant differences are that (a) the approach here keeps track of which seeds have been visited whilst growing regions from other seeds, and avoids growing a region from a seed if it has already been seen, and (b) the region grown from each seed is validated before being added to the preliminary feature. When the algorithm was originally devised, the first of these tweaks was intended to avoid growing similar regions more than once, whilst the second was intended as an alternative to performing connected component analysis on the preliminary feature. With the benefit of hindsight, it is potentially better to implement a simpler stratified region growing approach that avoids these complications (and is easier to parallelize), and then perform connected component analysis on the results during post-processing. However, the original approach is described here so as not to affect the validity of the presented results.
+
+%---
+\begin{stulisting}[p]
+\caption{Spine Identification in 2D}
+\label{code:featureid-2d-spineidentification}
+\lstinputlisting[style=Default]{featureid/featureid-2d-spineidentification.lst}
+\end{stulisting}
+%---
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Seed Finding}
