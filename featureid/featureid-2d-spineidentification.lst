@@ -21,7 +21,7 @@ function find_preliminary_feature : (seeds : List<NodeID>) $\to$ PartitionForest
 		if reached then continue;
 
 		// Identify a potential partial feature by flooding out from the seed.
-		var used, partialFeature : Set<NodeID> := \{seed\}, \{seed\};
+		var used, partialFeature : Set<NodeID> := {seed}, {seed};
 		flood_from(seed, used, partialFeature, seed);
 
 		// If the potential partial feature is valid, add it to the feature as a whole.
@@ -51,6 +51,7 @@ function flood_from
 				flood_from(adj, used, partialFeature, seed);
 
 function remove_unwanted_regions : (ref selection : PartitionForestSelection) $\to$ $\emptyset$
+
 	for each n $\in$ selection.nodes()	// for each node in the selection representation
 		remove_unwanted_regions_below(n, selection);
 

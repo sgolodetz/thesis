@@ -363,7 +363,20 @@ Figure~\ref{fig:featureid-2d-spineidentification-seedfinding} illustrates the ar
 \subsubsection{Region Growing}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+The stratified region growing method itself has already been described in detail above, but it remains to define a suitable \emph{flooding criterion} to decide whether to add an adjacent region to a partial spine being grown from a particular seed, and a \emph{validation criterion} to decide whether to later add that partial spine to the final selection.
+
+The flooding criterion I defined in \cite{gvcispa09}, which is specific to $512 \times 512$ images, specifies that an adjacent region should be added if:
+%
+\begin{itemize}
+
+\item It is at least relatively bright (mean grey value $> 170$)
+\item Its centroid $(x,y)$ satisfies $200 \le x \le 312$ and $y \ge 256$
+
+\end{itemize}
+%
+In this, the threshold for the mean grey value is slightly lower than it was when identifying the spine seeds -- the intuition is that a partial spine should contain at least some regions which are very bright (the seeds), but its mean grey value overall might be lower (this allows pieces of the spine that are more grey than white to be identified by the algorithm).
+
+The validation criterion for partial spines merely ensures that the centroid $(x,y)$ of the partial spine as a whole satisfies $200 \le x \le 312$ and $y \ge 256$.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Post-Processing}
