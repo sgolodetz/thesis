@@ -3,7 +3,7 @@ function identify_spine_2d : (mfs : ref PartitionForestMultiFeatureSelection) $\
 	var seeds : List<NodeID> := filter_branch_nodes(is_seed);
 	var result : PartitionForestSelection := find_preliminary_feature(seeds);
 	remove_unwanted_regions(result);
-	return result;
+	mfs.identify_selection(result, VERTEBRA);
 
 function find_preliminary_feature : (seeds : List<NodeID>) $\to$ PartitionForestSelection
 

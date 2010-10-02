@@ -1,0 +1,64 @@
+function identify_ribs_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+	var spineProperties : BranchProperties := mfs.properties_of(VERTEBRA);
+	var seeds : List<NodeID> := filter_branch_nodes(is_rib_seed(spineProperties));
+	var prelimRegions : PartitionForestSelection := grow_regions(seeds, grow_condition(mfs));
+	var finalRegions : PartitionForestSelection := postprocess_regions(prelimRegions);
+	mfs.identify_selection(finalRegions, RIB);
+
+function grow_condition
+:	(adj : NodeID; adjProperties : BranchProperties; curProperties : BranchProperties;
+	 seedProperties : BranchProperties; overallProperties : BranchProperties;
+	 mfs : PartitionForestMultiFeatureSelection) $\to$ bool
+
+	return	adjProperties.mean_grey_value() $\ge$ 180 and
+			not mfs.selection(VERTEBRA).contains(adj);
+
+function is_rib_seed
+:	(node : NodeID; properties : BranchProperties; spineProperties : BranchProperties) $\to$ bool
+
+	var sliceCount : int := properties.z_max() + 1 - properties.z_min();
+	var maxVoxels : int := 500 * sliceCount;	// at most 500 voxels per slice
+	return
+			// It should be a relatively small node
+			properties.voxel_count() $\le$ maxVoxels and
+
+			// It should have a high grey value
+			properties.mean_grey_value() $\ge$ 200 and		
+
+			// It should not be significantly below the spine (excludes things like the table)
+			properties.y_max() $\le$ spineProperties.y_max() + 10 and
+
+			// It should not be contined with the spine in the x axis
+			(properties.x_min() $<$ spineProperties.x_min() or
+			 properties.x_max() $>$ spineProperties.x_max());
+
+function postprocess_regions
+:	(prelimRegions : PartitionForestSelection) $\to$ PartitionForestSelection
+
+	var finalRegions : PartitionForestSelection := make_selection(forest());
+
+	// Step 1: Build the set of preliminary regions at the level of their merge layer.
+	var layerM : int;
+	var indices : Set<int>;
+	(layerM,indices) := extract_merge_layer_indices(prelimRegions, forest().highest_layer());
+
+	// Step 2: Remove any darker regions.
+	for each index $\in$ indices
+		var node : NodeID := (layerM,index);
+		var properties : BranchProperties := forest().branch_properties(node);
+		if properties.mean_grey_value() $<$ 150 then
+			indices.erase(index);
+
+	// Step 3: Find the connected components of what remains.
+	var ccs : Vector<Set<int>> := forest().find_connected_components(indices, layerM);
+
+	// Step 4: Either keep or discard each connected component based on its size.
+	for each cc $\in$ ccs
+		var ccProperties : BranchProperties := calculate_component_properties(layerM, cc);
+		var sliceCount : int := ccProperties.z_max() + 1 - ccProperties.z_min();
+		var minVoxels, maxVoxels : int := 90 * sliceCount, 500 * sliceCount;
+		if minVoxels $\le$ ccProperties.voxel_count() $\le$ maxVoxels then
+			for each index $\in$ cc
+				finalRegions.select_node((mergeLayer,index));
+
+	return finalRegions;
