@@ -318,7 +318,7 @@ The 2D spine identifier, originally described in \cite{gvcispa09}, uses a varian
 
 %---
 \begin{stulisting}[p]
-\caption{Spine Identification in 2D}
+\caption{Spine Identification in 2D : Main Algorithm}
 \label{code:featureid-2d-spineidentification}
 \lstinputlisting[style=Default]{featureid/featureid-2d-spineidentification.lst}
 \end{stulisting}
@@ -328,7 +328,17 @@ The 2D spine identifier, originally described in \cite{gvcispa09}, uses a varian
 \subsubsection{Seed Finding}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+To find suitable seeds for the region growing process in $512 \times 512$ images, we just have to define an appropriate seed criterion. In the case of the spine, we can specify that seeds should be:
+%
+\begin{itemize}
+
+\item Moderately-sized (area $\ge 500$ pixels)
+\item Fairly bright (grey value mean $\ge 190$, where $0$ is black and $255$ is white)
+\item Roughly-centred in the bottom-middle of the image (centroid $(x,y)$ satisfies $200 \le x \le 312$ and $y \ge 200$)
+
+\end{itemize}
+%
+Figure~\ref{?} illustrates the area of the image that we search for seeds, together with two examples of the seeds chosen by this approach. As observed in \cite{gvcispa09}, the constraints listed tend to work quite well, because the ribs (the only other features of comparable brightness in the image) are generally smaller than the specified threshold, or fall outside the area of interest.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Region Growing}
