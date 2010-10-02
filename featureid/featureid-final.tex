@@ -338,7 +338,26 @@ To find suitable seeds for the region growing process in $512 \times 512$ images
 
 \end{itemize}
 %
-Figure~\ref{?} illustrates the area of the image that we search for seeds, together with two examples of the seeds chosen by this approach. As observed in \cite{gvcispa09}, the constraints listed tend to work quite well, because the ribs (the only other features of comparable brightness in the image) are generally smaller than the specified threshold, or fall outside the area of interest.
+Figure~\ref{fig:featureid-2d-spineidentification-seedfinding} illustrates the area of the image that we search for seeds, together with two examples of the seeds chosen by this approach. As observed in \cite{gvcispa09}, the constraints listed tend to work quite well, because the ribs (the only other features of comparable brightness in the image) are generally smaller than the specified threshold, or fall outside the area of interest.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The area in an image to search for spine seeds]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-2d-spineidentification-seedfinding-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[An example layer $1$ spine seed]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-2d-spineidentification-seedfinding-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[An example layer $2$ spine seed]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-2d-spineidentification-seedfinding-c.png}}%
+\caption{Finding suitable spine seeds: it suffices to look for moderately-sized, bright regions with centroids within the box shown (this originally appeared as Figure $3$ in \cite{gvcispa09})}
+\label{fig:featureid-2d-spineidentification-seedfinding}
+\end{stusubfig}
+%---
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Region Growing}
