@@ -1,0 +1,63 @@
+function identify_liver_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+	// Step 1: Filter for liver candidates.
+	var candidates : List<NodeID> := filter_branch_nodes(is_candidate);
+
+	// Step 2: Pick the best candidate (namely, the one with the smallest xMin).
+	var bestCandidate : ref NodeID;
+	var bestXMin : int := $\infty$;
+	for each candidate $\in$ candidates
+		var properties : BranchProperties := forest().branch_properties(candidate);
+		if properties.x_min() $<$ bestXMin then
+			bestCandidate := ref candidate;
+			bestXMin := properties.x_min();
+	if bestCandidate = null then return;
+
+	// Step 3: Grow a region from the candidate liver.
+	var region : PartitionForestSelection := grow_regions([bestCandidate], grow_condition);
+
+	// Step 4: Use conditional morphological closing to try and fill any holes.
+	var nodes : Set<NodeID> := region.view_at_layer(1);
+	morphologically_close_nodes(nodes, morphological_condition);
+	var filledRegion : PartitionForestSelection := make_selection(forest());
+	for each n $\in$ nodes
+		filledRegion.select_node(n);
+
+	// Step 5: Mark the result as liver.
+	mfs.identify_selection(filledRegion, LIVER);
+
+function grow_condition
+:	(adj : NodeID; adjProperties : BranchProperties; curProperties : BranchProperties;
+	 seedProperties : BranchProperties; overallProperties : BranchProperties) $\to$ bool
+
+	return
+			// No further left than the original seed.
+			adjProperties.x_min() $\ge$ seedProperties.x_min() and
+
+			// Reasonable grey value.
+			150 $\le$ adjProperties.mean_grey_value() $\le$ 190 and
+
+			// Roughly the same grey value as the seed.
+			|adjProperties.mean_grey_value() - seedProperties.mean_grey_value()| $<$ 15 and
+
+			// Roughly the same grey value as its generating region.
+			|adjProperties.mean_grey_value() - curProperties.mean_grey_value()| $<$ 10;
+
+function is_candidate : (node : NodeID; properties : BranchProperties) $\to$ bool
+	var volumeSize : Vec<int,3> := dicom_volume().size();
+	var sliceCount : int := properties.z_max() + 1 - properties.z_min();
+	var minVoxels : int := 800 * sliceCount;
+	return
+			// In the lowest branch layer (higher nodes generally stretch too far).
+			node.layer() = 1 and
+
+			// Reasonable size.
+			properties.voxel_count() $\ge$ minVoxels and
+
+			// Reasonable grey value.
+			150 $\le$ mean_grey_value() $\le$ 190 and
+
+			// At least part of it on the left-hand side of the image.
+			properties.x_min() $<$ volumeSize.x/2;
+
+function morphological_condition : (properties : BranchProperties) $\to$ bool
+	return properties.mean_grey_value() $\ge$ 140;
