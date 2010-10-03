@@ -19,16 +19,16 @@ function is_rib_seed
 	var sliceCount : int := properties.z_max() + 1 - properties.z_min();
 	var maxVoxels : int := 500 * sliceCount;	// at most 500 voxels per slice
 	return
-			// It should be a relatively small node
+			// Relatively small node.
 			properties.voxel_count() $\le$ maxVoxels and
 
-			// It should have a high grey value
+			// High grey value.
 			properties.mean_grey_value() $\ge$ 200 and		
 
-			// It should not be significantly below the spine (excludes things like the table)
+			// Not significantly below the spine (excludes things like the table).
 			properties.y_max() $\le$ spineProperties.y_max() + 10 and
 
-			// It should not be contined with the spine in the x axis
+			// Not contained within the spine in the x axis.
 			(properties.x_min() $<$ spineProperties.x_min() or
 			 properties.x_max() $>$ spineProperties.x_max());
 

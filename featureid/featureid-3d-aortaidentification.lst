@@ -1,0 +1,64 @@
+function identify_aorta_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+	// Step 1: Calculate the combined properties of the spine and spinal cord.
+	var spineProperties : BranchProperties := mfs.properties_of(VERTEBRA);
+	var cordProperties : BranchProperties : mfs.properties_of(SPINAL_CORD);
+
+	// Step 2: Filter for aorta-like regions.
+	var seeds : List<NodeID> := filter_branch_nodes(is_aorta(spineProperties, cordProperties));
+	if seeds.empty() then return;
+	var regions : PartitionForestSelection := make_selection(forest());
+	for each seed $\in$ seeds
+		regions.select_node(seed);
+
+	// Step 3: Find the connected components and keep only the one with the greatest yMax.
+	var mergeLayer : int;
+	var indices : Set<int>;
+	(mergeLayer,indices) := extract_merge_layer_indices(regions, forest().highest_layer());
+	var ccs : Vector<Set<int>> := forest().find_connected_components(indices, mergeLayer);
+	var bestComponent : ref Set<int>;
+	var bestYMax : int := $-\infty$;
+	for each cc $\in$ ccs
+		var ccProperties : BranchProperties := calculate_component_properties(mergeLayer, cc);
+		if ccProperties.y_max() $>$ bestYMax then
+			bestComponent := ref cc;
+			bestYMax := ccProperties.y_max();
+
+	// Step 4: Remove any particularly dark regions.
+	var nodes : Set<NodeID>;
+	for each index $\in$ bestComponent
+		var node : NodeID := (mergeLayer, index);
+		var properties : BranchProperties := forest().branch_properties(node);
+		if properties.mean_grey_value() $\ge$ 150 then
+			nodes.insert(node);
+
+	// Step 5: Morphologically close what's left to fill in any holes.
+	morphologically_close_nodes(nodes, morphological_condition);
+
+	// Step 6: Mark the resulting nodes as aorta (provided they don't overlap the spine).
+	for each n $\in$ nodes
+		if not mfs.selection(VERTEBRA).contains(n) then
+			mfs.identify_node(n, AORTA);
+
+function is_aorta
+:	(node : NodeID; properties : BranchProperties;
+	 spineProperties : BranchProperties; cordProperties : BranchProperties) $\to$ bool
+	var sliceCount : int := properties.z_max() + 1 - properties.z_min();
+	var minVoxels, maxVoxels : int := 350 * sliceCount, 750 * sliceCount;
+	return
+			// Reasonable grey value.
+			150 $\le$ properties.mean_grey_value() $\le$ 180 and
+
+			// Reasonable size.
+			minVoxels $\le$ properties.voxel_count() $\le$ maxVoxels and
+
+			// Left-hand side should be within the spinal cord bounds in x.
+			cordProperties.x_min() $<$ properties.x_min() $<$ cordProperties.x_max() and
+
+			// Top should be above the spine.
+			properties.y_min() $<$ spineProperties.y_min() and
+
+			// Bottom should not be much higher than the top of the spine.
+			properties.y_max() $>$ spineProperties.y_min() - 20;
+
+function morphological_condition : (properties : BranchProperties) $\to$ bool
+	return 150 $\le$ properties.mean_grey_value() $\le$ 180;
