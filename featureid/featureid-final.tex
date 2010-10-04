@@ -423,13 +423,21 @@ In terms of results, a qualitative assessment of the identifier conducted for \c
 \subsection{Overview}
 %################################################
 
-TODO
+Whilst identifying features in 2D can be made to work well much of the time, as was seen in the previous section, such an approach fails to take advantage of important information that is available in adjacent image slices. This can be particularly problematic at the extremities of particular features, or when the cross-section through a feature in a particular slice is not very well distinguished from surrounding tissue. For example, we might not be able to confidently identify a small region as being the right kidney when we can only see the slice in which it lies (see Figure~\ref{?}(a)), but we could be substantially more confident about doing so if we could see one of the slices adjacent to it (see Figure~\ref{?}(b)).
+
+% TODO: Figure here
+
+Whilst there is more than one way of taking such information into account (for instance, it is possible to imagine a scheme whereby the feature outline from one slice could be propagated to the next slice and deformed to fit the information in the new image), one of the cleanest ways of doing so is to construct a partition forest for the entire 3D CT volume (as described in Chapter~\ref{chap:segmentation}) and then construct new feature identifiers that work in 3D. Using this approach, information from adjacent slices is implicitly taken into account when segmenting the volume into 3D regions.
+
+In this section, therefore, I present a series of methods for identifying a number of 3D features in such a partition forest. Unlike the 2D identifiers presented previously, the 3D identifiers described here are not mutually independent (thus it is not always possible to take an individual identifier out of context and use it to identify its specific feature). Instead, easily-identified features are found first, and then used to identify features that are harder to extract. For example, once the spine (a major landmark) has been identified, it becomes substantially easier to extract the spinal cord (we can intuitively think of it as the darker region inside the spine). Figure~\ref{?} shows how the different identifiers fit together.
+
+% TODO: Figure here
 
 %################################################
 \subsection{Spine Identification}
 %################################################
 
-TODO
+The first 3D feature to identify is the spine. This is an important landmark, both because it is rigid (being made of bone, it does not move within the body when the patient's position changes) and because it is clearly visible in the CT images, even to an untrained eye. It is extremely useful for \emph{localizing} (specifying the position of) other features: for instance, a helpful intuition when identifying the aorta will be that it is roughly located just in front of the spine (i.e.~just above it in the axial slices).
 
 %---
 \begin{stulisting}[p]
@@ -439,11 +447,33 @@ TODO
 \end{stulisting}
 %---
 
+Because the spine is so easily distinguishable in the images, a simple branch node filtering approach is generally sufficient to identify it (if desired, the region(s) thus found can be treated as the seed(s) for a stratified region growing process, but for my purposes this did not prove necessary). A number of criteria are used to isolate the spine (see the pseudo-code in Listing~\ref{code:featureid-3d-spineidentification}), namely that spine regions must:
+%
+\begin{itemize}
+
+\item Straddle the centre of the image in the $x$ direction.
+\item Be at least partially below the centre of the image in the $y$ direction.
+\item Extend through all the (axial) slices in the $z$ direction.
+\item Have a reasonable $x$-$y$ \emph{aspect ratio} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
+\item Have a mean grey value $\ge 180$.
+\item Have an area equivalent to between $800$ and $8000$ voxels per (axial) slice.
+
+\end{itemize}
+%
+Of these, perhaps the most powerful is the criterion that the spine must appear in every slice -- this is particularly effective when there are a significant number of slices in the 3D volume, because very few regions do so, and, in combination with the grey value criterion, more or less prevents false positives. However, it must be applied with an awareness of the scans' location in the body: it would clearly not be appropriate to use such a criterion when viewing scans that go up or down as far as the head or legs.
+
+TODO
+
+\afterpage{\clearpage}
+\newpage
+
 %################################################
 \subsection{Spinal Cord Identification}
 %################################################
 
 TODO
+
+\iffalse
 
 %---
 \begin{stulisting}[p]
@@ -453,12 +483,19 @@ TODO
 \end{stulisting}
 %---
 
+\fi
+
+\afterpage{\clearpage}
+\newpage
+
 %################################################
 \subsection{Ribs Identification}
 \label{subsec:featureid-3d-ribsidentification}
 %################################################
 
 TODO
+
+\iffalse
 
 %---
 \begin{stulisting}[p]
@@ -468,11 +505,18 @@ TODO
 \end{stulisting}
 %---
 
+\fi
+
+\afterpage{\clearpage}
+\newpage
+
 %################################################
 \subsection{Aorta Identification}
 %################################################
 
 TODO
+
+\iffalse
 
 %---
 \begin{stulisting}[p]
@@ -482,11 +526,18 @@ TODO
 \end{stulisting}
 %---
 
+\fi
+
+\afterpage{\clearpage}
+\newpage
+
 %################################################
 \subsection{Liver Identification}
 %################################################
 
 TODO
+
+\iffalse
 
 %---
 \begin{stulisting}[p]
@@ -496,11 +547,19 @@ TODO
 \end{stulisting}
 %---
 
+\fi
+
+\afterpage{\clearpage}
+\newpage
+
 %################################################
 \subsection{Kidneys Identification}
 %################################################
 
 TODO
+
+\afterpage{\clearpage}
+\newpage
 
 %################################################
 \subsection{Results}

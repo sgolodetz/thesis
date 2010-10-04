@@ -6,7 +6,7 @@ function identify_spine_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\
 
 function is_spine : (node : NodeID; properties : BranchProperties) $\to$ bool
 
-	var aspectRatio : double := properties.aspect_ratio();
+	var aspectRatioXY : double := properties.aspect_ratio_xy();
 	var volumeSize : Vec<int,3> := dicom_volume().size();
 	var minV : int := 800 * volumeSize.z;			// at least 800 voxels per slice
 	var maxV : int := 8000 * volumeSize.z;			// at most 8000 voxels per slice
@@ -14,8 +14,8 @@ function is_spine : (node : NodeID; properties : BranchProperties) $\to$ bool
 	return properties.x_min() < volumeSize.x/2 and	// straddles volumeSize.x/2
 	       properties.x_max() > volumeSize.x/2 and
 	       properties.y_max() > volumeSize.y/2 and	// base below y = volumeSize.y/2
-	       properties.z_min() = 0 and
-	       properties.z_max() = volumeSize.z-1 and	// extends through all slices
-	       0.25 $\le$ aspectRatio $\le 4$ and					// reasonable aspect ratio
+	       properties.z_min() = 0 and				// extends through all slices
+	       properties.z_max() = volumeSize.z-1 and
+	       0.25 $\le$ aspectRatioXY $\le 4$ and					// reasonable x-y aspect ratio
 	       properties.mean_grey_value() $\ge$ 180 and	// reasonably high grey value
 	       minV $\le$ properties.voxel_count() $\le$ maxV;	// reasonable size
