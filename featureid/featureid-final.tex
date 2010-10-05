@@ -507,7 +507,7 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 	%
 	\subfigure[Series EB-2 (Slices 60--80)]
 	{\includegraphics[height=6cm]{featureid/featureid-3d-spineidentification-EB-2-60-80.png}}%
-\caption{The results of running the spine identifier in isolation on slices from a number of different image series}
+\caption{The results of running the spine identifier in isolation on slices from six different image series}
 \label{fig:featureid-3d-spineidentification-results}
 \end{stusubfig}
 %---
@@ -530,9 +530,7 @@ Having first identified the spine, identifying the spinal cord becomes a much si
 
 \end{itemize}
 %
-Regions which satisfy these criteria are unmarked as spine (if necessary) and marked as spinal cord. Unlike the spine identifier, the spinal cord identifier clearly cannot be run in isolation, but it is possible to visualize the results of spinal cord identification by running the multi-feature identifier and then hiding the results of all the other features. As illustrated in Figure~\ref{?}, TODO
-
-TODO
+Regions which satisfy these criteria are unmarked as spine (if necessary) and marked as spinal cord. Unlike the spine identifier, the spinal cord identifier clearly cannot be run in isolation, but it is possible to visualize the results of spinal cord identification by running both the spine and spinal cord identifiers and then either rendering the spinal cord on its own, or rendering the spine as transparent. As illustrated in Figure~\ref{fig:featureid-3d-spinalcordidentification-results}, the identifier is quite robust, and able to automatically identify the spinal cord in a number of different image series. There is, however, definitely room for further work to improve the detailed contour of the cord -- this could perhaps be done by using the automatic result produced thus far to initialise a level sets approach.
 
 %---
 \begin{stulisting}[p]
@@ -540,6 +538,40 @@ TODO
 \label{code:featureid-3d-spinalcordidentification}
 \lstinputlisting[style=Default]{featureid/featureid-3d-spinalcordidentification.lst}
 \end{stulisting}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Series BT-2 (Slices 60--80), Spine and Spinal Cord]
+	{\hspace{16mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-transparent-BT-2-60-80.png}\hspace{16mm}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Series BT-2 (Slices 60--80), Spinal Cord Only]
+	{\hspace{20mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-solid-BT-2-60-80.png}\hspace{20mm}}%
+	%
+	\\
+	%
+	\subfigure[Series SD-2 (Slices 70--90), Spine and Spinal Cord]
+	{\hspace{20mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-transparent-SD-2-70-90.png}\hspace{20mm}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Series SD-2 (Slices 70--90), Spinal Cord Only]
+	{\hspace{24mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-solid-SD-2-70-90.png}\hspace{24mm}}%
+	%
+	\\
+	%
+	\subfigure[Series EJ-2 (Slices 20--40), Spine and Spinal Cord]
+	{\hspace{16mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-transparent-EJ-2-20-40.png}\hspace{16mm}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Series EJ-2 (Slices 20--40), Spinal Cord Only]
+	{\hspace{24mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-solid-EJ-2-20-40.png}\hspace{24mm}}%
+\caption{The results of running spine and spinal cord identification on slices from three different image series}
+\label{fig:featureid-3d-spinalcordidentification-results}
+\end{stusubfig}
 %---
 
 \afterpage{\clearpage}
