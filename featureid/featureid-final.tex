@@ -441,10 +441,10 @@ Whilst identifying features in 2D can be made to work well much of the time, as 
 
 Whilst there is more than one way of taking such information into account (for instance, it is possible to imagine a scheme whereby the feature outline from one slice could be propagated to the next slice and deformed to fit the information in the new image), one of the cleanest ways of doing so is to construct a partition forest for the entire 3D CT volume (as described in Chapter~\ref{chap:segmentation}) and then construct new feature identifiers that work in 3D. Using this approach, information from adjacent slices is implicitly taken into account when segmenting the volume into 3D regions.
 
-In this section, therefore, I present a series of methods for identifying a number of 3D features in such a partition forest. Unlike the 2D identifiers presented previously, the 3D identifiers described here are not mutually independent (thus it is not always possible to take an individual identifier out of context and use it to identify its specific feature). Instead, easily-identified features are found first, and then used to identify features that are harder to extract. For example, once the spine (a major landmark) has been identified, it becomes substantially easier to extract the spinal cord (we can intuitively think of it as the darker region inside the spine). Figure~\ref{fig:featureid-3d-multifeatureidentifier} shows the dependencies between the different identifiers.
+In this section, therefore, I present a series of methods for identifying a number of 3D features in such a partition forest. Unlike the 2D identifiers presented previously, the 3D identifiers described here are not mutually independent (thus it is not always possible to take an individual identifier out of context and use it to identify its specific feature). Instead, easily-identified features are found first, and then used to identify features that are harder to extract. For example, once the spine (a major landmark) has been identified, it becomes substantially easier to extract the spinal cord (we can intuitively think of it as the darker region inside the spine). As we will see later, it is also possible to use later identifiers to correct any mistakes made by earlier ones. Figure~\ref{fig:featureid-3d-multifeatureidentifier} shows how the identifiers fit together to form a multi-feature identifier.
 
 %---
-\stufigex{width=.95\linewidth}{featureid/featureid-3d-multifeatureidentifier.png}{The dependencies between individual 3D feature identifiers (the arrows point from the lower-level identifiers to the higher-level ones that depend on them)}{fig:featureid-3d-multifeatureidentifier}{p}
+\stufigex{width=.95\linewidth}{featureid/featureid-3d-multifeatureidentifier.png}{The structure of the multi-feature identifier, with dependencies between individual 3D feature identifiers shown as arrows pointing from the identifiers that are run earlier in the identification process to those that depend on them}{fig:featureid-3d-multifeatureidentifier}{p}
 %---
 
 %################################################
@@ -452,14 +452,6 @@ In this section, therefore, I present a series of methods for identifying a numb
 %################################################
 
 The first 3D feature to identify is the spine. This is an important landmark, both because it is rigid (being made of bone, it does not move within the body when the patient's position changes) and because it is clearly visible in the CT images, even to an untrained eye. It is extremely useful for \emph{localizing} (specifying the position of) other features: for instance, a helpful intuition when identifying the aorta will be that it is roughly located just in front of the spine (i.e.~just above it in the axial slices).
-
-%---
-\begin{stulisting}[p]
-\caption{Spine Identification in 3D}
-\label{code:featureid-3d-spineidentification}
-\lstinputlisting[style=Default]{featureid/featureid-3d-spineidentification.lst}
-\end{stulisting}
-%---
 
 Because the spine is so easily distinguishable in the images, a simple branch node filtering approach is generally sufficient to identify it (if desired, the region(s) thus found can be treated as the seed(s) for a stratified region growing process, but for my purposes this did not prove necessary). A number of criteria are used to isolate the spine (see the pseudo-code in Listing~\ref{code:featureid-3d-spineidentification}), namely that spine regions must:
 %
@@ -470,13 +462,55 @@ Because the spine is so easily distinguishable in the images, a simple branch no
 \item Extend through all the (axial) slices in the $z$ direction.
 \item Have a reasonable $x$-$y$ \emph{aspect ratio} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
 \item Have a mean grey value $\ge 180$.
-\item Have an area equivalent to between $800$ and $8000$ voxels per (axial) slice.
+\item Have a voxel count of between $800$ and $8000$ voxels per (axial) slice.
 
 \end{itemize}
 %
 Of these, perhaps the most powerful is the criterion that the spine must appear in every slice -- this is particularly effective when there are a significant number of slices in the 3D volume, because very few regions do so, and, in combination with the grey value criterion, more or less prevents false positives. However, it must be applied with an awareness of the scans' location in the body: it would clearly not be appropriate to use such a criterion when viewing scans that go up or down as far as the head or legs.
 
-TODO
+%---
+\begin{stulisting}[t]
+\caption{Spine Identification in 3D}
+\label{code:featureid-3d-spineidentification}
+\lstinputlisting[style=Default]{featureid/featureid-3d-spineidentification.lst}
+\end{stulisting}
+%---
+
+As the spine identifier has no dependencies on other identifiers, it can be run individually on the CT volume to extract the spine feature. The results of running it on volumes from several different patients, as visualized in Figure~\ref{fig:featureid-3d-spineidentification-results}, give an indication that it works fairly robustly across a wide range of image series; its accuracy will be quantified in Chapter~\ref{chap:validation}. When the identifier is run in isolation, the identified spine tends to also include the spinal cord, as no attempt has thus far been made to exclude it. When identifying multiple features, however, this is later rectified by the spinal cord identifier, which unmarks any regions incorrectly labelled as spine where necessary. The identified spine can sometimes also include pieces of rib where they join onto the spinal column; the current approach to rib identification does not handle this at present, but it is an interesting area for further work.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Series BT-2 (Slices 60--80)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-spineidentification-BT-2-60-80.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Series SD-2 (Slices 70--90)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-spineidentification-SD-2-70-90.png}}%
+	%
+	\\
+	%
+	\subfigure[Series MC-2 (Slices 110--130)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-spineidentification-MC-2-110-130.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Series EJ-2 (Slices 20--40)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-spineidentification-EJ-2-20-40.png}}%
+	%
+	\\
+	%
+	\subfigure[Series MJ-2 (Slices 110--130)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-spineidentification-MJ-2-110-130.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Series EB-2 (Slices 60--80)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-spineidentification-EB-2-60-80.png}}%
+\caption{The results of running the spine identifier in isolation on slices from a number of different image series}
+\label{fig:featureid-3d-spineidentification-results}
+\end{stusubfig}
+%---
 
 \afterpage{\clearpage}
 \newpage
@@ -485,9 +519,20 @@ TODO
 \subsection{Spinal Cord Identification}
 %################################################
 
-TODO
+Having first identified the spine, identifying the spinal cord becomes a much simpler task. The intuition is to search for regions within the $x-y$ bounding box of the spine (see Figure~\ref{?}) that:
+%
+\begin{itemize}
 
-\iffalse
+\item Straddle the spine centroid in the $x$ direction.
+\item Extend through all the (axial) slices in the $z$ direction (this could be alternatively phrased as `appear in every slice in which the spine does', if a more sophisticated approach to spine identification was being used).
+\item Have a mean grey value $\le 140$ (the spinal cord appears much darker on the CT scans than the vertebrae surrounding it).
+\item Have a voxel count of between $300$ and $1000$ voxels per (axial) slice.
+
+\end{itemize}
+%
+Regions which satisfy these criteria are unmarked as spine (if necessary) and marked as spinal cord. Unlike the spine identifier, the spinal cord identifier clearly cannot be run in isolation, but it is possible to visualize the results of spinal cord identification by running the multi-feature identifier and then hiding the results of all the other features. As illustrated in Figure~\ref{?}, TODO
+
+TODO
 
 %---
 \begin{stulisting}[p]
@@ -496,8 +541,6 @@ TODO
 \lstinputlisting[style=Default]{featureid/featureid-3d-spinalcordidentification.lst}
 \end{stulisting}
 %---
-
-\fi
 
 \afterpage{\clearpage}
 \newpage
