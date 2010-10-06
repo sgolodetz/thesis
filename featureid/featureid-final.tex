@@ -520,7 +520,7 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 %################################################
 
 %---
-\stufigex{height=7cm}{featureid/featureid-3d-spinalcordidentification-region.png}{The spinal cord (selected, in red) should lie well within the (yellow) bounding box of the regions identified as the spine}{fig:featureid-3d-spinalcordidentification-region}{h}
+\stufigex{height=9cm}{featureid/featureid-3d-spinalcordidentification-region.png}{The spinal cord (selected, in red) should lie well within the (yellow) bounding box of the regions identified as the spine}{fig:featureid-3d-spinalcordidentification-region}{h}
 %---
 
 \noindent Having first identified the spine, identifying the spinal cord becomes a much simpler task. The intuition is to search for regions well within the $x-y$ bounding box of the spine (see Figure~\ref{fig:featureid-3d-spinalcordidentification-region}) that:
@@ -586,9 +586,24 @@ Regions which satisfy these criteria are unmarked as spine (if necessary) and ma
 \label{subsec:featureid-3d-ribsidentification}
 %################################################
 
-TODO
+%---
+\stufigex{height=9cm}{featureid/featureid-3d-ribsidentification-region}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
+%---
 
-\iffalse
+In contrast to the spine and spinal cord identifiers, which can (at least to a first approximation) often identify their features using only branch node filtering, the 3D ribs identifier is necessarily more involved, because it is unusual for each rib to be represented by only a single node in the forest. For that reason, a stratified region growing method is preferred in this case, followed by customised post-processing to tidy up the results. The first step is to identify suitable seeds for the ribs, namely regions that:
+%
+\begin{itemize}
+
+\item Are relatively small, having a voxel count of less than $500$ voxels per slice.
+\item Have a high mean grey value $\ge 200$.
+\item Do not extend significantly below the spine (this helps to exclude pieces of the table on which the patient is lying, which might otherwise look quite rib-like).
+\item Are not completely contained within the spine's bounding box in the $x$ axis.
+
+\end{itemize}
+%
+The spatial constraints are illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-region}. Having found suitable seeds, the next step is to grow regions from them, using the grow condition that we should flood into an adjacent region iff its mean grey value is $\ge 180$ and it is not already marked as spine. Setting the mean grey value threshold slightly lower than that required for seeds makes it possible to identify ribs that are slightly grey in places. Excluding the spine is done to prevent ribs growing into the spine, since they are attached to the spinal column. As mentioned when describing the spine identifier, the identifiers do not currently manage to perfectly separate the spine and ribs -- the current approach effectively assigns pieces to the spine when in doubt. This is a suitable area for further work.
+
+TODO
 
 %---
 \begin{stulisting}[p]
@@ -598,7 +613,29 @@ TODO
 \end{stulisting}
 %---
 
-\fi
+%---
+\begin{stusubfig}{p}
+	\subfigure[Series BT-2 (Slices 60--80)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-ribsidentification-BT-2-60-80.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Series SD-2 (Slices 50--70)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-ribsidentification-SD-2-50-70.png}}%
+	%
+	\\
+	%
+	\subfigure[Series MC-2 (Slices 80--100)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-ribsidentification-MC-2-80-100.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Series EJ-2 (Slices 1--21)]
+	{\includegraphics[height=6cm]{featureid/featureid-3d-ribsidentification-EJ-2-1-21.png}}%
+\caption{The results of running spine, spinal cord and ribs identification on slices from four different image series}
+\label{fig:featureid-3d-ribsidentification-results}
+\end{stusubfig}
+%---
 
 \afterpage{\clearpage}
 \newpage
