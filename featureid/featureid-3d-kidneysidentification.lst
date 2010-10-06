@@ -1,0 +1,39 @@
+function identify_kidneys_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+
+	// Step 1: Calculate the properties of the spine.
+	var spineProperties : BranchProperties := mfs.properties_of(VERTEBRA);
+
+	// Step 2: Filter for kidney-like regions.
+	var nodes : List<NodeID> := filter_branch_nodes(is_kidney(spineProperties));
+
+	// Step 3: Mark the results as kidney (and unmark them as liver if necessary).
+	for each n $\in$ nodes
+		mfs.identify_node(n, KIDNEY);
+		mfs.unidentify_node(n, LIVER);
+
+function is_kidney
+:	(node : NodeID; properties : BranchProperties; spineProperties : BranchProperties) $\to$ bool
+
+	var sliceCount : int := properties.z_max() + 1 - properties.z_min();
+	var minVoxels, maxVoxels := 2000 * sliceCount, 6000 * sliceCount;
+	var aspectRatioXY := properties.aspect_ratio_xy();
+
+	return
+			// In forest layer 3 or above (lower nodes aren't kidneys).
+			node.layer() $\ge$ 3 and
+
+			// Reasonable grey value.
+			160 $\le$ properties.mean_grey_value() $\le$ 190 and
+
+			// Doesn't cross the spine centroid in the $x$ direction.
+			(properties.x_max() $<$ spineProperties.centroid().x or
+			 properties.x_min() $>$ spineProperties.centroid().x) and
+
+			// Extends as far back as the spine in the $y$ direction.
+			properties.y_max() $\ge$ spineProperties.y_min() and
+
+			// Reasonable x-y aspect ratio.
+			0.25 $\le$ aspectRatioXY $\le$ 4 and
+
+			// Reasonable size.
+			minVoxels $\le$ properties.voxel_count() $\le$ maxVoxels;

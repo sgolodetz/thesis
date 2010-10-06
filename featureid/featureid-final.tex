@@ -224,6 +224,14 @@ The 2D ribs identifier, a sample result of which was originally presented in \ci
 In the present case, we can (for example) define the fuzzy set of regions that have the correct area to be a rib, and use it as our probability distribution $\mathbf{P}(\mathit{Area} | \mathit{rib})$. By observing rib-like regions in multiple image series, we can determine that most ribs in $512 \times 512$ axial images have areas in the $[180,350)$ pixel range, with some outliers in the $[70,180)$ and $[350,400)$ pixel ranges. From this, we can then simply construct the piecewise linear membership function shown in Figure~\ref{fig:featureid-2d-ribsidentification-areamembership}, which makes regions with pixel areas in $[180,350)$ full members of the fuzzy set, with membership tailing off based on distance from this central range (regions with areas $< 70$ or $\ge 400$ are considered either too small or too large to be ribs, respectively). A similar membership function can be empirically determined for each of the other properties -- in each case, we use this as our probability distribution $\mathbf{P}(\mathit{Property} | \mathit{rib})$. By contrast, when defining the $\mathbf{P}(\mathit{Property} | \neg\mathit{rib})$ probability distributions for the four properties, constant probabilities were in practice found to work well.
 
 %---
+\begin{stulisting}[p]
+\caption{Ribs Identification in 2D}
+\label{code:featureid-2d-ribsidentification}
+\lstinputlisting[style=Default]{featureid/featureid-2d-ribsidentification.lst}
+\end{stulisting}
+%---
+
+%---
 \stufigex{height=7cm}{featureid/featureid-2d-ribsidentification-areamembership.png}{The membership function for the fuzzy set of regions that have the correct area to be a rib in 2D axial slices}{fig:featureid-2d-ribsidentification-areamembership}{p}
 %---
 
@@ -249,14 +257,6 @@ In the present case, we can (for example) define the fuzzy set of regions that h
 \caption{Example results of the 2D ribs identifier on images from several different series}
 \label{fig:featureid-2d-ribsidentification-example}
 \end{stusubfig}
-%---
-
-%---
-\begin{stulisting}[p]
-\caption{Ribs Identification in 2D}
-\label{code:featureid-2d-ribsidentification}
-\lstinputlisting[style=Default]{featureid/featureid-2d-ribsidentification.lst}
-\end{stulisting}
 %---
 
 Pseudo-code for the ribs identifier is shown in Listing~\ref{code:featureid-2d-ribsidentification}. As illustrated in Figure~\ref{fig:featureid-2d-ribsidentification-example}, this approach can identify ribs quite well (although some darker ribs, such as that in (a), can be missed). However, it is evidently somewhat ad-hoc, in that the probability distributions were customised by hand -- a better approach would have been to manually identify the ribs in a training set of image series, and then automatically construct the probability distributions from the marked and unmarked regions. At the time of designing the identifier, this approach was not advisable due to the amount of data I had available at the time (only $3$ series) -- there would have been a serious risk of overfitting to a small number of images. When more data is available, automatically-constructed probability distributions are almost certainly the better option. In practice, however, a much more effective way of improving the identification of the ribs is simply to work with 3D volumes rather than 2D axial slices -- this was the approach used in \emph{millipede}, which will be described in \S\ref{subsec:featureid-3d-ribsidentification}.
@@ -684,8 +684,6 @@ TODO
 
 TODO
 
-\iffalse
-
 %---
 \begin{stulisting}[p]
 \caption{Liver Identification in 3D}
@@ -694,8 +692,6 @@ TODO
 \end{stulisting}
 %---
 
-\fi
-
 \afterpage{\clearpage}
 \newpage
 
@@ -703,7 +699,15 @@ TODO
 \subsection{Kidneys Identification}
 %################################################
 
-TODO
+TODO (remember to mention that non-complete kidneys, e.g.~those with tumours on, are particularly vulnerable to being missed -- an example is the EB result, where one kidney has been perfectly identified and the other has been completely missed)
+
+%---
+\begin{stulisting}[p]
+\caption{Kidneys Identification in 3D}
+\label{code:featureid-3d-kidneysidentification}
+\lstinputlisting[style=Default]{featureid/featureid-3d-kidneysidentification.lst}
+\end{stulisting}
+%---
 
 \afterpage{\clearpage}
 \newpage
