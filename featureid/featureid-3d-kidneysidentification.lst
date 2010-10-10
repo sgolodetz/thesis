@@ -25,11 +25,11 @@ function is_kidney
 			// Reasonable grey value.
 			160 $\le$ properties.mean_grey_value() $\le$ 190 and
 
-			// Doesn't cross the spine centroid in the $x$ direction.
+			// Doesn't cross the spine centroid in the x direction.
 			(properties.x_max() $<$ spineProperties.centroid().x or
 			 properties.x_min() $>$ spineProperties.centroid().x) and
 
-			// Extends as far back as the spine in the $y$ direction.
+			// Extends as far back as the spine in the y direction.
 			properties.y_max() $\ge$ spineProperties.y_min() and
 
 			// Reasonable x-y aspect ratio.
