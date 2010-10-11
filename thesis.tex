@@ -4,6 +4,9 @@
 
 \documentclass{smgthesis}
 
+\usepackage[final,nomargin,footnote]{fixme}
+%\usepackage[draft,nomargin,footnote]{fixme}
+
 \begin{document}
 
 \pagestyle{empty}
@@ -54,7 +57,7 @@
 \part{Segmentation and Feature Identification}
 
 %\input{ipfs/ipfs}
-%\input{segmentation/segmentation}
+\input{segmentation/segmentation}
 %\input{featureid/featureid}
 
 \part{Assessment}
@@ -76,9 +79,12 @@
 % TODO: Move these into separate files once I'm sure they're needed.
 %\chapter{Volume Visualization} TODO
 %\chapter{Pseudo-Code Language Reference} TODO
+%\chapter{Ethics Considerations} TODO
 
 \printindex
 
 \input{bibliography}
+
+\listoffixmes
 
 \end{document}
