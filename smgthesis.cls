@@ -122,6 +122,17 @@
 
 \newcommand\abstractname{Abstract}
 
+% Define the acknowledgements environment
+\newenvironment{acknowledgements}
+{
+	\cleardoublepage\null\vfill\begin{center}\bfseries\acknowledgementsname\end{center}
+}
+{
+	\vfill\null
+}
+
+\newcommand\acknowledgementsname{Acknowledgements}
+
 % Define the centreditemize environment
 \newenvironment{centreditemize}
 {
