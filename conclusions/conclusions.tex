@@ -1,12 +1,26 @@
-\chapter{Further Work and Concluding Remarks}
+\chapter{Concluding Remarks and Further Work}
 \label{chap:conclusions}
-
-%---
-\section{Further Work}
-
-TODO
 
 %---
 \section{Concluding Remarks}
 
 TODO
+
+%---
+\section{Further Work}
+
+TODO: The list below contains some of the things I should mention.
+%
+\begin{itemize}
+\item Investigate different types of edge-preserving smoothing more thoroughly -- anisotropic diffusion is good, but there are alternatives.
+\item Look at whether the watershed algorithm currently being used is appropriate -- compare it to the one in ITK, for instance.
+\item Analyse the differences between the waterfall algorithms in more detail.
+\item Look at the forest construction process in more detail -- which parameters are best for which types of image? Are there better approaches than watershed/waterfall?
+\item Look at the weights given to the edges when performing the waterfall -- are they the right option, or should e.g.~volume dynamics be used?
+\item Focus more on the type of image used -- if contrast images work better, make sure those are the ones obtained.
+\item Use level sets as part of feature identification. (The current approach is good for finding roughly where to look, but a better approach is needed to actually get the contours.)
+\item Work on getting the boundaries `right' between e.g.~spine and ribs.
+\item Make the feature identifiers more \emph{robust}. The key issue here is being able to check how you're doing as you go along, otherwise the compile/link/test cycle takes ages on multiple series. Evidently the implementation needs to be faster (see parallelization below). An ideal setup would involve having multiple copies of the program running in parallel on \emph{specific test series} every time a change is made (think distributed computing). (Otherwise, the temptation is always to find series that give good results.)
+\item Rather than using ad-hoc thresholds in the feature identifiers, either make them fuzzy or base them on the images involved somehow.
+\item Look at ways of parallelizing the implementation (e.g.~using CUDA) -- particularly important for things like visualization.
+\end{itemize}
