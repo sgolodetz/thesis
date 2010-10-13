@@ -9,6 +9,8 @@ TODO
 %---
 \section{Further Work}
 
+\iffalse
+
 TODO: The list below contains some of the things I should mention.
 %
 \begin{itemize}
@@ -24,3 +26,33 @@ TODO: The list below contains some of the things I should mention.
 \item Rather than using ad-hoc thresholds in the feature identifiers, either make them fuzzy or base them on the images involved somehow.
 \item Look at ways of parallelizing the implementation (e.g.~using CUDA) -- particularly important for things like visualization.
 \end{itemize}
+
+\fi
+
+My research has highlighted a number of potential areas that seem suitable for further work. These can be broadly placed under the headings of \emph{segmentation refinement}, \emph{feature identification refinement} and \emph{parallelization}. The first two are effectively a continuation of the two major strands of work discussed in this thesis; parallelization is important to speed up the implementation of the algorithms for the purposes of more rapid testing and (hopefully) future deployment in a clinical setting.
+
+\subsection{Segmentation Refinement}
+
+There are a number of aspects of the segmentation process used to construct partition forests that present opportunities for further work:
+%
+\begin{itemize}
+
+\item The parameters to the anisotropic diffusion process, used during the pre-processing phase of the segmentation process to smooth images whilst preserving edges, are currently specified manually by the user, with reasonable defaults provided ($20$ iterations, a conductance of $1.0$ and a time step of $0.0625$). The defaults produce good results in many cases, but a better segmentation is sometimes obtainable by varying the parameters. It would be interesting to look at ways of deriving suitable parameters for a given input volume -- for example, the smoothing could be varied depending on the amount of noise in an image volume. (It might also be useful to take into account the thickness of the axial slices.)
+
+\item The rainfalling algorithm I used to implement the watershed transform (that of Meijster and Roerdink \cite{meijster98}) works well, but it is only one of a number of implementation possibilities (see e.g.~\cite{roerdink01}). Moreover, different watershed algorithms generally produce slightly different results. It would therefore be interesting to investigate whether some watershed algorithms produce more `useful' lowest leaf layers of the partition forest than others -- their usefulness could perhaps be evaluated in terms of the usefulness of the overall partition forest produced by a particular combination of watershed and waterfall algorithms, which could in turn be evaluated in terms of how easy it is to identify individual features in the result. (One of the first challenges in this case is evidently to devise some sort of performance metric that can be used to evaluate the different algorithms quantitatively.)
+
+\item TODO: Look at why the `tweaked' version of Chris's algorithm works better than the `correct' one.
+
+\end{itemize}
+
+\subsection{Feature Identification Refinement}
+
+TODO
+
+\subsection{Parallelization}
+
+Since one of the reasons for trying to automate the segmentation and feature identification tasks is to save users time, achieving good performance is important when developing systems that are intended to see clinical use. For that reason, it would be beneficial to investigate ways of implementing some of the more time-consuming algorithms used in \emph{millipede} in parallel.
+
+In particular, a number of parallel algorithms exist for the watershed transform \cite{?} and, in addition to implementing one, it would be interesting to see whether graph-based waterfall algorithms (which are, after all, merely a series of graph-based watershed transforms) can be similarly parallelized. Visualization is another area which is especially susceptible to parallelization -- indeed, recent GPU-based, massively parallel implementations of single material marching cubes (which can be iterated to extract multiple isosurfaces), such as \cite{dyken08}, have been made to run in real-time on normal consumer hardware.
+
+Another potential target for a massively parallel implementation on the GPU is the anisotropic diffusion process. Despite using a robust, CPU-based implementation from the Insight Toolkit \cite{?}, this is currently the most costly part of the entire segmentation process (it has to do a lot of work, so this isn't surprising). It would be interesting to try re-implementing the process in CUDA \cite{?} to try and improve performance.
