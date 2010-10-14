@@ -193,7 +193,25 @@ A generic, single-seed region growing algorithm can be implemented straightforwa
 
 The key policy issues to consider when implementing region growing are how to choose the seed points, how to formulate the criteria specifying which points to add to the region, and how to decide when the process should terminate. For automated segmentation methods, how to choose the seed points is of fundamental importance; semi-automated algorithms can focus exclusively on the latter two problems, relying instead on the user to interactively specify any initial seeds.
 
-The advantages of region growing methods are that the segmentation result is guaranteed to have no more connected components than there were initial seeds (thus, single-seed methods are guaranteed to produced a connected result), and that they are, on the whole, fairly easy to implement. However, from the point of view of automatic segmentation, they present difficulties, because choosing initial seed points is in general a non-trivial problem. The usual approach taken for automatic seed point selection is to rely on statistical data about where the features of interest (e.g. organs) usually lie in the body. For instance, the approach in \cite{lin06} was to search for suitable seed points in two elliptical regions on each side of the body, one for each kidney. This worked quite well in context, but is not robust in the general case, relying strongly on the kidneys being in the expected places -- for example, it is unsuitable for MRI images, in which the patient's body may be oriented arbitrarily. It would also fail if used for images of auto-transplant patients.\footnote{Auto-transplantation involves transplanting an organ, or part of an organ, from one part of a patient's body to another. For instance, partial nephrectomy operations (which involve cutting away part of a kidney) are sometimes performed by removing the kidney, cutting away the relevant piece outside the body, and then reimplanting what is left of the kidney.}\fxnote{[IDV] [What is an auto-transplant patient? Use a footnote]}
+%---
+\begin{stusubfig}{p}
+	\subfigure[An example CT image, with seeds marked at $(150,360)$ and $(350,340)$]
+	{\includegraphics[width=.45\linewidth]{background/background-segmentation-regiongrowing-ct-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[{The results of trying to segment the kidneys using region growing -- the grow condition specifies that adjacent pixels are added if their grey values are in the range $[165,215]$}]
+	{\includegraphics[width=.45\linewidth]{background/background-segmentation-regiongrowing-ct-b.png}}%
+\caption{Segmenting features using region growing can be very effective, but it relies on the user to specify seed points and a sensible grow condition}
+\label{fig:background-segmentation-regiongrowing-ct}
+\end{stusubfig}
+%---
+
+%---
+\stufigex{height=8cm}{background/background-segmentation-regiongrowing-lin.png}{The candidate regions searched for kidney seeds in \cite{lin06} (reproduced from the paper in question)}{fig:background-segmentation-regiongrowing-lin}{p}
+%---
+
+The advantages of region growing methods are that the segmentation result is guaranteed to have no more connected components than there were initial seeds (thus, single-seed methods are guaranteed to produced a connected result), and that they are, on the whole, fairly easy to implement. An example of the sort of results that can be achieved is shown in Figure~\ref{fig:background-segmentation-regiongrowing-ct}. However, from the point of view of automatic segmentation, they present difficulties, because choosing initial seed points automatically is in general a non-trivial problem. The usual approach taken for automatic seed point selection is to rely on statistical data about where the features of interest (e.g. organs) usually lie in the body. For instance, the approach in \cite{lin06} was to search for suitable seed points in two elliptical regions on each side of the body, one for each kidney (see Figure~\ref{fig:background-segmentation-regiongrowing-lin}). This worked quite well in context, but is not robust in the general case, relying strongly on the kidneys being in the expected places -- for example, it is unsuitable for MRI images, in which the patient's body may be oriented arbitrarily. It would also fail if used for images of auto-transplant patients.\footnote{Auto-transplantation involves transplanting an organ, or part of an organ, from one part of a patient's body to another. For instance, partial nephrectomy operations (which involve cutting away part of a kidney) are sometimes performed by removing the kidney, cutting away the relevant piece outside the body, and then reimplanting what is left of the kidney.}
 
 Whilst region growing algorithms produce connected regions around each seed, each region may still have holes in the middle of it. Whilst this may be desirable if we really are trying to segment torus-shaped features, on the whole it is necessary to post-process the region growing results to remove these holes, e.g.~using morphological closing techniques.
 
