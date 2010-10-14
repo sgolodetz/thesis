@@ -34,7 +34,7 @@ The majority of the segmentation techniques in current use can be divided into e
 
 \subsection{Thresholding}
 
-In principle, thresholding segmentation methods are quite simple. The idea is to divide the pixels of the image into classes through the use of one or more dividing lines on the image histogram. Dividing the image into two classes is known as \emph{binary thresholding}; where more classes are used, we refer to the process as \emph{multi-thresholding}. As an example, we could use binary thresholding to divide an 8-bit image (with grey levels ranging from $0 = \mbox{black}$ to $255 = \mbox{white}$) into two classes, one containing pixels greater than (say) $125$, and representing the foreground of the image, and the other containing all the remaining pixels and representing the background (see Figure~\ref{fig:background-segmentation-thresholding-binaryexample}).
+In principle, thresholding segmentation methods are quite simple. The idea is to divide the pixels of the image into classes through the use of one or more dividing lines on the image histogram. Dividing the image into two classes is known as \emph{binary thresholding}; where more classes are used, we refer to the process as \emph{multi-thresholding}. As an example, we could use binary thresholding to divide an 8-bit image (with grey levels ranging from $0 = \mbox{black}$ to $255 = \mbox{white}$) into two classes, one containing pixels greater than (say) $125$, and representing the foreground of the image, and the other containing all the remaining pixels and representing the background (see Figure~\ref{fig:background-segmentation-thresholding-binaryexample}). This would allow us to achieve the goal of segmenting the brighter object in the image.
 
 %---
 \begin{stusubfig}{p}
@@ -57,12 +57,12 @@ In principle, thresholding segmentation methods are quite simple. The idea is to
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Segmenting Figure~\ref{fig:background-segmentation-thresholding-binaryexample}(a) with a threshold of $175$ leads to undersegmentation]
+	\subfigure[Segmenting Figure~\ref{fig:background-segmentation-thresholding-binaryexample}(a) with a threshold of $175$ undersegments the brighter object]
 	{\includegraphics[height=.2\textheight]{background/background-segmentation-thresholding-inaccurate-a.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[Conversely, segmenting it with a threshold of $75$ leads to oversegmentation]
+	\subfigure[Conversely, segmenting the same image with a threshold of $75$ oversegments the brighter object]
 	{\includegraphics[height=.2\textheight]{background/background-segmentation-thresholding-inaccurate-b.png}}%
 \caption{Misplaced thresholds lead to inaccurate segmentations}
 \label{fig:background-segmentation-thresholding-inaccurate}
@@ -71,7 +71,7 @@ In principle, thresholding segmentation methods are quite simple. The idea is to
 
 \afterpage{\clearpage}
 
-The difficulty encountered in practice is how to determine the optimum threshold location(s). A misplaced threshold will cause an inaccurate segmentation, so choosing the location appropriately is essential. In our example above, choosing a threshold that was too high would mean that the foreground of the image would be \emph{undersegmented} (i.e. pixels which should be classified as being part of the foreground are incorrectly classified as background) and the background would be \emph{oversegmented} (the converse) -- see Figure~\ref{fig:background-segmentation-thresholding-inaccurate}(a). Choosing too low a threshold would cause the opposite problem -- see Figure~\ref{fig:background-segmentation-thresholding-inaccurate}(b).
+The difficulty encountered in practice is how to determine the optimum threshold location(s). A misplaced threshold will cause an inaccurate segmentation, so choosing the location appropriately is essential. In our example above, choosing a threshold that is too high will mean that the brighter object will be \emph{undersegmented} (i.e. some pixels which should be classified as being part of the foreground are incorrectly being classified as background) and the background will be \emph{oversegmented} (the converse) -- see Figure~\ref{fig:background-segmentation-thresholding-inaccurate}(a). Choosing too low a threshold will cause the opposite problem -- see Figure~\ref{fig:background-segmentation-thresholding-inaccurate}(b).
 
 Owing to difficulties like this, applications are often designed so that thresholds can be chosen interactively by the user, but a great deal of work has also been done on automatically determining good threshold locations. As surveyed by Sezgin and Sankur in \cite{sezgin04}, there are six types of approach to the problem in current use:
 
@@ -126,7 +126,7 @@ and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in th
 
 \end{itemize}
 
-\noindent Thresholding's limitations can in some cases be overcome by combining thresholding with other techniques. For instance, whilst the results of thresholding often have holes in them, these can sometimes be filled in by carefully applying a technique called morphological closing. Where thresholding has produced lots of small regions across the image, it is sometimes possible to remove them and keep only the larger ones by using connected component analysis. Luc Soler's team \cite{soler01} made use of thresholding (as one technique among many) and achieved excellent automatic segmentation results for the liver. However, they did not use thresholding on its own. For instance, they segmented bones by thresholding for bright areas and then keeping only those which were near to the fat tissue (which had already been segmented). Simple thresholding alone would have been insufficient for the task, since structures such as the aorta also appeared bright on the contrast-enhanced images.
+\noindent Thresholding's limitations can in some cases be overcome by combining thresholding with other techniques. For instance, whilst the results of thresholding often have holes in them, these can sometimes be filled in by carefully applying a technique called morphological closing (the graph-based version of which is described in Chapter~\ref{chap:featureid}). Where thresholding has produced lots of small regions across the image, it is sometimes possible to remove them and keep only the larger ones by using connected component analysis. Luc Soler's team \cite{soler01} made use of thresholding (as one technique among many) and achieved excellent automatic segmentation results for the liver. However, they did not use thresholding on its own. For instance, they segmented bones by thresholding for bright areas and then keeping only those which were near to the fat tissue (which had already been segmented). Simple thresholding alone would have been insufficient for the task, since structures such as the aorta also appeared bright on the contrast-enhanced images.
 
 \subsection{Region Growing}
 \label{subsec:background-segmentation-regiongrowing}
@@ -213,7 +213,7 @@ The key policy issues to consider when implementing region growing are how to ch
 
 The advantages of region growing methods are that the segmentation result is guaranteed to have no more connected components than there were initial seeds (thus, single-seed methods are guaranteed to produced a connected result), and that they are, on the whole, fairly easy to implement. An example of the sort of results that can be achieved is shown in Figure~\ref{fig:background-segmentation-regiongrowing-ct}. However, from the point of view of automatic segmentation, they present difficulties, because choosing initial seed points automatically is in general a non-trivial problem. The usual approach taken for automatic seed point selection is to rely on statistical data about where the features of interest (e.g. organs) usually lie in the body. For instance, the approach in \cite{lin06} was to search for suitable seed points in two elliptical regions on each side of the body, one for each kidney (see Figure~\ref{fig:background-segmentation-regiongrowing-lin}). This worked quite well in context, but is not robust in the general case, relying strongly on the kidneys being in the expected places -- for example, it is unsuitable for MRI images, in which the patient's body may be oriented arbitrarily. It would also fail if used for images of auto-transplant patients.\footnote{Auto-transplantation involves transplanting an organ, or part of an organ, from one part of a patient's body to another. For instance, partial nephrectomy operations (which involve cutting away part of a kidney) are sometimes performed by removing the kidney, cutting away the relevant piece outside the body, and then reimplanting what is left of the kidney.}
 
-Whilst region growing algorithms produce connected regions around each seed, each region may still have holes in the middle of it. Whilst this may be desirable if we really are trying to segment torus-shaped features, on the whole it is necessary to post-process the region growing results to remove these holes, e.g.~using morphological closing techniques.
+Whilst region growing algorithms produce connected regions around each seed, each region may still have holes in the middle of it. Whilst this may be desirable if we really are trying to segment torus-shaped features, on the whole it is necessary to post-process the region growing results to remove these holes, e.g.~using morphological closing.
 
 \subsection{Morphological Techniques}
 \label{subsec:background-segmentation-morphology}
