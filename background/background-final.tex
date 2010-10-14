@@ -97,16 +97,6 @@ and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in th
 
 \end{enumerate}
 
-\noindent In spite of the large amount of work done on thresholding, however, it has some significant downsides when used on its own to process more complicated images:
-
-\begin{itemize}
-
-\item It is by no means the case that acceptable threshold locations always exist. If the grey value ranges of different objects of interest significantly overlap, it may be impossible to isolate individual features using thresholding alone. Consider trying to segment the kidneys, as in Figure~\ref{fig:background-segmentation-thresholding-ct}, by bounding them between two grey value thresholds. If we choose too wide a foreground range, as in (b), we succeed in segmenting the kidneys, but end up inadvertently including other features (bits of the liver, aorta, etc.); if we choose a narrower foreground range to try and avoid this, as in (c), we succeed to some extent in reducing this oversegmentation, but the resulting kidneys now contain holes. There is in fact no range that we can choose that will not suffer from either problem, as the grey values that must be in our range in order to segment the kidneys are shared by other features in the image.
-
-\item There is no guarantee (or even an expectation) that any of the groups of pixels into which thresholding divides the image will be contiguous. When a wide foreground range is chosen (as in Figure~\ref{fig:background-segmentation-thresholding-ct}(b)), it is thus common to end up segmenting lots of separate foreground regions across the entire image that only have grey values in common. Conversely, when a narrow foreground range is chosen (as in Figure~\ref{fig:background-segmentation-thresholding-ct}(c)), the segmented result usually contains the aforementioned holes, corresponding to lots of separate background regions that only have grey values in common. As shown in Figure~\ref{fig:background-segmentation-thresholding-ct}(c), it is in fact possible to suffer from both these problems at once.
-
-\end{itemize}
-
 %---
 \begin{stusubfig}{p}
 	\subfigure[An example CT image]
@@ -126,6 +116,16 @@ and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in th
 \end{stusubfig}
 %---
 
+\noindent In spite of the large amount of work done on thresholding, however, it has some significant downsides when used on its own to process more complicated images:
+
+\begin{itemize}
+
+\item It is by no means the case that acceptable threshold locations always exist. If the grey value ranges of different objects of interest significantly overlap, it may be impossible to isolate individual features using thresholding alone. Consider trying to segment the kidneys, as in Figure~\ref{fig:background-segmentation-thresholding-ct}, by bounding them between two grey value thresholds. If we choose too wide a foreground range, as in (b), we succeed in segmenting the kidneys, but end up inadvertently including other features (bits of the liver, aorta, etc.); if we choose a narrower foreground range to try and avoid this, as in (c), we succeed to some extent in reducing this oversegmentation, but the resulting kidneys now contain holes. There is in fact no range that we can choose that will not suffer from either problem, as the grey values that must be in our range in order to segment the kidneys are shared by other features in the image.
+
+\item There is no guarantee (or even an expectation) that any of the groups of pixels into which thresholding divides the image will be contiguous. When a wide foreground range is chosen (as in Figure~\ref{fig:background-segmentation-thresholding-ct}(b)), it is thus common to end up segmenting lots of separate foreground regions across the entire image that only have grey values in common. Conversely, when a narrow foreground range is chosen (as in Figure~\ref{fig:background-segmentation-thresholding-ct}(c)), the segmented result usually contains the aforementioned holes, corresponding to lots of separate background regions that only have grey values in common. As shown in Figure~\ref{fig:background-segmentation-thresholding-ct}(c), it is in fact possible to suffer from both these problems at once.
+
+\end{itemize}
+
 \noindent Thresholding's limitations can in some cases be overcome by combining thresholding with other techniques. For instance, whilst the results of thresholding often have holes in them, these can sometimes be filled in by carefully applying a technique called morphological closing. Where thresholding has produced lots of small regions across the image, it is sometimes possible to remove them and keep only the larger ones by using connected component analysis. Luc Soler's team \cite{soler01} made use of thresholding (as one technique among many) and achieved excellent automatic segmentation results for the liver. However, they did not use thresholding on its own. For instance, they segmented bones by thresholding for bright areas and then keeping only those which were near to the fat tissue (which had already been segmented). Simple thresholding alone would have been insufficient for the task, since structures such as the aorta also appeared bright on the contrast-enhanced images.
 
 \subsection{Region Growing}
@@ -136,22 +136,22 @@ Region growing methods for segmentation essentially work as follows.\fxnote{[IDV
 %---
 \begin{stusubfig}{p}
 	\subfigure[Initial state]
-	{\includegraphics[height=5cm]{background/background-segmentation-regiongrowing-process-a.png}}%
+	{\includegraphics[height=4.5cm]{background/background-segmentation-regiongrowing-process-a.png}}%
 	%
 	\hspace{12mm}%
 	%
 	\subfigure[After one iteration]
-	{\includegraphics[height=5cm]{background/background-segmentation-regiongrowing-process-b.png}}%
+	{\includegraphics[height=4.5cm]{background/background-segmentation-regiongrowing-process-b.png}}%
 	%
 	\\ \vspace{4mm}
 	%
 	\subfigure[After two iterations]
-	{\includegraphics[height=5cm]{background/background-segmentation-regiongrowing-process-c.png}}%
+	{\includegraphics[height=4.5cm]{background/background-segmentation-regiongrowing-process-c.png}}%
 	%
 	\hspace{12mm}%
 	%
 	\subfigure[Final state]
-	{\includegraphics[height=5cm]{background/background-segmentation-regiongrowing-process-d.png}}%
+	{\includegraphics[height=4.5cm]{background/background-segmentation-regiongrowing-process-d.png}}%
 \caption{An example region growing process -- black pixels are those not yet considered, red pixels are those currently in the region, green pixels are those under consideration, and yellow pixels are those that already failed the similarity criterion. The algorithm terminates when there are no further pixels to consider. The final segmented object is shown in red in (d).}
 \label{fig:background-segmentation-regiongrowing-process}
 \end{stusubfig}
@@ -193,9 +193,9 @@ A generic, single-seed region growing algorithm can be implemented straightforwa
 
 The key policy issues to consider when implementing region growing are how to choose the seed points, how to formulate the criteria specifying which points to add to the region, and how to decide when the process should terminate. For automated segmentation methods, how to choose the seed points is of fundamental importance; semi-automated algorithms can focus exclusively on the latter two problems, relying instead on the user to interactively specify any initial seeds.
 
-The advantages of region growing methods are that the resultant region is guaranteed to be connected in the image (unlike with thresholding) and that they are, on the whole, fairly easy to implement. However, from the point of view of automatic segmentation, they present difficulties, because choosing initial seed points is in general a non-trivial problem. The usual approach taken for automatic seed point selection is to rely on statistical data about where the features of interest (e.g. organs) usually lie in the body. For instance, the approach in \cite{lin06} was to search for suitable seed points in two elliptical regions on each side of the body, one for each kidney. This worked quite well in context, but is not robust in the general case, relying strongly on the kidneys being in the expected places -- for example, it is unsuitable for MRI images, in which the patient's body may be oriented arbitrarily. It would also fail if used for images of auto-transplant patients.\fxnote{[IDV] [What is an auto-transplant patient? Use a footnote]}
+The advantages of region growing methods are that the segmentation result is guaranteed to have no more connected components than there were initial seeds (thus, single-seed methods are guaranteed to produced a connected result), and that they are, on the whole, fairly easy to implement. However, from the point of view of automatic segmentation, they present difficulties, because choosing initial seed points is in general a non-trivial problem. The usual approach taken for automatic seed point selection is to rely on statistical data about where the features of interest (e.g. organs) usually lie in the body. For instance, the approach in \cite{lin06} was to search for suitable seed points in two elliptical regions on each side of the body, one for each kidney. This worked quite well in context, but is not robust in the general case, relying strongly on the kidneys being in the expected places -- for example, it is unsuitable for MRI images, in which the patient's body may be oriented arbitrarily. It would also fail if used for images of auto-transplant patients.\footnote{Auto-transplantation involves transplanting an organ, or part of an organ, from one part of a patient's body to another. For instance, partial nephrectomy operations (which involve cutting away part of a kidney) are sometimes performed by removing the kidney, cutting away the relevant piece outside the body, and then reimplanting what is left of the kidney.}\fxnote{[IDV] [What is an auto-transplant patient? Use a footnote]}
 
-Whilst region growing algorithms are guaranteed to produce a connected result, the region may still have holes in the middle of it. Whilst this may be desirable if we really are trying to segment a torus-shaped feature, on the whole it is necessary to post-process the region growing results to remove these holes, e.g.~using morphological closing techniques.
+Whilst region growing algorithms produce connected regions around each seed, each region may still have holes in the middle of it. Whilst this may be desirable if we really are trying to segment torus-shaped features, on the whole it is necessary to post-process the region growing results to remove these holes, e.g.~using morphological closing techniques.
 
 \subsection{Morphological Techniques}
 \label{subsec:background-segmentation-morphology}
