@@ -544,28 +544,28 @@ It should be noted that each cluster produced by this simple k-means approach is
 \subsubsection{Fuzzy C-Means}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Fuzzy C-means is essentially a fuzzy relative of the K-means approach just described. It was originally presented by Dunn in 1974 \cite{dunn74}. The key idea is that instead of objects being divided crisply into groups (i.e.~each object belonging completely to exactly one group), objects have a degree of membership for each group. Using the same notation as before, and letting $u_{ij}$ be a real number between $0$ and $1$ indicating the degree to which object $o_i$ is a member of group $G_j$, and $1 \le p < \infty$ be a real parameter (e.g.~$p = 2$), we seek to find a set of groups $G$ minimising:
+Fuzzy C-means is essentially a fuzzy relative of the K-means approach just described. It was originally presented by Dunn in 1974 \cite{dunn74}. The key idea is that instead of objects being divided crisply into groups (i.e.~each object belonging completely to exactly one group), objects have a degree of membership for each group. Using the same notation as before, and letting $u_{ij}$ be a real number between $0$ and $1$ indicating the degree to which object $o_i$ is a member of group $G_j$, and $1 < p < \infty$ be a real parameter (e.g.~$p = 2$), we seek to find a set of groups $G$ minimising:
 %
 \[
 \sum_{j=1}^k \sum_{o_i \in G_j} u_{ij}^p \cdot m(o,\mu_j)^2
 \]
 %
-The standard algorithm for fuzzy C-means is once again an iterative, heuristic method:
+The standard algorithm for fuzzy C-means (as per \cite{matteucci}) is once again an iterative, heuristic method:
 
 \begin{enumerate}
 
 \item Initialise the $u_{ij}$ values for the first iteration (written as ${}^{(0)}u_{ij}$). Any of the initialisation approaches which work for K-means will work equally well for this (i.e.~it suffices to pick an initial set of means and assign objects completely to their nearest groups by setting the $u_{ij}$ value to $1$ for their group and $0$ for all other groups).
 
-\item At iteration $s$, calculate the updated means of the groups using the equation:
+\item At iteration $s+1$, calculate the updated means of the groups using the equation:
 %
 \[
-\mu_j^{(s)} = \frac{\displaystyle \sum_{o_i \in G_j} {}^{(s-1)}u_{ij}^p \cdot o_i}{\displaystyle \sum_{o_i \in G_j} {}^{(s-1)}u_{ij}^p}
+\mu_j^{(s+1)} = \frac{\displaystyle \sum_{o_i \in G_j} {}^{(s)}u_{ij}^p \cdot o_i}{\displaystyle \sum_{o_i \in G_j} {}^{(s)}u_{ij}^p}
 \]
 
 \item Calculate the updated values ${}^{(s+1)}u_{ij}$ using the equation:
 %
 \[
-{}^{(s+1)}u_{ij} = \frac{1}{\displaystyle \sum_{j=1}^k \left( \frac{m(o_i, \mu_j)}{m(o_i, \mu_k)} \right)^{\frac{2}{p-1}}}
+{}^{(s+1)}u_{ij} = \frac{1}{\displaystyle \sum_{n=1}^k \left( \frac{m(o_i, \mu_j^{(s)})}{m(o_i, \mu_n^{(s)})} \right)^{\frac{2}{p-1}}}
 \]
 
 \item Iterate Steps 2 and 3 until
