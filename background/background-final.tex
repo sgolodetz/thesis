@@ -542,9 +542,21 @@ The method generally used to try and find $G$ is an heuristic known as Lloyd's a
 
 \noindent Lloyd's algorithm is not guaranteed to find the global optimum for $G$, but it has been shown by Arthur and Vassilvitskii \cite{arthur07} that a careful choice of the initial means can make the algorithm $O(\log k)$-competitive with an optimal clustering (in other words, if the global optimum for $G$ is $G_{\mbox{OPT}}$, then the $G$ for the clustering produced by the algorithm satisfies $G / G_{\mbox{OPT}} \in O(\log k)$).
 
-The key issues when using Lloyd's algorithm to segment images are how to define both the similarity measure and the mean of a set of objects. In some domains, the similarity measure can simply be defined as the distance between objects, and the mean as the average of the objects' positions, but for images this may not produce good results. Instead, similarity measures can be defined which are based not only on the positions of the pixels, but also on their values (for example, see \cite{?}). In such cases, the way in which the mean of a set of objects is defined will vary accordingly.
+The key issues when using Lloyd's algorithm to segment images are how to define both the similarity measure and the mean of a set of pixels. One simple option is to define the similarity measure to be the absolute difference between pixel values, and the mean to be the average of the pixel values. (In other domains, the similarity measure might be the distance between objects, and the mean the average of the objects' positions.) This produces the sort of result shown in Figure~\ref{fig:background-segmentation-kmeans}. Whilst the results seem relatively promising, it should be noted that the clusters produced by this simple K-means approach are not generally contiguous in the image (some attempts have been made to address this in the literature, e.g.~see \cite{luo03,ilea06}).
 
-It should be noted that each cluster produced by this simple k-means approach is highly unlikely to be contiguous in the image (see Figure~\ref{fig:background-segmentation-kmeans-noncontiguity}). Some attempts have been made to address this in the literature (e.g.~see \cite{luo03,ilea06}).
+%---
+\begin{stusubfig}{p}
+	\subfigure[]
+	{\includegraphics[width=.4\linewidth]{background/background-segmentation-kmeans-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.4\linewidth]{background/background-segmentation-kmeans-b.png}}%
+\caption{An example of K-means clustering -- note that clustering the pixels of the example image (a) based on their values tends to produce non-contiguous clusters (b). For this example, the initial means chosen were $0$, $150$, $160$, $190$ and $255$.}
+\label{fig:background-segmentation-kmeans}
+\end{stusubfig}
+%---
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Fuzzy C-Means}
