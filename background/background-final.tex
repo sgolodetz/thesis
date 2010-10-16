@@ -440,7 +440,7 @@ Level sets have a number of advantages over snakes. One advantage is that they h
 
 Another advantage of level sets is that, unlike snakes, they translate straightforwardly into three dimensions -- all that is required is to replace a 2D grid with a 3D one. It is worth remarking, however, that the extra processing involved in the 3D case is substantial, making the basic scheme described above unsuitable if timely solutions are required. Special techniques have been developed to deal with this problem. One example is the narrow-band technique mentioned in \cite{malladi95}, which essentially restricts numerical calculations to a narrow region around the isosurface in which we're particularly interested (i.e.~the one representing the deformable model). The insight is that solving the PDE over the whole domain is only necessary if we're interested in solving for the entire family of isosurfaces associated with $\psi$: often, we're only interested in a single isosurface, so the extra computations aren't necessary. More details of this sort of technique are available in \cite{malladi95} and \cite{itk}.\fxnote{[IDV] [The level sets section needs an image-based example]}
 
-An example illustrating the performance of a level set approach (the \emph{geodesic active contours} level set method from ITK, as described in \S9.3.3 of \cite{itk}) on an actual image is shown in Figure~\ref{fig:background-segmentation-levelsets-ct}. By carefully tweaking the (large number of) parameters to the method, it is possible to get very good results, making it an excellent technique for interactive segmentation. However, the requirement to provide so many parameters, whose effects on the results are not always intuitively obvious, makes the technique far less attractive as a method for more automatic segmentation.
+An example illustrating the performance of a level set approach (the \emph{geodesic active contours} level set method from the \emph{Insight Toolkit} (ITK), as described in \S9.3.3 of \cite{itk}) on an actual image is shown in Figure~\ref{fig:background-segmentation-levelsets-ct}. By carefully tweaking the (large number of) parameters to the method, it is possible to get very good results, making it an excellent technique for interactive segmentation. However, the requirement to provide so many parameters, whose effects on the results are not always intuitively obvious, makes the technique far less attractive as a method for more automatic segmentation.
 
 %---
 \begin{stusubfig}{p}
@@ -461,7 +461,7 @@ An example illustrating the performance of a level set approach (the \emph{geode
 	%
 	\subfigure[Both results superimposed on the initial image]
 	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-d.png}}%
-\caption{The results of using the \emph{geodesic active contours} level set method from ITK to identify kidneys in an example CT image. The (large number of) parameters had to be carefully tweaked by hand for each kidney, which is a downside of level set approaches.}
+\caption{The results of using the \emph{geodesic active contours} level set method from the \emph{Insight Toolkit} to identify the kidneys in an example CT image. The (large number of) parameters had to be carefully tweaked by hand for each kidney, which is a downside of level set approaches.}
 \label{fig:background-segmentation-levelsets-ct}
 \end{stusubfig}
 %---
@@ -577,7 +577,7 @@ The key issues when using Lloyd's algorithm to segment images are how to define 
 	%
 	\subfigure[]
 	{\includegraphics[width=.4\linewidth]{background/background-segmentation-kmeans-b.png}}%
-\caption{An example of K-means clustering -- note that clustering the pixels of the example image (a) based on their values tends to produce non-contiguous clusters (b). For this example, the initial means chosen were $0$, $150$, $160$, $190$ and $255$.}
+\caption{An example of K-means clustering, produced using an implementation in the \emph{Insight Toolkit} -- note that clustering the pixels of the example image (a) based on their values tends to produce non-contiguous clusters (b). For this example, the initial means chosen were $0$, $150$, $160$, $190$ and $255$.}
 \label{fig:background-segmentation-kmeans}
 \end{stusubfig}
 %---
