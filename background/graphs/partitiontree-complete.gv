@@ -1,0 +1,37 @@
+graph
+{
+	node [shape=ellipse, style=solid, color=black, label=""];
+
+	// Nodes
+	n0a [label="{a,b,c,d,e,f}", width=2.5];
+	n1a [label="{a,b}"];
+	n1c [label="{c,d,e}"];
+	n1f [label="{f}"];
+	n2a [label="{a}"];
+	n2b [label="{b}"];
+	n2c [label="{c}"];
+	n2d [label="{d,e}"];
+	n2f [label="{f}"];
+	n3a [label="{a}"];
+	n3b [label="{b}"];
+	n3c [label="{c}"];
+	n3d [label="{d}"];
+	n3e [label="{e}"];
+	n3f [label="{f}"];
+
+	// Edges
+	n0a -- n1a;
+	n0a -- n1c;
+	n0a -- n1f;
+	n1a -- n2a;
+	n1a -- n2b;
+	n1c -- n2c;
+	n1c -- n2d;
+	n1f -- n2f;
+	n2a -- n3a;
+	n2b -- n3b;
+	n2c -- n3c;
+	n2d -- n3d;
+	n2d -- n3e;
+	n2f -- n3f;
+}
