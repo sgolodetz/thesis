@@ -343,15 +343,15 @@ x^2 + y^2 = r^2
 As we have seen, parametric deformable model approaches like snakes represent their model using the former approach. Level set approaches, by contrast, use the latter. As an introduction to the ideas behind level sets, consider the function $\psi(x,y) = x^2 + y^2$, which defines a scalar field over $\mathbb{R}^2$. For any value $k > 0$, the equation $\psi(x,y) = k$ defines a circle in the x-y plane: we will refer to each of these circles as an \emph{isosurface} of $\psi$, because each of them is the surface (curve) of all the points at which $\psi$ takes a particular value.\footnote{\emph{Iso} means `equal' in Greek, so here we are talking about the surface containing all the points with the same $\psi$ value.} The key idea is that if we now change $\psi$, for instance by redefining it as $\psi(x,y) = x^3 + y^3$, the isosurfaces change, in this case from circles to hypercircles. Thus, by changing the function $\psi$, we can move the isosurfaces of $\psi$ around without ever having to represent them explicitly. Level set approaches make use of this by representing the deformable model as an isosurface of some function $\psi$, and then modifying $\psi$ to deform the model towards the boundary of the desired image feature.
 
 %---
-\stufigex{height=6cm}{background/background-segmentation-levelsets-circleexample.png}{A simple circular contour which gradually expands over time}{fig:background-segmentation-levelsets-circleexample}{p}
+\stufigex{height=5.5cm}{background/background-segmentation-levelsets-circleexample.png}{A simple circular contour which gradually expands over time}{fig:background-segmentation-levelsets-circleexample}{p}
 %---
 
 %---
-\stufigex{height=6cm}{background/background-segmentation-levelsets-ellipseexample.png}{An example of a contour which changes its shape over time}{fig:background-segmentation-levelsets-ellipseexample}{p}
+\stufigex{height=5.5cm}{background/background-segmentation-levelsets-ellipseexample.png}{An example of a contour which changes its shape over time}{fig:background-segmentation-levelsets-ellipseexample}{p}
 %---
 
 %---
-\stufigex{height=6cm}{background/background-segmentation-levelsets-uniformgrid.png}{Approximating a function $\psi(\mathbf{x},t)$ with a discrete, uniformly-spaced grid (note that the time superscripts on the grid values are not shown)}{fig:background-segmentation-levelsets-uniformgrid}{p}
+\stufigex{height=5.5cm}{background/background-segmentation-levelsets-uniformgrid.png}{Approximating a function $\psi(\mathbf{x},t)$ with a discrete, uniformly-spaced grid (note that the time superscripts on the grid values are not shown)}{fig:background-segmentation-levelsets-uniformgrid}{p}
 %---
 
 To represent contour changes over time, level set approaches make $\psi$ a function of time as well, and define it over some domain $U \subset \mathbb{R}^N$, giving us $\psi(\mathbf{x}, t) : U \times \mathbb{R}^+ \rightarrow \mathbb{R}$. They then set this equal to some constant (generally $0$) to actually specify one of the isosurfaces of $\psi$ as the contour being deformed. As a simple example of this, consider a circle, centred at the origin, which gradually expands outwards as the time increases (see Figure~\ref{fig:background-segmentation-levelsets-circleexample}). Supposing its radius to be $t$ at time $t$, we could represent this as:
@@ -389,7 +389,7 @@ Thus far, we have examined the basic ideas underpinning level sets, but not seen
 The initial goal is to construct, from a contour specified by the user, the grid of values $\psi_{ij}^0$ approximating the function $\psi(\mathbf{x},0)$. In \cite{malladi95}, this is done by setting $\psi_{ij}^0$ to be the signed distance of the grid node $ij$ from the initial contour (points outside the contour are assigned positive values and those inside are assigned negative ones) -- see Figure~\ref{fig:background-segmentation-levelsets-initialfunction}.
 
 %---
-\stufigex{height=7cm}{background/background-segmentation-levelsets-initialfunction.png}{Generating the initial function from the zero contour specified by the user (in red)}{fig:background-segmentation-levelsets-initialfunction}{p}
+\stufigex{height=5.5cm}{background/background-segmentation-levelsets-initialfunction.png}{Generating the initial function from the zero contour specified by the user (in red)}{fig:background-segmentation-levelsets-initialfunction}{p}
 %---
 
 Having constructed the grid for the initial function, the next step is then to define an appropriate numerical method to deform it over time. To do this, we first need a partial differential equation for $\psi$. The appropriate PDE, as derived in \cite{malladi95}, is:
@@ -427,18 +427,48 @@ Level sets have a number of advantages over snakes. One advantage is that they h
 %---
 \begin{stusubfig}{p}
 	\subfigure[An isosurface divided into two separate components]
-	{\includegraphics[height=6cm]{background/background-segmentation-levelsets-topologychanges-a.png}}%
+	{\includegraphics[height=5.5cm]{background/background-segmentation-levelsets-topologychanges-a.png}}%
 	%
 	\\ \vspace{4mm}%
 	%
 	\subfigure[Changing a single grid value merges the two components into one]
-	{\includegraphics[height=6cm]{background/background-segmentation-levelsets-topologychanges-b.png}}%
+	{\includegraphics[height=5.5cm]{background/background-segmentation-levelsets-topologychanges-b.png}}%
 \caption{Level set approaches seamlessly handle multiple boundaries and changes in topology}
 \label{fig:background-segmentation-levelsets-topologychanges}
 \end{stusubfig}
 %---
 
 Another advantage of level sets is that, unlike snakes, they translate straightforwardly into three dimensions -- all that is required is to replace a 2D grid with a 3D one. It is worth remarking, however, that the extra processing involved in the 3D case is substantial, making the basic scheme described above unsuitable if timely solutions are required. Special techniques have been developed to deal with this problem. One example is the narrow-band technique mentioned in \cite{malladi95}, which essentially restricts numerical calculations to a narrow region around the isosurface in which we're particularly interested (i.e.~the one representing the deformable model). The insight is that solving the PDE over the whole domain is only necessary if we're interested in solving for the entire family of isosurfaces associated with $\psi$: often, we're only interested in a single isosurface, so the extra computations aren't necessary. More details of this sort of technique are available in \cite{malladi95} and \cite{itk}.\fxnote{[IDV] [The level sets section needs an image-based example]}
+
+An example illustrating the performance of a level set approach (the \emph{geodesic active contours} level set method from ITK, as described in \S9.3.3 of \cite{itk}) on an actual image is shown in Figure~\ref{fig:background-segmentation-levelsets-ct}. By carefully tweaking the (large number of) parameters to the method, it is possible to get very good results, making it an excellent technique for interactive segmentation. However, the requirement to provide so many parameters, whose effects on the results are not always intuitively obvious, makes the technique far less attractive as a method for more automatic segmentation.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial CT image, with seeds marked]
+	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The right kidney result]
+	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-b.png}}%
+	%
+	\\
+	%
+	\subfigure[The left kidney result]
+	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-c.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Both results superimposed on the initial image]
+	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-d.png}}%
+\caption{The results of using the \emph{geodesic active contours} level set method from ITK to identify kidneys in an example CT image. The (large number of) parameters had to be carefully tweaked by hand for each kidney, which is a downside of level set approaches.}
+\label{fig:background-segmentation-levelsets-ct}
+\end{stusubfig}
+%---
+
+%---
+\stufigex{height=5.5cm}{background/background-segmentation-atlas-park.png}{Volume rendering of a probabilistic atlas constructed by Park et al.\ in \cite{park03} (extracted from Figure $2$ of the paper in question) -- the colours and brightnesses of the voxels depend on the probability values for the various organs at the voxels in question}{fig:background-segmentation-atlas-park}{p}
+%---
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Other Deformable Models}
@@ -473,12 +503,6 @@ P(x_i = \ell) = a_{i,\ell}.
 \]
 %
 In other words, the probability of the correct segmentation result for a given voxel being $\ell$ is given by the $\ell^{th}$ component of the probabilistic atlas at that location. With this link made, the result determined will depend on both the atlas and the observed data.
-
-%---
-\stufigex{height=8cm}{background/background-segmentation-atlas-park.png}{Volume rendering of a probabilistic atlas constructed by Park et al.\ in \cite{park03} (extracted from Figure $2$ of the paper in question) -- the colours and brightnesses of the voxels depend on the probability values for the various organs at the voxels in question}{fig:background-segmentation-atlas-park}{p}
-%---
-
-\afterpage{\clearpage}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Neural Network Techniques}
