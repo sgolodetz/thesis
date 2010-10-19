@@ -1,31 +1,25 @@
 \chapter{Validation}
 \label{chap:validation}
 
+\vspace{-\baselineskip}
+
 %##################################################################################################
 \section{Chapter Overview}
 %##################################################################################################
 
-%In the previous chapter, I presented a set of novel feature identifiers that can be used to extract features such as the spine, spinal cord, ribs, aorta and soft-tissue organs from abdominal CT scans in an automatic way. It is clearly the case, however, that some of these feature identifiers are more robust than others (spine identification, for example, can be expected to be substantially more robust than liver identification). In this chapter, I seek to quantify the effectiveness of the identifiers by validating them against known results (a `gold standard'). This provides the basis for the following chapter, in which I critically assess my approach as a whole in the context of existing work in this area.
-
 In order to evaluate the effectiveness of my approach, I undertook two separate pieces of validation work. The first piece involved quantifying the accuracy of the 3D feature identifiers presented in the previous chapter -- this was done by comparing their output to `gold standard' results produced manually in collaboration with a radiologist. The second piece involved validating the accuracy of my volume calculations. To do this, I first manually identified the liver, kidneys and spleen in a number of series and used my program to calculate their volumes in each case. The volume results were then correlated with known weights provided by the radiologist (bearing in mind that the densities of the organs in question are relatively uniform).
 
-TODO
+Both producing the gold standard results and making inter-result comparisons involved implementing special features for the purpose in \emph{millipede}. For the gold standard production, manual drawing tools were implemented to allow the user to draw round features of interest in the images. To make life easier for the user, the actual drawing was done using a \emph{Bamboo Fun} pen tablet (manufactured by Wacom) -- see Figure~\ref{fig:validation-pentablet-usage} -- although it would also have been possible to use a standard mouse. The inter-result comparisons were implemented as a dialog box allowing the user to compare multi-feature selections on a per-feature basis. The implementation of all the validation-specific features is discussed in Appendix~\ref{chap:appendixval}.
+
+The validation work undertaken here forms an important part of the basis for the following chapter, in which I critically assess all the contributions claimed in the introduction, and discuss possible improvements to my research methodology.
+
+%---
+\stufigex{height=20cm}{validation/validation-pentablet-usage.png}{A typical user drawing round the right kidney using a `lasso' drawing tool similar to that found in common image-editing programs}{fig:validation-pentablet-usage}{p}
+%---
 
 %##################################################################################################
 \section{Validation of Feature Identifiers}
 %##################################################################################################
-
-TODO
-
-%################################################
-\subsection{Production of a Gold Standard}
-%################################################
-
-TODO
-
-%################################################
-\subsection{Results}
-%################################################
 
 TODO
 
