@@ -1,0 +1,63 @@
+function rasterize_polyline : (polyline : List<Vec2i>) $\to$ Vector<Vec2i>
+	var output : Vector<Vec2i>;
+
+	// Step 1: Construct the edge set, and determine the min and max scanlines.
+	var minY, maxY : int := $\infty$, $-\infty$;
+	var edges : Set<Edge>;
+	for it : ListIterator<Vec2i> := polyline.begin() up to polyline.end()
+		var jt : ListIterator<Vec2i> := it.cyclic_successor();
+		if *it $\ne$ *jt then edges.insert(make_edge(*it, *jt));
+		minY := min(minY, it->y);
+		maxY := max(maxY, it->y);
+
+	// Step 2: Rasterize each scanline in turn.
+	var activeEdges : Set<ActiveEdge>;
+	var nextEdge : SetIterator<Edge> := edges.begin();
+	for y : int := minY up to maxY
+		// (a) Add any new edges to the active edge list.
+		while nextEdge $\ne$ edges.end() and nextEdge->u.y = y
+			activeEdges.insert(make_active_edge(*nextEdge));
+			++nextEdge;
+
+		// (b) Construct edge points along the current scanline.
+		// We use a variation of normal bit-packing that allows us to add each flag twice.
+		var UP, DOWN, HORIONTAL : int := 1, 4, 16;
+		var edgePoints : Map<int,int>;
+		for each activeEdge $\in$ activeEdges
+			if activeEdge.e.u.y $\ne$ activeEdge.e.v.y then		// up or down edge
+				var x : int := round_to_nearest_int(activeEdge.x);
+				if activeEdge.e.u.y $<$ y then edgePoints[x] += UP;
+				else edgePoints[x] += DOWN;
+			else											// horizontal edge
+				edgePoints[activeEdge.e.u.x] += HORIZONTAL;
+				edgePoints[activeEdge.e.v.x] += HORIZONTAL;
+			activeEdge.propagate();
+
+		// (c) Rasterize the scanline using the even-odd parity method.
+		var drawingOn : bool := false;
+		var beginHorizontalFlag : int := 0;
+		for it : MapIterator<int,int> := edgePoints.begin() up to edgePoints.end()
+			var x, flag : int := it->first, it->second;
+			output.push_back((x,y));
+			switch flag
+				case DOWN+UP or UP: drawingOn := not drawingOn;
+				case HORIZONTAL+DOWN:
+					if beginHorizontalFlag = HORIZONTAL+UP then drawingOn := not drawingOn;
+					if beginHorizontalFlag $\ne$ 0 then beginHorizontalFlag := 0;
+					else beginHorizontalFlag := flag;
+				case HORIZONTAL+UP:
+					if beginHorizontalFlag = HORIZONTAL+DOWN then drawingOn := not drawingOn;
+					if beginHorizontalFlag $\ne$ 0 then beginHorizontalFlag := 0;
+					else beginHorizontalFlag := flag;
+				default: /* Do nothing */;
+
+			var jt : MapIterator<int,int> := it.successor();
+			if jt = edgePoints.end() then continue;
+			if drawingOn or beginHorizontalFlag $\ne$ 0 then
+				var nextX : int := jt->first;
+				for k : int := x $+$ 1 up to nextX $-$ 1
+					output.push_back((k,y));
+
+		// (d) Remove any old edges from the active edge list.
+		for it : SetIterator<ActiveEdge> := activeEdges.begin() up to activeEdges.end()
+			if it->e.v.y = y then activeEdges.erase(it);
