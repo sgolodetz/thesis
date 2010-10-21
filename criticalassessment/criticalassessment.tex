@@ -1,14 +1,146 @@
 \chapter{Critical Assessment}
 \label{chap:assessment}
 
-%---
+%##################################################################################################
 \section{Chapter Overview}
+%##################################################################################################
 
-%The previous chapter described the validation work I undertook to evaluate the 
+In Chapter~\ref{chap:introduction}, I listed seven original contributions made by my doctoral work. Having now discussed the work underlying the contributions in detail in the preceding chapters, and validated my feature identification work in the previous chapter, the goal of this chapter is to evaluate the usefulness of these contributions both within the context of my doctorate and (where applicable) more widely.
+
+%##################################################################################################
+\section{Partition Forest Algorithms}
+%##################################################################################################
 
 TODO
 
-%---
+\iffalse
++ Useful both for imaging and hierarchical pathfinding
++ Algorithms carefully pinned down, well-justified, reasonable complexities
++ Parent switching algorithm improves on previous state-of-the-art (Nacken) because it makes extra reasonable parent switches possible
++ Unzipping, zipping, non-sibling node merging have no obvious comparisons in the literature
+\fi
+
+%##################################################################################################
+\section{Partition Forest Selections}
+%##################################################################################################
+
+TODO
+
+\iffalse
++ Usefulness well-justified
++ Algorithms carefully pinned down, reasonable complexities
++ No comparison in the literature
++ Can be reused for feature marking
+\fi
+
+%##################################################################################################
+\section{Spatially-Variant Gaussian Filtering}
+%##################################################################################################
+
+TODO
+
+\iffalse
++ Does help to improve the segmentation results somewhat
++ Quick to run
++ Easy to understand
++ Easy to implement
+- Rather poor end results compared to e.g.~anisotropic diffusion filtering
+\fi
+
+%##################################################################################################
+\section{New Waterfall Algorithm}
+%##################################################################################################
+
+TODO
+
+\iffalse
+# Based on Chris's work
++ Produces results that do not depend on the implementation of key data structures (like Marcotegui's) or where the MST is rooted (like Chris's)
++ Efficient, linear-time algorithm
++ Useful as a first step in other waterfall algorithms, because it carefully pins down the types of different edges
++ Easy to implement
+- Produces results that depend on which MST is constructed (all MST-based algorithms, including Chris's, necessarily do this -- the only alternative is to run the waterfall on a graph and accept that it will be slower)
+- Requires a constant factor more work than Chris's
+- Not as easy to implement as Chris's
+- The 'incorrect' version of Chris's actually produces better results than either this one or Chris's 'correct' version(!)
+\fi
+
+%##################################################################################################
+\section{Partition Forest Construction}
+%##################################################################################################
+
+TODO
+
+\iffalse
++ Works for both 2D and 3D segmentation, because it's designed using subvolumes
++ No comparison in the literature
+- Relatively slow, primarily because of the significant preprocessing time required (anisotropic diffusion filtering, at least as implemented in ITK, is slow as hell)
+- Construction process uses twice as much memory as the finished partition forest
+\fi
+
+%##################################################################################################
+\section{Feature Identification Techniques}
+%##################################################################################################
+
+TODO
+
+\iffalse
++ The feature identifiers are relatively quick to run
++ The 2D ribs identifier is relatively effective, although it can miss ribs in some cases
++ The 2D spine identifier is effective and robust (about 85% of results are pretty good)
++ The 3D spine identifier is relatively effective and robust, but has a tendency to flood into the ribs a bit
++ The 3D spinal cord identifier is relatively effective and robust, although the contour of the spinal cord is by no means perfect yet
++ The 3D kidneys identifier is a reasonable start, but requires further work both to make it more robust and to detect kidneys that are made up of multiple regions 
+- Because the current techniques are based on region growing, they suffer from the usual sort of region growing problems; a better approach might be to use the partition forest to find initial features, and then use level sets
+- The 3D aorta identifier only works well when the segmentation is particularly good; it needs further work
+- The 3D liver identifier is not ideal (although it does start out in the right place), and has a tendency to flood into other features
+\fi
+
+%##################################################################################################
+\section{Implementation}
+%##################################################################################################
+
+As mentioned in the introduction, over the course of my doctorate I developed two separate segmentation, feature identification and visualization systems, called \emph{centipede} and \emph{millipede}. Each of these was a substantial, medium-sized system -- as a rough\footnote{I am aware that lines of code is a somewhat unreliable way of measuring the size of a project, but it does at least allow us to distinguish between small, medium and large projects.} indication of scale, \emph{centipede} (the trial system) had $26000+$ lines of C++ code, and \emph{millipede} (the final system) $32000+$ lines. Additionally, \emph{millipede} was designed to be a highly portable, cross-platform project built using CMake -- to date, it has been successfully used on Microsoft Windows, Linux (Ubuntu) and Mac OS X (Snow Leopard), but it is potentially portable to other platforms as well.
+
+The two systems make a vital contribution to this thesis, because they demonstrate that the approach actually works in practice, and on widely-available consumer hardware. From the perspective of future developers, \emph{millipede} in particular also provides a consistently-designed and easily-maintainable code-base that forms a firm foundation for further research work. The build process has been carefully documented on all three of the platforms mentioned, allowing other developers to pick up the project and make changes without the Herculean struggle often associated with building unfamiliar code.
+
+In terms of assessing the development process itself, the development of \emph{millipede} proceeded far more smoothly than that of \emph{centipede}, for a number of reasons:
+%
+\begin{enumerate}
+
+\item \textbf{Better Domain Knowledge}. Most importantly, \emph{millipede} was developed with the difficulties of developing \emph{centipede} firmly in mind, which allowed me to avoid many of the pitfalls I had encountered the first time around, whilst delivering a more feature-rich end result. (A few examples of specific improvements were that (a) I was able to redesign my partition forest implementation to be faster and more coherent, (b) I was able to implement segmentation and feature identification in 3D as well as 2D, and (c) I was able to make the user interface more responsive using multithreading.)
+
+\item \textbf{Better Tools}. When developing \emph{centipede}, I made the mistake of insisting on developing my own underlying imaging toolkit rather than using the `off-the-shelf' alternative\footnote{In industry, this folly is commonly referred to as suffering from the `not invented here' syndrome.}, which resulted in the initial development taking far longer than it otherwise would have done; for \emph{millipede}, I chose to use the \emph{Insight Toolkit} (ITK) instead.
+
+\item \textbf{Better Scheduling}. The development of \emph{millipede} progressed under much tighter time constraints than \emph{centipede}, which forced me to construct a much more focused development plan, keeping only essential features and avoiding `feature creep'. The actual time spent on implementing \emph{millipede} itself was roughly six months, compared to roughly a year overall for \emph{centipede}.
+
+\end{enumerate}
+%
+The lessons I have taken from this are that:
+%
+\begin{enumerate}
+
+\item It is important to build a trial system, but it is often a good idea to then ditch that trial system and start again with the benefit of hindsight. (This echoes Fred Brooks' well-known advice of `Plan to throw one away; you will, anyhow.' \cite{brooks74}) In this case, rewriting from scratch was by far the best option (if a slightly frustrating one from a development perspective), because it allowed improvements to be made that would have taken far longer to integrate into the existing \emph{centipede} system.
+
+\item It is especially crucial to avoid reinventing the wheel when developing systems of a non-trivial size. The goal of learning more about how things work by redeveloping them yourself is a worthwhile one, but that must not be done during the development of a system that has real-world time constraints. Redoing work that has already been done by somebody else takes time away from new work. Systems you redevelop yourself are also often less reliable than their `off-the-shelf' counterparts, which have been subjected to significant testing in the real world.
+
+\item Having less time can result in a better end result, because you are forced to develop only what is necessary. However, this can only work when you already know what you are developing (which is not usually the case at the start of a research project).
+
+\end{enumerate}
+
+\iffalse
++ Medium-size systems (30k+ lines of code each)
++ Implementation of millipede carefully planned with feature list -- very functional, but no unnecessary 'bells and whistles' / feature creep
++ The implementation of millipede proceeded rapidly and according to schedule
++ Consistent, maintainable code (particularly millipede)
++ millipede is entirely cross-platform -- built using CMake; works on Windows, Linux and Mac
++ Runs on normal consumer desktops / laptops
+- Should have used ITK the first time round (instead of suffering from NIH syndrome)
+- Should have written centipede to be cross-platform from the start
+\fi
+
+%##################################################################################################
 \section{Chapter Summary}
+%##################################################################################################
 
 TODO
