@@ -273,7 +273,7 @@
 \renewcommand{\thelstlisting}{\textbf{\arabic{lstlisting}}}
 
 \lstdefinelanguage{Pseudocode}{
-morekeywords={and,break,continue,down,each,else,for,function,if,not,null,or,rangeswitch,ref,return,then,throw,to,up,var,while},
+morekeywords={and,break,case,continue,default,down,each,else,for,function,if,not,null,or,rangeswitch,ref,return,switch,then,throw,to,up,var,while},
 sensitive=true,
 morecomment=[l]{//},
 morecomment=[s]{/*}{*/}
@@ -284,6 +284,7 @@ abovecaptionskip=0.5cm,
 basicstyle=\scriptsize\ttfamily,
 belowcaptionskip=0.5cm,
 belowskip=0.5cm,
+columns=fixed,
 commentstyle=\color{darkgreen},
 language=Pseudocode,
 numbers=left,
@@ -295,12 +296,31 @@ stepnumber=1,
 tabsize=4
 }
 
-% For function prototypes (e.g. in the partition forests chapter)
+\lstdefinestyle{Snippet}{
+abovecaptionskip=0.5cm,
+aboveskip=0.5cm,
+basicstyle=\small\ttfamily,
+belowcaptionskip=0.5cm,
+belowskip=0.5cm,
+columns=fixed,
+commentstyle=\color{darkgreen},
+frame=lines,
+keywordstyle=\small\bfseries,
+language=Pseudocode,
+numbers=none,
+mathescape=true,
+showstringspaces=false,
+stepnumber=1,
+tabsize=4
+}
+
+% For C++ function prototypes (e.g. in the partition forests chapter)
 \lstdefinestyle{Prototype}{
 abovecaptionskip=0.5cm,
 basicstyle=\small\ttfamily,
 belowcaptionskip=0.5cm,
 belowskip=0.5cm,
+columns=fixed,
 commentstyle=\color{darkgreen},
 language=C++,
 numbers=none,

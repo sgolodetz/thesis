@@ -1,0 +1,209 @@
+\chapter{Pseudo-Code Language Reference}
+
+The language I have devised for the pseudo-code listings in this thesis is intended to be relatively self-explanatory to an experienced computer scientist, but this language reference is provided to clarify any points of doubt that may remain. In general, the language has been designed with brevity and simplicity in mind -- the idea is to convey the essence of the algorithms without burdening the reader with irrelevant, language-specific details.
+
+%##################################################################################################
+\section{General Observations}
+%##################################################################################################
+
+\begin{itemize}
+\item Indention is crucial, since we do without braces for reasons of brevity.
+\item Statements end in semi-colons, like in C++.
+\item Where not otherwise specified, constructs have the same meaning they would in C++.
+\end{itemize}
+
+%##################################################################################################
+\section{Built-In Types}
+%##################################################################################################
+
+The built-in types mirror the ones found in languages like C++, but without the usual range restrictions:
+
+\begin{center}
+\begin{tabular}{c|c}
+\textbf{Type} & \textbf{Range} \\
+\hline
+bool & true or false \\
+int & $\mathbb{Z}$ \\
+double & $\mathbb{R}$
+\end{tabular}
+\end{center}
+
+%##################################################################################################
+\section{Operators}
+%##################################################################################################
+
+The main operators are:
+
+\begin{center}
+\begin{tabular}{c|c|l}
+\textbf{Operator} & \textbf{Name} & \textbf{Example} \\
+\hline
+$:=$ & Assignment & a $:=$ b; \\
+$+$ & Addition & a $:=$ b $+$ c; \\
+$+=$ & Addition Assignment & a $+=$ b; \\
+$-$ & Subtraction & a $:=$ b $-$ c; \\
+$-=$ & Subtraction Assignment & a $-=$ b; \\
+$*$ & Multiplication & a $:=$ b $*$ c; \\
+$*=$ & Multiplication Assignment & a $*=$ b; \\
+$/$ & Division & a $:=$ b $/$ c; \\
+$/=$ & Divison Assignment & a $/=$ b; \\
+$-$ & Negation & a $:=$ $-$b; \\
+$=$ & Equals & if a $=$ b then ... \\
+$\ne$ & Does Not Equal & if a $\ne$ b then ... \\
+$<$ & Less & if a $<$ b then ... \\
+$>$ & Greater & if a $>$ b then ... \\
+$\le$ & Less-Equal & if a $\le$ b then ... \\
+$\ge$ & Greater-Equal & if a $\ge$ b then ...
+\end{tabular}
+\end{center}
+
+%##################################################################################################
+\section{Variables}
+%##################################################################################################
+
+Variables are defined by writing:
+
+\begin{lstlisting}[style=Snippet]
+var name : type;
+\end{lstlisting}
+%
+They can be immediately initialized by writing:
+
+\begin{lstlisting}[style=Snippet]
+var name : type := value;
+\end{lstlisting}
+
+%##################################################################################################
+\section{Functions}
+%##################################################################################################
+
+Functions are defined by writing:
+
+\begin{lstlisting}[style=Snippet]
+function name : (param1 : type1; ...; paramN : typeN) $\to$ resultType
+	<body>
+\end{lstlisting}
+
+%##################################################################################################
+\section{Flow Control}
+%##################################################################################################
+
+%################################################
+\subsection{Conditional Branching}
+%################################################
+
+There are three types of conditional branching: \lstinline[language=Pseudocode]$if$s, \lstinline[language=Pseudocode]$switch$es and \lstinline[language=Pseudocode]$rangeswitch$es. An \lstinline[language=Pseudocode]$if$ is written as:
+
+\begin{lstlisting}[style=Snippet]
+if conditionA then
+	<body>
+else if conditionB then
+	<body>
+...
+else
+	<body>
+\end{lstlisting}
+%
+A \lstinline[language=Pseudocode]$switch$ is written as:
+
+\begin{lstlisting}[style=Snippet]
+switch name
+	case <value1>: <do something>
+	...
+	case <valueN>: <do something>
+	default: <do something>
+\end{lstlisting}
+%
+As in C++, the \lstinline[language=Pseudocode]$default$ case is optional. Unlike C++, \emph{there is no fall-through} (i.e.~you don't need to write \lstinline[language=Pseudocode]$break$ at the end of each case). Instead, you can write things like:
+
+\begin{lstlisting}[style=Snippet]
+case <value1> or <value2>: <do something>
+\end{lstlisting}
+%
+A \lstinline[language=Pseudocode]$rangeswitch$ is written as:
+%
+\begin{lstlisting}[style=Snippet]
+rangeswitch name
+	<value1> $<$ _ $<$ <value2> | <do something>
+	...
+\end{lstlisting}
+%
+In the above, the underscore is used to denote the variable that is the subject of the \lstinline[language=Pseudocode]$rangeswitch$. It is worth noting that conditionals can also be used as expressions, as in the examples:
+%
+\begin{lstlisting}[style=Snippet]
+a := if b then c else d;
+e := switch f
+		case g: h
+		case i: j
+		default: k;
+\end{lstlisting}
+
+%################################################
+\subsection{Loops}
+%################################################
+
+There are three types of loop, normal \lstinline[language=Pseudocode]$for$ loops, \lstinline[language=Pseudocode]$for each$ loops (which tend to be especially suitable for use with containers) and \lstinline[language=Pseudocode]$while$ loops. A normal \lstinline[language=Pseudocode]$for$ loop is written:
+%
+\begin{lstlisting}[style=Snippet]
+for name : type := startValue {up|down} to endValue
+	<body>
+\end{lstlisting}
+
+\newpage
+
+\noindent A \lstinline[language=Pseudocode]$for each$ loop is written:
+%
+\begin{lstlisting}[style=Snippet]
+for each name $\in$ container
+	<body>
+\end{lstlisting}
+%
+A \lstinline[language=Pseudocode]$while$ loop is written:
+%
+\begin{lstlisting}[style=Snippet]
+while condition
+	<body>
+\end{lstlisting}
+
+%##################################################################################################
+\section{Mathematical Vectors}
+%##################################################################################################
+
+Mathematical vectors are treated specially to make life easier. For example, you can write:
+%
+\begin{lstlisting}[style=Snippet]
+var vi : Vec2i := (2,3);
+\end{lstlisting}
+%
+This creates a 2D vector with integer components $x = 2$ and $y = 3$.
+
+%##################################################################################################
+\section{Containers and Iterators}
+%##################################################################################################
+
+All the containers you would find in C++ have direct equivalents in the pseudo-code:
+%
+\begin{itemize}
+\item Vector$<$T$>$ gives you a resizeable array similar to std::vector in C++.
+\item List$<$T$>$ gives you a doubly-linked list similar to std::list.
+\item Set$<$T$>$ gives you a tree-based set similar to std::set.
+\item Map$<$K,V$>$ gives you a tree-based map similar to std::map.
+\end{itemize}
+%
+Unlike in C++, where you would write an iterator over an int vector as std::vector$<$int$>$::iterator, here you just write VectorIterator$<$int$>$. There are corresponding ListIterator, SetIterator and MapIterator templates as well.
+
+As in C++, iterators can be dereferenced to access the container element to which they point. To dereference the iterator it, we just write *it. Furthermore, properties of the pointed-to element can be accessed directly using the \lstinline[language=Pseudocode]$->$ notation, i.e.~\lstinline[language=Pseudocode]$it->value$ means the same as \lstinline[language=Pseudocode]$(*it).value$, as in C++. We can increment an iterator it by writing \lstinline[language=Pseudocode]$++it$, and decrement it by writing \lstinline[language=Pseudocode]$--it$.
+
+There are special notations for constructing containers, corresponding to how you would normally write them on paper. For example, we can use set literals directly in the code like this:
+%
+\begin{lstlisting}[style=Snippet]
+r := f({1,2,3});
+\end{lstlisting}
+%
+The corresponding notation for vectors and lists is [1,2,3] -- note that in real life the fact that it is the same for both would make parsing harder, but in pseudo-code we are less constrained.
+
+%##################################################################################################
+\section{User-Defined Data Types}
+%##################################################################################################
+
+For reasons of brevity, data type definitions are not shown explicitly in the pseudo-code. Instead, the form of user-defined data types is implied by their usage.
