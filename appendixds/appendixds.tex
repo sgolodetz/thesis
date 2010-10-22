@@ -4,7 +4,49 @@
 %---
 \section{Disjoint Set Forests}
 
-TODO
+Echoing the more general definition of partitioning in Chapter~\ref{chap:ipfs}, we first observe that:
+
+\begin{definition}
+A set of k subsets $\{S'_1,\ldots,S'_k\}$ \textbf{partitions} a set $S$ iff:
+
+\begin{enumerate}
+\item $\bigcup_i S'_i = S$ and
+\item $\forall i,j \cdot i \ne j \Rightarrow S'_i \cap S'_j = \emptyset$.
+\end{enumerate}
+
+\noindent (In words, the subsets together make up $S$, and are mutually disjoint.)
+\end{definition}
+
+\noindent Disjoint set forests, which are a staple of undergraduate computer science courses \cite{worrell06}, are a data structure designed to represent such a partition using a collection of trees, one for each subset (see Figure~\ref{?}). Each subset has a \emph{representative element}, namely the root node of its tree. The goal is to efficiently support three key operations:
+%
+\begin{enumerate}
+
+\item MAKE-SET, which makes a subset containing a single element.
+\item FIND-SET, which allows the lookup of the representative element of the subset containing a particular element.
+\item UNION, which allows the (distinct) subsets containing two individual elements to be merged.
+
+\end{enumerate}
+%
+The basic idea (initially ignoring the details) is that MAKE-SET makes a single node tree, FIND-SET follows the path from a given element to the top of its tree and returns the root, and UNION merges trees by making the root of one the child of the root of the other (see Figure~\ref{?}). However, in order to make things more efficient, two optimizations are commonly employed:
+%
+\begin{enumerate}
+
+\item Rather than arbitrarily choosing which tree root should be the child of the other, the \textbf{union-by-rank} approach aims to approximate the ideal that when a UNION takes place, the root of the tree representing the smaller subset becomes the child of the root of the tree representing the larger subset, and not the other way round. This is sensible, because the alternative leads to trees of greater height, making FIND-SET operations more costly. However, rather than maintaining the actual size of each subset, which would necessitate more work, union-by-rank works by giving each node a \emph{rank} (which is maintained as an upper bound on the height of the node from the bottom of its tree) and making the root with the smaller rank the child of the root with the larger rank.
+
+\item It is better to have short paths from each node to the root of its tree, because it makes FIND-SET operations more efficient. The \textbf{path compression} approach takes advantage of the walking up the tree done during FIND-SET operations to set the parent links of visited nodes to point directly to the tree root. This makes future FIND-SET operations more efficient (see Figure~\ref{?}).
+
+\end{enumerate}
+
+\noindent Bearing these optimizations in mind, the operations can then be implemented as shown in Listing~\ref{code:appendixds-dsf} (the code is largely identical to the implementations originally given in \cite{worrell06}, but is slightly adapted to additionally support the storage of auxiliary data with each node). An example sequence of disjoint set operations is illustrated in Figure~\ref{?}.
+
+%---
+\begin{stulisting}[p]
+\caption{Disjoint Set Forest Implementation}
+\label{code:appendixds-dsf}
+\lstinputlisting[style=Default]{appendixds/appendixds-dsf.lst}
+\end{stulisting}
+%---
+%It can be shown, as per \cite{worrell06}, that `a sequence of $m$ MAKE-SET, UNION operations, $n$ of which are MAKE-SET operations, takes time $O(m \lg^* n)$ in the worst case'. Since $\lg^* n$ is incredibly slowly growing ($\le 5$ for any sensible $n$), the intuition is thus that such a sequence takes effectively $O(m)$ time in practice. Thus each individual operation is almost amortized constant time, and the goal of making the operations efficient is achieved.
 
 %---
 \section{Minimum Spanning Trees}

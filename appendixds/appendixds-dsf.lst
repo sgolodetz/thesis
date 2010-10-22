@@ -1,0 +1,26 @@
+function make_set<T> : (x : int; value : T) $\to$ $\emptyset$
+	elements[x].parent := x;
+	elements[x].rank := 0;
+	elements[x].value := value;
+
+function find_set : (x : int) $\to$ int
+	var element : ref Element := get_element(x);
+	var parent : ref int := element.parent;
+	if parent $\ne$ x then
+		parent := find_set(parent);
+	return parent;
+
+function union : (x : int; y : int) $\to$ $\emptyset$
+	var setX, setY : int := find_set(x), find_set(y);
+	if setX $\ne$ setY then
+		link(setX, setY);
+
+function link : (x : int; y : int) $\to$ $\emptyset$
+	var elementX, elementY : ref Element := get_element(x), get_element(y);
+	var rankX, rankY : ref int := elementX.rank, elementY.rank;
+	if rankX $>$ rankY then
+		elementY.parent := x;
+	else
+		elementX.parent := y;
+		if rankX = rankY then
+			rankY := rankY + 1;
