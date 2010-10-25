@@ -1,0 +1,60 @@
+class BoxDrawingTool : public DrawingTool
+{
+private:
+	boost::optional<Vector2i> m_anchor_Pixels, m_other_Pixels;
+	boost::optional<Vector2i> m_anchor_Coords, m_other_Coords;
+
+	// <Method declarations not shown, for reasons of brevity>
+};
+
+bool BoxDrawingTool::has_started() const
+{
+	return m_anchor_Pixels;
+}
+
+void BoxDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const Vector2i& p_Coords)
+{
+	m_other_Pixels = p_Pixels;
+	m_other_Coords = p_Coords;
+}
+
+void BoxDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i& p_Coords)
+{
+	m_anchor_Pixels = m_other_Pixels = p_Pixels;
+	m_anchor_Coords = m_other_Coords = p_Coords;
+}
+
+void BoxDrawingTool::render() const
+{
+	// <Not shown here, for reasons of brevity>
+}
+
+void BoxDrawingTool::reset()
+{
+	m_anchor_Pixels.reset();
+	m_other_Pixels.reset();
+	m_anchor_Coords.reset();
+	m_other_Coords.reset();
+}
+
+std::vector<Vector2i> BoxDrawingTool::selected_positions() const
+{
+	std::vector<Vector2i> selectedPositions;
+	if(has_started())
+	{
+		int minX = std::min(m_anchor_Coords->x, m_other_Coords->x),
+		    minY = std::min(m_anchor_Coords->y, m_other_Coords->y);
+		int maxX = std::max(m_anchor_Coords->x, m_other_Coords->x),
+		    maxY = std::max(m_anchor_Coords->y, m_other_Coords->y);
+		selectedPositions.reserve((maxX + 1 - minX) * (maxY + 1 - minY));
+		for(int y=minY; y<=maxY; ++y)
+			for(int x=minX; x<=maxX; ++x)
+				selectedPositions.push_back(Vector2i(x,y));
+	}
+	return selectedPositions;
+}
+
+DrawingTool::ToolStyle BoxDrawingTool::style() const
+{
+	return TOOLSTYLE_CLICKANDDRAG;
+}

@@ -27,6 +27,19 @@ Three tools were implemented in \emph{millipede} (but it would be easy to add fu
 %
 No instantaneous tool was implemented, because it was not essential for validation purposes, but an instantaneous magic wand tool (essentially just a single-click region growing tool) is an obvious candidate for future inclusion. A tool is implemented as a C++ class deriving from the \texttt{DrawingTool} base class shown in Listing~\ref{code:appendixval-drawingtool}. The key things to specify are:
 
+\begin{itemize}
+
+\item How to check whether the user is currently drawing with the tool.
+\item What to do when the user presses, drags or releases the mouse. (Note from the listing that the position of the mouse when the user does any of these things is passed to the tool both in on-screen pixel coordinates and in image volume coordinates -- this will be discussed further when talking about partition forest selections later, but the essential point is that rendering is done in pixel coordinates, whereas selections must be created in image volume coordinates. Trying to produce selections by rasterizing in pixel coordinates can produce results that contain holes.)
+\item How to render what is currently being drawn.
+\item How to reset the tool.
+\item How to evaluate the user's input to produce a selection of voxels in the image volume.
+\item What style of tool this is.
+
+\end{itemize}
+%
+Each of the three implemented tools is described below, after which it will be shown how they were actually used to create partition forest selections in \emph{millipede}. It should be noted that the lasso and line loop have a great deal in common, in that both create loops of lines that must be evaluated to produce a selection of voxels in the image volume (in the lasso case, these are large loops that are evaluated as soon as the user releases the mouse button; in the line loop case, these are generally small loops that are evaluated when the user requests it). The evaluation in both cases requires \emph{concave polygon rasterization}, which will be discussed first. In the code, both tools are implemented as subclasses of a \texttt{LineBasedDrawingTool} class, which maintains the loop of lines that will ultimately be fed to the rasterizer.
+
 %---
 \begin{stulisting}[p]
 \caption{The DrawingTool class}
@@ -35,25 +48,33 @@ No instantaneous tool was implemented, because it was not essential for validati
 \end{stulisting}
 %---
 
-
-\begin{itemize}
-
-\item How to check whether the user is currently drawing with the tool.
-\item What to do when the user presses, drags or releases the mouse. (Note from the listing that the position of the mouse when the user does any of these things is passed to the tool both in on-screen pixel coordinates and in image volume coordinates -- this will be discussed further when talking about partition forest selections later, but the essential point is that rendering is done in pixel coordinates, whereas selections must be created in image volume coordinates. Trying to produce selections by rasterizing in pixel coordinates can produce results that contain holes.)
-\item How to render what is currently being drawn.
-\item How to reset the tool.
-\item How to evaluate the user's input to produce a selection of pixels in the image.
-\item What style of tool this is.
-
-\end{itemize}
-%
-Each of the three implemented tools is described below, after which it will be shown how they were actually used to create partition forest selections in \emph{millipede}. It should be noted that the lasso and line loop have a great deal in common, in that both create loops of lines that must be evaluated to produce a selection of pixels in the image (in the lasso case, these are large loops that are evaluated as soon as the user releases the mouse button; in the line loop case, these are generally small loops that are evaluated when the user requests it). The evaluation in both cases requires \emph{concave polygon rasterization}, which will be discussed first. In the code, both tools are implemented as subclasses of a \texttt{LineBasedDrawingTool} class, which maintains the loop of lines that will ultimately be fed to the rasterizer.
-
 %################################################
 \subsection{Box Tool}
 %################################################
 
-TODO
+The box tool is relatively straightforward to implement, as shown in Listing~\ref{code:appendixval-boxdrawingtool}. Two points are maintained to represent the extents of the box: an \emph{anchor} point and an \emph{other} point. When drawing a box, the user first presses the mouse: this initialises both points to the position of the mouse press. The user then drags the mouse, which moves the \emph{other} point away from the \emph{anchor} to make the box (see Figure~\ref{fig:appendixval-boxtool}(a)). Finally, the user releases the mouse; since the tool is not of the multi-click variety, this results in \texttt{BoxDrawingTool::selected_positions()} being called to evaluate the actual voxels contained within the box. These are initially in 2D (since the drawing tools are designed as an independent package that doesn't know about the 3D image volume), but are subsequently converted into 3D based on the slice being viewed, and used to construct a partition forest selection (see Figure~\ref{fig:appendixval-boxtool}(b)). The details of this will be described in \S\ref{subsec:appendixval-selectioninteraction}. Actually determining which voxels are in the box is a trivial process: all that is required is to traverse the box from one of its corners to the other in the obvious manner.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Before evaluating the selection]
+	{\hspace{8mm}\includegraphics[height=5cm]{appendixval/appendixval-boxtool-before.png}\hspace{8mm}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After evaluating the selection]
+	{\hspace{8mm}\includegraphics[height=5cm]{appendixval/appendixval-boxtool-after.png}\hspace{8mm}}%
+\caption{The box tool being used to select a region containing the spine}
+\label{fig:appendixval-boxtool}
+\end{stusubfig}
+%---
+
+%---
+\begin{stulisting}[p]
+\caption{The BoxDrawingTool class}
+\label{code:appendixval-boxdrawingtool}
+\lstinputlisting[style=Default,language=C++]{appendixval/appendixval-boxdrawingtool.lst}
+\end{stulisting}
+%---
 
 %################################################
 \subsection{Line-Based Tools}
@@ -89,6 +110,7 @@ TODO
 
 %################################################
 \subsection{Interaction with Partition Forest Selections}
+\label{subsec:appendixval-selectioninteraction}
 %################################################
 
 TODO
