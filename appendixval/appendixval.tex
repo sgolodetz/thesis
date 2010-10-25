@@ -84,7 +84,7 @@ Line-based tools are those that somehow convert the user's input into a polyline
 
 Rendering the polyline is essentially trivial. The \texttt{m_drawnLocations} field stores the points indicated by the user during the drawing process (each drawn location is a pair, the first component of which is the pixel location clicked, and the second component of which is the corresponding location in the image volume). The current polyline is rendered by drawing a green line strip through all the indicated points, followed by a pink line connecting the last point back to the first (this last line indicates the way in which the polyline would be automatically completed if the user stopped drawing immediately).
 
-Polyline rasterization (which is the same problem as concave polygon rasterization) is substantially trickier, although it is a problem that has been well-studied in the past (see e.g.~\cite{heckbert90}). The basic idea is to rasterize the polyline one horizontal scanline at a time. We maintain a list of `active' edges that intersect the current scanline (every time we increment the scanline, we update the active edge list), work out where they intersect it, and then render spans of pixels between pairs of intersection points (this is known as the `even-odd parity method', because we render between intersection points $1$ and $2$, $3$ and $4$, $5$ and $6$, etc., but not between points $2$ and $3$, $4$ and $5$, etc.). What would be a relatively simple algorithm is complicated by the need to account for tricky special cases (as is common in graphics programming) such as horizontal edges. I will not attempt to describe horizontal edge handling here (it is rather outside the scope of this thesis), but the reader is encouraged to peruse the listing provided if the method is of interest.
+Polyline rasterization (which is the same problem as concave polygon rasterization) is substantially trickier, although it is a problem that has been well-studied in the past (see e.g.~\cite{heckbert90}). The basic idea is to rasterize the polyline one horizontal scanline at a time. We maintain a list of `active' edges that intersect the current scanline (sorted first by minimum $y$, then by maximum $x$, then by minimum $x$, then by maximum $y$), work out where they intersect it, and then render spans of pixels between pairs of intersection points (this is known as the `even-odd parity method', because we render between intersection points $1$ and $2$, $3$ and $4$, $5$ and $6$, etc., but not between points $2$ and $3$, $4$ and $5$, etc.). What would be a relatively simple algorithm is complicated by the need to account for tricky special cases (as is common in graphics programming) such as horizontal edges. I will not attempt to describe horizontal edge handling here (it is rather outside the scope of this thesis), but the reader is encouraged to peruse the listing provided if the method is of interest.
 
 %---
 \begin{stulisting}[p]
@@ -106,13 +106,62 @@ Polyline rasterization (which is the same problem as concave polygon rasterizati
 \subsubsection{Lasso Tool}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+With polyline rasterization implemented, the lasso tool becomes straightforward (see Listing~\ref{code:appendixval-lassodrawingtool}). All that is required is to add the points clicked or dragged over by the user to the list of drawn locations maintained by the \texttt{LineBasedDrawingTool} super-class. Figure~\ref{fig:appendixval-lassotool} shows the lasso tool in use.
+
+%---
+\begin{stulisting}[p]
+\caption{The LassoDrawingTool class}
+\label{code:appendixval-lassodrawingtool}
+\lstinputlisting[style=Default,language=C++]{appendixval/appendixval-lassodrawingtool.lst}
+\end{stulisting}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Before evaluating the selection]
+	{\hspace{8mm}\includegraphics[height=6cm]{appendixval/appendixval-lassotool-before.png}\hspace{8mm}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After evaluating the selection]
+	{\hspace{8mm}\includegraphics[height=6cm]{appendixval/appendixval-lassotool-after.png}\hspace{8mm}}%
+\caption{The lasso tool being used to draw round a kidney}
+\label{fig:appendixval-lassotool}
+\end{stusubfig}
+%---
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Line Loop Tool}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
+The line loop tool is also straightforward in principle -- all that is really necessary is to specify that it is a multi-click tool, and then add the points clicked to the list of drawn locations in its \texttt{mouse_pressed()} method -- but in practice, the tool can be made substantially more usable with a few simple improvements.
+
+Rather than always adding a new point when the user presses the mouse, we first check to see if they are clicking near to an existing point. If so, we `grab' the point, and allow the user to drag it around in \texttt{mouse_dragged()}. If not, we add a new point as usual.
+
+Rendering must also be improved for this to work well -- instead of just rendering the polyline, we also render the individual points as large circular handles (see Figure~\ref{fig:appendixval-linelooptool}(a)). This makes it easier for users to see where they need to click to drag the points around. The code to implement the line loop tool is shown in Listing~\ref{code:appendixval-lineloopdrawingtool}.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Before evaluating the selection]
+	{\hspace{8mm}\includegraphics[height=6cm]{appendixval/appendixval-linelooptool-before.png}\hspace{8mm}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After evaluating the selection]
+	{\hspace{8mm}\includegraphics[height=6cm]{appendixval/appendixval-linelooptool-after.png}\hspace{8mm}}%
+\caption{The line loop tool being used to draw round a liver}
+\label{fig:appendixval-linelooptool}
+\end{stusubfig}
+%---
+
+%---
+\begin{stulisting}[p]
+\caption{The LineLoopDrawingTool class}
+\label{code:appendixval-lineloopdrawingtool}
+\lstinputlisting[style=Default,language=C++]{appendixval/appendixval-lineloopdrawingtool.lst}
+\end{stulisting}
+%---
+
 
 %################################################
 \subsection{Interaction with Partition Forest Selections}
