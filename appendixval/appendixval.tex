@@ -5,7 +5,49 @@
 \section{Drawing Tools}
 %##################################################################################################
 
-TODO
+In order to allow `gold standard' reference segmentations to be produced for validation purposes, it was necessary to implement tools in \emph{millipede} to allow the user to manually draw round features of interest in 2D CT slices. Each tool can be used to replace the current selection, augment it (if the \emph{Shift} key is pressed) or subtract from it (if the \emph{Ctrl} key is pressed). Tools are classified as belonging to one of three types:
+%
+\begin{enumerate}
+\item \emph{Instantaneous} tools, where the user clicks a point on the canvas and the selection is immediately updated (e.g.~the type of magic wand tool found in common image-editing programs).
+\item \emph{Click-and-drag} tools, where the user clicks a point on the canvas, drags the mouse and then releases it to update the selection.
+\item \emph{Multi-click} tools, where the user clicks a number of points and then `finalizes' the selection when ready.
+\end{enumerate}
+%
+Three tools were implemented in \emph{millipede} (but it would be easy to add further tools if desired):
+%
+\begin{enumerate}
+
+\item A click-and-drag \emph{box} tool. An example use of this is to restrict a 3D selection to a particular axial slice -- this involves switching to coronal or sagittal view and drawing boxes to remove the pieces of selection above and below the desired slice.
+
+\item A click-and-drag \emph{lasso} tool. This can be used to draw round the exact contours of specific features, although it can require a relatively steady hand. If mistakes are made, they can be corrected fairly easily by augmenting/subtracting from the initial selection using further lassoing.
+
+\item A multi-click \emph{line loop} tool. This involves placing a series of points to form a line loop, and then finalizing the result. Previously placed points can be dragged to new positions if mistakes are made. The line loop tool produces results that are less precise than those produced by the lasso, but it is somewhat easier to control.
+
+\end{enumerate}
+%
+No instantaneous tool was implemented, because it was not essential for validation purposes, but an instantaneous magic wand tool (essentially just a single-click region growing tool) is an obvious candidate for future inclusion. A tool is implemented as a C++ class deriving from the \texttt{DrawingTool} base class shown in Listing~\ref{code:appendixval-drawingtool}. The key things to specify are:
+
+%---
+\begin{stulisting}[p]
+\caption{The DrawingTool class}
+\label{code:appendixval-drawingtool}
+\lstinputlisting[style=Default,language=C++]{appendixval/appendixval-drawingtool.lst}
+\end{stulisting}
+%---
+
+
+\begin{itemize}
+
+\item How to check whether the user is currently drawing with the tool.
+\item What to do when the user presses, drags or releases the mouse. (Note from the listing that the position of the mouse when the user does any of these things is passed to the tool both in on-screen pixel coordinates and in image volume coordinates -- this will be discussed further when talking about partition forest selections later, but the essential point is that rendering is done in pixel coordinates, whereas selections must be created in image volume coordinates. Trying to produce selections by rasterizing in pixel coordinates can produce results that contain holes.)
+\item How to render what is currently being drawn.
+\item How to reset the tool.
+\item How to evaluate the user's input to produce a selection of pixels in the image.
+\item What style of tool this is.
+
+\end{itemize}
+%
+Each of the three implemented tools is described below, after which it will be shown how they were actually used to create partition forest selections in \emph{millipede}. It should be noted that the lasso and line loop have a great deal in common, in that both create loops of lines that must be evaluated to produce a selection of pixels in the image (in the lasso case, these are large loops that are evaluated as soon as the user releases the mouse button; in the line loop case, these are generally small loops that are evaluated when the user requests it). The evaluation in both cases requires \emph{concave polygon rasterization}, which will be discussed first. In the code, both tools are implemented as subclasses of a \texttt{LineBasedDrawingTool} class, which maintains the loop of lines that will ultimately be fed to the rasterizer.
 
 %################################################
 \subsection{Box Tool}
@@ -42,6 +84,12 @@ TODO
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Line Loop Tool}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO
+
+%################################################
+\subsection{Interaction with Partition Forest Selections}
+%################################################
 
 TODO
 
