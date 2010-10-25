@@ -38,7 +38,7 @@ No instantaneous tool was implemented, because it was not essential for validati
 
 \end{itemize}
 %
-Each of the three implemented tools is described below, after which it will be shown how they were actually used to create partition forest selections in \emph{millipede}. It should be noted that the lasso and line loop have a great deal in common, in that both create loops of lines that must be evaluated to produce a selection of voxels in the image volume (in the lasso case, these are large loops that are evaluated as soon as the user releases the mouse button; in the line loop case, these are generally small loops that are evaluated when the user requests it). The evaluation in both cases requires \emph{concave polygon rasterization}, which will be discussed first. In the code, both tools are implemented as subclasses of a \texttt{LineBasedDrawingTool} class, which maintains the loop of lines that will ultimately be fed to the rasterizer.
+Each of the three implemented tools is described below, after which it will be shown how they were actually used to create partition forest selections in \emph{millipede}. It should be noted that the lasso and line loop have a great deal in common, in that both create polylines that must be evaluated to produce a selection of voxels in the image volume (in the lasso case, these are large polylines that are evaluated as soon as the user releases the mouse button; in the line loop case, these are generally small polylines that are evaluated when the user requests it). The evaluation in both cases requires \emph{polyline rasterization}, which will be discussed first. In the code, both tools are implemented as subclasses of a \texttt{LineBasedDrawingTool} class, which maintains the polyline that will ultimately be fed to the rasterizer.
 
 %---
 \begin{stulisting}[p]
@@ -57,12 +57,12 @@ The box tool is relatively straightforward to implement, as shown in Listing~\re
 %---
 \begin{stusubfig}{p}
 	\subfigure[Before evaluating the selection]
-	{\hspace{8mm}\includegraphics[height=5cm]{appendixval/appendixval-boxtool-before.png}\hspace{8mm}}%
+	{\hspace{8mm}\includegraphics[height=6cm]{appendixval/appendixval-boxtool-before.png}\hspace{8mm}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[After evaluating the selection]
-	{\hspace{8mm}\includegraphics[height=5cm]{appendixval/appendixval-boxtool-after.png}\hspace{8mm}}%
+	{\hspace{8mm}\includegraphics[height=6cm]{appendixval/appendixval-boxtool-after.png}\hspace{8mm}}%
 \caption{The box tool being used to select a region containing the spine}
 \label{fig:appendixval-boxtool}
 \end{stusubfig}
@@ -80,13 +80,19 @@ The box tool is relatively straightforward to implement, as shown in Listing~\re
 \subsection{Line-Based Tools}
 %################################################
 
-TODO
+Line-based tools are those that somehow convert the user's input into a polyline (a closed line loop) and then rasterize that to determine the final selection. Precisely how the user input becomes a polyline is a matter for the individual tools (and will be discussed below), but the common work involved -- that of rendering the polyline while it is being created, and later rasterizing it to produce the selection -- is implemented in the \texttt{LineBasedDrawingTool} class (see Listing~\ref{code:appendixval-linebaseddrawingtool}) and the function \texttt{rasterize_polyline()} (see Listing~\ref{code:appendixval-rasterizepolyline}, which shows a pseudo-code, rather than C++, listing of this for increased clarity).
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\subsubsection{Polyline Rasterization}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Rendering the polyline is essentially trivial. The \texttt{m_drawnLocations} field stores the points indicated by the user during the drawing process (each drawn location is a pair, the first component of which is the pixel location clicked, and the second component of which is the corresponding location in the image volume). The current polyline is rendered by drawing a green line strip through all the indicated points, followed by a pink line connecting the last point back to the first (this last line indicates the way in which the polyline would be automatically completed if the user stopped drawing immediately).
 
-TODO
+Polyline rasterization (which is the same problem as concave polygon rasterization) is substantially trickier, although it is a problem that has been well-studied in the past (see e.g.~\cite{heckbert90}). The basic idea is to rasterize the polyline one horizontal scanline at a time. We maintain a list of `active' edges that intersect the current scanline (every time we increment the scanline, we update the active edge list), work out where they intersect it, and then render spans of pixels between pairs of intersection points (this is known as the `even-odd parity method', because we render between intersection points $1$ and $2$, $3$ and $4$, $5$ and $6$, etc., but not between points $2$ and $3$, $4$ and $5$, etc.). What would be a relatively simple algorithm is complicated by the need to account for tricky special cases (as is common in graphics programming) such as horizontal edges. I will not attempt to describe horizontal edge handling here (it is rather outside the scope of this thesis), but the reader is encouraged to peruse the listing provided if the method is of interest.
+
+%---
+\begin{stulisting}[p]
+\caption{The LineBasedDrawingTool class}
+\label{code:appendixval-linebaseddrawingtool}
+\lstinputlisting[style=Default,language=C++]{appendixval/appendixval-linebaseddrawingtool.lst}
+\end{stulisting}
+%---
 
 %---
 \begin{stulisting}[p]

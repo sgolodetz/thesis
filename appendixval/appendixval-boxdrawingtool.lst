@@ -4,7 +4,7 @@ private:
 	boost::optional<Vector2i> m_anchor_Pixels, m_other_Pixels;
 	boost::optional<Vector2i> m_anchor_Coords, m_other_Coords;
 
-	// <Method declarations not shown, for reasons of brevity>
+	// <Method declarations not shown for reasons of brevity>
 };
 
 bool BoxDrawingTool::has_started() const
@@ -26,7 +26,7 @@ void BoxDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i& p_C
 
 void BoxDrawingTool::render() const
 {
-	// <Not shown here, for reasons of brevity>
+	// <Not shown for reasons of brevity>
 }
 
 void BoxDrawingTool::reset()
