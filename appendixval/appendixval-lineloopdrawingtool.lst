@@ -8,10 +8,7 @@ private:
 
 void LineLoopDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const Vector2i& p_Coords)
 {
-	if(m_grabbedPoint)
-	{
-		**m_grabbedPoint = std::make_pair(p_Pixels, p_Coords);
-	}
+	if(m_grabbedPoint) **m_grabbedPoint = std::make_pair(p_Pixels, p_Coords);
 }
 
 void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i& p_Coords)

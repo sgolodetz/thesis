@@ -1,0 +1,59 @@
+void DICOMCanvas::OnLeaveWindow(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf() || !current_tool()) return;
+	current_tool()->reset();
+	Refresh();
+}
+
+void DICOMCanvas::OnLeftDown(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf() || !current_tool()) return;
+	Vector2i p_Pixels(e.GetX(), e.GetY());
+	if(within_image_bounds(p_Pixels))
+	{
+		current_tool()->mouse_pressed(
+			p_Pixels, Vector2i(pixels_to_coords(Vector2d(p_Pixels)))
+		);
+		if(current_tool()->style() == TOOLSTYLE_INSTANTANEOUS) finish_drawing(e);
+		else Refresh();
+	}
+}
+
+void DICOMCanvas::OnLeftUp(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf() || !current_tool() || !current_tool()->has_started()) return;
+	Vector2i p_Pixels(e.GetX(), e.GetY());
+	current_tool()->mouse_released(
+		p_Pixels, Vector2i(pixels_to_coords(Vector2d(p_Pixels)))
+	);
+	if(current_tool()->style() != TOOLSTYLE_MULTICLICK) finish_drawing(e);
+}
+
+void DICOMCanvas::OnMouseMotion(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf() || !current_tool() ||
+	   current_tool()->style() == TOOLSTYLE_INSTANTANEOUS)
+	{
+		return;
+	}
+
+	if(e.LeftIsDown())
+	{
+		if(current_tool()->has_started())
+		{
+			Vector2i p_Pixels(e.GetX(), e.GetY());
+			p_Pixels = clamp_to_image_bounds(p_Pixels);
+			current_tool()->mouse_dragged(
+				p_Pixels, Vector2i(pixels_to_coords(Vector2d(p_Pixels)))
+			);
+			Refresh();
+		}
+		else OnLeftDown(e);
+	}
+}
+
+void DICOMCanvas::OnRightUp(wxMouseEvent& e)
+{
+	if(!model()->volume_ipf() || !current_tool() || !current_tool()->has_started()) return;
+	if(current_tool()->style() == TOOLSTYLE_MULTICLICK) finish_drawing(e);
+}

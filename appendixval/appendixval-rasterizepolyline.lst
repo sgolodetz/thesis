@@ -7,8 +7,7 @@ function rasterize_polyline : (polyline : List<Vec2i>) $\to$ Vector<Vec2i>
 	for it : ListIterator<Vec2i> := polyline.begin() up to polyline.end()
 		var jt : ListIterator<Vec2i> := it.cyclic_successor();
 		if *it $\ne$ *jt then edges.insert(make_edge(*it, *jt));
-		minY := min(minY, it->y);
-		maxY := max(maxY, it->y);
+		minY, maxY := min(minY, it->y), max(maxY, it->y);
 
 	// Step 2: Rasterize each scanline in turn.
 	var activeEdges : Set<ActiveEdge>;
@@ -61,3 +60,5 @@ function rasterize_polyline : (polyline : List<Vec2i>) $\to$ Vector<Vec2i>
 		// (d) Remove any old edges from the active edge list.
 		for it : SetIterator<ActiveEdge> := activeEdges.begin() up to activeEdges.end()
 			if it->e.v.y = y then activeEdges.erase(it);
+
+	return output;

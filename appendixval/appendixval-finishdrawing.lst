@@ -1,0 +1,33 @@
+void DICOMCanvas::finish_drawing(wxMouseEvent& e)
+{
+	std::vector<Vector2i> selectedPositions = current_tool()->selected_positions();
+	std::set<int> uniqueLeaves;
+	for(size_t i=0, size=selectedPositions.size(); i<size; ++i)
+	{
+		uniqueLeaves.insert(
+			model()->volume_ipf()->leaf_of_position(project_to_3d(selectedPositions[i]))
+		);
+	}
+
+	Selection_Ptr selectionDiff(new SelectionT(model()->volume_ipf(), uniqueLeaves));
+
+	Selection_Ptr newSelection;
+	if(e.ShiftDown())
+	{
+		newSelection.reset(new SelectionT(model()->volume_ipf()));
+		newSelection->combine_using_leaves(model()->selection(), selectionDiff);
+	}
+	else if(e.CmdDown())
+	{
+		newSelection.reset(new SelectionT(model()->volume_ipf()));
+		newSelection->subtract_using_leaves(model()->selection(), selectionDiff);
+	}
+	else
+	{
+		newSelection = selectionDiff;
+	}
+
+	model()->selection()->replace_with_selection(newSelection);
+	current_tool()->reset();
+	Refresh();
+}
