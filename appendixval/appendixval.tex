@@ -54,7 +54,7 @@ Each of the three implemented tools is described below, after which it will be s
 \subsection{Box Tool}
 %################################################
 
-The box tool is relatively straightforward to implement, as shown in Listing~\ref{code:appendixval-boxdrawingtool}. Two points are maintained to represent the extents of the box: an \emph{anchor} point and an \emph{other} point. When drawing a box, the user first presses the mouse: this initialises both points to the position of the mouse press. The user then drags the mouse, which moves the \emph{other} point away from the \emph{anchor} to make the box (see Figure~\ref{fig:appendixval-boxtool}(a)). Finally, the user releases the mouse; since the tool is not of the multi-click variety, this results in \texttt{BoxDrawingTool::selected_positions()} being called to evaluate the actual voxels contained within the box. These are initially in 2D (since the drawing tools are designed as an independent package that doesn't know about the 3D image volume), but are subsequently converted into 3D based on the slice being viewed, and used to construct a partition forest selection (see Figure~\ref{fig:appendixval-boxtool}(b)). The details of this will be described in \S\ref{subsec:appendixval-selectioninteraction}. Actually determining which voxels are in the box is a trivial process: all that is required is to traverse the box from one of its corners to the other in the obvious manner.
+The box tool is relatively straightforward to implement, as shown in Listing~\ref{code:appendixval-boxdrawingtool}. Two points are maintained to represent the extents of the box: an \emph{anchor} point and an \emph{other} point. When drawing a box, the user first presses the mouse: this initialises both points to the position of the mouse press. The user then drags the mouse, which moves the \emph{other} point away from the \emph{anchor} to make the box (see Figure~\ref{fig:appendixval-boxtool}(a)). Finally, the user releases the mouse; since the tool is not of the multi-click variety, this results in \texttt{BoxDrawingTool::selected_positions()} being called to evaluate the actual voxels contained within the box. These are initially in 2D (since the drawing tools are designed as an independent package that doesn't know about the 3D image volume), but are subsequently converted into 3D based on the slice being viewed, and used to construct a partition forest selection (see Figure~\ref{fig:appendixval-boxtool}(b)). The details of this will be described in \S\ref{subsec:appendixval-integration}. Actually determining which voxels are in the box is a trivial process: all that is required is to traverse the box from one of its corners to the other in the obvious manner.
 
 %---
 \begin{stusubfig}{p}
@@ -167,25 +167,45 @@ Rendering must also be improved for this to work well -- instead of just renderi
 \newpage
 
 %################################################
-\subsection{Interaction with Partition Forest Selections}
-\label{subsec:appendixval-selectioninteraction}
+\subsection{GUI Integration}
+\label{subsec:appendixval-integration}
 %################################################
 
-TODO
+In \emph{millipede}, the interactions between the drawing tools and the rest of the application are handled in a class called \texttt{DICOMCanvas}, which represents a canvas that displays CT scans. There are two pieces of code necessary -- (a) the canvas's mouse handlers, which process the user's input, forward it to the current drawing tool as necessary and decide when the user has finished drawing (see Listing~\ref{code:appendixval-mousehandlers}), and (b) the \texttt{finish_drawing()} method, which is called by the mouse handlers to rasterize the current drawing, project the rasterized drawing into 3D, and modify the partition forest selection as necessary (see Listing~\ref{code:appendixval-finishdrawing}).
 
-%---
-\begin{stulisting}[p]
-\caption{The implementation of DICOMCanvas::finish_drawing()}
-\label{code:appendixval-finishdrawing}
-\lstinputlisting[style=Default]{appendixval/appendixval-finishdrawing.lst}
-\end{stulisting}
-%---
+The mouse handlers are fairly straightforward, but there are a few observations that need to be made in order to fully understand them:
+%
+\begin{enumerate}
+
+\item The \texttt{pixels_to_coords()} method converts from on-screen pixel coordinates to image volume coordinates.
+\item The \texttt{within_image_bounds()} method checks whether or not the specified point in pixel coordinates is within the bounds of the image as rendered on the screen.
+\item The \texttt{clamp_to_image_bounds()} method clamps a point in pixel coordinates to the bounds of the image as rendered on the screen.
+
+\end{enumerate}
+%
+Pressing the left mouse button down triggers \texttt{OnLeftDown()}, which first checks that there is a valid partition forest and current drawing tool, and that the mouse press was within the image bounds. If so, it calculates the image volume location of the mouse press, and forwards both that and the pixel location to the current drawing tool. If the tool is an instantaneous one, it then additionally invokes \texttt{finish_drawing()}.
+
+Moving the mouse triggers \texttt{OnMouseMotion()}, which checks whether the left mouse button is down and, if it is, alerts non-instantaneous tools that the mouse is being dragged. The actual location of the drag is clamped to the on-screen bounds of the image, since it doesn't make sense to try and select things outside the image volume.
+
+Letting go of the left mouse button triggers \texttt{OnLeftUp()}, which alerts the tool that the mouse has been released if a drawing is currently in progress (otherwise, the event is ignored). It also invokes \texttt{finish_drawing()} unless the tool is a multi-click one (in which case there is potentially more input to come).
+
+Letting go of the right mouse button triggers \texttt{OnRightUp()}, which is used to finalize multi-click drawings. Moving the mouse outside the window triggers \texttt{OnLeaveWindow()}, which simply resets the current drawing tool.
+
+The \texttt{finish_drawing()} method itself first invokes \texttt{selected_positions()} on the current drawing tool in order to rasterize the drawing. The rasterization produces a std::vector of 2D image coordinates, which are projected into 3D in a manner that depends on which slice is currently being viewed. As an example, if coronal (X-Z) slices were being viewed, with the current value of $y$ (i.e.~the current coronal slice number) being $23$, then the 2D image coordinates $(x,z)$ would be projected into 3D as $(x,23,z)$. Each projected image coordinate is used to look up a leaf in the lowest layer of the partition forest, and a unique set of such leaves is formed. Next, the unique leaves are used to initialise a partition forest selection -- depending on what keys the user is holding down, this is then either used to augment the current selection, subtract from it, or replace it. Finally, the current drawing tool is reset, ready for the user to start a new drawing.
 
 %---
 \begin{stulisting}[p]
 \caption{The implementation of the DICOMCanvas mouse handlers}
 \label{code:appendixval-mousehandlers}
 \lstinputlisting[style=Default]{appendixval/appendixval-mousehandlers.lst}
+\end{stulisting}
+%---
+
+%---
+\begin{stulisting}[p]
+\caption{The implementation of DICOMCanvas::finish_drawing()}
+\label{code:appendixval-finishdrawing}
+\lstinputlisting[style=Default]{appendixval/appendixval-finishdrawing.lst}
 \end{stulisting}
 %---
 
