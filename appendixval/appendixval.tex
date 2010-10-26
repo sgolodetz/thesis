@@ -219,4 +219,41 @@ The \texttt{finish_drawing()} method itself first invokes \texttt{selected_posit
 \section{Feature Comparisons}
 %##################################################################################################
 
-TODO
+In order to facilitate comparisons between the results of the automatic feature identifiers and manually-produced, gold standard results for the same image volumes, \emph{millipede} allows the user to maintain multiple feature selections for an image volume at the same time. These are managed using the dialog box shown in Figure~\ref{fig:appendixval-featureselectionsdialog}. The user can:
+
+%---
+\stufigex{width=.6\linewidth}{appendixval/appendixval-featureselectionsdialog.png}{The \emph{Manage Feature Selections} dialog in \emph{millipede}}{fig:appendixval-featureselectionsdialog}{p}
+%---
+
+\begin{enumerate}
+\item Create a new, blank feature selection.
+\item Clone a feature selection.
+\item Delete all but the last remaining feature selection.
+\item Rename a feature selection.
+\item Save/load a feature selection (this is primarily useful for gold standard results).
+\item Perform intersection, union, subtraction and symmetric difference operations on pairs of feature selections.
+\end{enumerate}
+
+\noindent A separate dialog box, shown in Figure~\ref{fig:appendixval-validationdialog}, allows the user to validate a feature selection by comparing it to a gold standard result (obtained either by creating a blank feature selection and drawing round the relevant features in each slice, or by loading an existing feature selection from disk).
+
+%---
+\stufigex{width=.95\linewidth}{appendixval/appendixval-validationdialog.png}{The \emph{Validate Feature Selection} dialog in \emph{millipede}}{fig:appendixval-validationdialog}{p}
+%---
+
+The validation dialog compares two feature selections on a per-feature basis, displaying the results in spreadsheet form (the spreadsheet can be saved either as comma-separated values or as a \LaTeX{} table). It shows the number of voxels both in the feature selection being validated (the \emph{target}) and in the gold standard result. It then computes the number of voxels that are in the target but not the gold standard (extraneous voxels), the number that are in the gold standard but not the target (missing voxels) and the number that are in both (overlapping voxels).
+
+\newpage
+
+\noindent Finally, it uses these values to calculate the commonly-used Dice and Jaccard similarity coefficients for each feature. Letting $T$ be the target for a particular feature, $\mathit{GS}$ be the gold standard result for the same feature, and $\mbox{voxels}(S)$ be the voxel count of the feature in selection $S$, the Dice similarity coefficient for the feature is defined as:
+%
+\[
+\frac{2 \times \mbox{voxels}(T \cap \mathit{GS})}{\mbox{voxels}(T) + \mbox{voxels}(\mathit{GS})}
+\]
+%
+Note that this attains a maximum of $1$ when $T = \mathit{GS}$ (i.e.~when the target feature exactly matches that in the gold standard result), and a minimum of $0$ when $T \cap \mathit{GS} = \emptyset$. The Jaccard similarity coefficient also shares this property, but is defined differently:
+%
+\[
+\frac{\mbox{voxels}(T \cap \mathit{GS})}{\mbox{voxels}(T \cup \mathit{GS})}
+\]
+%
+Here, when $T = \mathit{GS}$, $T \cap \mathit{GS} = T = \mathit{GS} = T \cup \mathit{GS}$.
