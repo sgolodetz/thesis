@@ -5,15 +5,17 @@
 \section{Drawing Tools}
 %##################################################################################################
 
-In order to allow `gold standard' reference segmentations to be produced for validation purposes, it was necessary to implement tools in \emph{millipede} to allow the user to manually draw round features of interest in 2D CT slices. Each tool can be used to replace the current selection, augment it (if the \emph{Shift} key is pressed) or subtract from it (if the \emph{Ctrl} key is pressed). Tools were classified as belonging to one of three types:
+%---
+\stufigex{height=10cm}{appendixval/appendixval-pen-closeup.png}{A close-up view of a Bamboo Fun pen tablet and accompanying pen}{fig:appendixval-pen-closeup}{p}
+%---
+
+\noindent In order to allow `gold standard' reference segmentations to be produced for validation purposes, it was necessary both to find suitable user input hardware and to implement software tools in \emph{millipede} to allow the user to manually draw round features of interest in 2D slices. The hardware chosen (primarily because I owned one) was a Bamboo Fun pen tablet (manufactured by Wacom) -- see Figure~\ref{fig:appendixval-pen-closeup}. For our purposes here, however, I will focus only on the drawing tools I implemented in my software. Each tool can be used to replace the current selection, augment it (if the \emph{Shift} key is pressed) or subtract from it (if the \emph{Ctrl} key is pressed). Tools were classified as belonging to one of three types:
 %
 \begin{enumerate}
 \item \emph{Instantaneous} tools, where the user clicks a point on the canvas and the selection is immediately updated (e.g.~the type of magic wand tool found in common image-editing programs).
 \item \emph{Click-and-drag} tools, where the user clicks a point on the canvas, drags the mouse and then releases it to update the selection.
 \item \emph{Multi-click} tools, where the user clicks a number of points and then `finalizes' the selection when ready.
 \end{enumerate}
-
-\newpage
 
 \noindent Three tools were implemented in \emph{millipede} (but it would be easy to add further tools if desired):
 
@@ -50,6 +52,8 @@ Each of the three implemented tools is described below, after which it will be s
 \end{stulisting}
 %---
 
+\newpage
+
 %################################################
 \subsection{Box Tool}
 %################################################
@@ -57,7 +61,7 @@ Each of the three implemented tools is described below, after which it will be s
 The box tool is relatively straightforward to implement, as shown in Listing~\ref{code:appendixval-boxdrawingtool}. Two points are maintained to represent the extents of the box: an \emph{anchor} point and an \emph{other} point. When drawing a box, the user first presses the mouse: this initialises both points to the position of the mouse press. The user then drags the mouse, which moves the \emph{other} point away from the \emph{anchor} to make the box (see Figure~\ref{fig:appendixval-boxtool}(a)). Finally, the user releases the mouse; since the tool is not of the multi-click variety, this results in \texttt{BoxDrawingTool::selected_positions()} being called to evaluate the actual voxels contained within the box. These are initially in 2D (since the drawing tools are designed as an independent package that doesn't know about the 3D image volume), but are subsequently converted into 3D based on the slice being viewed, and used to construct a partition forest selection (see Figure~\ref{fig:appendixval-boxtool}(b)). The details of this will be described in \S\ref{subsec:appendixval-integration}. Actually determining which voxels are in the box is a trivial process: all that is required is to traverse the box from one of its corners to the other in the obvious manner.
 
 %---
-\begin{stusubfig}{p}
+\begin{stusubfig}{h}
 	\subfigure[Before evaluating the selection]
 	{\hspace{8mm}\includegraphics[height=6cm]{appendixval/appendixval-boxtool-before.png}\hspace{8mm}}%
 	%
@@ -136,12 +140,6 @@ With polyline rasterization implemented, the lasso tool becomes straightforward 
 \subsubsection{Line Loop Tool}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The line loop tool is also straightforward in principle -- all that is really necessary is to specify that it is a multi-click tool, and then add the points clicked to the list of drawn locations in its \texttt{mouse_pressed()} method -- but in practice, the tool can be made substantially more usable with a few simple improvements.
-
-Rather than always adding a new point when the user presses the mouse, we first check to see if they are clicking near to an existing point. If so, we `grab' the point, and allow the user to drag it around in \texttt{mouse_dragged()}. If not, we add a new point as usual.
-
-Rendering must also be improved for this to work well -- instead of just rendering the polyline, we also render the individual points as large circular handles (see Figure~\ref{fig:appendixval-linelooptool}(a)). This makes it easier for users to see where they need to click to drag the points around. The code to implement the line loop tool is shown in Listing~\ref{code:appendixval-lineloopdrawingtool}.
-
 %---
 \begin{stusubfig}{p}
 	\subfigure[Before evaluating the selection]
@@ -155,6 +153,12 @@ Rendering must also be improved for this to work well -- instead of just renderi
 \label{fig:appendixval-linelooptool}
 \end{stusubfig}
 %---
+
+The line loop tool is also straightforward in principle -- all that is really necessary is to specify that it is a multi-click tool, and then add the points clicked to the list of drawn locations in its \texttt{mouse_pressed()} method -- but in practice, the tool can be made substantially more usable with a few simple improvements.
+
+Rather than always adding a new point when the user presses the mouse, we first check to see if they are clicking near to an existing point. If so, we `grab' the point, and allow the user to drag it around in \texttt{mouse_dragged()}. If not, we add a new point as usual.
+
+Rendering must also be improved for this to work well -- instead of just rendering the polyline, we also render the individual points as large circular handles (see Figure~\ref{fig:appendixval-linelooptool}(a)). This makes it easier for users to see where they need to click to drag the points around. The code to implement the line loop tool is shown in Listing~\ref{code:appendixval-lineloopdrawingtool}.
 
 %---
 \begin{stulisting}[p]
@@ -208,6 +212,8 @@ The \texttt{finish_drawing()} method itself first invokes \texttt{selected_posit
 \lstinputlisting[style=Default]{appendixval/appendixval-finishdrawing.lst}
 \end{stulisting}
 %---
+
+\newpage
 
 %##################################################################################################
 \section{Feature Comparisons}
