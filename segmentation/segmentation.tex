@@ -248,8 +248,8 @@ The arrow assignment process works as follows. Firstly, one of the pixels in eac
 \item If the pixel is a non-canonical element of a minimal plateau, then its arrow points directly to the canonical element of the plateau.
 \item The arrow of any other pixel points to a lowest neighbour of that pixel.
 \end{enumerate}
-
-The implementation (see Listing~\ref{code:segmentation-watershed-arrowassignment}) uses Tarjan's disjoint-set forest data structure (see Appendix~\ref{?}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points of minimal plateaux during this phase of the process. The results of the arrow assignment are shown in Figure~\ref{fig:segmentation-watershed-example}(c).
+%
+The implementation (see Listing~\ref{code:segmentation-watershed-arrowassignment}) uses Tarjan's disjoint set forest data structure (see Appendix~\ref{chap:appendixds}). The idea is to combine all the minimum points into their respective local minima using this data structure, and make all the other non-minimal points point to one of their lower neighbours. We also take the opportunity to numerically label all the canonical points of minimal plateaux during this phase of the process. The results of the arrow assignment are shown in Figure~\ref{fig:segmentation-watershed-example}(c).
 
 %---
 \begin{stulisting}[p]
@@ -269,14 +269,14 @@ function construct_arrows
 		if lc(p) = 0 then
 			labels(p) := labelCount;
 			labelCount := labelCount + 1;
-			minima.add_node(p);
+			minima.add_element(p);
 
 	for each p : PixelCoords $\in \Omega$
 		if lc(p) = 0 then
 			// Union any neighbouring minimum points into the same local minimum.
 			for each neighbour : PixelCoords $\in$ N(p)
 				if lc(neighbour) = 0 then
-					minima.union_nodes(labels(p), labels(neighbour));
+					minima.union_sets(labels(p), labels(neighbour));
 		else
 			// Find a lowest neighbour and make this point's arrow point to it.
 			var lowestNeighbour : PixelCoords(-1,-1);

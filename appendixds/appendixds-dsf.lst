@@ -1,4 +1,4 @@
-function make_set<T> : (x : int; value : T) $\to$ $\emptyset$
+function add_element<T> : (x : int; value : T) $\to$ $\emptyset$
 	elements[x].parent := x;
 	elements[x].rank := 0;
 	elements[x].value := value;
@@ -10,7 +10,7 @@ function find_set : (x : int) $\to$ int
 		parent := find_set(parent);
 	return parent;
 
-function union : (x : int; y : int) $\to$ $\emptyset$
+function union_sets : (x : int; y : int) $\to$ $\emptyset$
 	var setX, setY : int := find_set(x), find_set(y);
 	if setX $\ne$ setY then
 		link(setX, setY);

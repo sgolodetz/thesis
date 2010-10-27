@@ -38,7 +38,7 @@ The basic idea (initially ignoring the details) is that MAKE-SET makes a single 
 
 \end{enumerate}
 
-\noindent Bearing these optimizations in mind, the operations can then be implemented as shown in Listing~\ref{code:appendixds-dsf} (the code is largely identical to the implementations originally given in \cite{worrell06}, but is slightly adapted to additionally support the storage of auxiliary data with each node). An example sequence of disjoint set operations is illustrated in Figure~\ref{?}.
+\noindent Bearing these optimizations in mind, the operations can then be implemented as shown in Listing~\ref{code:appendixds-dsf} (note that the names have been changed to match those in earlier listings, but the operations are exactly the same). The code itself is largely identical to the implementations originally given in \cite{worrell06}, but is slightly adapted to additionally support the storage of auxiliary data with each node. An example sequence of disjoint set operations is illustrated in Figure~\ref{?}.
 
 %---
 \begin{stulisting}[p]
@@ -50,6 +50,7 @@ The basic idea (initially ignoring the details) is that MAKE-SET makes a single 
 
 %It can be shown, as per \cite{worrell06}, that `a sequence of $m$ MAKE-SET, UNION operations, $n$ of which are MAKE-SET operations, takes time $O(m \lg^* n)$ in the worst case'. Since $\lg^* n$ is incredibly slowly growing ($\le 5$ for any sensible $n$), the intuition is thus that such a sequence takes effectively $O(m)$ time in practice. Thus each individual operation is almost amortized constant time, and the goal of making the operations efficient is achieved.
 
+\afterpage{\clearpage}
 \newpage
 
 %##################################################################################################
@@ -70,10 +71,6 @@ For our purposes here, we build on this definition to define a \emph{rooted MST}
 \subsection{Construction}
 %################################################
 
-There are several algorithms for constructing normal MSTs of graphs, the best-known of which are perhaps Kruskal's algorithm (which sorts the edges in non-decreasing order of weight and then adds edges -- starting from the one with the smallest weight -- that do not create a cycle until all the vertices have been spanned) and Prim's algorithm (which maintains a set of spanned vertices -- initially an arbitrary start vertex -- and then repeatedly adds the smallest edge that connects a currently unspanned vertex to the vertices in this set until all the vertices have been spanned).
-
-To construct a \emph{rooted} MST, however, Prim's algorithm is superior to Kruskal's, because it works by gradually expanding a tree, starting from an initial vertex -- this can be easily adapted to build a rooted MST by choosing the initial vertex to be the root. A suitable implementation is shown in Listing~\ref{code:appendixds-rootedmst-construction}. This represents the tree using an adjacency graph (referred to using \texttt{base()} in the code) that stores parent pointers at each vertex. Constructing a rooted MST using Kruskal's algorithm would involve far more work, because Kruskal's adds edges all over the graph and only guarantees to join them up by the time the algorithm terminates.
-
 %---
 \begin{stulisting}[p]
 \caption{Rooted MST Construction}
@@ -81,6 +78,12 @@ To construct a \emph{rooted} MST, however, Prim's algorithm is superior to Krusk
 \lstinputlisting[style=Default]{appendixds/appendixds-rootedmst-construction.lst}
 \end{stulisting}
 %---
+
+There are several algorithms for constructing normal MSTs of graphs, the best-known of which are perhaps Kruskal's algorithm (which sorts the edges in non-decreasing order of weight and then adds edges -- starting from the one with the smallest weight -- that do not create a cycle until all the vertices have been spanned) and Prim's algorithm (which maintains a set of spanned vertices -- initially an arbitrary start vertex -- and then repeatedly adds the smallest edge that connects a currently unspanned vertex to the vertices in this set until all the vertices have been spanned).
+
+To construct a \emph{rooted} MST, however, Prim's algorithm is superior to Kruskal's, because it works by gradually expanding a tree, starting from an initial vertex -- this can be easily adapted to build a rooted MST by choosing the initial vertex to be the root. A suitable implementation is shown in Listing~\ref{code:appendixds-rootedmst-construction}. This represents the tree using an adjacency graph (referred to using \texttt{base()} in the code) that stores parent pointers at each vertex. Constructing a rooted MST using Kruskal's algorithm would involve far more work, because Kruskal's adds edges all over the graph and only guarantees to join them up by the time the algorithm terminates.
+
+\afterpage{\clearpage}
 
 %################################################
 \subsection{Node Merging}
