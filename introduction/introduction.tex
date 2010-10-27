@@ -100,22 +100,32 @@ The original contributions made by this dissertation, then, are as follows:
 %---
 \section*{Dissertation Organisation}
 
-TODO: This section needs a rewrite
-
 The remainder of this dissertation is organised as follows.
 
-\textbf{Chapter~\ref{chap:background}} surveys the fields of segmentation and feature identification, and discusses some of the varied uses of partition hierarchies throughout computer science, with the intention of both placing my own techniques in context and providing the foundations for later discussion.
+\textbf{Chapter~\ref{chap:background}} surveys the field of image segmentation, and discusses some of the varied uses of partition hierarchies throughout computer science, with the intention of both placing my own techniques in context and providing the foundations for later discussion.
 
 \textbf{Chapter~\ref{chap:methodology}} describes my research methodology in more detail, focusing in particular on the question of the appropriateness of my goals and the methods I chose to achieve them.
 
-\textbf{Chapter~\ref{chap:ipfs}} describes partition forests, the key data structure I used to represent segmented images, and introduces novel algorithms I have developed for editing them and selecting nodes in multiple layers within them.
+\textbf{Chapter~\ref{chap:ipfs}} describes partition forests, the hierarchical data structure I used to represent segmented images, and introduces novel algorithms I have developed for editing them and selecting nodes in multiple layers within them.
 
-\textbf{Chapter~\ref{chap:segmentation}} shows how partition forests can be constructed from images using existing segmentation approaches such as the watershed and waterfall transforms. It looks at three different ways in which the waterfall transform can be implemented: an algorithm due to Marcotegui and Beucher \cite{marcotegui05}, a new tree-based algorithm due to my colleague Chris Nicholls \cite{nicholls09}, and my own novel tree-based approach, presented here for the first time, that handles minimal plateaux in a robust manner.
+\textbf{Chapter~\ref{chap:segmentation}} shows how partition forests can be constructed from images by harnessing existing segmentation approaches such as the watershed and waterfall transforms. It looks at three different ways in which the waterfall transform can be implemented: an algorithm due to Marcotegui and Beucher \cite{marcotegui05}, a new tree-based algorithm due to my colleague Chris Nicholls \cite{nicholls09}, and my own novel tree-based approach that handles minimal plateaux in a more explicit manner. It further describes a novel method that allows the construction of a single partition forest for an entire image volume, regardless of whether the initial segmentation was performed in either 2D or 3D.
 
-\textbf{Chapter~\ref{chap:featureid}} shows how feature identification algorithms, including a novel multi-layer region growing method, can be applied to the partition forest in order to automatically segment certain abdominal features. It also illustrates how the results of the segmentation and feature identification processes can be useful in solving real-world problems such as visualizing abdominal organs in three dimensions and calculating organ volumes.
+\textbf{Chapter~\ref{chap:featureid}} discusses my work on automated feature identification in both 2D and 3D. It describes some techniques that are useful for partition forest-based feature identification -- including the novel multi-layer region growing technique I presented in \cite{gvcispa09} -- before presenting my 2D methods for identifying the ribs \cite{gvccimi08} and spine \cite{gvcispa09}, and my 3D methods for identifying the spine, spinal column, ribs, aorta, liver and kidneys \cite{gvcoucl10}.
 
-\textbf{Chapter~\ref{chap:assessment}} assesses and validates the contributions made elsewhere in the dissertation (see below) and summarises my case supporting the thesis statement.
+\textbf{Chapter~\ref{chap:validation}} shows how I validated my approach, and provides quantitative results.
 
-\textbf{Chapter~\ref{chap:conclusions}} discusses potential avenues for further work, and concludes the dissertation.
+\textbf{Chapter~\ref{chap:assessment}} critically assesses the contributions I claimed above.
 
-\textbf{Appendix~\ref{chap:appendixds}} provides information on basic structures such as disjoint set forests and minimum spanning trees.
+\textbf{Chapter~\ref{chap:conclusions}} discusses potential avenues for further work, and concludes the thesis.
+
+\textbf{Appendix~\ref{chap:appendixds}} contains my implementations of data structures such as disjoint set forests and rooted minimum spanning trees.
+
+\textbf{Appendix~\ref{chap:appendixpf}} contains my implementations of some supporting partition forest algorithms.
+
+\textbf{Appendix~\ref{chap:appendixapps}} discusses my implementations of volume visualization and volume calculation in \emph{millipede}. Both are important real-world applications of the segmentation and feature identification work described in the rest of the thesis.
+
+\textbf{Appendix~\ref{chap:appendixval}} discusses my implementation of validation-related tools in \emph{millipede}.
+
+\textbf{Appendix~\ref{chap:appendixeth}} explains how the ethical issues that arise from work in medical image analysis were accounted for in this work.
+
+\textbf{Appendix~\ref{chap:appendixlang}} contains a brief reference for the pseudo-code language I have used in listings throughout this thesis.
