@@ -273,7 +273,7 @@
 \renewcommand{\thelstlisting}{\textbf{\arabic{lstlisting}}}
 
 \lstdefinelanguage{Pseudocode}{
-morekeywords={and,break,case,continue,default,down,each,else,for,function,if,not,null,or,rangeswitch,ref,return,switch,then,throw,to,up,var,while},
+morekeywords={and,assert,break,case,continue,default,down,each,else,for,function,if,not,null,or,rangeswitch,ref,return,switch,then,throw,to,up,var,while},
 sensitive=true,
 morecomment=[l]{//},
 morecomment=[s]{/*}{*/}
