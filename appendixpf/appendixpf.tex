@@ -1,10 +1,13 @@
 \chapter{Partition Forests -- Support Algorithms}
 \label{chap:appendixpf}
 
-%---
+%##################################################################################################
 \section{The Forest Data Structure}
+%##################################################################################################
 
+%################################################
 \paragraph{Ancestor Of}
+%################################################
 
 \begin{stulisting}[H]
 \caption{Forest : Ancestor Of Implementation}
@@ -22,7 +25,9 @@ function ancestor_of
 \end{lstlisting}
 \end{stulisting}
 
+%################################################
 \paragraph{Are Connected}
+%################################################
 
 \begin{stulisting}[H]
 \caption{Forest : Are Connected Implementation}
@@ -40,7 +45,9 @@ function are_connected
 \end{lstlisting}
 \end{stulisting}
 
+%################################################
 \paragraph{Children Of}
+%################################################
 
 \begin{stulisting}[H]
 \caption{Forest : Children Of Implementation}
@@ -62,7 +69,9 @@ function children_of
 \end{lstlisting}
 \end{stulisting}
 
+%################################################
 \paragraph{Find Common Ancestor Layer}
+%################################################
 
 \begin{stulisting}[H]
 \caption{Forest : Find Common Ancestor Layer Implementation}
@@ -82,7 +91,9 @@ function find_common_ancestor_layer
 \end{lstlisting}
 \end{stulisting}
 
+%################################################
 \paragraph{Find Common Ancestor Layer And New Chain}
+%################################################
 
 \begin{stulisting}[H]
 \caption{Forest : Find Common Ancestor Layer And New Chain Implementation}
@@ -102,7 +113,9 @@ function find_common_ancestor_layer_and_new_chain
 \end{lstlisting}
 \end{stulisting}
 
+%################################################
 \paragraph{Find Connected Component}
+%################################################
 
 \begin{stulisting}[H]
 \caption{Forest : Find Connected Component Implementation}
@@ -129,7 +142,9 @@ function find_connected_component
 \end{lstlisting}
 \end{stulisting}
 
+%################################################
 \paragraph{Find Connected Components}
+%################################################
 
 \begin{stulisting}[H]
 \caption{Forest : Find Connected Components Implementation}
@@ -143,3 +158,278 @@ function find_connected_components
 	return result;
 \end{lstlisting}
 \end{stulisting}
+
+%################################################
+\paragraph{Receptive Region Of}
+%################################################
+
+TODO
+
+%##################################################################################################
+\section{The Selection Data Structure}
+%##################################################################################################
+
+%################################################
+\paragraph{Clear}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Combine}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Combine Using Leaves}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Consolidate All}
+%################################################
+
+\begin{stulisting}[H]
+\caption{Selection : Consolidate All Implementation}
+\begin{lstlisting}[style=Default]
+function consolidate_all : () $\to$ $\emptyset$
+	for i : int := 0 up to forest().highest_layer() - 1
+		var parents : Set<NodeID>;
+		for each n $\in$ layer(i)
+			parents.insert(forest().parent_of(NodeID(i,n)));
+		for each p $\in$ parents
+			consolidate_node(p, null);
+\end{lstlisting}
+\end{stulisting}
+
+%################################################
+\paragraph{Consolidate Node}
+%################################################
+
+\begin{stulisting}[H]
+\caption{Selection : Consolidate Node Implementation}
+\begin{lstlisting}[style=Default]
+function consolidate_node : (node : NodeID; modification : ref Modification?) $\to$ bool
+	// Check to see if all the children of the specified node are selected.
+	for each c $\in$ forest().children_of(node)
+		if not in_representation(c) then return false;
+
+	// If they are, deselect them and select this node instead.
+	for each c $\in$ forest().children_of(node)
+		erase_node(c, ref modification);
+	insert_node(node, ref modification);
+
+	listeners.node_was_consolidated(node);
+	return true;
+\end{lstlisting}
+\end{stulisting}
+
+%################################################
+\paragraph{Consolidate Upwards From Node}
+%################################################
+
+\begin{stulisting}[H]
+\caption{Selection : Consolidate Upwards From Node Implementation}
+\begin{lstlisting}[style=Default]
+function consolidate_upwards_from_node : (node : NodeID; modification : ref Modification?) $\to$ $\emptyset$
+	var cur : NodeID := node;
+	while not cur.invalid() and consolidate_node(cur, ref modification)
+		cur := forest().parent_of(cur);
+\end{lstlisting}
+\end{stulisting}
+
+%################################################
+\paragraph{Constructor (Unique Leaves)}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Contains}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Deconsolidate Node}
+%################################################
+
+\begin{stulisting}[H]
+\caption{Selection : Deconsolidate Node Implementation}
+\begin{lstlisting}[style=Default]
+function deconsolidate_node : (node : NodeID; modification : ref Modification?) $\to$ $\emptyset$
+	// Replace the selected node with its children in the forest.
+	erase_node(node, ref modification);
+	for each c $\in$ forest().children_of(node)
+		insert_node(c, ref modification);
+	listeners.node_was_deconsolidated(node);
+\end{lstlisting}
+\end{stulisting}
+
+%################################################
+\paragraph{Descendants In Layer}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Descendants In Representation}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Empty}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Erase Node}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Find Ancestor In Representation}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{In Representation}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Insert Node}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Merge Layer}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Replace With Selection}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Split Selection}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Subtract}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Subtract Using Leaves}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Toggle Node}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{View At Layer (Iterator Version)}
+%################################################
+
+TODO
+
+%##################################################################################################
+\section{The Multi-Feature Selection Data Structure}
+%##################################################################################################
+
+%################################################
+\paragraph{Clear All}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Clear Feature}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Combine}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Empty}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Features Of}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Identify Multi-Feature Selection}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Identify Node}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Identify Selection}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Subtract}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Toggle Node}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Toggle Selection}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Unidentify Node}
+%################################################
+
+TODO
+
+%################################################
+\paragraph{Unidentify Selection}
+%################################################
+
+TODO

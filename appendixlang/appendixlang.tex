@@ -81,8 +81,68 @@ var name : type := value;
 Functions are defined by writing:
 
 \begin{lstlisting}[style=Snippet]
-function name : (param1 : type1; ...; paramN : typeN) $\to$ resultType
+function f : (param1 : type1; ...; paramN : typeN) $\to$ resultType
 	<body>
+\end{lstlisting}
+
+\noindent They are called by writing:
+
+\begin{lstlisting}[style=Snippet]
+f(arg1, ..., argN)
+\end{lstlisting}
+
+\noindent A void result type is written as $\emptyset$.
+
+%##################################################################################################
+\section{References and Optionals}
+%##################################################################################################
+
+References can be used as follows:
+
+\begin{lstlisting}[style=Snippet]
+var i : int := 23;
+var r : ref int := ref i;	// make r refer to i
+r := 9;						// set i to 9
+var j : int := 24;
+r := ref j;					// reseat r to refer to j
+r := 12;					// set j to 12
+\end{lstlisting}
+
+\noindent Function parameter types can also be references:
+
+\begin{lstlisting}[style=Snippet]
+function f : (r : ref int) $\to$ $\emptyset$
+	r := 9;
+...
+var i := 23;
+f(ref i);		// set i to 9
+\end{lstlisting}
+
+\noindent Optionals can be used as follows:
+
+\begin{lstlisting}[style=Snippet]
+var i : int := 17;
+var o : int? := i;
+if o $\ne$ null then o := 10;	// set o to 10 (i is still 17)
+\end{lstlisting}
+
+\noindent As with references, function parameter types can also be optionals:
+
+\begin{lstlisting}[style=Snippet]
+function f : (o : int?) $\to$ int
+	if o $\ne$ null then return o;
+	else return 84;
+...
+var i : int := 16;
+i := i + f(null);	// set i to 100
+\end{lstlisting}
+
+\noindent Finally, references and optionals can be combined to make optional references:
+
+\begin{lstlisting}[style=Snippet]
+var i : int := 7;
+var ro : ref int? := i;
+if ro $\ne$ null then ro := 8;	// set i to 8
 \end{lstlisting}
 
 %##################################################################################################
@@ -149,8 +209,6 @@ There are three types of loop, normal \lstinline[language=Pseudocode]$for$ loops
 for name : type := startValue {up|down} to endValue
 	<body>
 \end{lstlisting}
-
-\newpage
 
 \noindent A \lstinline[language=Pseudocode]$for each$ loop is written:
 %
