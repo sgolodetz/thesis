@@ -244,9 +244,11 @@ All the containers you would find in C++ have direct equivalents in the pseudo-c
 %
 \begin{itemize}
 \item Vector$<$T$>$ gives you a resizeable array similar to std::vector in C++.
+\item Deque$<$T$>$ gives you a double-ended queue similar to std::deque in C++.
 \item List$<$T$>$ gives you a doubly-linked list similar to std::list.
 \item Set$<$T$>$ gives you a tree-based set similar to std::set.
 \item Map$<$K,V$>$ gives you a tree-based map similar to std::map.
+\item etc.
 \end{itemize}
 %
 Unlike in C++, where you would write an iterator over an int vector as std::vector$<$int$>$::iterator, here you just write VectorIterator$<$int$>$. There are corresponding ListIterator, SetIterator and MapIterator templates as well.
@@ -259,7 +261,7 @@ There are special notations for constructing containers, corresponding to how yo
 r := f({1,2,3});
 \end{lstlisting}
 %
-The corresponding notation for vectors and lists is [1,2,3] -- note that in real life the fact that it is the same for both would make parsing harder, but in pseudo-code we are less constrained.
+The corresponding notation for vectors, deques and lists is [1,2,3] -- note that in real life the fact that it is the same for all three would make parsing harder, but in pseudo-code we are less constrained.
 
 %##################################################################################################
 \section{User-Defined Data Types}

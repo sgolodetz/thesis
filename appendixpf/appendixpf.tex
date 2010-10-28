@@ -163,7 +163,26 @@ function find_connected_components
 \paragraph{Receptive Region Of}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Forest : Receptive Region Of Implementation}
+\begin{lstlisting}[style=Default]
+function receptive_region_of : (node : NodeID) $\to$ Deque<int>
+	var MARKER : int := -1;
+	var layerIndex : int := node.layer();
+	var nodeIndices : Deque<int> := [node.index(), MARKER];
+	while layerIndex $>$ 0
+		var layer : BranchLayer := branch_layer(layerIndex);
+		while true	// iterate until a break occurs
+			var n : int := nodeIndices.front();
+			nodeIndices.pop_front();
+			if n = MARKER then break;
+			nodeIndices.append(layer.node_children(n));
+		nodeIndices.push_back(MARKER);
+		layerIndex := layerIndex - 1;
+	nodeIndices.pop_back();
+	return nodeIndices;
+\end{lstlisting}
+\end{stulisting}
 
 %##################################################################################################
 \section{The Selection Data Structure}
