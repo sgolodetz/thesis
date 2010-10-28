@@ -1,0 +1,18 @@
+digraph
+{
+	edge [dir="back"];
+	A -> B;
+	A -> E;
+	E -> C;
+
+	D -> F;
+	D -> G;
+	D -> I;
+	D -> H;
+
+	L -> K;
+
+	A -> J;
+
+	D -> L;
+}

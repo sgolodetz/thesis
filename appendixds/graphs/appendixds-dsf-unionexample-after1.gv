@@ -1,0 +1,11 @@
+digraph
+{
+	edge [dir="back"];
+	B -> E;
+	B -> F;
+	E -> D;
+
+	C -> A;
+
+	B -> C;
+}
