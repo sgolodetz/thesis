@@ -3,7 +3,7 @@ function nodes_will_be_merged
 
 	// Replace any of the nodes being merged that are selected with their children.
 	for each n : NodeID $\in$ nodes
-		if in_selection(n) then
+		if in_representation(n) then
 			deconsolidate_node(n, null);
 
 function nodes_were_merged

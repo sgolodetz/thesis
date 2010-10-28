@@ -3,7 +3,7 @@ function node_was_split
 
 	// Step 1: If the node being split was itself in the representation,
 	//         replace it with the results of the split.
-	if in_selection(node) then
+	if in_representation(node) then
 		erase_node(node, null);
 		for each r : NodeID $\in$ results
 			insert_node(r, null);
