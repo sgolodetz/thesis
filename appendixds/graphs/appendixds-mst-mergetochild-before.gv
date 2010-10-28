@@ -1,0 +1,17 @@
+graph
+{
+	node [style="filled" fillcolor="white"];
+	edge [dir="both", arrowhead="none", arrowtail="none"];
+
+	0 -- 2;
+	2 -- 3;
+	2 -- 4;
+	2 -- 1 [arrowhead="vee"];
+	1 -- 5;
+	1 -- 6;
+
+	1 [fillcolor="green"];
+	2 [fillcolor="red"];
+	3 [fillcolor="blue"];
+	4 [fillcolor="blue"];
+}

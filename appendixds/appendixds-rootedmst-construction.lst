@@ -1,5 +1,4 @@
 function construct_rooted_mst : (graph : Graph) $\to$ $\emptyset$
-
 	// Build an MST for the graph using Prim's algorithm.
 	var pq : PriorityQueue<int,EdgeWeight>;
 	var nodeIndices : Vector<int> := graph.node_indices();
@@ -10,7 +9,6 @@ function construct_rooted_mst : (graph : Graph) $\to$ $\emptyset$
 	for i := 1 up to nodeIndices.size()
 		pq.insert(nodeIndices[i], $\infty$);
 		set_tree_parent(nodeIndices[i], -1);
-
 	while not pq.empty()
 		var u : int := pq.top().id();
 		pq.pop();
@@ -28,13 +26,9 @@ function construct_rooted_mst : (graph : Graph) $\to$ $\emptyset$
 			base().set_edge_weight(u, v, graph.edge_weight(u, v));
 
 function set_tree_parent : (n : int; parent : int) $\to$ $\emptyset$
-
-	// Note: set_tree_parent() intentionally creates node n if it doesn't
-	//       already exist.
-	if base().has_node(n) then
-		base().node_properties(n).parent := parent;
-	else
-		base().set_node_properties(n, make_node_properties(parent));
+	// Note: set_tree_parent() creates node n if it doesn't already exist.
+	if base().has_node(n) then	base().node_properties(n).parent := parent;
+	else						base().set_node_properties(n, make_node_properties(parent));
 
 function tree_parent : (n : int) $\to$ int
 	return base().node_properties(n).parent;

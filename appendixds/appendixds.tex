@@ -132,21 +132,11 @@ For our purposes here, we build on this definition to define a \emph{rooted MST}
 
 %---
 \begin{stulisting}[p]
-\caption{Rooted MST Construction}
+\caption{Constructing a Rooted MST}
 \label{code:appendixds-rootedmst-construction}
 \lstinputlisting[style=Default]{appendixds/appendixds-rootedmst-construction.lst}
 \end{stulisting}
 %---
-
-There are several algorithms for constructing normal MSTs of graphs, the best-known of which are perhaps Kruskal's algorithm (which sorts the edges in non-decreasing order of weight and then adds edges -- starting from the one with the smallest weight -- that do not create a cycle until all the vertices have been spanned) and Prim's algorithm (which maintains a set of spanned vertices -- initially an arbitrary start vertex -- and then repeatedly adds the smallest edge that connects a currently unspanned vertex to the vertices in this set until all the vertices have been spanned).
-
-To construct a \emph{rooted} MST, however, Prim's algorithm is superior to Kruskal's, because it works by gradually expanding a tree, starting from an initial vertex -- this can be easily adapted to build a rooted MST by choosing the initial vertex to be the root. A suitable implementation is shown in Listing~\ref{code:appendixds-rootedmst-construction}. This represents the tree using an adjacency graph (referred to using \texttt{base()} in the code) that stores parent pointers at each vertex. Constructing a rooted MST using Kruskal's algorithm would involve far more work, because Kruskal's adds edges all over the graph and only guarantees to join them up by the time the algorithm terminates.
-
-\afterpage{\clearpage}
-
-%################################################
-\subsection{Node Merging}
-%################################################
 
 %---
 \begin{stulisting}[p]
@@ -156,10 +146,44 @@ To construct a \emph{rooted} MST, however, Prim's algorithm is superior to Krusk
 \end{stulisting}
 %---
 
+\afterpage{\clearpage}
+
+There are several algorithms for constructing normal MSTs of graphs, the best-known of which are perhaps Kruskal's algorithm (which sorts the edges in non-decreasing order of weight and then adds edges -- starting from the one with the smallest weight -- that do not create a cycle until all the vertices have been spanned) and Prim's algorithm (which maintains a set of spanned vertices -- initially an arbitrary start vertex -- and then repeatedly adds the smallest edge that connects a currently unspanned vertex to the vertices in this set until all the vertices have been spanned).
+
+To construct a \emph{rooted} MST, however, Prim's algorithm is superior to Kruskal's, because it works by gradually expanding a tree, starting from an initial vertex -- this can be easily adapted to build a rooted MST by choosing the initial vertex to be the root. A suitable implementation is shown in Listing~\ref{code:appendixds-rootedmst-construction}. This represents the tree using an adjacency graph (referred to using \texttt{base()} in the code) that stores parent pointers at each vertex. Constructing a rooted MST using Kruskal's algorithm would involve far more work, because Kruskal's adds edges all over the graph and only guarantees to join them up by the time the algorithm terminates.
+
+%################################################
+\subsection{Node Merging}
+%################################################
+
 For rooted MSTs to be used as the underlying data structure for the various waterfall algorithms, they need to be augmented with a \emph{node merging} operation (see Listing~\ref{code:appendixds-rootedmst-mergenodes}). Since we're dealing with a rooted tree, the only nodes which can merge must form a parent/child pair in the tree. The basic algorithm is simple (remove one of the nodes and move its children across to the other one), but in practice things are slightly more complicated.
 
 The first step is to pick which node should survive and which should be removed. In the implementation here, the lower-indexed node is retained, because the rooted MSTs are being used in the construction of partition forests, which assign nodes an index corresponding to the lowest-indexed pixel they contain. Other implementations might want/need to make a different choice here.
 
-The next step depends on whether we are retaining the parent of the pair being merged, or the child. If we are retaining the parent, we simply move all the child's children across to the parent (see Figure~\ref{?}). If, on the other hand, we are retaining the child, we move all the parent's children \emph{except the child} across to the child (see Figure~\ref{?}). Moving a node involves modifying its parent pointer to point to the surviving node and adding a graph edge that joins it to the surviving node (the graph edge joining it to the node being removed will be automatically removed when that node is).
+The next step depends on whether we are retaining the parent of the pair being merged, or the child. If we are retaining the parent, we simply move all the child's children across to the parent (see Figures~\ref{fig:appendixds-mst-mergecases}(a) and (b)). If, on the other hand, we are retaining the child, we move all the parent's children \emph{except the child} across to the child (see Figures~\ref{fig:appendixds-mst-mergecases}(c) and (d)). Moving a node involves modifying its parent pointer to point to the surviving node and adding a graph edge that joins it to the surviving node (the graph edge joining it to the node being removed will be automatically removed when that node is).
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Before merging to parent]
+	{\includegraphics[height=5.5cm]{appendixds/appendixds-mst-mergetoparent-before.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After merging to parent]
+	{\includegraphics[height=4cm]{appendixds/appendixds-mst-mergetoparent-after.png}}%
+	%
+	\\
+	%
+	\subfigure[Before merging to child]
+	{\includegraphics[height=5.5cm]{appendixds/appendixds-mst-mergetochild-before.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After merging to child]
+	{\includegraphics[height=4cm]{appendixds/appendixds-mst-mergetochild-after.png}}%
+\caption{The two merging cases (see text for description) -- in each case, the green node is the surviving node, the red node is the one being removed and the blue nodes are the ones that are moved during the merging process.}
+\label{fig:appendixds-mst-mergecases}
+\end{stusubfig}
+%---
 
 It is important to check whether the root node is the one being removed -- if so, we need to make the surviving node into the new root node. Finally, we remove the node as planned and return the index of the surviving node.

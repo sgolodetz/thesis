@@ -1,19 +1,14 @@
 function merge_nodes : (parent : int; child : int) $\to$ int
-	assert parent = tree_parent(child);
-
-	// Determine the indices of the surviving node and the one to be removed.
 	var survivingIndex, otherIndex : int := min(parent, child), max(parent, child);
 
 	// Move all the edges descending from the node to be removed to the surviving node.
 	var otherChildren : Set<int> := tree_children(otherIndex);
-	if survivingIndex = child then
-		otherChildren.erase(child);
+	if survivingIndex = child then otherChildren.erase(child);
 	for each c $\in$ otherChildren
 		set_tree_parent(c, survivingIndex);
 		base().set_edge_weight(c, survivingIndex, edgeWeight(c, otherIndex));
 
-	// If the surviving node is the child, it needs to be connected to the parent of the
-	// initial parent.
+	// If the child survives, it needs connecting to the parent of the initial parent.
 	if survivingIndex = child then
 		set_tree_parent(survivingIndex, tree_parent(parent));
 		var weight : EdgeWeight := edge_weight(otherIndex, tree_parent(parent));
@@ -23,9 +18,7 @@ function merge_nodes : (parent : int; child : int) $\to$ int
 	if root() = otherIndex then
 		set_root(survivingIndex);
 
-	// Remove the node.
 	base().remove_node(otherIndex);
-
 	return survivingIndex;
 
 function tree_children : (n : int) $\to$ Set<int>
