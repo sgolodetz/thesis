@@ -213,7 +213,7 @@ function clear_impl : () $\to$ Modification
 \begin{stulisting}[H]
 \caption{Selection : Combine Implementation}
 \begin{lstlisting}[style=Default]
-function combine : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
+function combine : (lhs : PartitionForestSelection; rhs : PartitionForestSelection) $\to$ $\emptyset$
 	// Note: This method should only be invoked on newly-created selections.
 	assert empty();
 	this := lhs;
@@ -229,7 +229,8 @@ function combine : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
 \begin{stulisting}[H]
 \caption{Selection : Combine Using Leaves Implementation}
 \begin{lstlisting}[style=Default]
-function combine_using_leaves : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
+function combine_using_leaves
+:	(lhs : PartitionForestSelection; rhs : PartitionForestSelection) $\to$ $\emptyset$
 	// Note: This method should only be invoked on newly-created selections.
 	assert empty();
 	for each n $\in$ lhs.nodes()
@@ -434,7 +435,7 @@ function merge_layer : (viewLayer : int) $\to$ int
 \begin{stulisting}[H]
 \caption{Selection : Replace With Selection Implementation}
 \begin{lstlisting}[style=Default]
-function replace_with_selection_impl : (selection : Selection) $\to$ Modification
+function replace_with_selection_impl : (selection : PartitionForestSelection) $\to$ Modification
 	var modification : Modification;
 	for i : int := 0 up to forest().highest_layer()
 		for each n $\in$ layer(i)
@@ -470,7 +471,7 @@ function split_selection : (trail : ref Stack<NodeID>; modification : ref Modifi
 \begin{stulisting}[H]
 \caption{Selection : Subtract Implementation}
 \begin{lstlisting}[style=Default]
-function subtract : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
+function subtract : (lhs : PartitionForestSelection; rhs : PartitionForestSelection) $\to$ $\emptyset$
 	// Note: This method should only be invoked on newly-created selections.
 	assert empty();
 	this := lhs;
@@ -486,7 +487,8 @@ function subtract : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
 \begin{stulisting}[H]
 \caption{Selection : Subtract Using Leaves Implementation}
 \begin{lstlisting}[style=Default]
-function subtract_using_leaves : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
+function subtract_using_leaves
+:	(lhs : PartitionForestSelection; rhs : PartitionForestSelection) $\to$ $\emptyset$
 	// Note: This method should only be invoked on newly-created selections.
 	assert empty();
 	for each n $\in$ lhs.nodes()
@@ -533,7 +535,14 @@ TODO
 \paragraph{Clear Feature}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Clear Feature Implementation}
+\begin{lstlisting}[style=Default]
+function clear_feature : (feature : Feature) $\to$ $\emptyset$
+	if has_selection(feature) then
+		selection(feature).clear();
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Combine}
@@ -542,34 +551,62 @@ TODO
 TODO
 
 %################################################
-\paragraph{Empty}
-%################################################
-
-TODO
-
-%################################################
 \paragraph{Features Of}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Features Of Implementation}
+\begin{lstlisting}[style=Default]
+function features_of : (node : NodeID) $\to$ Vector<Feature>
+	var features : Vector<Feature>;
+	for each (feature,selection) $\in$ selections()
+		if selection.contains(node) then
+			features.push_back(feature);
+	return features;
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Identify Multi-Feature Selection}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Identify Multi-Feature Selection Implementation}
+\begin{lstlisting}[style=Default]
+function identify_multi_feature_selection : (mfs : PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+	"begin_command_sequence();" // handled by the command sequence guard
+	for each (feature,selection) $\in$ mfs
+		identify_selection(selection, feature);
+	"end_command_sequence();" // handled by the command sequence guard
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Identify Node}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Identify Node Implementation}
+\begin{lstlisting}[style=Default]
+function identify_node : (node : NodeID; feature : Feature) $\to$ $\emptyset$
+	selection(feature).select_node(node);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Identify Selection}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Identify Selection Implementation}
+\begin{lstlisting}[style=Default]
+function identify_selection : (selection : PartitionForestSelection; feature : Feature) $\to$ $\emptyset$
+	var oldSelection : ref PartitionForestSelection := selection(feature);
+	var newSelection : PartitionForestSelection := make_selection(forest());
+	newSelection.combine_using_leaves(oldSelection, selection);
+	oldSelection.replace_with_selection(newSelection);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Subtract}
@@ -578,25 +615,28 @@ TODO
 TODO
 
 %################################################
-\paragraph{Toggle Node}
-%################################################
-
-TODO
-
-%################################################
-\paragraph{Toggle Selection}
-%################################################
-
-TODO
-
-%################################################
 \paragraph{Unidentify Node}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Unidentify Node Implementation}
+\begin{lstlisting}[style=Default]
+function unidentify_node : (node : NodeID; feature : Feature) $\to$ $\emptyset$
+	selection(feature).deselect_node(node);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Unidentify Selection}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Unidentify Selection Implementation}
+\begin{lstlisting}[style=Default]
+function unidentify_selection : (selection : PartitionForestSelection; feature : Feature) $\to$ $\emptyset$
+	var oldSelection : ref PartitionForestSelection := selection(feature);
+	var newSelection : PartitionForestSelection := make_selection(forest());
+	newSelection.subtract_using_leaves(oldSelection, selection);
+	oldSelection.replace_with_selection(newSelection);
+\end{lstlisting}
+\end{stulisting}

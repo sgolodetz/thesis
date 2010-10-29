@@ -1,10 +1,10 @@
 class ViewNodeIterator
-	var base : ref Selection;
+	var base : ref PartitionForestSelection;
 	var viewLayer : int;
 	var nodeIt : NodeIterator;
 	var descendants : List<NodeID>;
 
-	constructor : (base_ : ref Selection; viewLayer_ : int; end_ : bool)
+	constructor : (base_ : ref PartitionForestSelection; viewLayer_ : int; end_ : bool)
 		base := base_;
 		viewLayer := viewLayer_;
 		nodeIt := NodeIterator(base_, end_);

@@ -1,10 +1,10 @@
 class NodeIterator
-	var base : ref Selection;
+	var base : ref PartitionForestSelection;
 	var layerIndex : int;
 	var it : SetIterator<int>;
 	var currentNode : NodeID?;
 
-	constructor : (base_ : ref Selection; end_ : bool)
+	constructor : (base_ : ref PartitionForestSelection; end_ : bool)
 		base := base_;
 		if not end
 			layerIndex := base.nodes().size() - 1;
