@@ -251,7 +251,9 @@ All the containers you would find in C++ have direct equivalents in the pseudo-c
 \item etc.
 \end{itemize}
 %
-Unlike in C++, where you would write an iterator over an int vector as std::vector$<$int$>$::iterator, here you just write VectorIterator$<$int$>$. There are corresponding ListIterator, SetIterator and MapIterator templates as well.
+Implicit conversions between containers are supported where appropriate -- e.g.~a Vector$<$T$>$ can be automatically converted to a List$<$T$>$ without having to write it explicitly.
+
+Unlike in C++, where you would write an int vector iterator as std::vector$<$int$>$::iterator, here you just write VectorIterator$<$int$>$. There are corresponding ListIterator, SetIterator and MapIterator templates as well.
 
 As in C++, iterators can be dereferenced to access the container element to which they point. To dereference the iterator it, we just write *it. Furthermore, properties of the pointed-to element can be accessed directly using the \lstinline[language=Pseudocode]$->$ notation, i.e.~\lstinline[language=Pseudocode]$it->value$ means the same as \lstinline[language=Pseudocode]$(*it).value$, as in C++. We can increment an iterator it by writing \lstinline[language=Pseudocode]$++it$, and decrement it by writing \lstinline[language=Pseudocode]$--it$.
 
@@ -267,4 +269,19 @@ The corresponding notation for vectors, deques and lists is [1,2,3] -- note that
 \section{User-Defined Data Types}
 %##################################################################################################
 
-For reasons of brevity, data type definitions are not shown explicitly in the pseudo-code. Instead, the form of user-defined data types is implied by their usage.
+In general, the form of user-defined data types is implied by their usage. However, on the rare occasions when user-defined data types are explicitly shown in pseudo-code, they take the form shown in the following example:
+%
+\begin{lstlisting}[style=Snippet]
+class Example
+	var i : int;
+	constructor : (i_ : int)
+		i := i_;
+	operator$=$ : (rhs : Example) $\to$ bool
+		return i = rhs.i;
+	operator$\ne$ : (rhs : Example) $\to$ bool
+		return not (this = rhs);
+	function get : () $\to$ int
+		return i;
+\end{lstlisting}
+%
+As in other languages, the \texttt{this} keyword can be used to refer to the current object from within a member function/operator (unlike C++, it is a reference and not a pointer).

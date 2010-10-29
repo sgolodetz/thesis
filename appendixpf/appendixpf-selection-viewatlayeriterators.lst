@@ -1,0 +1,41 @@
+class ViewNodeIterator
+	var base : ref Selection;
+	var viewLayer : int;
+	var nodeIt : NodeIterator;
+	var descendants : List<NodeID>;
+
+	constructor : (base_ : ref Selection; viewLayer_ : int; end_ : bool)
+		base := base_;
+		viewLayer := viewLayer_;
+		nodeIt := NodeIterator(base_, end_);
+		if not end_ then check_for_descendants();
+
+	operator* : () $\to$ NodeID
+		if descendants.empty() then return *nodeIt;
+		else return descendants.front();
+
+	operator++ : () $\to$ ref ViewNodeIterator
+		if not descendants.empty() then
+			descendants.pop_front();
+		if descendants.empty() then
+			++nodeIt;
+			check_for_descendants();
+		return this;
+
+	operator$=$ : (rhs : ViewNodeIterator) $\to$ bool
+		return nodeIt = rhs.nodeIt and descendants.size() = rhs.descendants.size();
+
+	operator$\ne$ : (rhs : ViewNodeIterator) $\to$ bool
+		return not (this = rhs);
+
+	function check_for_descendants : () $\to$ $\emptyset$
+		if nodeIt $\ne$ base.nodes_end() then
+			var node : NodeID := *nodeIt;
+			if node.layer() $>$ viewLayer then
+				descendants = base.descendants_in_layer(node, viewLayer);
+
+function view_at_layer_begin : (layerIndex : int) $\to$ ViewNodeIterator
+	return ViewNodeIterator(ref this, layerIndex, false);
+
+function view_at_layer_end : (layerIndex : int) $\to$ ViewNodeIterator
+	return ViewNodeIterator(ref this, layerIndex, true);

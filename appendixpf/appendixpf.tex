@@ -192,19 +192,54 @@ function receptive_region_of : (node : NodeID) $\to$ Deque<int>
 \paragraph{Clear}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Clear Implementation}
+\begin{lstlisting}[style=Default]
+function clear_impl : () $\to$ Modification
+	var modification : Modification;
+	for i := 0 up to forest.highest_layer()
+		for each n $\in$ layer(i)
+			modification.erase_node(NodeID(i, n));
+		layer(i).clear();
+	listeners.selection_was_cleared();
+	return modification;
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Combine}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Combine Implementation}
+\begin{lstlisting}[style=Default]
+function combine : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
+	// Note: This method should only be invoked on newly-created selections.
+	assert empty();
+	this := lhs;
+	for each n $\in$ rhs.nodes()
+		select_node_impl(n);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Combine Using Leaves}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Combine Using Leaves Implementation}
+\begin{lstlisting}[style=Default]
+function combine_using_leaves : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
+	// Note: This method should only be invoked on newly-created selections.
+	assert empty();
+	for each n $\in$ lhs.nodes()
+		layer(0).append(forest().receptive_region_of(n));
+	for each n $\in$ rhs.nodes()
+		layer(0).append(forest().receptive_region_of(n));
+
+	consolidate_all();
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Consolidate All}
@@ -260,16 +295,18 @@ function consolidate_upwards_from_node : (node : NodeID; modification : ref Modi
 \end{stulisting}
 
 %################################################
-\paragraph{Constructor (Unique Leaves)}
-%################################################
-
-TODO
-
-%################################################
 \paragraph{Contains}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Contains Implementation}
+\begin{lstlisting}[style=Default]
+function contains : (node : NodeID) $\to$ bool
+	if in_representation(node) then return true;
+	var trail : Stack<NodeID>;
+	return not find_ancestor_in_representation(node, trail).invalid();
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Deconsolidate Node}
@@ -291,85 +328,196 @@ function deconsolidate_node : (node : NodeID; modification : ref Modification?) 
 \paragraph{Descendants In Layer}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Descendants In Layer Implementation}
+\begin{lstlisting}[style=Default]
+function descendants_in_layer : (node : NodeID; layerIndex : int) $\to$ List<NodeID>
+	assert node.layer() $>$ layerIndex;
+
+	var children : Set<NodeID> := forest().children_of(node);
+	if node.layer() $\ne$ layerIndex + 1 then
+		var descendants : List<NodeID>;
+		for each c $\in$ children
+			descendants.append(descendants_in_layer(c, layerIndex));
+		return descendants;
+	else return children;
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Descendants In Representation}
 %################################################
 
-TODO
-
-%################################################
-\paragraph{Empty}
-%################################################
-
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Descendants In Representation Implementation}
+\begin{lstlisting}[style=Default]
+function descendants_in_representation : (node : NodeID) $\to$ List<NodeID>
+	var descendants : List<NodeID>;
+	for each c $\in$ forest().children_of(node)
+		if in_representation(c) then descendants.push_back(c);
+		else descendants.append(descendants_in_representation(c));
+	return descendants;
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Erase Node}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Erase Node Implementation}
+\begin{lstlisting}[style=Default]
+function erase_node : (node : NodeID; modification : ref Modification?) $\to$ $\emptyset$
+	layer(node.layer()).erase(node.index());
+	if modification $\ne$ null then modification.erase_node(node);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Find Ancestor In Representation}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Find Ancestor In Representation Implementation}
+\begin{lstlisting}[style=Default]
+function find_ancestor_in_representation : (node : NodeID; trail : ref Stack<NodeID>) $\to$ NodeID
+	var parent : NodeID := forest().parent_of(node);
+	trail.push(parent);
 
-%################################################
-\paragraph{In Representation}
-%################################################
+	// If this node has no parent, then it definitely has no ancestor in the representation.
+	if parent.invalid() then return parent;
 
-TODO
+	// If this node has a parent and it's in the representation, then return it.
+	if in_representation(parent) then return parent;
+
+	// Otherwise, any ancestor this node may have is also its parent's ancestor, so recurse.
+	return find_ancestor_in_representation(parent, trail);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Insert Node}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Insert Node Implementation}
+\begin{lstlisting}[style=Default]
+function insert_node : (node : NodeID; modification : ref Modification?) $\to$ $\emptyset$
+	layer(node.layer()).insert(node.index());
+	if modification $\ne$ null then modification.insert_node(node);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Merge Layer}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Merge Layer Implementation}
+\begin{lstlisting}[style=Default]
+/*
+Calculates the layer in which any merging of the selected nodes should happen.
+
+viewLayer - The layer being `viewed' by the user.
+*/
+function merge_layer : (viewLayer : int) $\to$ int
+	for i : int := 0 up to viewLayer - 1
+		if not layer(i).empty() return i;
+	return viewLayer;
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Replace With Selection}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Replace With Selection Implementation}
+\begin{lstlisting}[style=Default]
+function replace_with_selection_impl : (selection : Selection) $\to$ Modification
+	var modification : Modification;
+	for i : int := 0 up to forest().highest_layer()
+		for each n $\in$ layer(i)
+			modification.erase_node(NodeID(i, n));
+		layer(i).clear();
+	for each n $\in$ selection
+		modification.insert_node(n);
+		layer(n.layer()).insert(n.index());
+	listeners.selection_was_replaced(selection);
+	return modification;
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Split Selection}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Split Selection Implementation}
+\begin{lstlisting}[style=Default]
+function split_selection : (trail : ref Stack<NodeID>; modification : ref Modification) $\to$ $\emptyset$
+	while not trail.empty()
+		var cur : NodeID := trail.top();
+		trail.pop();
+		deconsolidate_node(cur, ref modification);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Subtract}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Subtract Implementation}
+\begin{lstlisting}[style=Default]
+function subtract : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
+	// Note: This method should only be invoked on newly-created selections.
+	assert empty();
+	this := lhs;
+	for each n $\in$ rhs.nodes()
+		deselect_node_impl(n);
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Subtract Using Leaves}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Subtract Using Leaves Implementation}
+\begin{lstlisting}[style=Default]
+function subtract_using_leaves : (lhs : Selection; rhs : Selection) $\to$ $\emptyset$
+	// Note: This method should only be invoked on newly-created selections.
+	assert empty();
+	for each n $\in$ lhs.nodes()
+		layer(0).append(forest().receptive_region_of(n));
+	for each n $\in$ rhs.nodes()
+		layer(0).erase_all(forest().receptive_region_of(n));
+	consolidate_all();
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
-\paragraph{Toggle Node}
+\paragraph{Node Iterators}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : Node Iterators Implementation}
+\lstinputlisting[style=Default]{appendixpf/appendixpf-selection-nodeiterators.lst}
+\end{stulisting}
+
+\newpage
 
 %################################################
-\paragraph{View At Layer (Iterator Version)}
+\paragraph{View At Layer Iterators}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Selection : View At Layer Iterators Implementation}
+\lstinputlisting[style=Default]{appendixpf/appendixpf-selection-viewatlayeriterators.lst}
+\end{stulisting}
+
+\newpage
 
 %##################################################################################################
 \section{The Multi-Feature Selection Data Structure}

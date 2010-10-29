@@ -1,0 +1,44 @@
+class NodeIterator
+	var base : ref Selection;
+	var layerIndex : int;
+	var it : SetIterator<int>;
+	var currentNode : NodeID?;
+
+	constructor : (base_ : ref Selection; end_ : bool)
+		base := base_;
+		if not end
+			layerIndex := base.nodes().size() - 1;
+			assert layerIndex $\ge$ 0;
+			it := base.layer(layerIndex).begin();
+			find_next_node();
+		else
+			layerIndex := -1;
+			it := base.layer(0).end();
+
+	operator* : () $\to$ NodeID
+		if currentNode = null then currentNode := NodeID(layerIndex, *it);
+		return currentNode;
+
+	operator++ : () $\to$ ref NodeIterator
+		++it;
+		find_next_node();
+		currentNode.reset();
+		return this;
+
+	operator$=$ : (rhs : NodeIterator) $\to$ bool
+		return layerIndex = rhs.layerIndex and it = rhs.it;
+
+	operator$\ne$ : (rhs : NodeIterator) $\to$ bool
+		return not (this = rhs);
+
+	function find_next_node : () $\to$ $\emptyset$
+		while it = base.layer(layerIndex).end()
+			layerIndex := layerIndex - 1;
+			if layerIndex = -1 then break;
+			it = base.layer(layerIndex).begin();
+
+function nodes_begin : () $\to$ NodeIterator
+	return NodeIterator(ref this, false);
+
+function nodes_end : () $\to$ NodeIterator
+	return NodeIterator(ref this, true);
