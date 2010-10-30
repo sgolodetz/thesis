@@ -529,7 +529,16 @@ function subtract_using_leaves
 \paragraph{Clear All}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Clear All Implementation}
+\begin{lstlisting}[style=Default]
+function clear_all : () $\to$ $\emptyset$
+	"begin_command_sequence();" // handled by the command sequence guard
+	for each (feature,ref selection) $\in$ mfs
+		selection.clear();
+	"end_command_sequence();" // handled by the command sequence guard
+\end{lstlisting}
+\end{stulisting}
 
 %################################################
 \paragraph{Clear Feature}
@@ -548,7 +557,10 @@ function clear_feature : (feature : Feature) $\to$ $\emptyset$
 \paragraph{Combine}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Combine Implementation}
+\lstinputlisting[style=Default]{appendixpf/appendixpf-mfs-combine.lst}
+\end{stulisting}
 
 %################################################
 \paragraph{Features Of}
@@ -612,7 +624,10 @@ function identify_selection : (selection : PartitionForestSelection; feature : F
 \paragraph{Subtract}
 %################################################
 
-TODO
+\begin{stulisting}[H]
+\caption{Multi-Feature Selection : Subtract Implementation}
+\lstinputlisting[style=Default]{appendixpf/appendixpf-mfs-subtract.lst}
+\end{stulisting}
 
 %################################################
 \paragraph{Unidentify Node}

@@ -1,0 +1,21 @@
+function combine
+:	(lhs : PartitionForestMultiFeatureSelection;
+	 rhs : PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+
+	// Note: This method should only be invoked on newly-created multi-feature selections.
+	assert selections().empty();
+
+	// Step 1: Construct the appropriate selections.
+	for each (feature,selection) $\in$ lhs
+		selection(feature) := make_selection(forest());
+	for each (feature,selection) $\in$ rhs
+		selection(feature) := make_selection(forest());
+
+	// Step 2: Combine the corresponding selections from lhs and rhs.
+	for each (feature,ref selection) $\in$ selections()
+		if not lhs.has_selection(feature) then
+			selection := rhs.selection(feature);
+		else if not rhs.has_selection(feature) then
+			selection := lhs.selection(feature);
+		else
+			selection.combine(lhs.selection(feature), rhs.selection(feature));
