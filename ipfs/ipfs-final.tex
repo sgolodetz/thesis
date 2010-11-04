@@ -181,6 +181,7 @@ It is possible to transform any partition forest $F$ for a particular object int
 \item The nodes in the forest's branch layers are stored in some sort of tree-based map (for example, a std::map in C++).
 \item Edges in the leaf layer are created on-the-fly -- it would be unnecessarily costly to store all the edges between adjacent image pixels, for example.
 \item Edges in other layers are stored using some sort of tree-based data structure (such as the multi-index container provided in C++'s Boost libraries).
+\item The children of each node are stored in a tree-based set (for example, a std::set in C++).
 \end{itemize}
 
 \noindent All of these data structures are assumed to provide their usual complexity guarantees (e.g.~logarithmic lookup for tree-based maps, etc.)
@@ -318,9 +319,7 @@ Pseudo-code to undo a delete layer command is shown in Listing~\ref{code:ipfs-fo
 
 (It is worth observing that undeleting a layer in an interactive system may not necessarily be as simple as this. One good reason for deleting a layer is to save memory, in particular the substantial amount of memory associated with the textures that display the partition forest to the user. Caching these textures when deleting a layer would in this case defeat the point of deleting the layer in the first place. A compromise solution is to cache the layer itself, but delete the textures -- we then arrange to recreate the textures from scratch in the event that the layer is undeleted.)
 
-TODO: Complexity analysis
-
-%In terms of complexity, the reinsertion of the deleted layer takes amortized constant time. The first loop of the pseudo-code (which clears the child sets of all the nodes in layer $A$) takes $O(n_a)$ time. To analyse the remainder of the algorithm, observe that line $20$ (which sets the parent of a node looked up in layer $B$) executes $n_b$ times, making the cost of the inner loop $O(n_b \log n_b)$ when $B$ is a branch layer. Line $21$ (which does a lookup in layer $A$ and then an insertion into a child set) is executed $n_d$ times. The total cost of the lookups is $O(n_d \log n_a)$. Assuming the child sets are implemented sensibly, each insertion is amortized constant time, making the amortized cost of all the insertions $O(n_d)$. So the overall cost of lines $17-21$ is $O(n_b \log n_b + n_d \log n_a + n_d) = O(n_b \log n_b)$, since $n_b \ge n_d \ge n_a$. The total cost of the entire algorithm is thus also $O(n_b \log n_b)$.
+In terms of complexity, line $8$ in the listing is amortised $O(1)$. Lines $12-15$ are $O(n_a)$, because they involve a simple array lookup, followed by at most a constant time operation for each node in layer $A$. Line $17$ is a simple $O(1)$ array lookup. Lines $18-21$ are more interesting: note that line $20$, which involves an $O(\log n_b)$ lookup, executes exactly $n_b$ times (we're running through the children of every node in the layer above $B$, i.e.~through all the nodes actually in $B$), so the cost of the first part of the loop is $O(n_b \log n_b)$. Line $21$, by contrast, executes $n_d$ times and involves at most $O(\log n_a + \log \#\mathit{children}(\mathit{n.parent()}))$ amount of work each time, adding $O(n_d (\log n_a + \log \#\mathit{children}(\mathit{n.parent()})))$ work to the total. This is dominated by the earlier $O(n_b \log n_b)$, which is thus the total cost of lines $18-21$. The cost of the entire algorithm, bearing in mind that line $8$'s cost was amortised, and that $n_a \le n_b$, is thus amortised $O(n_b \log n_b)$.
 
 \afterpage{\clearpage}
 \newpage
