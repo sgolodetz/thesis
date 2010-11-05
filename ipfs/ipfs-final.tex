@@ -752,7 +752,7 @@ Pseudo-code for the zipping algorithm is shown in Listing~\ref{code:ipfs-forest-
 
 \paragraph{Complexity Analysis}
 
-TODO
+The complexity of executing a zip operation (ignoring the precondition checking) is most easily characterised in terms of the complexity of the underlying sibling node merging operations. In Listing~\ref{code:ipfs-forest-zipchains}, line $33$ is clearly $O(1)$ and lines $34-36$ are clearly $O(\#\mathit{chains})$. Lines $40-46$ can be analysed as follows. Each iteration of the outer loop first constructs a set of at most $\#\mathit{chains}$ nodes by inserting them one at a time -- this involves $O(\log(\#\mathit{chains}!))$ work, as usual. It then merges the nodes in this set, with the cost as given in the sibling node merging analysis. Since the dominant cost in this is in merging the nodes, not in constructing the sets of nodes to be merged, the overall complexity of the loop, and ultimately the algorithm as a whole, is then $O(\sum_{m=\mathit{lowLayer}}^{\mathit{highLayer}} \mathit{merge\_cost}(\mathit{nodes}_m))$, where $\mathit{nodes}_m$ is the set of nodes to be merged in layer $m$.
 
 \afterpage{\clearpage}
 \newpage
