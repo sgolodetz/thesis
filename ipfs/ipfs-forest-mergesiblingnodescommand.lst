@@ -1,4 +1,4 @@
-function execute : $\emptyset$ $\to$ $\emptyset$
+function execute : () $\to$ $\emptyset$
 	if split_groups() = {} then
 		// Construct the split groups for a later undo operation.
 		var layerIndex : int := lowest_indexed_node(nodes()).layer();
@@ -8,5 +8,5 @@ function execute : $\emptyset$ $\to$ $\emptyset$
 
 	result() = merge_sibling_nodes_impl(nodes());
 
-function undo : $\emptyset$ $\to$ $\emptyset$
+function undo : () $\to$ $\emptyset$
 	split_node_impl(result(), split_groups());

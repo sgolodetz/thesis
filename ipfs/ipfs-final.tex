@@ -374,12 +374,12 @@ The following preconditions must be checked for sibling node merging (see the ps
 
 \item There must be more than one node to be merged. (This can be trivially checked in $O(1)$ time.)
 \item None of the nodes must be in the lowest layer of the forest. (This can be checked in time $O(k)$, where $k$ is the number of nodes.)
-\item The nodes must share a common parent in the forest. Note that this implies that they must all be in the same layer. (Assuming the $k$ nodes share a common layer $\ell$, then the cost of looking up the parent for each node is $O(\log n_\ell)$, whence the total cost of this check is $O(k \log n_\ell)$.)
-\item The union of the objects represented by the nodes to be merged must be connected. (This can be checked in $O(k \log e_\ell)$ time. To see this, examine the \texttt{are_connected} and \texttt{find_connected_component} listings in Appendix~\ref{chap:appendixpf}. The worst case is when all the nodes must be visited, i.e.~when there is a single connected component. When that happens, over the course of the process, every node is erased from the set of input nodes and inserted into the set of result nodes -- $O(\log (k!))$ overall. Each node is also pushed onto the queue and popped off it again -- $O(k)$ overall. Every node but the seed is also looked up during the \texttt{contains} call -- $O(\log (k!))$ overall, because the size of the input node set decreases after each such call. The dominant cost of $O(k \log e_\ell)$ comes from having to look up the adjacent edges for each input node in the tree-based data structure storing the edges for forest layer $\ell$.)
+\item The nodes must share a common parent in the forest. Note that this implies that they must all be in the same layer. (Assuming the $k$ nodes share a common layer $m$, then the cost of looking up the parent for each node is $O(\log n_m)$, whence the total cost of this check is $O(k \log n_m)$.)
+\item The union of the objects represented by the nodes to be merged must be connected. (This can be checked in $O(k \log e_m)$ time. To see this, examine the \texttt{are_connected} and \texttt{find_connected_component} listings in Appendix~\ref{chap:appendixpf}. The worst case is when all the nodes must be visited, i.e.~when there is a single connected component. When that happens, over the course of the process, every node is erased from the set of input nodes and inserted into the set of result nodes -- $O(\log (k!))$ overall. Each node is also pushed onto the queue and popped off it again -- $O(k)$ overall. Every node but the seed is also looked up during the \texttt{contains} call -- $O(\log (k!))$ overall, because the size of the input node set decreases after each such call. The dominant cost of $O(k \log e_m)$ comes from having to look up the adjacent edges for each input node in the tree-based data structure storing the edges for forest layer $m$.)
 
 \end{enumerate}
 
-\noindent The overall cost of checking the preconditions is thus $O(k \log e_\ell)$, since $n_\ell \in O(e_\ell)$ (the adjacency graphs we're dealing with are connected).
+\noindent The overall cost of checking the preconditions is thus $O(k \log e_m)$, since $n_m \in O(e_m)$ (the adjacency graphs we're dealing with are connected).
 
 %---
 \begin{stulisting}[p]
@@ -407,7 +407,11 @@ As a result of merging the other nodes into the canonical node, the latter may g
 
 Finally, Step 3 removes the non-canonical nodes. In the pseudo-code given (based on my implementation in \emph{millipede}), this also has the effect of removing any edges adjacent to those nodes -- if an alternative implementation strategy is chosen, however, these may need to be removed manually.
 
-TODO: Complexity analysis
+%TODO: Complexity analysis
+
+In terms of complexity analysis, we first let $k$ be the number of nodes to be merged. Line $6$ in Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl} is $O(1)$, since the nodes in the input set are sorted by index. Line $7$ is $O(k)$, since it involves a set copy followed by an erase. Lines $8-9$ are $O(1)$, since they are array lookups. Line $16$ is $O(\log n_m)$ due to the set lookup done by \texttt{node_children}. Lines $17-20$ require more careful analysis. There is $O(k \log n_m)$ work looking up the children of the $k-1$ nodes in \texttt{others}. The inner loop runs $\sum_{x \in \mathit{others}} \#children(x)$ times, and does an $O(\log n_b)$ set lookup and a set insertion into \texttt{canonicalChildren} that is guaranteed to be no worse than $O(\log n_b)$ on each iteration. Thus, lines $17-20$ are $O(k \log n_m + (\sum_{x \in \mathit{others}} \#\mathit{children}(x)) \log n_b)$ overall. Lines $24-29$ do $O(\log n_m + \log n_a + k \log \#\mathit{parentChildren})$ work, made up of a layer $M$ node lookup, a layer $A$ node lookup and $k-1$ set erases from \texttt{parentChildren}. Lines $34-38$ again require careful analysis. The layer $M$ adjacent edge lookups in the outer loop require $O(k \log e_m)$ work. The inner loop runs $\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)$ times, and does $O(\log e_m)$ work updating the edge weight on each iteration. Thus, lines $34-38$ involve $O(k \log e_m + (\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)) \log e_m)$ work overall. Line $41$ is $O(\sum_{x \in \mathit{nodes}} \#\mathit{children}(x))$. Line $42$ is an $O(\log n_m)$ layer $M$ node lookup. Lines $46-47$ are $O(k(\log n_m + \log e_m))$, since they involve removing each of the $k-1$ nodes being merged from the layer $M$ node set and their adjacent edge sets from the layer $M$ edge table (a single erase is required in each case). This simplifies to $O(k \log e_m)$, since $n_m \in O(e_m)$.
+
+Although I will not show the long-winded derivation here, the complexity of the algorithm as a whole can be simplified down to $O(\#children(\mathit{canonical}) + (\sum_{x \in others} \#\mathit{children}(x)) \log n_b + (\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)) \log e_m)$. Note in passing that this is upper-bounded by $O(n_b \log n_b + e_m \log e_m)$.
 
 %---
 \begin{stulisting}[p]
@@ -970,14 +974,6 @@ Pseudo-code to implement parent switching is shown in Listing~\ref{code:ipfs-for
 TODO
 
 \afterpage{\clearpage}
-\newpage
-
-%################################################
-\subsection{Summary}
-%################################################
-
-TODO: Summarise the algorithms and their complexities
-
 \newpage
 
 %##################################################################################################
@@ -1560,4 +1556,54 @@ function identify_node
 \section{Chapter Summary}
 %##################################################################################################
 
-In this chapter, the partition forest, partition forest selection and partition forest multi-feature selection data structures were introduced, together with their accompanying algorithms. It was also shown how they could be integrated into a graphical user interface for image analysis. This lays the groundwork for Chapters~\ref{chap:segmentation} and \ref{chap:featureid}, which respectively discuss how to construct partition forests from images and how to use them to identify features therein.
+In this chapter, the partition forest, partition forest selection and partition forest multi-feature selection data structures were introduced, together with their accompanying algorithms. (A table summarising the complexities of the various algorithms in this chapter is shown in Figure~\ref{?}). It was also shown how they could be integrated into a graphical user interface for image analysis. This lays the groundwork for Chapters~\ref{chap:segmentation} and \ref{chap:featureid}, which respectively discuss how to construct partition forests from images and how to use them to identify features therein.
+
+%\begin{landscape}
+\begin{table}[p]
+\scriptsize
+\begin{center}
+\begin{tabular}{c||c|c|c}
+\textbf{Algorithm} & \textbf{Preconditions} & \textbf{Execution} & \textbf{Undo} \\
+\hline\hline
+Layer Cloning & $O(1)$ & $O(e_b)$ / $O(\log (e_b!))$ & $O(n_b \log n_d)$ \\
+\hline
+Layer Deletion & $O(1)$ & $O(n_b \log n_d)$ & $O(n_b \log n_b)$ \\
+\hline
+Sibling Node Merging & $O(k \log e_m)$ & \begin{tabular}{c} $O\left[ \#\mathit{children}(\mathit{canonical}) \; + \right.$ \\ $\left( \sum_{x \in \mathit{others}} \#\mathit{children}(x) \right) \log n_b \; +$ \\ $\left. \left( \sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x) \right) \log e_m \right]$ \end{tabular} & ? \\
+\hline
+Node Splitting & ? & ? & ? \\ 
+\hline
+Unzipping & ? & ? & ? \\
+\hline
+Zipping & ? & ? & ? \\
+\hline
+Non-Sibling Node Merging & $O(k)$ & ? & ? \\
+\hline
+Parent Switching & ? & ? & ? \\
+\hline\hline
+Node Selection & N/A & ? & N/A \\
+\hline
+Node Deselection & N/A & ? & N/A \\
+\hline
+View At Layer & N/A & ? & N/A \\
+\hline
+Undo Modification & N/A & ? & N/A \\
+\hline
+Redo Modification & N/A & ? & N/A \\
+\hline
+Layer Was Cloned & N/A & ? & N/A \\
+\hline
+Layer Will Be Deleted & N/A & ? & N/A \\
+\hline
+Layer Was Undeleted & N/A & ? & N/A \\
+\hline
+Nodes Will Be Merged & N/A & ? & N/A \\
+\hline
+Nodes Were Merged & N/A & ? & N/A \\
+\hline
+Node Was Split & N/A & ? & N/A
+\end{tabular}
+\end{center}
+\caption{This table summarises the complexities of the various algorithms described in this chapter. To understand the notation used, readers are encouraged to refer back to the sections describing the algorithms concerned.}
+\end{table}
+%\end{landscape}
