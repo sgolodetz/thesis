@@ -373,13 +373,13 @@ The following preconditions must be checked for sibling node merging (see the ps
 \begin{enumerate}
 
 \item There must be more than one node to be merged. (This can be trivially checked in $O(1)$ time.)
-\item None of the nodes must be in the lowest layer of the forest. (This can be checked in time $O(k)$, where $k$ is the number of nodes.)
-\item The nodes must share a common parent in the forest. Note that this implies that they must all be in the same layer. (Assuming the $k$ nodes share a common layer $m$, then the cost of looking up the parent for each node is $O(\log n_m)$, whence the total cost of this check is $O(k \log n_m)$.)
-\item The union of the objects represented by the nodes to be merged must be connected. (This can be checked in $O(k \log e_m)$ time. To see this, examine the \texttt{are_connected} and \texttt{find_connected_component} listings in Appendix~\ref{chap:appendixpf}. The worst case is when all the nodes must be visited, i.e.~when there is a single connected component. When that happens, over the course of the process, every node is erased from the set of input nodes and inserted into the set of result nodes -- $O(\log (k!))$ overall. Each node is also pushed onto the queue and popped off it again -- $O(k)$ overall. Every node but the seed is also looked up during the \texttt{contains} call -- $O(\log (k!))$ overall, because the size of the input node set decreases after each such call. The dominant cost of $O(k \log e_m)$ comes from having to look up the adjacent edges for each input node in the tree-based data structure storing the edges for forest layer $m$.)
+\item None of the nodes must be in the lowest layer of the forest. (This can be checked in time $O(\#\mathit{nodes})$.)
+\item The nodes must share a common parent in the forest. Note that this implies that they must all be in the same layer. (Assuming the nodes share a common layer $m$, then the cost of looking up the parent for each node is $O(\log n_m)$, whence the total cost of this check is $O(\#\mathit{nodes} \log n_m)$.)
+\item The union of the objects represented by the nodes to be merged must be connected. (This can be checked in $O(\#\mathit{nodes} \log e_m)$ time. To see this, examine the \texttt{are_connected} and \texttt{find_connected_component} listings in Appendix~\ref{chap:appendixpf}. The worst case is when all the nodes must be visited, i.e.~when there is a single connected component. When that happens, over the course of the process, every node is erased from the set of input nodes and inserted into the set of result nodes -- $O(\log (\#\mathit{nodes}!))$ overall. Each node is also pushed onto the queue and popped off it again -- $O(\#\mathit{nodes})$ overall. Every node but the seed is also looked up during the \texttt{contains} call -- $O(\log (\#\mathit{nodes}!))$ overall, because the size of the input node set decreases after each such call. The dominant cost of $O(\#\mathit{nodes} \log e_m)$ comes from having to look up the adjacent edges for each input node in the tree-based data structure storing the edges for forest layer $m$.)
 
 \end{enumerate}
 
-\noindent The overall cost of checking the preconditions is thus $O(k \log e_m)$, since $n_m \in O(e_m)$ (the adjacency graphs we're dealing with are connected).
+\noindent The overall cost of checking the preconditions is thus $O(\#\mathit{nodes} \log e_m)$, since $n_m \in O(e_m)$ (the adjacency graphs we're dealing with are connected).
 
 %---
 \begin{stulisting}[p]
@@ -406,8 +406,6 @@ In Step 1, forest links are then added (in both directions) between the canonica
 As a result of merging the other nodes into the canonical node, the latter may gain new edges that it did not have before (since some of the other nodes may have been adjacent to nodes that it itself was not), and its properties (such as its voxel count) will generally change. In Step 2, therefore, its edges are updated using the edges of the other nodes. When there is a duplicate edge (i.e.~both the canonical node and one of the other nodes have an edge to a third node), then a new edge weight has to be chosen -- depending on the scheme in use, this might for example involve taking the minimum of the weights on the two existing edges (the appropriate method for a lowest pass point approach). Also in Step 2, the canonical node's properties are recalculated directly from those of its children (note that this is why the partition forest definition places direct calculability constraints on property sets).
 
 Finally, Step 3 removes the non-canonical nodes. In the pseudo-code given (based on my implementation in \emph{millipede}), this also has the effect of removing any edges adjacent to those nodes -- if an alternative implementation strategy is chosen, however, these may need to be removed manually.
-
-%TODO: Complexity analysis
 
 In terms of complexity analysis, we first let $k$ be the number of nodes to be merged. Line $6$ in Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl} is $O(1)$, since the nodes in the input set are sorted by index. Line $7$ is $O(k)$, since it involves a set copy followed by an erase. Lines $8-9$ are $O(1)$, since they are array lookups. Line $16$ is $O(\log n_m)$ due to the set lookup done by \texttt{node_children}. Lines $17-20$ require more careful analysis. There is $O(k \log n_m)$ work looking up the children of the $k-1$ nodes in \texttt{others}. The inner loop runs $\sum_{x \in \mathit{others}} \#children(x)$ times, and does an $O(\log n_b)$ set lookup and a set insertion into \texttt{canonicalChildren} that is guaranteed to be no worse than $O(\log n_b)$ on each iteration. Thus, lines $17-20$ are $O(k \log n_m + (\sum_{x \in \mathit{others}} \#\mathit{children}(x)) \log n_b)$ overall. Lines $24-29$ do $O(\log n_m + \log n_a + k \log \#\mathit{parentChildren})$ work, made up of a layer $M$ node lookup, a layer $A$ node lookup and $k-1$ set erases from \texttt{parentChildren}. Lines $34-38$ again require careful analysis. The layer $M$ adjacent edge lookups in the outer loop require $O(k \log e_m)$ work. The inner loop runs $\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)$ times, and does $O(\log e_m)$ work updating the edge weight on each iteration. Thus, lines $34-38$ involve $O(k \log e_m + (\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)) \log e_m)$ work overall. Line $41$ is $O(\sum_{x \in \mathit{nodes}} \#\mathit{children}(x))$. Line $42$ is an $O(\log n_m)$ layer $M$ node lookup. Lines $46-47$ are $O(k(\log n_m + \log e_m))$, since they involve removing each of the $k-1$ nodes being merged from the layer $M$ node set and their adjacent edge sets from the layer $M$ edge table (a single erase is required in each case). This simplifies to $O(k \log e_m)$, since $n_m \in O(e_m)$.
 
@@ -1569,7 +1567,7 @@ Layer Cloning & $O(1)$ & $O(e_b)$ / $O(\log (e_b!))$ & $O(n_b \log n_d)$ \\
 \hline
 Layer Deletion & $O(1)$ & $O(n_b \log n_d)$ & $O(n_b \log n_b)$ \\
 \hline
-Sibling Node Merging & $O(k \log e_m)$ & \begin{tabular}{c} $O\left[ \#\mathit{children}(\mathit{canonical}) \; + \right.$ \\ $\left( \sum_{x \in \mathit{others}} \#\mathit{children}(x) \right) \log n_b \; +$ \\ $\left. \left( \sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x) \right) \log e_m \right]$ \end{tabular} & ? \\
+Sibling Node Merging & $O(\#\mathit{nodes} \log e_m)$ & \begin{tabular}{c} $O\left[ \#\mathit{children}(\mathit{canonical}) \; + \right.$ \\ $\left( \sum_{x \in \mathit{others}} \#\mathit{children}(x) \right) \log n_b \; +$ \\ $\left. \left( \sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x) \right) \log e_m \right]$ \end{tabular} & ? \\
 \hline
 Node Splitting & ? & ? & ? \\ 
 \hline
@@ -1577,7 +1575,7 @@ Unzipping & ? & ? & ? \\
 \hline
 Zipping & ? & ? & ? \\
 \hline
-Non-Sibling Node Merging & $O(k)$ & ? & ? \\
+Non-Sibling Node Merging & $O(\#\mathit{nodes})$ & ? & ? \\
 \hline
 Parent Switching & ? & ? & ? \\
 \hline\hline
