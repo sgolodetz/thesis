@@ -752,7 +752,7 @@ Pseudo-code for the zipping algorithm is shown in Listing~\ref{code:ipfs-forest-
 
 \paragraph{Complexity Analysis}
 
-The complexity of executing a zip operation (ignoring the precondition checking) is most easily characterised in terms of the complexity of the underlying sibling node merging operations. In Listing~\ref{code:ipfs-forest-zipchains}, line $33$ is clearly $O(1)$ and lines $34-36$ are clearly $O(\#\mathit{chains})$. Lines $40-46$ can be analysed as follows. Each iteration of the outer loop first constructs a set of at most $\#\mathit{chains}$ nodes by inserting them one at a time -- this involves $O(\log(\#\mathit{chains}!))$ work, as usual. It then merges the nodes in this set, with the cost as given in the sibling node merging analysis. Since the dominant cost in this is in merging the nodes, not in constructing the sets of nodes to be merged, the overall complexity of the loop, and ultimately the algorithm as a whole, is then $O(\sum_{m=\mathit{lowLayer}}^{\mathit{highLayer}} \mathit{merge\_cost}(\mathit{nodes}_m))$, where $\mathit{nodes}_m$ is the set of nodes to be merged in layer $m$.
+The complexity of executing a zip operation (ignoring the precondition checking) is most easily characterised in terms of the complexity of the underlying sibling node merging operations. In Listing~\ref{code:ipfs-forest-zipchains}, line $33$ is clearly $O(1)$ and lines $34-36$ are clearly $O(\#\mathit{chains})$. Lines $40-46$ can be analysed as follows. Each iteration of the outer loop first constructs a set of at most $\#\mathit{chains}$ nodes by inserting them one at a time -- this involves $O(\log(\#\mathit{chains}!))$ work, as usual. It then merges the nodes in this set, with the cost as given in the sibling node merging analysis. Since the dominant cost in this is in merging the nodes, not in constructing the sets of nodes to be merged, the overall complexity of the loop, and ultimately the algorithm as a whole, is then $O(\sum_{m=\mathit{lowLayer}}^{\mathit{highLayer}} \mathit{sibling\_merge\_cost}(\mathit{nodes}_m))$, where $\mathit{nodes}_m$ is the set of nodes to be merged in layer $m$.
 
 \afterpage{\clearpage}
 \newpage
@@ -1231,8 +1231,6 @@ function undo_modification
 	listeners.modification_undone(modification);
 \end{lstlisting}
 
-\noindent TODO: Complexity analysis
-
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Redo Modification}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1249,8 +1247,6 @@ function redo_modification
 		insert_node(n, null);
 	listeners.modification_redone(modification);
 \end{lstlisting}
-
-\noindent TODO: Complexity analysis
 
 \newpage
 
@@ -1365,8 +1361,6 @@ void layer_was_undeleted(int index);
 
 Pseudo-code to implement the algorithm is shown in Listing~\ref{code:ipfs-selection-layerwasundeleted}. First, an empty layer must be re-added to the selection representation in the appropriate place. Then, a set is constructed containing the parents of the selected nodes in the layer below that being undeleted. Finally, each of those parents is consolidated in turn.
 
-TODO: Complexity analysis
-
 %---
 \begin{stulisting}[p]
 \caption{Forest Selection : Layer Was Undeleted : Implementation}
@@ -1418,8 +1412,6 @@ void nodes_were_merged(const set<NodeID>& nodes,
 
 The implementation, as shown in the pseudo-code in Listing~\ref{code:ipfs-selection-nodeswillbemerged}, is straightforward. Before the merge, we loop through the nodes being merged and deconsolidate them if they are in the selection representation. After the merge, we consolidate the node resulting from the merge and inform any listeners.
 
-TODO: Complexity analysis
-
 %---
 \begin{stulisting}[p]
 \caption{Forest Selection : Nodes Will Be Merged / Nodes Were Merged : Implementation}
@@ -1469,8 +1461,6 @@ void node_was_split(const NodeID& node, const set<NodeID>& results);
 \paragraph{Implementation}
 
 Pseudo-code to implement the algorithm is shown in Listing~\ref{code:ipfs-selection-nodewassplit}. The method is exactly as described above.
-
-TODO: Complexity analysis
 
 %---
 \begin{stulisting}[p]
@@ -1563,9 +1553,9 @@ In this chapter, the partition forest, partition forest selection and partition 
 \begin{tabular}{c||c|c|c}
 \textbf{Algorithm} & \textbf{Preconditions} & \textbf{Execution} & \textbf{Undo} \\
 \hline\hline
-Layer Cloning & $O(1)$ & $O(e_b)$ / $O(\log (e_b!))$ & $O(n_b \log n_d)$ \\
+Layer Cloning & $O(1)$ & Amortised \{$O(e_b)$ / $O(\log (e_b!))\}$ & $O(n_b \log n_d)$ \\
 \hline
-Layer Deletion & $O(1)$ & $O(n_b \log n_d)$ & $O(n_b \log n_b)$ \\
+Layer Deletion & $O(1)$ & $O(n_b \log n_d)$ & Amortised $O(n_b \log n_b)$ \\
 \hline
 Sibling Node Merging & $O(\#\mathit{nodes} \log e_m)$ & \begin{tabular}{c} $O\left[ \#\mathit{children}(\mathit{canonical}) \; + \right.$ \\ $\left( \sum_{x \in \mathit{others}} \#\mathit{children}(x) \right) \log n_b \; +$ \\ $\left. \left( \sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x) \right) \log e_m \right]$ \end{tabular} & ? \\
 \hline
@@ -1573,7 +1563,7 @@ Node Splitting & ? & ? & ? \\
 \hline
 Unzipping & ? & ? & ? \\
 \hline
-Zipping & ? & ? & ? \\
+Zipping & ? & $O(\sum_{m=\mathit{lowLayer}}^{\mathit{highLayer}} \mathit{sibling\_merge\_cost}(\mathit{nodes}_m))$ & ? \\
 \hline
 Non-Sibling Node Merging & $O(\#\mathit{nodes})$ & ? & ? \\
 \hline
@@ -1583,25 +1573,9 @@ Node Selection & N/A & ? & N/A \\
 \hline
 Node Deselection & N/A & ? & N/A \\
 \hline
-View At Layer & N/A & ? & N/A \\
-\hline
-Undo Modification & N/A & ? & N/A \\
-\hline
-Redo Modification & N/A & ? & N/A \\
-\hline
-Layer Was Cloned & N/A & ? & N/A \\
-\hline
-Layer Will Be Deleted & N/A & ? & N/A \\
-\hline
-Layer Was Undeleted & N/A & ? & N/A \\
-\hline
-Nodes Will Be Merged & N/A & ? & N/A \\
-\hline
-Nodes Were Merged & N/A & ? & N/A \\
-\hline
-Node Was Split & N/A & ? & N/A
+View At Layer & N/A & ? & N/A
 \end{tabular}
 \end{center}
-\caption{This table summarises the complexities of the various algorithms described in this chapter. To understand the notation used, readers are encouraged to refer back to the sections describing the algorithms concerned.}
+\caption{A summary of the complexities of the more important algorithms described in this chapter. To understand the notation used, readers are encouraged to refer back to the sections describing the algorithms concerned.}
 \end{table}
 %\end{landscape}
