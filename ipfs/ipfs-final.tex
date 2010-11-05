@@ -293,10 +293,6 @@ The only precondition that needs checking for layer deletion is that the layer b
 
 \paragraph{Executing the Command}
 
-Pseudo-code to execute a delete layer command is shown in Listing~\ref{code:ipfs-forest-deletelayerimpl}. The idea is to update the forest links between the layers on either side of the layer to be deleted and then remove the layer itself from the forest. Specifically, if $D$ is the layer being deleted, $B$ is the layer below it and $A$ is the layer above (if it exists), then each node in $B$ should have its parent link updated to point to its grandparent in layer $A$. The grandparent nodes in $A$ should similarly have their child links updated to point to their grandchildren in layer $B$. To implement this efficiently, it is important to avoid calculating the grandchildren of nodes in $A$ explicitly. This is most easily arranged by iterating over the grandchildren and updating the grandparents during the course of the iteration (see pseudo-code). It is important to return the deleted layer (unchanged) at the end of the process, because it must be cached if we are to support undo.
-
-We use the same notation to analyse the complexity as in the layer cloning analysis. Referring to the listing, line $16$ is a simple $O(1)$ array lookup. Lines $17-19$ are $O(n_a)$, since each iteration (if the loop happens at all) does a constant amount of work for each node in layer $A$. Lines $21-22$ are simple $O(1)$ array lookups. Lines $23-27$ are $O(n_b (\log n_d + \log n_a + \log \#\mathit{children}(\mathit{grandparentA}))) = O(n_b \log n_d)$, since $n_a \le n_d$ and $\#\mathit{children}(\mathit{grandparentA}) \le n_d$. Line $29$ is amortised $O(1)$. The algorithm as a whole is $O(n_a + n_b \log n_d) = O(n_b \log n_d)$, since $n_a \le n_b$.
-
 %---
 \begin{stulisting}[p]
 \caption{Forest : Layer Deletion : Execution}
@@ -305,8 +301,6 @@ We use the same notation to analyse the complexity as in the layer cloning analy
 \end{stulisting}
 %---
 
-\paragraph{Undoing the Command}
-
 %---
 \begin{stulisting}[p]
 \caption{Forest : Layer Deletion : Undo}
@@ -314,6 +308,12 @@ We use the same notation to analyse the complexity as in the layer cloning analy
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-undeletelayerimpl.lst}
 \end{stulisting}
 %---
+
+Pseudo-code to execute a delete layer command is shown in Listing~\ref{code:ipfs-forest-deletelayerimpl}. The idea is to update the forest links between the layers on either side of the layer to be deleted and then remove the layer itself from the forest. Specifically, if $D$ is the layer being deleted, $B$ is the layer below it and $A$ is the layer above (if it exists), then each node in $B$ should have its parent link updated to point to its grandparent in layer $A$. The grandparent nodes in $A$ should similarly have their child links updated to point to their grandchildren in layer $B$. To implement this efficiently, it is important to avoid calculating the grandchildren of nodes in $A$ explicitly. This is most easily arranged by iterating over the grandchildren and updating the grandparents during the course of the iteration (see pseudo-code). It is important to return the deleted layer (unchanged) at the end of the process, because it must be cached if we are to support undo.
+
+We use the same notation to analyse the complexity as in the layer cloning analysis. Referring to the listing, line $16$ is a simple $O(1)$ array lookup. Lines $17-19$ are $O(n_a)$, since each iteration (if the loop happens at all) does a constant amount of work for each node in layer $A$. Lines $21-22$ are simple $O(1)$ array lookups. Lines $23-27$ are $O(n_b (\log n_d + \log n_a + \log \#\mathit{children}(\mathit{grandparentA}))) = O(n_b \log n_d)$, since $n_a \le n_d$ and $\#\mathit{children}(\mathit{grandparentA}) \le n_d$. Line $29$ is amortised $O(1)$. The algorithm as a whole is $O(n_a + n_b \log n_d) = O(n_b \log n_d)$, since $n_a \le n_b$.
+
+\paragraph{Undoing the Command}
 
 Pseudo-code to undo a delete layer command is shown in Listing~\ref{code:ipfs-forest-undeletelayerimpl}. The algorithm reinserts the deleted layer $D$ (cached during deletion) back into the forest, then recreates the forest links in the layers below ($B$) and above ($A$, where applicable) the deletion point, using the links in the deleted layer to discover which links to add.
 
@@ -399,14 +399,6 @@ The following preconditions must be checked for sibling node merging (see the ps
 
 \paragraph{Executing the Command}
 
-Pseudo-code to execute a sibling node merge command is shown in Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl}. Firstly, the mergee node with the lowest index is picked to be the result of the merge (for instance, nodes $(2,2)$, $(2,1)$ and $(2,5)$ in a hypothetical forest would be merged into a new node called $(2,1)$, since $\min(\{2,1,5\}) = 1$). This node is referred to as the `canonical' node in the code.
-
-In Step 1, forest links are then added (in both directions) between the canonical node and the children of the other nodes being merged (the parent links from the children to the canonical node replace those already there; the child links in the other direction are simply added). If the nodes being merged are not in the highest layer, the forest links joining the non-canonical nodes to their common parent must also be removed (since the non-canonical nodes will ultimately be removed from the forest).
-
-As a result of merging the other nodes into the canonical node, the latter may gain new edges that it did not have before (since some of the other nodes may have been adjacent to nodes that it itself was not), and its properties (such as its voxel count) will generally change. In Step 2, therefore, its edges are updated using the edges of the other nodes. When there is a duplicate edge (i.e.~both the canonical node and one of the other nodes have an edge to a third node), then a new edge weight has to be chosen -- depending on the scheme in use, this might for example involve taking the minimum of the weights on the two existing edges (the appropriate method for a lowest pass point approach). Also in Step 2, the canonical node's properties are recalculated directly from those of its children (note that this is why the partition forest definition places direct calculability constraints on property sets).
-
-Finally, Step 3 removes the non-canonical nodes. In the pseudo-code given (based on my implementation in \emph{millipede}), this also has the effect of removing any edges adjacent to those nodes -- if an alternative implementation strategy is chosen, however, these may need to be removed manually.
-
 %---
 \begin{stulisting}[p]
 \caption{Forest : Sibling Node Merging : Execution}
@@ -414,6 +406,14 @@ Finally, Step 3 removes the non-canonical nodes. In the pseudo-code given (based
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-mergesiblingnodesimpl.lst}
 \end{stulisting}
 %---
+
+Pseudo-code to execute a sibling node merge command is shown in Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl}. Firstly, the mergee node with the lowest index is picked to be the result of the merge (for instance, nodes $(2,2)$, $(2,1)$ and $(2,5)$ in a hypothetical forest would be merged into a new node called $(2,1)$, since $\min(\{2,1,5\}) = 1$). This node is referred to as the `canonical' node in the code.
+
+In Step 1, forest links are then added (in both directions) between the canonical node and the children of the other nodes being merged (the parent links from the children to the canonical node replace those already there; the child links in the other direction are simply added). If the nodes being merged are not in the highest layer, the forest links joining the non-canonical nodes to their common parent must also be removed (since the non-canonical nodes will ultimately be removed from the forest).
+
+As a result of merging the other nodes into the canonical node, the latter may gain new edges that it did not have before (since some of the other nodes may have been adjacent to nodes that it itself was not), and its properties (such as its voxel count) will generally change. In Step 2, therefore, its edges are updated using the edges of the other nodes. When there is a duplicate edge (i.e.~both the canonical node and one of the other nodes have an edge to a third node), then a new edge weight has to be chosen -- depending on the scheme in use, this might for example involve taking the minimum of the weights on the two existing edges (the appropriate method for a lowest pass point approach). Also in Step 2, the canonical node's properties are recalculated directly from those of its children (note that this is why the partition forest definition places direct calculability constraints on property sets).
+
+Finally, Step 3 removes the non-canonical nodes. In the pseudo-code given (based on my implementation in \emph{millipede}), this also has the effect of removing any edges adjacent to those nodes -- if an alternative implementation strategy is chosen, however, these may need to be removed manually.
 
 In terms of complexity analysis, we first let $k$ be the number of nodes to be merged. Line $6$ in Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl} is $O(1)$, since the nodes in the input set are sorted by index. Line $7$ is $O(k)$, since it involves a set copy followed by an erase. Lines $8-9$ are $O(1)$, since they are array lookups. Line $16$ is $O(\log n_m)$ due to the set lookup done by \texttt{node_children}. Lines $17-20$ require more careful analysis. There is $O(k \log n_m)$ work looking up the children of the $k-1$ nodes in \texttt{others}. The inner loop runs $\sum_{x \in \mathit{others}} \#children(x)$ times, and does an $O(\log n_b)$ set lookup and a set insertion into \texttt{canonicalChildren} that is guaranteed to be no worse than $O(\log n_b)$ on each iteration. Thus, lines $17-20$ are $O(k \log n_m + (\sum_{x \in \mathit{others}} \#\mathit{children}(x)) \log n_b)$ overall. Lines $24-29$ do $O(\log n_m + \log n_a + k \log \#\mathit{parentChildren})$ work, made up of a layer $M$ node lookup, a layer $A$ node lookup and $k-1$ set erases from \texttt{parentChildren}. Lines $34-38$ again require careful analysis. The layer $M$ adjacent edge lookups in the outer loop require $O(k \log e_m)$ work. The inner loop runs $\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)$ times, and does $O(\log e_m)$ work updating the edge weight on each iteration. Thus, lines $34-38$ involve $O(k \log e_m + (\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)) \log e_m)$ work overall. Line $41$ is $O(\sum_{x \in \mathit{nodes}} \#\mathit{children}(x))$. Line $42$ is an $O(\log n_m)$ layer $M$ node lookup. Lines $46-47$ are $O(k(\log n_m + \log e_m))$, since they involve removing each of the $k-1$ nodes being merged from the layer $M$ node set and their adjacent edge sets from the layer $M$ edge table (a single erase is required in each case). This simplifies to $O(k \log e_m)$, since $n_m \in O(e_m)$.
 
@@ -515,41 +515,47 @@ The user interface for node splitting is necessarily more complicated than that 
 
 \paragraph{Precondition Checking}
 
-The following preconditions must be checked for node splitting (see the pseudo-code in Listing~\ref{code:ipfs-forest-splitnode} for the method):
-
-\begin{enumerate}
-
-\item The node to be split must not be in the leaf layer of the forest. (This can be trivially checked in $O(1)$ time.)
-\item The node to be split must exist. (This can be checked in $O(1)$ time for the leaf layer, and $O(\log n_\ell)$ time for branch layer $\ell$.)
-\item There must be more than one subgroup. (This can be trivially checked in $O(1)$ time.)
-\item The subgroups must partition the children of the node being split. (This can be checked in time $O(\log C!)$, where $C$ is the number of children, since each inner loop iteration involves a logarithmic amount of work on a set whose size decreases linearly from $C$ to $1$, and $\sum_{i=1}^C \log i = \log C!$.)
-\item Each of the subgroups must be non-empty and connected. (Each of the $G$ groups requires $O(1)$ time for the non-empty check, and TODO.)
-
-\end{enumerate}
-
-When implementing node splitting in a user interface like the one described above, these preconditions should be checked by the interface, not by the forest at the time of finalizing the split. The user should not, for example, have the option of adding invalid subgroups or finalizing a split without defining any subgroups.
-
 %---
-\begin{stulisting}[p]
+\begin{stulisting}[t]
 \caption{Forest : Node Splitting : Precondition Checking}
 \label{code:ipfs-forest-splitnode}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-splitnode.lst}
 \end{stulisting}
 %---
 
+The following preconditions must be checked for node splitting (see the pseudo-code in Listing~\ref{code:ipfs-forest-splitnode} for the method):
+
+\begin{enumerate}
+
+\item The node to be split must not be in the leaf layer of the forest. (This can be trivially checked in $O(1)$ time.)
+\item The node to be split must exist. (This can be checked in $O(1)$ time for the leaf layer, and $O(\log n_s)$ time for branch layer $s$.)
+\item There must be more than one subgroup. (This can be trivially checked in $O(1)$ time.)
+\item The subgroups must partition the children of the node being split. (This can be checked in time $O(\log C!)$, where $C$ is the number of children.)
+\item Each of the subgroups must be non-empty and connected. (Each of the $G$ groups requires $O(1)$ time for the non-empty check, and $O(\#\mathit{group} \log e_b)$ time to check connectedness, where $b$ is the layer containing the group nodes.)
+
+\end{enumerate}
+
+When implementing node splitting in a user interface like the one described above, these preconditions should be checked by the interface, not by the forest at the time of finalizing the split. The user should not, for example, have the option of adding invalid subgroups or finalizing a split without defining any subgroups.
+
 \paragraph{Executing the Command}
 
 Pseudo-code to execute a split node command is shown in Listing~\ref{code:ipfs-forest-splitnodeimpl}. In Step 1, the node to be split is deleted from the forest -- this involves removing the forest links that connect the node to its parent and children, and removing the node itself from the partitioning graph for its forest layer (in the pseudo-code, removing the node from the graph also removes its adjacent edges). In Step 2, each of the groups of children that define a node resulting from the split is used to generate a new node in the split layer (a parent for the group). This new node has the index of the lowest-indexed child node (for instance, the parent of nodes $(1,5)$, $(1,3)$ and $(1,7)$ in a hypothetical forest would be denoted $(2,3)$). Its properties are calculated by combining those of its children in the usual way. Forest links are added to connect the new node to its children in the group and its parent in the layer above (namely the parent of the node that is being split). Finally, in Step 3, the adjacency graph for the split layer is locally reconstructed around the nodes resulting from the split (it was locally destroyed when the node being split was removed) -- this is done by considering all the edges adjacent to any of the split node's children, and propagating them upwards to the split layer. For instance, if node $p_1$ in the split layer has children $c_1$ and $c_2$, and node $p_2$ in the split layer has children $c_3$ and $c_4$, and the only edges between children of $p_1$ and $p_2$ are $(\{c_1,c_3\}, w_{13})$ and $(\{c_2,c_4\}, w_{24})$, then this induces an edge $(\{p_1,p_2\}, f(w_{13}, w_{24}))$ in the split layer, where $f$ is some appropriate function on edge weights, such as $\min$ in the case of a lowest pass point approach.
 
-TODO: Complexity analysis
-
 %---
-\begin{stulisting}[p]
+\begin{stulisting}[t]
 \caption{Forest : Node Splitting : Execution}
 \label{code:ipfs-forest-splitnodeimpl}
 \lstinputlisting[style=Default]{ipfs/ipfs-forest-splitnodeimpl.lst}
 \end{stulisting}
 %---
+
+In terms of complexity analysis, lines $4-6$ in Listing~\ref{code:ipfs-forest-splitnodeimpl} are $O(1)$. Lines $11-12$ are $O(\log n_s + \#\mathit{children}(node) \log n_b)$. Line $14$ is $O(\log n_s)$. Line $15$ is $O(\log n_a + \log \#\mathit{children}(\mathit{parentIndex})) = O(\log n_a)$. Line $18$ is $O(\log n_s + \log e_s)$, since removing the node also involves a lookup in the edge table to remove the node's set of adjacent edges. This simplifies to $O(\log e_s)$. Lines $22-31$ require more careful analysis -- we analyse each line over all $\#\mathit{groups}$ iterations of the loop. Line $24$ requires $O(1)$ for each iteration and thus $O(\#\mathit{groups})$ overall. Line $25$ involves inserting $\#\mathit{groups}$ nodes one by one into an initially empty set, and is thus $O(\log(\#\mathit{groups}!))$ overall. Line $26$ requires $O(\#\mathit{groups} \log n_s)$ for the lookups done by \texttt{set_node_properties}, and $O(\sum_{\mathit{group} \in \mathit{groups}} \#\mathit{group})$ for combining the properties of the various groups. Lines $27$ and $28$ each require $O(\#\mathit{groups} \log n_s)$ for the lookups they do. Lines $29-30$ involve a layer $B$ lookup for each node in every group, and are thus $O((\sum_{\mathit{group} \in \mathit{groups}} \#\mathit{group}) \log n_b)$. Line $31$ requires $O(\#\mathit{groups} \log n_a)$ work for the child lookups, and $O(\#\mathit{groups} \log \#\mathit{groups})$ for the set insertions. The overall complexity of lines $22-31$ is thus $O((\sum_{\mathit{group} \in \mathit{groups}} \#\mathit{group}) \log n_b)$. Lines $34-40$ also require careful analysis. Each iteration of the innermost loop does an $O(\log e_b)$ lookup of adjacent edges, and then $O(\#\mathit{adjacent\_edges}(n) (\log n_b + \log e_s))$ work actually updating edge weights. The overall complexity of lines $34-40$ is:
+%
+\[
+O\left( \sum_{\mathit{group} \in \mathit{groups}} \sum_{n \in \mathit{group}} (\log e_b + \#\mathit{adjacent\_edges}(n) (\log n_b + \log e_s)) \right)
+\]
+%
+This is also the complexity of the entire algorithm, since the edge propagation step is the dominant cost involved.
 
 \paragraph{Undoing the Command}
 

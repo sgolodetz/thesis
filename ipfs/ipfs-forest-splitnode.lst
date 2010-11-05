@@ -1,7 +1,6 @@
 function split_node
 :	(node : NodeID; groups : Vector<Set<int>>;
 	 checkPreconditions : CheckPreconditions) $\to$ Set<NodeID>
-
 	if checkPreconditions = CHECK_PRECONDITIONS then
 		// Check that the node to be split is not in the lowest layer.
 		if node.layer() = 0 then throw;
