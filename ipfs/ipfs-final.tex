@@ -670,7 +670,15 @@ The construction of the chains is the most interesting part of the algorithm. Th
 
 \paragraph{Complexity Analysis}
 
-TODO
+The complexity of executing an unzip operation (ignoring the precondition checking) is most easily characterised in terms of the complexity of the underlying node splitting operations. In Listing~\ref{code:ipfs-forest-unzipnode}, lines $19-23$ and $54$ are all clearly $O(1)$, so we focus instead on the main loop in lines $24-49$. Consider the iteration of this loop in which $cur.layer() = c$, and let $p = c+1$. Then line $25$ is $O(\log n_c)$, since it involves a layer $c$ node lookup. Line $26$ is a simple $O(1)$ array lookup. Line $27$ is $O(\log n_p)$ for the child lookup, $O(\#\mathit{children}(parent))$ for the set copy and $O(\log \#\mathit{children}(parent))$ for the set erase. Line $30$ is $O(\#\mathit{siblings} \log n_c)$, since \texttt{find_connected_components} has the same complexity as \texttt{are_connected}, which was analysed previously. Line $33$ is $O(1)$. Line $34$ is $O(\mathit{split\_node\_cost}(parent, ccs))$. Lines $37-41$ require careful analysis. In each iteration, line $38$ requires $O(1)$ work. Line $39$ requires $O(\log n_c)$ work, since $h$ is guaranteed to be in layer $c$ by the way the algorithm works. Line $40$ is clearly $O(1)$, since \texttt{chain} is a deque. To analyse line $41$, we have to consider all $\#\mathit{chains}$ iterations of the loop -- at worst, we erase every element of the result set by the end of the loop. Its initial size was the the number of connected components into which we split the node, or $\#\mathit{ccs}$, so the worst case complexity of all the erases in line $41$ is $O(\log(\#\mathit{ccs}!))$. Overall, lines $37-41$ have complexity $O(\#\mathit{chains} \log n_c + \log(\#\mathit{ccs}!))$. Continuing with the rest of the outer loop, Lines $43-46$ clearly have worst case complexity $O(\#\mathit{ccs})$, since they do a constant amount of work for all the remaining nodes in \texttt{result}, and result's initial size was $\#\mathit{ccs}$. Finally, line $49$ is $O(\log n_c)$ for the node lookup in layer $c$.
+
+Analysing the algorithm as a whole, it is clear from the above that the only significant costs involved are in lines $30$, $34$ and $37-41$, i.e.~in determining how to split the node, splitting it, and updating the chains. Of these, the most costly is evidently splitting the node. Bearing in mind the outer loop involved, the overall complexity of the algorithm thus becomes:
+%
+\[
+O\left( \sum_{i=\mathit{node.layer()}}^{\mathit{toLayer}} \mathit{split\_node\_cost}(\mathit{parent}_i, \mathit{ccs}_i) \right)
+\]
+%
+The observation to be made from this is that the complexity of the unzip is the same as the sum of the complexities of the individual splits it entails -- the work involved to find the splits and to update the chains is far less costly and can be ignored.
 
 \afterpage{\clearpage}
 \newpage
@@ -758,7 +766,13 @@ Pseudo-code for the zipping algorithm is shown in Listing~\ref{code:ipfs-forest-
 
 \paragraph{Complexity Analysis}
 
-The complexity of executing a zip operation (ignoring the precondition checking) is most easily characterised in terms of the complexity of the underlying sibling node merging operations. In Listing~\ref{code:ipfs-forest-zipchains}, line $33$ is clearly $O(1)$ and lines $34-36$ are clearly $O(\#\mathit{chains})$. Lines $40-46$ can be analysed as follows. Each iteration of the outer loop first constructs a set of at most $\#\mathit{chains}$ nodes by inserting them one at a time -- this involves $O(\log(\#\mathit{chains}!))$ work, as usual. It then merges the nodes in this set, with the cost as given in the sibling node merging analysis. Since the dominant cost in this is in merging the nodes, not in constructing the sets of nodes to be merged, the overall complexity of the loop, and ultimately the algorithm as a whole, is then $O(\sum_{m=\mathit{lowLayer}}^{\mathit{highLayer}} \mathit{sibling\_merge\_cost}(\mathit{nodes}_m))$, where $\mathit{nodes}_m$ is the set of nodes to be merged in layer $m$.
+The complexity of executing a zip operation (ignoring the precondition checking) is most easily characterised in terms of the complexity of the underlying sibling node merging operations. In Listing~\ref{code:ipfs-forest-zipchains}, line $33$ is clearly $O(1)$ and lines $34-36$ are clearly $O(\#\mathit{chains})$. Lines $40-46$ can be analysed as follows. Each iteration of the outer loop first constructs a set of at most $\#\mathit{chains}$ nodes by inserting them one at a time -- this involves $O(\log(\#\mathit{chains}!))$ work, as usual. It then merges the nodes in this set, with the cost as given in the sibling node merging analysis. Since the dominant cost in this is in merging the nodes, not in constructing the sets of nodes to be merged, the overall complexity of the loop, and ultimately the algorithm as a whole, is then
+%
+\[
+O\left( \sum_{m=\mathit{lowLayer}}^{\mathit{highLayer}} \mathit{sibling\_node\_merge\_cost}(\mathit{nodes}_m) \right),
+\]
+%
+where $\mathit{nodes}_m$ is the set of nodes to be merged in layer $m$. In other words, the complexity of a zip is the sum of the complexities of the sibling node merges it has to do -- all the other work involved is far less costly than the actual merges.
 
 \afterpage{\clearpage}
 \newpage
