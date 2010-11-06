@@ -79,22 +79,22 @@ The watershed transform is commonly thought of not in the abstract terms just de
 %--
 \begin{stusubfig}{p}
 	\subfigure[An image]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-regionbasincorrespondence-a.png}}%
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-regionbasincorrespondence-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The corresponding discrete landscape]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-regionbasincorrespondence-b.png}}%
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-regionbasincorrespondence-b.png}}%
 	%
 	\\
 	%
 	\subfigure[The image after watershed segmentation]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-regionbasincorrespondence-c.png}}%
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-regionbasincorrespondence-c.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The landscape after watershed segmentation]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-regionbasincorrespondence-d.png}}%
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-regionbasincorrespondence-d.png}}%
 \caption{Applying a watershed algorithm to an image partitions the image into regions that correspond to the catchment basins of the discrete landscape to which the image corresponds.}
 \label{fig:segmentation-watershed-regionbasincorrespondence}
 \end{stusubfig}
@@ -350,12 +350,12 @@ A key issue which arises when applying the watershed to CT images is their lack 
 %---
 \begin{stusubfig}{p}
 	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
-	{\includegraphics[height=8cm]{segmentation/segmentation-watershed-oversegmented-a.png}}%
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-oversegmented-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The oversegmented watershed result]
-	{\includegraphics[height=8cm]{segmentation/segmentation-watershed-oversegmented-b.png}}%
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-oversegmented-b.png}}%
 \caption{Applying the watershed transform to a non-smooth image (a) yields a seriously oversegmented result (b).}
 \label{fig:segmentation-watershed-oversegmented}
 \end{stusubfig}
@@ -415,13 +415,13 @@ $\;\; \longrightarrow \;\;$%
 
 %---
 \begin{stusubfig}{p}
-		\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
-	{\includegraphics[height=8cm]{segmentation/segmentation-watershed-smoothedimage-a.png}}%
+	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-smoothedimage-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The image after smoothing with a Gaussian filter ($\sigma^2 = 5$)]
-	{\includegraphics[height=8cm]{segmentation/segmentation-watershed-smoothedimage-b.png}}%
+	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-smoothedimage-b.png}}%
 \caption{Gaussian filtering is very good at smoothing an image}
 \label{fig:segmentation-watershed-smoothedimage}
 \end{stusubfig}

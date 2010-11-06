@@ -191,7 +191,7 @@
 
 % Set the paper size and margins
 \setpapersize{A4}
-\setmargrb{2cm}{2cm}{2cm}{2cm}
+\setmargrb{3cm}{2cm}{2cm}{2cm}
 
 % Change the ways headings are formatted (based on the definitions in report.cls)
 \renewcommand\section{\@startsection{section}{1}
