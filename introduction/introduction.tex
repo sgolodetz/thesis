@@ -8,7 +8,7 @@ Nevertheless, an ability to solve these problems, even in an imperfect way, is o
 This thesis is about tackling the segmentation and feature identification problems for a particular type of medical image, namely computerised tomography (CT) scans of a patient's abdomen. The first practical CT scanner was developed in 1971 by Sir Godfrey Hounsfield, working at the EMI Central Research Laboratories in Hayes, UK.\footnote{Credit for the CT technique is also due to Allan McLeod Cormack of Tufts University in Massachusetts in the United States, who independently developed the theory underpinning CT in the late 1950s and early 1960s. Both men shared the 1979 Nobel Prize in Physiology or Medicine.} CT scanners work using X-rays and produce images whose pixels are scalar values on a scale of radiodensity known (after Sir Godfrey) as the Hounsfield scale. They are used extensively in modern medical practice \cite{garvey02}, both for diagnosing illness and for evaluating a patient's response to therapy.
 
 %---
-\stufigex{height=8cm}{introduction/introduction-labelledabdominalscan.png}{An abdominal CT scan of a patient with a large renal tumour on their left kidney. Some of the key features in the scan are labelled.}{fig:introduction-labelledabdominalscan}{t}
+\stufigex{height=8cm}{introduction/introduction-labelledabdominalscan.png}{An abdominal CT scan of a patient with a large renal tumour on the left kidney. Some of the key features in the scan are labelled.}{fig:introduction-labelledabdominalscan}{t}
 %---
 
 My underlying interest is in renal (kidney) cancers, in the diagnosis of which CT scanners are generally used to produce images of the abdomen (see Figure~\ref{fig:introduction-labelledabdominalscan}). Whilst less prevalent than some other types of cancer -- notably breast, lung, colorectal and prostate -- renal cancers nevertheless kill thousands of people a year in the UK.\footnote{According to Cancer Research UK \cite{cruk-kidneycancermortality}, 3752 people died from a kidney cancer in the UK in 2007, the most recent year for which published statistics are currently available.} An ability to visualize the state of a renal cancer patient's abdominal organs in 3D can provide doctors with an extra tool when making important decisions about how best to treat the patient. In a similar vein, being able to calculate the volume of a renal tumour can help doctors track changes over time that may be relevant when evaluating a patient's response to therapy. For these, and other, applications, finding a way to segment and identify features in abdominal CT scans is a key prerequisite.
@@ -38,8 +38,25 @@ With the forest constructed to represent the 3D image, it is possible to devise 
 I have implemented all of the described techniques and algorithms in C++. Specifically, two separate systems were developed to do segmentation, feature identification and 3D visualization. The trial system, \emph{centipede}, ran only on Microsoft Windows, and segmented each slice in a CT (or MRI) series into its own separate image partition forest. The user could mark features manually, or identify features such as the ribs and spine automatically in 2D CT images (see Figure~\ref{fig:introduction-centipede}). This work was published in \cite{gvccimi08} and \cite{gvcispa09}, with the former paper receiving the Professor Yasuhiko Dote award for the Best Workshop Paper at the Fifth International Conference on Soft Computing as Transdisciplinary Science and Technology (CSTST '08). It was also possible to visualize the results as a wireframe 3D mesh (generated using the multiple material marching cubes algorithm described in \cite{wu03}).
 
 %---
-\stufigex{width=.95\linewidth}{introduction/introduction-centipede.png}{Automatically identifying the ribs and spine in \emph{centipede} and visualizing the feature labelling as a wireframe 3D mesh -- the visible features are the aorta (red), liver (purple), right kidney (yellow) and spine (white).}{fig:introduction-centipede}{t}
+\stufigex{width=.9\linewidth}{introduction/introduction-centipede.png}{Automatically identifying the ribs and spine in \emph{centipede} and visualizing the feature labelling as a wireframe 3D mesh -- the visible features are the aorta (red), liver (purple), right kidney (yellow) and spine (white).}{fig:introduction-centipede}{t}
 %---
+
+The final system, \emph{millipede}, is built using a cross-platform build framework called CMake, and runs on Microsoft Windows, Linux and Mac OS X (see Figure~\ref{fig:introduction-millipede-seg}). It allows the user to segment slices from a CT (or MRI) series either as a 3D volume, or as individual axial, coronal or sagittal slices, in all cases producing a single image partition forest for the entire image volume used. Among many other improvements, it supports far better automatic feature identification, this time in 3D, and has built-in tools for validation. It can also visualize the feature identification results as a Phong-lit 3D mesh (see Figure~\ref{fig:introduction-millipede-vis}).
+
+%---
+\section*{Contributions}
+
+The original contributions made by this dissertation, then, are as follows:
+
+\begin{enumerate}
+\item A hierarchy of undoable operations to mutate partition forests, and their integration into a graphical user interface (\S\ref{sec:ipfs-mutatingalgorithms}).
+\item A subtree-based, self-updating partition forest selection data structure (\S\ref{sec:ipfs-selections}).
+\item A simple, edge-preserving image filter -- known as a \emph{spatially-variant Gaussian filter} (\S\ref{subpara:svgf}).
+\item A new, implementation-invariant algorithm for the waterfall transform on minimum spanning trees (\S\ref{?}).
+\item A technique to construct image partition forests for 3D images, making use of the existing watershed and waterfall transforms (\S\ref{?}).
+\item Novel feature identification techniques for 2D and 3D abdominal CT scans (Chapter~\ref{chap:featureid}).
+\item The implementation of the \emph{centipede} and \emph{millipede} segmentation, feature identification and 3D visualization systems in C++.
+\end{enumerate}
 
 %---
 \begin{stusubfig}{p}
@@ -60,42 +77,9 @@ I have implemented all of the described techniques and algorithms in C++. Specif
 \end{stusubfig}
 %---
 
-The final system, \emph{millipede}, is built using a cross-platform build framework called CMake, and runs on Microsoft Windows, Linux and Mac OS X (see Figure~\ref{fig:introduction-millipede-seg}). It allows the user to segment slices from a CT (or MRI) series either as a 3D volume, or as individual axial, coronal or sagittal slices, in all cases producing a single image partition forest for the entire image volume used. Among many other improvements, it supports far better automatic feature identification, this time in 3D, and has built-in tools for validation. It can also visualize the feature identification results as a Phong-lit 3D mesh (see Figure~\ref{fig:introduction-millipede-vis}).
-
 %---
 \stufigex{height=6cm}{introduction/introduction-millipede-vis.png}{Visualizing the results of the automatic feature identification techniques in \emph{millipede} as a Phong-lit 3D mesh. Six features are visible: the aorta (red), right kidney (yellow), liver (purple), ribs (pale green), spine (pale blue) and spinal cord (slightly darker blue).}{fig:introduction-millipede-vis}{t}
 %---
-
-The original contributions made by this dissertation, then, are as follows:
-
-\begin{enumerate}
-\item A hierarchy of undoable operations to mutate partition forests, and their integration into a graphical user interface (\S\ref{sec:ipfs-mutatingalgorithms}).
-\item A subtree-based, self-updating partition forest selection data structure (\S\ref{sec:ipfs-selections}).
-\item A simple, edge-preserving image filter -- known as a \emph{spatially-variant Gaussian filter} (\S\ref{subpara:svgf}).
-\item A new, implementation-invariant algorithm for the waterfall transform on minimum spanning trees (\S\ref{?}).
-\item A technique to construct image partition forests for 3D images, making use of the existing watershed and waterfall transforms (\S\ref{?}).
-\item Novel feature identification techniques for 2D and 3D abdominal CT scans (Chapter~\ref{chap:featureid}).
-\item The implementation of the \emph{centipede} and \emph{millipede} segmentation, feature identification and 3D visualization systems in C++.
-\end{enumerate}
-
-\iffalse
-
-\begin{itemize}
-
-\item Attempts have been made to solve segmentation and feature identification in abdominal CT scans before, e.g.~...
-\item But the limitations of these various methods are ...?
-\item In other imaging subfields (including some of medical imaging) partition trees have been applied to good effect to represent images -- including some trees based on watershed (but not waterfall)
-\item In some cases, attempts have been made to allow selection of regions in such a tree via cuts, etc.
-\item What has not been done before is to build an explicit partition hierarchy using both the watershed and waterfall transforms and to use it (in combination with novel algorithms) to facilitate editing of segmentation results by the user
-\item Furthermore, no-one has tried multi-layer region growing techniques for feature identification before (for that matter, I'm not sure they've tried multi-layer feature identification techniques period)
-\item These, then, provide my `niche' (occupying it)
-\item It is an interesting approach to try because it in principle combines the automation of morphological techniques with the previously untapped editing potential of partition hierarchies
-\item Over the course of this dissertation, I will argue that it is also a useful approach, based on my results
-\item Specifically, I aim to defend the thesis statement that...
-
-\end{itemize}
-
-\fi
 
 %---
 \section*{Dissertation Organisation}
