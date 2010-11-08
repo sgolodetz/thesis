@@ -24,7 +24,11 @@ TODO
 \section{Partition Forest Selections}
 %##################################################################################################
 
-TODO
+In \S\ref{?}, I described a novel hierarchical representation for partition forest selections. This is based around the concept that the selection of an individual node in the forest equates to the selection of the subtree beneath it. It is a more compact representation than the obvious leaf-based representation that represents the selection as a set of selected partition forest leaves, and lends itself to more efficient interactive editing. For instance, if the user selects a high-level region in the partition forest and then wants to deselect one of its children, far fewer changes need to be made to the hierarchical representation than the leaf-based one (see Figure~\ref{?}). It also avoids the problems that would be caused by an ad-hoc approach that allowed the user to simply add and remove individual nodes from a list of selected nodes. That approach fails because the representation in question admits the possibility of redundancy in the selection -- that is, a node and its partition forest descendant can both be in the list of selected nodes, implicitly selecting some voxels more than once (see Figure~\ref{?}).
+
+The core algorithms I have developed to maintain this hierarchical representation are both efficient and practically useful -- in particular, they have been implemented in both the \emph{centipede} and \emph{millipede} systems and allow the user to intuitively manage selections of nodes from multiple layers of a partition forest without any slow-down. The listening algorithms are also interesting, as they ensure that a selection is updated in line with changes to its corresponding partition forest, making it easier to integrate partition forest selections into a graphical user interface.
+
+Whilst the partition forest selection data structure is inherently tied to partition forests themselves, the underlying hierarchical representation and algorithms are fully transferable to other partition hierarchies, including even non-complete partition trees. It would be easy, for example, to use the ideas here to represent the selection of parts of a binary space partitioning (BSP) tree, as used for spatial representation in some 3D games (perhaps as part of a program that depicted the BSP representation of a world visually to aid understanding). The selection algorithms thus have applications beyond the limited confines of my doctorate.
 
 \iffalse
 + Usefulness well-justified
