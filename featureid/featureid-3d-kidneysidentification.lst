@@ -12,7 +12,9 @@ function identify_kidneys_3d : (mfs : ref PartitionForestMultiFeatureSelection) 
 		mfs.unidentify_node(n, LIVER);
 
 function is_kidney
-:	(node : NodeID; properties : BranchProperties; spineProperties : BranchProperties) $\to$ bool
+:	(node : NodeID;
+	 properties : BranchProperties;
+	 spineProperties : BranchProperties) $\to$ bool
 
 	var sliceCount : int := properties.z_max() + 1 - properties.z_min();
 	var minVoxels, maxVoxels := 2000 * sliceCount, 6000 * sliceCount;
