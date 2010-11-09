@@ -24,7 +24,7 @@ TODO
 \section{Partition Forest Selections}
 %##################################################################################################
 
-In \S\ref{?}, I described a novel hierarchical representation for partition forest selections. This is based around the concept that the selection of an individual node in the forest equates to the selection of the subtree beneath it. It is a more compact representation than the obvious leaf-based representation that represents the selection as a set of selected partition forest leaves, and lends itself to more efficient interactive editing. For instance, if the user selects a high-level region in the partition forest and then wants to deselect one of its children, far fewer changes need to be made to the hierarchical representation than the leaf-based one (see Figure~\ref{?}). It also avoids the problems that would be caused by an ad-hoc approach that allowed the user to simply add and remove individual nodes from a list of selected nodes. That approach fails because the representation in question admits the possibility of redundancy in the selection -- that is, a node and its partition forest descendant can both be in the list of selected nodes, implicitly selecting some voxels more than once (see Figure~\ref{?}).
+In \S\ref{sec:ipfs-selections}, I described a novel hierarchical representation for partition forest selections. This is based around the concept that the selection of an individual node in the forest equates to the selection of the subtree beneath it. It is a more compact representation than the obvious leaf-based representation that represents the selection as a set of selected partition forest leaves, and lends itself to more efficient interactive editing. For instance, if the user selects a high-level region in the partition forest and then wants to deselect one of its children, far fewer changes need to be made to the hierarchical representation than the leaf-based one (see Figure~\ref{?}). It also avoids the problems that would be caused by an ad-hoc approach that allowed the user to simply add and remove individual nodes from a list of selected nodes. That approach fails because the representation in question admits the possibility of redundancy in the selection -- that is, a node and its partition forest descendant can both be in the list of selected nodes, implicitly selecting some voxels more than once (see Figure~\ref{?}).
 
 The core algorithms I have developed to maintain this hierarchical representation are both efficient and practically useful -- in particular, they have been implemented in both the \emph{centipede} and \emph{millipede} systems and allow the user to intuitively manage selections of nodes from multiple layers of a partition forest without any slow-down. The listening algorithms are also interesting, as they ensure that a selection is updated in line with changes to its corresponding partition forest, making it easier to integrate partition forest selections into a graphical user interface.
 
@@ -55,7 +55,27 @@ TODO
 \section{New Waterfall Algorithm}
 %##################################################################################################
 
-TODO
+In \S\ref{?}, I described a new tree-based algorithm I developed for the waterfall transform, based on a similarly tree-based waterfall algorithm developed by my colleague Chris Nicholls \cite{nicholls09}. Nicholls' algorithm was designed to be far easier to implement than the reference algorithm we already had available, due to Marcotegui \cite{marcotegui05}, and in particular to lend itself well to implementation in a functional programming language such as Haskell. In this, it achieves its aims brilliantly -- even my C++ implementation of Nicholls' algorithm only required roughly $100$ lines of code, and Chris's implementation in Haskell is even shorter. In addition to being easy to implement, Nicholls' algorithm is also efficient, running in linear time once the initial minimum spanning tree has been constructed.
+
+One slight downside of both the Nicholls and Marcotegui algorithms is in how they handle non-minimal plateaux in the minimum spanning tree on which the algorithms work. Specifically, Nicholls' algorithm produces results that depend on where the minimum spanning tree is rooted (and on the order of the children at each node), and Marcotegui's algorithm produces results that depend on the internal implementation of the priority queue used.
+
+My goal in developing a new algorithm was to make its results invariant to such implementation details. The new algorithm has the following advantages:
+%
+\begin{itemize}
+\item It produces consistent results for any given minimum spanning tree.
+\item Like Nicholls' algorithm, it is reasonably easy to implement and runs in linear time.
+\item Because it carefully classifies the edges in the minimum spanning tree into different types, it is very useful when implementing other waterfall algorithms -- in particular, I was able to make use of it when implementing the first step of Marcotegui's algorithm.
+\end{itemize}
+%
+There are still some downsides, however:
+%
+\begin{itemize}
+\item Most notably, whilst the algorithm produces consistent results for a given minimum spanning tree, it \emph{cannot} produce consistent results for the graph from which the minimum spanning tree was constructed (this is a general problem for all minimum spanning tree-based implementations, including both the Nicholls and Marcotegui algorithms). The results of the algorithm thus still depend on which minimum spanning tree was constructed from the graph. There is no way around this other than to revert to a slower, graph-based implementation.
+\item Whilst the algorithm is still linear, it requires a constant factor more work than Nicholls' algorithm, as it has to perform more than one pass of the tree.
+\item The algorithm is somewhat harder to implement than Nicholls' algorithm, although it is still relatively easy to code.
+\end{itemize}
+%
+For these reasons, Nicholls' algorithm is still a generally preferable way of performing a waterfall transform, except when the original graph is known to have only one possible minimum spanning tree (for instance, because it itself is a tree) and consistent handling of minimal plateaux is desired.
 
 \iffalse
 # Based on Chris's work
