@@ -41,7 +41,17 @@ Whilst the partition forest selection data structure is inherently tied to parti
 \section{Spatially-Variant Gaussian Filtering}
 %##################################################################################################
 
-TODO
+In \S\ref{?}, I presented a simple, edge-preserving smoothing technique called \emph{Spatially-Variant Gaussian Filtering} (SVGF). The idea is to convolve an input image with a Gaussian kernel whose standard deviation varies depending on the image location. By blurring with a high standard deviation away from suspected edges in the image, and with a low standard deviation near to suspected edges, the unimportant parts of the image can be smoothed whilst preserving the edges that are necessary for a successful segmentation. In this way, the goal of SVGF is the same as that of more sophisticated techniques such as anisotropic diffusion filtering (ADF). The SVGF approach was devised as an alternative to ADF for use in the \emph{centipede} trial system, since ADF would have been costly to implement from scratch without the benefit of using an existing imaging toolkit such as ITK. The final \emph{millipede} system, which used ITK, switched to using ADF.
+
+When compared with ADF (as in \S\ref{?}), SVGF produces clearly inferior end results, as one might expect from such a simple technique. However, SVGF does help to improve the resulting segmentation, as witnessed by its successful use in \emph{centipede}. Moreover, it has a few advantages over ADF:
+%
+\begin{itemize}
+\item It is extremely fast -- preprocessing time was never an issue in \emph{centipede}. By contrast, each ADF iteration can take seconds to run. When preprocessing using $20$ or $30$ ADF iterations, the time spent in preprocessing can come to dominate the forest construction process.
+\item It is far easier to implement than ADF. A good implementation of ADF, such as that found in ITK, requires exceptionally careful development by a programmer experienced in numerical computing, whereas SVGF can be implemented by anyone who is reasonably competent.
+\item It is far easier to understand than ADF, making it suitable for introducing people to the ideas behind edge-preserving smoothing.
+\end{itemize}
+%
+Despite these minor advantages, a serious segmentation system should clearly prefer to use ADF over SVGF where practicable. This is especially true for 3D segmentation, where preprocessing quality is far more important than running time, which is why ADF rather than SVGF was used in \emph{millipede}.
 
 \iffalse
 + Does help to improve the segmentation results somewhat
@@ -167,4 +177,4 @@ The lessons I have taken from this are that:
 \section{Chapter Summary}
 %##################################################################################################
 
-TODO
+In this chapter, each of the original contributions mentioned in the introduction was critically assessed. The final chapter contains some concluding remarks and pinpoints some opportunities for further work.
