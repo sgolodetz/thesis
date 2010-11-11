@@ -692,6 +692,7 @@ Since representing entities hierarchically is a fundamental way in which we, as 
 
 %################################################
 \subsection{Image Representation}
+\label{subsec:background-partitionhierarchies-imagerepresentation}
 %################################################
 
 The `grid-of-pixels' representation of images is by far the most familiar, but it contains fine-grained information at the expense of structure. This makes it less than ideal for image processing tasks such as feature identification, for which structure in the image is important. For this reason, there has long been a great deal of research interest in representing images hierarchically (for example, images were being represented as quadtrees at least as far back as the 1970s \cite{klinger76} and 1980s \cite{ahuja83,samet80}). Hierarchical representations recursively group the pixels into larger regions -- the idea in terms of feature identification is to construct a hierarchy in which the regions are actually meaningful in the problem domain (essentially the problem segmentation algorithms aim to solve). Feature identification algorithms can then work at the level of the regions in the hierarchy, which ideally correspond much better to the actual features we are trying to identify.
