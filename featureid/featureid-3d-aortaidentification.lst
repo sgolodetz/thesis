@@ -1,10 +1,10 @@
 function identify_aorta_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
-	// Step 1: Calculate the combined properties of the spine and spinal cord.
+	// Step 1: Calculate the combined properties of the spine and spinal canal.
 	var spineProperties : BranchProperties := mfs.properties_of(VERTEBRA);
-	var cordProperties : BranchProperties : mfs.properties_of(SPINAL_CORD);
+	var canalProperties : BranchProperties : mfs.properties_of(SPINAL_CANAL);
 
 	// Step 2: Filter for aorta-like regions.
-	var seeds : List<NodeID> := filter_branch_nodes(is_aorta(spineProperties, cordProperties));
+	var seeds : List<NodeID> := filter_branch_nodes(is_aorta(spineProperties, canalProperties));
 	if seeds.empty() then return;
 	var regions : PartitionForestSelection := make_selection(forest());
 	for each seed $\in$ seeds
@@ -41,7 +41,7 @@ function identify_aorta_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\
 
 function is_aorta
 :	(node : NodeID; properties : BranchProperties;
-	 spineProperties : BranchProperties; cordProperties : BranchProperties) $\to$ bool
+	 spineProperties : BranchProperties; canalProperties : BranchProperties) $\to$ bool
 	var sliceCount : int := properties.z_max() + 1 - properties.z_min();
 	var minVoxels, maxVoxels : int := 350 * sliceCount, 750 * sliceCount;
 	return
@@ -51,8 +51,8 @@ function is_aorta
 			// Reasonable size.
 			minVoxels $\le$ properties.voxel_count() $\le$ maxVoxels and
 
-			// Left-hand side should be within the spinal cord bounds in x.
-			cordProperties.x_min() $<$ properties.x_min() $<$ cordProperties.x_max() and
+			// Left-hand side should be within the spinal canal bounds in x.
+			canalProperties.x_min() $<$ properties.x_min() $<$ canalProperties.x_max() and
 
 			// Top should be above the spine.
 			properties.y_min() $<$ spineProperties.y_min() and

@@ -445,7 +445,7 @@ Whilst identifying features in 2D can be made to work well much of the time, as 
 
 Whilst there is more than one way of taking such information into account (for instance, it is possible to imagine a scheme whereby the feature outline from one slice could be propagated to the next slice and deformed to fit the information in the new image), one of the cleanest ways of doing so is to construct a partition forest for the entire 3D CT volume (as described in Chapter~\ref{chap:segmentation}) and then construct new feature identifiers that work in 3D. Using this approach, information from adjacent slices is implicitly taken into account when segmenting the volume into 3D regions.
 
-In this section, therefore, I present a series of methods for identifying a number of 3D features in such a partition forest. Unlike the 2D identifiers presented previously, the 3D identifiers described here are not mutually independent (thus it is not always possible to take an individual identifier out of context and use it to identify its specific feature). Instead, easily-identified features are found first, and then used to identify features that are harder to extract. For example, once the spine (a major landmark) has been identified, it becomes substantially easier to extract the spinal cord (we can intuitively think of it as the darker region inside the spine). As we will see later, it is also possible to use later identifiers to correct any mistakes made by earlier ones. Figure~\ref{fig:featureid-3d-multifeatureidentifier} shows how the identifiers fit together to form a multi-feature identifier.
+In this section, therefore, I present a series of methods for identifying a number of 3D features in such a partition forest. Unlike the 2D identifiers presented previously, the 3D identifiers described here are not mutually independent (thus it is not always possible to take an individual identifier out of context and use it to identify its specific feature). Instead, easily-identified features are found first, and then used to identify features that are harder to extract. For example, once the spine (a major landmark) has been identified, it becomes substantially easier to extract the spinal canal (we can intuitively think of it as the darker region inside the spine). As we will see later, it is also possible to use later identifiers to correct any mistakes made by earlier ones. Figure~\ref{fig:featureid-3d-multifeatureidentifier} shows how the identifiers fit together to form a multi-feature identifier.
 
 %################################################
 \subsection{Spine Identification}
@@ -476,7 +476,7 @@ Of these, perhaps the most powerful is the criterion that the spine must appear 
 \end{stulisting}
 %---
 
-As the spine identifier has no dependencies on other identifiers, it can be run individually on the CT volume to extract the spine feature. The results of running it on volumes from several different patients, as visualized in Figure~\ref{fig:featureid-3d-spineidentification-results}, give an indication that it works fairly robustly across a wide range of image series; its accuracy will be quantified in Chapter~\ref{chap:validation}. When the identifier is run in isolation, the identified spine tends to also include the spinal cord, as no attempt has thus far been made to exclude it. When identifying multiple features, however, this is later rectified by the spinal cord identifier, which unmarks any regions incorrectly labelled as spine where necessary. The identified spine can sometimes also include pieces of rib where they join onto the spinal column; the current approach to rib identification does not handle this at present, but it is an interesting area for further work.
+As the spine identifier has no dependencies on other identifiers, it can be run individually on the CT volume to extract the spine feature. The results of running it on volumes from several different patients, as visualized in Figure~\ref{fig:featureid-3d-spineidentification-results}, give an indication that it works fairly robustly across a wide range of image series; its accuracy will be quantified in Chapter~\ref{chap:validation}. When the identifier is run in isolation, the identified spine tends to also include the spinal canal, as no attempt has thus far been made to exclude it. When identifying multiple features, however, this is later rectified by the spinal canal identifier, which unmarks any regions incorrectly labelled as spine where necessary. The identified spine can sometimes also include pieces of rib where they join onto the spinal column; the current approach to rib identification does not handle this at present, but it is an interesting area for further work.
 
 %---
 \begin{stusubfig}{p}
@@ -516,65 +516,65 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 \newpage
 
 %################################################
-\subsection{Spinal Cord Identification}
+\subsection{Spinal Canal Identification}
 %################################################
 
 %---
-\stufigex{height=9cm}{featureid/featureid-3d-spinalcordidentification-region.png}{The spinal cord (selected, in red) should lie well within the (yellow) bounding box of the regions identified as the spine}{fig:featureid-3d-spinalcordidentification-region}{h}
+\stufigex{height=9cm}{featureid/featureid-3d-spinalcanalidentification-region.png}{The spinal canal (selected, in red) should lie well within the (yellow) bounding box of the regions identified as the spine}{fig:featureid-3d-spinalcanalidentification-region}{h}
 %---
 
-\noindent Having first identified the spine, identifying the spinal cord becomes a much simpler task. The intuition is to search for regions well within the $x-y$ bounding box of the spine (see Figure~\ref{fig:featureid-3d-spinalcordidentification-region}) that:
+\noindent Having first identified the spine, identifying the spinal canal becomes a much simpler task. The intuition is to search for regions well within the $x-y$ bounding box of the spine (see Figure~\ref{fig:featureid-3d-spinalcanalidentification-region}) that:
 %
 \begin{itemize}
 
 \item Straddle the spine centroid in the $x$ direction.
 \item Extend through all the (axial) slices in the $z$ direction (this could be alternatively phrased as `appear in every slice in which the spine does', if a more sophisticated approach to spine identification was being used).
-\item Have a mean grey value $\le 140$ (the spinal cord appears much darker on the CT scans than the vertebrae surrounding it).
+\item Have a mean grey value $\le 140$ (the spinal canal appears much darker on the CT scans than the vertebrae surrounding it).
 \item Have a voxel count of between $300$ and $1000$ voxels per (axial) slice.
 
 \end{itemize}
 %
-Regions which satisfy these criteria are unmarked as spine (if necessary) and marked as spinal cord. Unlike the spine identifier, the spinal cord identifier clearly cannot be run in isolation, but it is possible to visualize the results of spinal cord identification by running both the spine and spinal cord identifiers and then either rendering the spinal cord on its own, or rendering the spine as transparent. As illustrated in Figure~\ref{fig:featureid-3d-spinalcordidentification-results}, the identifier is quite robust, and able to automatically identify the spinal cord in a number of different image series. There is, however, definitely room for further work to improve the detailed contour of the cord -- this could perhaps be done by using the automatic result produced thus far to initialise a level sets approach.
+Regions which satisfy these criteria are unmarked as spine (if necessary) and marked as spinal canal. Unlike the spine identifier, the spinal canal identifier clearly cannot be run in isolation, but it is possible to visualize the results of spinal canal identification by running both the spine and spinal canal identifiers and then either rendering the spinal canal on its own, or rendering the spine as transparent. As illustrated in Figure~\ref{fig:featureid-3d-spinalcanalidentification-results}, the identifier is quite robust, and able to automatically identify the spinal canal in a number of different image series. There is, however, definitely room for further work to improve the detailed contour of the canal -- this could perhaps be done by using the automatic result produced thus far to initialise a level sets approach.
 
 %---
 \begin{stulisting}[!b]
-\caption{Spinal Cord Identification in 3D}
-\label{code:featureid-3d-spinalcordidentification}
-\lstinputlisting[style=Default]{featureid/featureid-3d-spinalcordidentification.lst}
+\caption{Spinal Canal Identification in 3D}
+\label{code:featureid-3d-spinalcanalidentification}
+\lstinputlisting[style=Default]{featureid/featureid-3d-spinalcanalidentification.lst}
 \end{stulisting}
 %---
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Series BT-2 (Slices 60--80), Spine and Spinal Cord]
-	{\hspace{8mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-transparent-BT-2-60-80.png}\hspace{8mm}}%
+	\subfigure[Series BT-2 (Slices 60--80), Spine and Spinal Canal]
+	{\hspace{8mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcanalidentification-transparent-BT-2-60-80.png}\hspace{8mm}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[Series BT-2 (Slices 60--80), Spinal Cord Only]
-	{\hspace{12mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-solid-BT-2-60-80.png}\hspace{12mm}}%
+	\subfigure[Series BT-2 (Slices 60--80), Spinal Canal Only]
+	{\hspace{12mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcanalidentification-solid-BT-2-60-80.png}\hspace{12mm}}%
 	%
 	\\
 	%
-	\subfigure[Series SD-2 (Slices 70--90), Spine and Spinal Cord]
-	{\hspace{16mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-transparent-SD-2-70-90.png}\hspace{16mm}}%
+	\subfigure[Series SD-2 (Slices 70--90), Spine and Spinal Canal]
+	{\hspace{16mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcanalidentification-transparent-SD-2-70-90.png}\hspace{16mm}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[Series SD-2 (Slices 70--90), Spinal Cord Only]
-	{\hspace{20mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-solid-SD-2-70-90.png}\hspace{20mm}}%
+	\subfigure[Series SD-2 (Slices 70--90), Spinal Canal Only]
+	{\hspace{20mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcanalidentification-solid-SD-2-70-90.png}\hspace{20mm}}%
 	%
 	\\
 	%
-	\subfigure[Series EJ-2 (Slices 20--40), Spine and Spinal Cord]
-	{\hspace{12mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-transparent-EJ-2-20-40.png}\hspace{12mm}}%
+	\subfigure[Series EJ-2 (Slices 20--40), Spine and Spinal Canal]
+	{\hspace{12mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcanalidentification-transparent-EJ-2-20-40.png}\hspace{12mm}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[Series EJ-2 (Slices 20--40), Spinal Cord Only]
-	{\hspace{20mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcordidentification-solid-EJ-2-20-40.png}\hspace{20mm}}%
-\caption{The results of running spine and spinal cord identification on slices from three different image series}
-\label{fig:featureid-3d-spinalcordidentification-results}
+	\subfigure[Series EJ-2 (Slices 20--40), Spinal Canal Only]
+	{\hspace{20mm}\includegraphics[height=6cm]{featureid/featureid-3d-spinalcanalidentification-solid-EJ-2-20-40.png}\hspace{20mm}}%
+\caption{The results of running spine and spinal canal identification on slices from three different image series}
+\label{fig:featureid-3d-spinalcanalidentification-results}
 \end{stusubfig}
 %---
 
@@ -590,7 +590,7 @@ Regions which satisfy these criteria are unmarked as spine (if necessary) and ma
 \stufigex{height=9cm}{featureid/featureid-3d-ribsidentification-region}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
 %---
 
-\noindent In contrast to the spine and spinal cord identifiers, which can (at least to a first approximation) often identify their features using only branch node filtering, the 3D ribs identifier is necessarily more involved, because it is unusual for each rib to be represented by only a single node in the forest. For that reason, a stratified region growing method is preferred in this case, followed by customised post-processing to tidy up the results. The first step is to identify suitable seeds for the ribs, namely regions that:
+\noindent In contrast to the spine and spinal canal identifiers, which can (at least to a first approximation) often identify their features using only branch node filtering, the 3D ribs identifier is necessarily more involved, because it is unusual for each rib to be represented by only a single node in the forest. For that reason, a stratified region growing method is preferred in this case, followed by customised post-processing to tidy up the results. The first step is to identify suitable seeds for the ribs, namely regions that:
 %
 \begin{itemize}
 
@@ -634,7 +634,7 @@ As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this
 	%
 	\subfigure[Series EJ-2 (Slices 1--21)]
 	{\includegraphics[width=.45\linewidth]{featureid/featureid-3d-ribsidentification-EJ-2-1-21.png}}%
-\caption{The results of running spine, spinal cord and ribs identification on slices from four different image series}
+\caption{The results of running spine, spinal canal and ribs identification on slices from four different image series}
 \label{fig:featureid-3d-ribsidentification-results}
 \end{stusubfig}
 %---
@@ -670,7 +670,7 @@ TODO
 	%
 	\subfigure[Series EJ-2 (Slices 10--30)]
 	{\includegraphics[height=6cm]{featureid/featureid-3d-aortaidentification-EJ-2-10-30.png}}%
-\caption{The results of running spine, spinal cord and aorta identification on slices from three different image series}
+\caption{The results of running spine, spinal canal and aorta identification on slices from three different image series}
 \label{fig:featureid-3d-aortaidentification-results}
 \end{stusubfig}
 %---
@@ -733,7 +733,7 @@ TODO (remember to mention that non-complete kidneys, e.g.~those with tumours on,
 	%
 	\subfigure[Series EJ-2 (Slices 16--40)]
 	{\includegraphics[height=6cm]{featureid/featureid-3d-kidneysidentification-EJ-2-16-40.png}}%
-\caption{The results of running spine, spinal cord and kidney identification on slices from five different image series}
+\caption{The results of running spine, spinal canal and kidney identification on slices from five different image series}
 \label{fig:featureid-3d-kidneysidentification-results}
 \end{stusubfig}
 %---
