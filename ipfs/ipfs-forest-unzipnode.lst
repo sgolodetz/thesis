@@ -1,5 +1,6 @@
 function unzip_node
-:	(node : NodeID; toLayer : int; checkPreconditions : CheckPreconditions) $\to$ Vector<Chain>
+:	(node : NodeID; toLayer : int;
+	 checkPreconditions : CheckPreconditions) $\to$ Vector<Chain>
 
 	if checkPreconditions = CHECK_PRECONDITIONS then
 		// Check that the specified node is valid.

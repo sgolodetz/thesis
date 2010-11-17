@@ -2,16 +2,17 @@ class LineLoopDrawingTool : public LineBasedDrawingTool
 {
 private:
 	boost::optional<std::list<std::pair<Vector2i,Vector2i> >::iterator> m_grabbedPoint;
-
-	// <Method declarations not shown for reasons of brevity>
+	// <Remainder of class not shown for reasons of brevity>
 };
 
-void LineLoopDrawingTool::mouse_dragged(const Vector2i& p_Pixels, const Vector2i& p_Coords)
+void LineLoopDrawingTool::mouse_dragged(const Vector2i& p_Pixels,
+                                        const Vector2i& p_Coords)
 {
 	if(m_grabbedPoint) **m_grabbedPoint = std::make_pair(p_Pixels, p_Coords);
 }
 
-void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i& p_Coords)
+void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels,
+                                        const Vector2i& p_Coords)
 {
 	const int MAX_DIST_SQUARED = 20*20;
 	for(std::list<std::pair<Vector2i,Vector2i> >::iterator
@@ -27,7 +28,8 @@ void LineLoopDrawingTool::mouse_pressed(const Vector2i& p_Pixels, const Vector2i
 	m_drawnLocations.push_back(std::make_pair(p_Pixels, p_Coords));
 }
 
-void LineLoopDrawingTool::mouse_released(const Vector2i& p_Pixels, const Vector2i& p_Coords)
+void LineLoopDrawingTool::mouse_released(const Vector2i& p_Pixels,
+                                         const Vector2i& p_Coords)
 {
 	m_grabbedPoint.reset();
 }

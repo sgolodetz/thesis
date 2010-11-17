@@ -251,9 +251,9 @@ All the containers you would find in C++ have direct equivalents in the pseudo-c
 \item etc.
 \end{itemize}
 %
-Implicit conversions between containers are supported where appropriate -- e.g.~a Vector$<$T$>$ can be automatically converted to a List$<$T$>$ without having to write it explicitly.
+Implicit conversions between containers are supported where appropriate -- for example, a Vector$<$T$>$ can be automatically converted to a List$<$T$>$ without having to write it explicitly.
 
-Unlike in C++, where you would write an int vector iterator as std::vector$<$int$>$::iterator, here you just write VectorIterator$<$int$>$. There are corresponding ListIterator, SetIterator and MapIterator templates as well.
+Unlike in C++, where you would write an iterator over an int vector as std::vector$<$int$>$::iterator, here you just write VectorIterator$<$int$>$. There are corresponding ListIterator, SetIterator and MapIterator templates as well.
 
 As in C++, iterators can be dereferenced to access the container element to which they point. To dereference the iterator it, we just write *it. Furthermore, properties of the pointed-to element can be accessed directly using the \lstinline[language=Pseudocode]$->$ notation, i.e.~\lstinline[language=Pseudocode]$it->value$ means the same as \lstinline[language=Pseudocode]$(*it).value$, as in C++. We can increment an iterator it by writing \lstinline[language=Pseudocode]$++it$, and decrement it by writing \lstinline[language=Pseudocode]$--it$.
 

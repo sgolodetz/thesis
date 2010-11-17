@@ -26,5 +26,6 @@ function deselect_node_impl
 		listeners.node_was_deselected(node);
 		return modification;
 
-	// Case 4: Neither the node nor any of its ancestors or descendants is in the representation.
+	// Case 4: Neither the node nor any of its ancestors or descendants is in
+	//         the representation.
 	return modification;

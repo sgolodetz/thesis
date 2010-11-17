@@ -244,7 +244,7 @@ function build_lower_complete
 	// dist holds the amount by which we want to multiply the base image.
 	for each p : PixelCoords $\in$ $\Omega$
 		if lc(p) $\ne$ 0 then
-			lc(p) := dist $\times$ image(p) + lc(p) - 1;
+			lc(p) := dist * image(p) + lc(p) - 1;
 
 	return lc;
 \end{lstlisting}
@@ -301,7 +301,8 @@ function construct_arrows
 				if lc(neighbour) < lowestNeighbourValue then
 					lowestNeighbour := neighbour;
 					lowestNeighbourValue := lc(neighbour);
-			// There will always be a lowest neighbour here since the function's lower-complete.
+			// There will always be a lowest neighbour here since the function's
+			// lower-complete.
 			arrows(p) := lowestNeighbour;
 
 	// Assign new labels to the canonical points of the regional minima and make
@@ -335,7 +336,9 @@ function resolve_all
 		resolve_pixel(p, arrows, labels)
 
 function resolve_pixel
-: (p : PixelCoords; arrows : Image<$\Omega$,PixelCoords>; labels : ref Image<$\Omega,\mathbb{Z}^+$) $\to$ PixelCoords
+: (p : PixelCoords;
+	 arrows : Image<$\Omega$,PixelCoords>;
+	 labels : ref Image<$\Omega,\mathbb{Z}^+$) $\to$ PixelCoords
 
 	var parent : PixelCoords := arrows(p);
 	if parent $\ne$ p then
@@ -453,18 +456,22 @@ $\;\; \longrightarrow \;\;$%
 
 The actual blurring is performed by \emph{convolving} an image $I$ with the mask to form a new image $I'$. Letting $M_\sigma^{3,3}$ be the 3x3 mask, this is written as $I' = I \otimes M_\sigma^{3,3}$. Convolution means overlaying the mask on each pixel of the image in turn, multiplying the value of each pixel in the mask by the value of the pixel beneath it, summing the results and using the value thus obtained as the value of the centre pixel in the blurred image. For the 3x3 mask with $\sigma = 1$, this means that:\fxnote{[IDV] [See paper copy]}
 %
+\begin{small}
 \begin{eqnarray*}
 I'(x,y)
 & = & 0.0751 \times (I(x-1,y-1) + I(x+1,y-1) + I(x-1,y+1) + I(x+1,y+1)) \; + \\
 &   & 0.1238 \times (I(x,y-1) + I(x,y+1) + I(x-1,y) + I(x+1,y)) \; + \\
 &   & 0.2042 \times I(x,y)
 \end{eqnarray*}
+\end{small}
 %
 This begs the question of what happens when the mask is placed on one of the border pixels of the image (i.e.~such that part of it is outside the image). The simplest way\fxnote{[SAC] Are there other techniques?} to deal with this is to perform the weighted sum with the pixels that are in range, and then normalize by dividing by the sum of the mask values used. For instance, using this scheme we would have:
 %
+\begin{small}
 \[
 I'(0,1) = \frac{0.0751 \times (I(1,0) + I(1,2)) + 0.1238 \times (I(0,0) + I(0,2) + I(1,1)) + 0.2042 \times I(0,1)}{2 \times 0.0751 + 3 \times 0.1238 + 0.2042}
 \]
+\end{small}
 
 %~~~~~~~~~~~~~~~~~~~~~~~
 \paragraph{Edge-Preserving Filters}

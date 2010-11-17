@@ -288,7 +288,8 @@ function consolidate_node : (node : NodeID; modification : ref Modification?) $\
 \begin{stulisting}[H]
 \caption{Selection : Consolidate Upwards From Node Implementation}
 \begin{lstlisting}[style=Default]
-function consolidate_upwards_from_node : (node : NodeID; modification : ref Modification?) $\to$ $\emptyset$
+function consolidate_upwards_from_node
+:	(node : NodeID; modification : ref Modification?) $\to$ $\emptyset$
 	var cur : NodeID := node;
 	while not cur.invalid() and consolidate_node(cur, ref modification)
 		cur := forest().parent_of(cur);
@@ -381,17 +382,20 @@ function erase_node : (node : NodeID; modification : ref Modification?) $\to$ $\
 \begin{stulisting}[H]
 \caption{Selection : Find Ancestor In Representation Implementation}
 \begin{lstlisting}[style=Default]
-function find_ancestor_in_representation : (node : NodeID; trail : ref Stack<NodeID>) $\to$ NodeID
+function find_ancestor_in_representation
+:	(node : NodeID; trail : ref Stack<NodeID>) $\to$ NodeID
 	var parent : NodeID := forest().parent_of(node);
 	trail.push(parent);
 
-	// If this node has no parent, then it definitely has no ancestor in the representation.
+	// If this node has no parent, then it definitely has no ancestor in the
+	// representation.
 	if parent.invalid() then return parent;
 
 	// If this node has a parent and it's in the representation, then return it.
 	if in_representation(parent) then return parent;
 
-	// Otherwise, any ancestor this node may have is also its parent's ancestor, so recurse.
+	// Otherwise, any ancestor this node may have is also its parent's ancestor,
+	// so recurse.
 	return find_ancestor_in_representation(parent, trail);
 \end{lstlisting}
 \end{stulisting}
@@ -435,7 +439,8 @@ function merge_layer : (viewLayer : int) $\to$ int
 \begin{stulisting}[H]
 \caption{Selection : Replace With Selection Implementation}
 \begin{lstlisting}[style=Default]
-function replace_with_selection_impl : (selection : PartitionForestSelection) $\to$ Modification
+function replace_with_selection_impl
+:	(selection : PartitionForestSelection) $\to$ Modification
 	var modification : Modification;
 	for i : int := 0 up to forest().highest_layer()
 		for each n $\in$ layer(i)
@@ -456,7 +461,8 @@ function replace_with_selection_impl : (selection : PartitionForestSelection) $\
 \begin{stulisting}[H]
 \caption{Selection : Split Selection Implementation}
 \begin{lstlisting}[style=Default]
-function split_selection : (trail : ref Stack<NodeID>; modification : ref Modification) $\to$ $\emptyset$
+function split_selection
+:	(trail : ref Stack<NodeID>; modification : ref Modification) $\to$ $\emptyset$
 	while not trail.empty()
 		var cur : NodeID := trail.top();
 		trail.pop();
@@ -585,7 +591,8 @@ function features_of : (node : NodeID) $\to$ Vector<Feature>
 \begin{stulisting}[H]
 \caption{Multi-Feature Selection : Identify Multi-Feature Selection Implementation}
 \begin{lstlisting}[style=Default]
-function identify_multi_feature_selection : (mfs : PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+function identify_multi_feature_selection
+:	(mfs : PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
 	"begin_command_sequence();" // handled by the command sequence guard
 	for each (feature,selection) $\in$ mfs
 		identify_selection(selection, feature);
@@ -612,7 +619,8 @@ function identify_node : (node : NodeID; feature : Feature) $\to$ $\emptyset$
 \begin{stulisting}[H]
 \caption{Multi-Feature Selection : Identify Selection Implementation}
 \begin{lstlisting}[style=Default]
-function identify_selection : (selection : PartitionForestSelection; feature : Feature) $\to$ $\emptyset$
+function identify_selection
+:	(selection : PartitionForestSelection; feature : Feature) $\to$ $\emptyset$
 	var oldSelection : ref PartitionForestSelection := selection(feature);
 	var newSelection : PartitionForestSelection := make_selection(forest());
 	newSelection.combine_using_leaves(oldSelection, selection);
@@ -648,7 +656,8 @@ function unidentify_node : (node : NodeID; feature : Feature) $\to$ $\emptyset$
 \begin{stulisting}[H]
 \caption{Multi-Feature Selection : Unidentify Selection Implementation}
 \begin{lstlisting}[style=Default]
-function unidentify_selection : (selection : PartitionForestSelection; feature : Feature) $\to$ $\emptyset$
+function unidentify_selection
+:	(selection : PartitionForestSelection; feature : Feature) $\to$ $\emptyset$
 	var oldSelection : ref PartitionForestSelection := selection(feature);
 	var newSelection : PartitionForestSelection := make_selection(forest());
 	newSelection.subtract_using_leaves(oldSelection, selection);

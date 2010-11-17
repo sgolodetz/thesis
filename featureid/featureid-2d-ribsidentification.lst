@@ -4,17 +4,17 @@ function identify_ribs_2d : (mfs : ref PartitionForestMultiFeatureSelection) $\t
 		mfs.identify_node(n, RIB);
 
 function is_rib : (node : NodeID; ps : BranchProperties) $\to$ bool
-	var trueFactor : double := 0.5 *	// P(rib)
-	                           area_given_rib(ps.area()) *
-	                           elongatedness_given_rib(ps.elongatedness()) *
-	                           max_grey_value_given_rib(ps.max_grey_value()) *
-	                           mean_grey_value_given_rib(ps.mean_grey_value());
-	var falseFactor : double := 0.5 *	// P(not rib)
-	                            area_given_not_rib(ps.area()) *
-	                            elongatedness_given_not_rib(ps.elongatedness()) *
-	                            max_grey_value_given_not_rib(ps.max_grey_value()) *
-	                            mean_grey_value_given_not_rib(ps.mean_grey_value());
-	var likelihood : double := if trueFactor > $\epsilon$ then trueFactor / (trueFactor + falseFactor)
+	var tFactor : double := 0.5 *	// P(rib)
+	                        area_given_rib(ps.area()) *
+	                        elongatedness_given_rib(ps.elongatedness()) *
+	                        max_grey_value_given_rib(ps.max_grey_value()) *
+	                        mean_grey_value_given_rib(ps.mean_grey_value());
+	var fFactor : double := 0.5 *	// P(not rib)
+	                        area_given_not_rib(ps.area()) *
+	                        elongatedness_given_not_rib(ps.elongatedness()) *
+	                        max_grey_value_given_not_rib(ps.max_grey_value()) *
+	                        mean_grey_value_given_not_rib(ps.mean_grey_value());
+	var likelihood : double := if tFactor > $\epsilon$ then tFactor / (tFactor + fFactor)
 	                           else 0;
 	return likelihood > 0.8 and saliency(node, ps) $\ge$ 50;
 

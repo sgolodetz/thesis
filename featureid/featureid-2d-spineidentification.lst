@@ -16,8 +16,8 @@ function find_preliminary_feature : (seeds : List<NodeID>) $\to$ PartitionForest
 		seedReached.insert((seed, false));
 
 	for each (seed, reached) $\in$ seedReached
-		// If the seed has already been reached from another seed during the flooding process
-		// (i.e. they're connected), don't flood from it.
+		// If the seed has already been reached from another seed during the flooding
+		// process (i.e. they're connected), don't flood from it.
 		if reached then continue;
 
 		// Identify a potential partial feature by flooding out from the seed.
@@ -29,8 +29,8 @@ function find_preliminary_feature : (seeds : List<NodeID>) $\to$ PartitionForest
 			for each n $\in$ partialFeature
 				selection.select_node(n);
 
-		// Mark any seeds that were reachable from the current seed, so that we don't process
-		// them again later.
+		// Mark any seeds that were reachable from the current seed, so that we don't
+		// process them again later.
 		for each (seed, reached) $\in$ seedReached
 			if used.contains(seed) then
 				reached := true;

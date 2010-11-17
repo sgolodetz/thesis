@@ -24,8 +24,8 @@ function merge_sibling_nodes
 
 	// We only need to merge the nodes if there's more than one of them.
 	if #nodes > 1 then
-		var command : MergeSiblingNodesCommand := make_merge_sibling_nodes_command(nodes);
-		command_manager().execute(command);
-		return command.result();
+		var cmd : MergeSiblingNodesCommand := make_merge_sibling_nodes_command(nodes);
+		command_manager().execute(cmd);
+		return cmd.result();
 	else
 		return lowestIndexedNode;

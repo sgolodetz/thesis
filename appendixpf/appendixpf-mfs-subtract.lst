@@ -2,7 +2,8 @@ function subtract
 :	(lhs : PartitionForestMultiFeatureSelection;
 	 rhs : PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
 
-	// Note: This method should only be invoked on newly-created multi-feature selections.
+	// Note: This method should only be invoked on newly-created multi-feature
+	//       selections.
 	assert selections().empty();
 
 	// Step 1: Construct the appropriate selections.

@@ -19,7 +19,7 @@ function rasterize_polyline : (polyline : List<Vec2i>) $\to$ Vector<Vec2i>
 			++nextEdge;
 
 		// (b) Construct edge points along the current scanline.
-		// We use a variation of normal bit-packing that allows us to add each flag twice.
+		// We use a variation of normal bit-packing to allow us to add each flag twice.
 		var UP, DOWN, HORIONTAL : int := 1, 4, 16;
 		var edgePoints : Map<int,int>;
 		for each activeEdge $\in$ activeEdges
@@ -34,25 +34,25 @@ function rasterize_polyline : (polyline : List<Vec2i>) $\to$ Vector<Vec2i>
 
 		// (c) Rasterize the scanline using the even-odd parity method.
 		var drawingOn : bool := false;
-		var beginHorizontalFlag : int := 0;
+		var beginHorizFlag : int := 0;
 		for it : MapIterator<int,int> := edgePoints.begin() up to edgePoints.end()
 			var x, flag : int := it->first, it->second;
 			output.push_back((x,y));
 			switch flag
 				case DOWN+UP or UP: drawingOn := not drawingOn;
 				case HORIZONTAL+DOWN:
-					if beginHorizontalFlag = HORIZONTAL+UP then drawingOn := not drawingOn;
-					if beginHorizontalFlag $\ne$ 0 then beginHorizontalFlag := 0;
-					else beginHorizontalFlag := flag;
+					if beginHorizFlag = HORIZONTAL+UP then drawingOn := not drawingOn;
+					if beginHorizFlag $\ne$ 0 then beginHorizFlag := 0;
+					else beginHorizFlag := flag;
 				case HORIZONTAL+UP:
-					if beginHorizontalFlag = HORIZONTAL+DOWN then drawingOn := not drawingOn;
-					if beginHorizontalFlag $\ne$ 0 then beginHorizontalFlag := 0;
-					else beginHorizontalFlag := flag;
+					if beginHorizFlag = HORIZONTAL+DOWN then drawingOn := not drawingOn;
+					if beginHorizFlag $\ne$ 0 then beginHorizFlag := 0;
+					else beginHorizFlag := flag;
 				default: /* Do nothing */;
 
 			var jt : MapIterator<int,int> := it.successor();
 			if jt = edgePoints.end() then continue;
-			if drawingOn or beginHorizontalFlag $\ne$ 0 then
+			if drawingOn or beginHorizFlag $\ne$ 0 then
 				var nextX : int := jt->first;
 				for k : int := x $+$ 1 up to nextX $-$ 1
 					output.push_back((k,y));

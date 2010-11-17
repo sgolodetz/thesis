@@ -417,7 +417,15 @@ Finally, Step 3 removes the non-canonical nodes. In the pseudo-code given (based
 
 In terms of complexity analysis, we first let $k$ be the number of nodes to be merged. Line $6$ in Listing~\ref{code:ipfs-forest-mergesiblingnodesimpl} is $O(1)$, since the nodes in the input set are sorted by index. Line $7$ is $O(k)$, since it involves a set copy followed by an erase. Lines $8-9$ are $O(1)$, since they are array lookups. Line $16$ is $O(\log n_m)$ due to the set lookup done by \texttt{node_children}. Lines $17-20$ require more careful analysis. There is $O(k \log n_m)$ work looking up the children of the $k-1$ nodes in \texttt{others}. The inner loop runs $\sum_{x \in \mathit{others}} \#children(x)$ times, and does an $O(\log n_b)$ set lookup and a set insertion into \texttt{canonicalChildren} that is guaranteed to be no worse than $O(\log n_b)$ on each iteration. Thus, lines $17-20$ are $O(k \log n_m + (\sum_{x \in \mathit{others}} \#\mathit{children}(x)) \log n_b)$ overall. Lines $24-29$ do $O(\log n_m + \log n_a + k \log \#\mathit{parentChildren})$ work, made up of a layer $M$ node lookup, a layer $A$ node lookup and $k-1$ set erases from \texttt{parentChildren}. Lines $34-38$ again require careful analysis. The layer $M$ adjacent edge lookups in the outer loop require $O(k \log e_m)$ work. The inner loop runs $\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)$ times, and does $O(\log e_m)$ work updating the edge weight on each iteration. Thus, lines $34-38$ involve $O(k \log e_m + (\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)) \log e_m)$ work overall. Line $41$ is $O(\sum_{x \in \mathit{nodes}} \#\mathit{children}(x))$. Line $42$ is an $O(\log n_m)$ layer $M$ node lookup. Lines $46-47$ are $O(k(\log n_m + \log e_m))$, since they involve removing each of the $k-1$ nodes being merged from the layer $M$ node set and their adjacent edge sets from the layer $M$ edge table (a single erase is required in each case). This simplifies to $O(k \log e_m)$, since $n_m \in O(e_m)$.
 
-Although I will not show the long-winded derivation here, the complexity of the algorithm as a whole can be simplified down to $O(\#children(\mathit{canonical}) + (\sum_{x \in others} \#\mathit{children}(x)) \log n_b + (\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)) \log e_m)$. Note in passing that this is upper-bounded by $O(n_b \log n_b + e_m \log e_m)$.
+Although I will not show the long-winded derivation here, the complexity of the algorithm as a whole can be simplified down to:
+%
+\begin{eqnarray*}
+O(\#children(\mathit{canonical}) \; + \\
+\left(\sum_{x \in others} \#\mathit{children}(x)\right) \log n_b \; + \\
+\left(\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)\right) \log e_m)
+\end{eqnarray*}
+%
+Note in passing that this is upper-bounded by $O(n_b \log n_b + e_m \log e_m)$.
 
 \paragraph{Undoing the Command}
 
@@ -598,11 +606,11 @@ A node in any layer of the hierarchy can be unzipped to a specified higher layer
 	\hspace{8mm}%
 	\subfigure[Initial layer $3$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-a-graph3.png}}%
 	\\
-	\subfigure[Resulting layer $1$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-b-graph1.png}}%
+	\subfigure[Final layer $1$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-b-graph1.png}}%
 	\hspace{8mm}%
-	\subfigure[Resulting layer $2$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-c-graph2.png}}%
+	\subfigure[Final layer $2$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-c-graph2.png}}%
 	\hspace{8mm}%
-	\subfigure[Resulting layer $3$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-d-graph3.png}}%
+	\subfigure[Final layer $3$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-unzipping-d-graph3.png}}%
 \caption{An example of unzipping: unzipping node $(0,5)$ to layer $3$}
 \label{fig:ipfs-forest-unzipping}
 \end{stusubfig}
@@ -701,17 +709,17 @@ A set of node chains (see the description of unzipping for a definition) that al
 	\hspace{8mm}%
 	\subfigure[After merging layer $1$ nodes]{\includegraphics[width=.43\linewidth]{ipfs/ipfs-forest-zipping-d-hierarchy.png}}%
 	\\
-	\subfigure[Initial layer $1$ graph]{\includegraphics[height=.26\linewidth]{ipfs/ipfs-forest-zipping-a-graph1.png}}%
+	\subfigure[Initial layer $1$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-zipping-a-graph1.png}}%
 	\hspace{8mm}%
-	\subfigure[Initial layer $2$ graph]{\includegraphics[height=.26\linewidth]{ipfs/ipfs-forest-zipping-a-graph2.png}}%
+	\subfigure[Initial layer $2$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-zipping-a-graph2.png}}%
 	\hspace{8mm}%
-	\subfigure[Initial layer $3$ graph]{\includegraphics[height=.26\linewidth]{ipfs/ipfs-forest-zipping-a-graph3.png}}%
+	\subfigure[Initial layer $3$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-zipping-a-graph3.png}}%
 	\\
-	\subfigure[Resulting layer $1$ graph]{\includegraphics[height=.26\linewidth]{ipfs/ipfs-forest-zipping-d-graph1.png}\hspace{4mm}}%
+	\subfigure[Final layer $1$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-zipping-d-graph1.png}}%
 	\hspace{8mm}%
-	\subfigure[Resulting layer $2$ graph]{\includegraphics[height=.26\linewidth]{ipfs/ipfs-forest-zipping-c-graph2.png}}%
+	\subfigure[Final layer $2$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-zipping-c-graph2.png}}%
 	\hspace{8mm}%
-	\subfigure[Resulting layer $3$ graph]{\includegraphics[height=.26\linewidth]{ipfs/ipfs-forest-zipping-b-graph3.png}}%
+	\subfigure[Final layer $3$ graph]{\includegraphics[width=.22\linewidth]{ipfs/ipfs-forest-zipping-b-graph3.png}}%
 \caption{An example of zipping: zipping together the four chains $[(3,0), (2,6), (1,6)]$, $[(3,2), (2,2)]$, $[(3,5), (2,5)]$ and $[(3,8), (2,8), (1,8)]$}
 \label{fig:ipfs-forest-zipping}
 \end{stusubfig}
@@ -1469,7 +1477,8 @@ When a node in the forest is split, two things must happen:
 \paragraph{C++ Method Interface}
 
 \begin{lstlisting}[style=Prototype]
-void node_was_split(const NodeID& node, const set<NodeID>& results);
+void node_was_split(const NodeID& node,
+                    const set<NodeID>& results);
 \end{lstlisting}
 
 \paragraph{Implementation}
