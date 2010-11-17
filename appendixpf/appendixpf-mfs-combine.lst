@@ -18,4 +18,4 @@ function combine
 		else if not rhs.has_selection(feature) then
 			selection := lhs.selection(feature);
 		else
-			selection.combine(lhs.selection(feature), rhs.selection(feature));
+			selection.combine_using_leaves(lhs.selection(feature), rhs.selection(feature));

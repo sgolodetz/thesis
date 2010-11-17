@@ -12,6 +12,6 @@ function subtract
 	// Step 2: Subtract the corresponding rhs selections from the lhs ones.
 	for each (feature,ref selection) $\in$ selections()
 		if rhs.has_selection(feature) then
-			selection.subtract(lhs.selection(feature), rhs.selection(feature));
+			selection.subtract_using_leaves(lhs.selection(feature), rhs.selection(feature));
 		else
 			selection := lhs.selection(feature);
