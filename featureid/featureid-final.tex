@@ -166,7 +166,26 @@ The counterpart of non-structured opening is non-structured closing. The non-str
 \kappa^{(n)} = \epsilon^{(n)} \bullet \delta^{(n)}
 \]
 %
-The intuition is that this starts by expanding the boundaries of the selection (including internal boundaries, which fills in holes) and then erodes the remaining boundaries (which we hope are the outer ones) to return the selection to something like its original size (again, this isn't strictly true, but it gives a rough guide to what is happening). The way closing works is illustrated in Figure~\ref{?}.
+The intuition is that this starts by expanding the boundaries of the selection (including internal boundaries, which fills in holes) and then erodes the remaining boundaries (which we hope are the outer ones) to return the selection to something like its original size (again, this isn't strictly true, but it gives a rough guide to what is happening). The way closing works is illustrated in Figure~\ref{fig:featureid-techniques-closing}.
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial selection]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-techniques-closing-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[After dilating]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-techniques-closing-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The final result]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-techniques-closing-c.png}}%
+\caption{Elementary non-structured morphological closing on graphs: the selected nodes in (a) are first dilated, adding the nodes shown in blue in (b); the new set of nodes is then eroded, removing the nodes shown in red in (c). This has the effect of closing the hole on the left of the graph, but also slightly affects the outer boundary.}
+\label{fig:featureid-techniques-closing}
+\end{stusubfig}
+%---
 
 Closing is a good tool for filling in holes. Larger holes can be filled in by closing with a larger size, but care must again be taken to avoid damaging the rest of the selection.
 
@@ -587,7 +606,7 @@ Regions which satisfy these criteria are unmarked as spine (if necessary) and ma
 %################################################
 
 %---
-\stufigex{height=9cm}{featureid/featureid-3d-ribsidentification-region}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
+\stufigex{height=9cm}{featureid/featureid-3d-ribsidentification-region.png}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
 %---
 
 \noindent In contrast to the spine and spinal canal identifiers, which can (at least to a first approximation) often identify their features using only branch node filtering, the 3D ribs identifier is necessarily more involved, because it is unusual for each rib to be represented by only a single node in the forest. For that reason, a stratified region growing method is preferred in this case, followed by customised post-processing to tidy up the results. The first step is to identify suitable seeds for the ribs, namely regions that:
@@ -605,7 +624,7 @@ The spatial constraints are illustrated in Figure~\ref{fig:featureid-3d-ribsiden
 
 The final step is to post-process the results of the stratified region growing process, which at this point in the algorithm are represented as a partition forest selection. As the post-processing involves connected component analysis, the selection must first be viewed at the level of the selected nodes' \emph{merge layer} (so called because it is the layer in which the nodes would be merged), namely the lowest layer containing a selected node. We will call the nodes \emph{viewed nodes} when viewed at this level. Of these viewed nodes, we remove any that are too dark to be part of the aorta -- specified as having a mean grey value $< 150$. We then find the connected components of the remaining viewed nodes, after which each connected component has its voxel count compared to minimum and maximum thresholds. Connected components that meet the size requirements are added to the final result, whilst the remainder are discarded.
 
-As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this identification process has been used to produce satisfactory (if not perfect) results on images from a number of different series. However, it needs further refinement to make it more robust. Two specific issues to be addressed in further work are that some of the ribs can be inadvertently captured by the spine, since the features are connected and share similar grey value distributions, and that some of the hard size constraints can cause ribs to be missed when they are too large or too small. The accuracy of the identifier in cases where it does and does not work well will be evaluated in the next chapter.
+As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this identification process has been used to produce satisfactory results on images from multiple series. However, it needs further refinement to make it more robust. Two specific issues to be addressed in further work are that some of the ribs can be inadvertently captured by the spine, since the features are connected and share similar grey value distributions, and that some of the hard size constraints can cause ribs to be missed when they are too large or too small. The accuracy of the identifier in cases where it does and does not work well will be examined in the next chapter.
 
 %---
 \begin{stulisting}[p]
@@ -645,6 +664,12 @@ As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this
 %################################################
 \subsection{Aorta Identification}
 %################################################
+
+%---
+\stufigex{height=9cm}{featureid/featureid-3d-aortaidentification-region-overlay.png}{The spatial constraints for aorta seeds -- they (a) must lie at least partly in the small, green box just above the spine, (b) may lie partly in the boxes marked in yellow, and (c) must not lie below or to the left of the red lines}{fig:featureid-3d-aortaidentification-region}{h}
+%---
+
+\noindent As with ribs identification, branch node filtering on its own is generally insufficient when identifying the aorta.
 
 TODO
 

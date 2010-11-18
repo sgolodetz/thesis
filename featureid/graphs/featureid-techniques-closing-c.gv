@@ -1,0 +1,64 @@
+graph
+{
+	node [shape=circle, style=solid, color=black, label=""];
+
+	A -- B;
+	A -- D;
+	A -- E;
+	B -- C;
+	B -- E;
+	B -- F;
+	C -- F;
+	D -- G;
+	D -- H;
+	D -- J;
+	E -- F;
+	E -- H;
+	E -- I;
+	F -- I;
+	G -- J;
+	G -- L;
+	H -- J;
+	H -- K;
+	H -- M;
+	I -- K;
+	I -- N;
+	J -- L;
+	J -- M;
+	J -- O;
+	K -- M;
+	K -- N;
+	L -- O;
+	M -- O;
+	M -- P;
+	N -- Q;
+	O -- R;
+	P -- Q;
+	P -- R;
+	P -- S;
+	Q -- S;
+	Q -- T;
+	R -- S;
+	S -- T;
+
+	A [pos="2,6!", style=filled];
+	B [pos="4,6!", style=filled];
+	C [pos="6,6!", style=filled];
+	D [pos="1,5!", style=filled];
+	E [pos="3,5!", style=filled, fillcolor=red];
+	F [pos="5,5!", style=filled, fillcolor=red];
+	G [pos="0,4!", style=filled];
+	H [pos="2,4!", style=filled];
+	I [pos="4,4!"];
+	J [pos="1,3!", style=filled];
+	K [pos="3,3!", style=filled, fillcolor=red];
+	L [pos="0,2!", style=filled];
+	M [pos="2,2!", style=filled];
+	N [pos="4,2!"];
+	O [pos="1,1!", style=filled];
+	P [pos="3,1!", style=filled];
+	Q [pos="5,1!", style=filled, fillcolor=red];
+	R [pos="2,0!", style=filled];
+	S [pos="4,0!", style=filled];
+	T [pos="6,0!", style=filled];
+}
