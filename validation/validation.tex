@@ -27,6 +27,48 @@ TODO
 \subsection{Series BT-2, Slices $60$--$80$}
 %################################################
 
+\iffalse
+
+Aorta
+
+- Fairly good (Dice = 0.859), but automated result floods out into another blood vessel slightly -- which one, and why?
+
+Kidneys
+
+- Only one kidney (other one is a huge tumour)
+- Good (Dice = 0.949), only minor differences -- partly due to slight subjectivity of gold standard results, etc.
+
+Liver
+
+- Fairly good (Dice = 0.890)
+- Missed the lateral segment of the left lobe -- why? (probably because we find a single seed and flood from it, but the pieces are disconnected in the slices we've chosen)
+- Floods beyond the correct boundary in the direction of the aorta -- why? (probably due to weak edges)
+
+Ribs
+
+- Reasonable (Dice = 0.773)
+- But some ribs marked as spine -- because priority is currently given to the spine when there's a clash
+  - Hence the table shows a high value for G - A
+
+Spinal Canal
+
+- Fairly good (Dice = 0.840)
+- The automated result somewhat oversegments the canal -- why? (probably due to the fact that the regions within the spine only gradually get combined into a reasonable canal region that we could find, so that region ends up including all the bits inside the spine)
+  - Hence the table shows a high value for A - G
+
+Spine
+
+- Good (Dice = 0.926)
+- The automated result slightly oversegments the spine in places -- the top bit should be marked as rib
+- It also tends to miss bits branching off the spine lower down -- why? (primarily because we're using branch node filtering rather than region flooding at present, but also because some of the bits sticking out are quite dark)
+
+Spleen
+
+- Fairly good (Dice = 0.853)
+- The automated result contains some holes at the moment -- why? (primarily because it's an incipient identifier and we're not currently doing any flooding/hole filling)
+
+\fi
+
 TODO
 
 %---
@@ -36,9 +78,9 @@ TODO
 \footnotesize \textbf{Feature} & \footnotesize \textbf{Automated (A)} & \footnotesize \textbf{Gold (G)} & \footnotesize \textbf{A -- G} & \footnotesize \textbf{G -- A} & \footnotesize \textbf{A $\cap$ G} & \footnotesize \textbf{Dice} & \footnotesize \textbf{Jaccard} \\
 \hline
 \footnotesize Aorta & \footnotesize 13940 & \footnotesize 13973 & \footnotesize 1949 & \footnotesize 1982 & \footnotesize 11991 & \footnotesize 0.859 & \footnotesize 0.753 \\
-\footnotesize Kidney & \footnotesize 72142 & \footnotesize 73715 & \footnotesize 2915 & \footnotesize 4488 & \footnotesize 69227 & \footnotesize 0.949 & \footnotesize 0.903 \\
+\footnotesize Kidneys & \footnotesize 72142 & \footnotesize 73715 & \footnotesize 2915 & \footnotesize 4488 & \footnotesize 69227 & \footnotesize 0.949 & \footnotesize 0.903 \\
 \footnotesize Liver & \footnotesize 180156 & \footnotesize 180693 & \footnotesize 19624 & \footnotesize 20161 & \footnotesize 160532 & \footnotesize 0.890 & \footnotesize 0.801 \\
-\footnotesize Rib & \footnotesize 22787 & \footnotesize 31125 & \footnotesize 1942 & \footnotesize 10280 & \footnotesize 20845 & \footnotesize 0.773 & \footnotesize 0.630 \\
+\footnotesize Ribs & \footnotesize 22787 & \footnotesize 31125 & \footnotesize 1942 & \footnotesize 10280 & \footnotesize 20845 & \footnotesize 0.773 & \footnotesize 0.630 \\
 \footnotesize Spinal Canal & \footnotesize 14451 & \footnotesize 11002 & \footnotesize 3758 & \footnotesize 309 & \footnotesize 10693 & \footnotesize 0.840 & \footnotesize 0.724 \\
 \footnotesize Spine & \footnotesize 111889 & \footnotesize 113385 & \footnotesize 7634 & \footnotesize 9130 & \footnotesize 104255 & \footnotesize 0.926 & \footnotesize 0.861 \\
 \footnotesize Spleen & \footnotesize 11841 & \footnotesize 15077 & \footnotesize 359 & \footnotesize 3595 & \footnotesize 11482 & \footnotesize 0.853 & \footnotesize 0.744 \\
@@ -70,6 +112,49 @@ TODO
 \subsection{Series SD-2, Slices $70$--$90$}
 %################################################
 
+\iffalse
+
+Aorta
+
+- Fairly good (Dice = 0.811)
+- Floods out into a neighbouring blood vessel somewhat -- which one? same reason as for BT-2?
+
+Kidneys
+
+- Only one -- why? (can't remember)
+- Good (Dice = 0.931)
+- Automated result not quite as smooth -- why? (primarily an issue with the underlying segmentation)
+
+Liver
+
+- Good (Dice = 0.932)
+- Doesn't miss a major part of the liver this time, because it's connected in the slices chosen
+- Floods out towards the aorta -- why? (probably a weak edge)
+
+Ribs
+
+- Fairly good (Dice = 0.819)
+- Picks up an erroneous bit which isn't a rib -- why? (probably because very bright in the image)
+- Misses the odd bit which is a rib -- why? (check differences on scans)
+
+Spinal Canal
+
+- Fairly good (Dice = 0.862)
+- Somewhat oversegmented -- for the same reasons mentioned for BT-2
+
+Spine
+
+- Good (Dice = 0.965), partly on account of this patient's notably high bone density
+- Only minor differences, largely due to slight subjectivity of gold standard
+
+Spleen
+
+- Fairly good (Dice = 0.874)
+- The automated result has missed a lot of the spleen -- why? (probably because I'm only finding a seed and not then flooding out from it)
+- The automated result contains a lot of holes -- why? (probably because I'm not currently doing any hole filling)
+
+\fi
+
 TODO
 
 %---
@@ -79,9 +164,9 @@ TODO
 \footnotesize \textbf{Feature} & \footnotesize \textbf{Automated (A)} & \footnotesize \textbf{Gold (G)} & \footnotesize \textbf{A -- G} & \footnotesize \textbf{G -- A} & \footnotesize \textbf{A $\cap$ G} & \footnotesize \textbf{Dice} & \footnotesize \textbf{Jaccard} \\
 \hline
 \footnotesize Aorta & \footnotesize 12799 & \footnotesize 9848 & \footnotesize 3619 & \footnotesize 668 & \footnotesize 9180 & \footnotesize 0.811 & \footnotesize 0.682 \\
-\footnotesize Kidney & \footnotesize 93853 & \footnotesize 91324 & \footnotesize 7671 & \footnotesize 5142 & \footnotesize 86182 & \footnotesize 0.931 & \footnotesize 0.871 \\
+\footnotesize Kidneys & \footnotesize 93853 & \footnotesize 91324 & \footnotesize 7671 & \footnotesize 5142 & \footnotesize 86182 & \footnotesize 0.931 & \footnotesize 0.871 \\
 \footnotesize Liver & \footnotesize 254945 & \footnotesize 231766 & \footnotesize 28156 & \footnotesize 4977 & \footnotesize 226789 & \footnotesize 0.932 & \footnotesize 0.873 \\
-\footnotesize Rib & \footnotesize 10331 & \footnotesize 10097 & \footnotesize 1962 & \footnotesize 1728 & \footnotesize 8369 & \footnotesize 0.819 & \footnotesize 0.694 \\
+\footnotesize Ribs & \footnotesize 10331 & \footnotesize 10097 & \footnotesize 1962 & \footnotesize 1728 & \footnotesize 8369 & \footnotesize 0.819 & \footnotesize 0.694 \\
 \footnotesize Spinal Canal & \footnotesize 15163 & \footnotesize 11655 & \footnotesize 3609 & \footnotesize 101 & \footnotesize 11554 & \footnotesize 0.862 & \footnotesize 0.757 \\
 \footnotesize Spine & \footnotesize 84757 & \footnotesize 85430 & \footnotesize 2624 & \footnotesize 3297 & \footnotesize 82133 & \footnotesize 0.965 & \footnotesize 0.933 \\
 \footnotesize Spleen & \footnotesize 46129 & \footnotesize 55049 & \footnotesize 1922 & \footnotesize 10842 & \footnotesize 44207 & \footnotesize 0.874 & \footnotesize 0.776 \\
@@ -113,6 +198,51 @@ TODO
 \subsection{Series MC-2, Slices $110$--$130$}
 %################################################
 
+\iffalse
+
+Aorta
+
+- Good (Dice = 0.908)
+- Minor differences -- why? (primarily a result of the underlying segmentation)
+- Overlapped by the liver, which has flooded out too far
+  - The "easy" way to fix this is to unidentify as liver anything also marked as aorta, and then to find the connected components of the remaining liver bits and only keep sensible ones -- but that doesn't solve the problem in the general case
+
+Kidneys
+
+- Fairly good (Dice = 0.906)
+- Flooded out a bit too far on the left kidney -- why? (check scans)
+- The automated result is a bit smoother than the gold standard (not surprising, the slices are 5mm thick and the Laplacian smoothing is not perfect)
+
+Liver
+
+- Fairly good (Dice = 0.848)
+- Flooded out much too far towards the aorta (completely overlapping it) -- why? (probably a weak edge)
+- General outline isn't too bad
+- Missed medial segment of left lobe -- why? (check scans)
+
+Ribs
+
+- Fairly good (Dice = 0.816)
+- The automated result misses internal bits of ribs -- why?
+
+Spinal Canal
+
+- Good (Dice = 0.933)
+- As ever, the automated result is slightly oversegmented -- see discussion for BT-2
+
+Spine
+
+- Good (Dice = 0.947)
+- Minor differences are probably due to slight subjectivity of the gold standard (but check scans)
+
+Spleen
+
+- Fairly good (Dice = 0.898)
+- As with SD-2, a certain amount of the spleen has been missed because not doing region flooding yet
+- As with SD-2, contains a number of holes because not doing hole filling yet
+
+\fi
+
 TODO
 
 %---
@@ -122,9 +252,9 @@ TODO
 \footnotesize \textbf{Feature} & \footnotesize \textbf{Automated (A)} & \footnotesize \textbf{Gold (G)} & \footnotesize \textbf{A -- G} & \footnotesize \textbf{G -- A} & \footnotesize \textbf{A $\cap$ G} & \footnotesize \textbf{Dice} & \footnotesize \textbf{Jaccard} \\
 \hline
 \footnotesize Aorta & \footnotesize 15799 & \footnotesize 15036 & \footnotesize 1805 & \footnotesize 1042 & \footnotesize 13994 & \footnotesize 0.908 & \footnotesize 0.831 \\
-\footnotesize Kidney & \footnotesize 148065 & \footnotesize 137416 & \footnotesize 18698 & \footnotesize 8049 & \footnotesize 129367 & \footnotesize 0.906 & \footnotesize 0.829 \\
+\footnotesize Kidneys & \footnotesize 148065 & \footnotesize 137416 & \footnotesize 18698 & \footnotesize 8049 & \footnotesize 129367 & \footnotesize 0.906 & \footnotesize 0.829 \\
 \footnotesize Liver & \footnotesize 492435 & \footnotesize 413475 & \footnotesize 108454 & \footnotesize 29494 & \footnotesize 383981 & \footnotesize 0.848 & \footnotesize 0.736 \\
-\footnotesize Rib & \footnotesize 33626 & \footnotesize 42708 & \footnotesize 2483 & \footnotesize 11565 & \footnotesize 31143 & \footnotesize 0.816 & \footnotesize 0.689 \\
+\footnotesize Ribs & \footnotesize 33626 & \footnotesize 42708 & \footnotesize 2483 & \footnotesize 11565 & \footnotesize 31143 & \footnotesize 0.816 & \footnotesize 0.689 \\
 \footnotesize Spinal Canal & \footnotesize 9924 & \footnotesize 9087 & \footnotesize 1054 & \footnotesize 217 & \footnotesize 8870 & \footnotesize 0.933 & \footnotesize 0.875 \\
 \footnotesize Spine & \footnotesize 81483 & \footnotesize 79453 & \footnotesize 5247 & \footnotesize 3217 & \footnotesize 76236 & \footnotesize 0.947 & \footnotesize 0.900 \\
 \footnotesize Spleen & \footnotesize 32048 & \footnotesize 36537 & \footnotesize 1240 & \footnotesize 5729 & \footnotesize 30808 & \footnotesize 0.898 & \footnotesize 0.816 \\
@@ -161,6 +291,48 @@ TODO
 \subsection{Series EB-2, Slices $60$--$80$}
 %################################################
 
+\iffalse
+
+Aorta
+
+- Fairly good (Dice = 0.849)
+- Automated result sticks out too far at the front -- why?
+- Automated result is also missing bits in places -- where, and why? (check scans)
+
+Kidneys
+
+- Right kidney is good (Dice = 0.932)
+- Left kidney is completely missed -- why? (primarily because of the tumour)
+- Minor differences for right kidney are probably due to slight subjectivity of gold standard
+
+Liver
+
+- Good (0.948)
+- Missing small bits of the left lobe -- why? (primarily because they're not connected in the slices chosen)
+- Missing bits at the back -- why? (check scans)
+
+Ribs
+
+- Poor (Dice = 0.488)
+- Segmenting lots of bits which aren't rib -- why? (probably because there are very bright bits on the images)
+
+Spinal Canal
+
+- Fairly good (Dice = 0.856)
+- Again, somewhat oversegmented -- same reasons as for other series
+
+Spine
+
+- Good (Dice = 0.925)
+- Automated result missing some of the bits sticking out -- why? (primarily because using branch node filtering instead of region growing, but also because some of the bits may be quite dark)
+- Also segmenting bits it shouldn't -- which bits? (check scans)
+
+Spleen
+
+- Completely missed -- why? (check scans)
+
+\fi
+
 TODO (the left kidney is missed due to a tumour; the spleen is missed because there's not enough of it in the slices chosen (check this); the ribs are oversegmented because there are lots of unusually bright non-rib bits in EB-2)
 
 %---
@@ -173,7 +345,7 @@ TODO (the left kidney is missed due to a tumour; the spleen is missed because th
 \footnotesize Kidney (Right) & \footnotesize 47444 & \footnotesize 46918 & \footnotesize 3461 & \footnotesize 2935 & \footnotesize 43983 & \footnotesize 0.932 & \footnotesize 0.873 \\
 \footnotesize Kidney (Left) & \footnotesize 0 & \footnotesize 36874 & \footnotesize 0 & \footnotesize 36874 & \footnotesize 0 & \footnotesize 0.000 & \footnotesize 0.000 \\
 \footnotesize Liver & \footnotesize 160978 & \footnotesize 164834 & \footnotesize 6592 & \footnotesize 10448 & \footnotesize 154386 & \footnotesize 0.948 & \footnotesize 0.901 \\
-\footnotesize Rib & \footnotesize 10256 & \footnotesize 4959 & \footnotesize 6542 & \footnotesize 1245 & \footnotesize 3714 & \footnotesize 0.488 & \footnotesize 0.323 \\
+\footnotesize Ribs & \footnotesize 10256 & \footnotesize 4959 & \footnotesize 6542 & \footnotesize 1245 & \footnotesize 3714 & \footnotesize 0.488 & \footnotesize 0.323 \\
 \footnotesize Spinal Canal & \footnotesize 12387 & \footnotesize 9645 & \footnotesize 2958 & \footnotesize 216 & \footnotesize 9429 & \footnotesize 0.856 & \footnotesize 0.748 \\
 \footnotesize Spine & \footnotesize 82721 & \footnotesize 85490 & \footnotesize 4946 & \footnotesize 7715 & \footnotesize 77775 & \footnotesize 0.925 & \footnotesize 0.860 \\
 \footnotesize Spleen & \footnotesize 0 & \footnotesize 20179 & \footnotesize 0 & \footnotesize 20179 & \footnotesize 0 & \footnotesize 0.000 & \footnotesize 0.000 \\
