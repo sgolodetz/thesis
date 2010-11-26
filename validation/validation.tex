@@ -39,21 +39,6 @@ These were then used to calculate the Dice similarity coefficient for each featu
 
 \iffalse
 
-Aorta
-
-- Fairly good (Dice = 0.859), but automated result floods out into the left renal vein slightly due to a weak edge
-
-Kidneys
-
-- Only one kidney (other one is a huge tumour)
-- Good (Dice = 0.949), only minor differences -- partly due to slight subjectivity of gold standard results, etc.
-
-Liver
-
-- Fairly good (Dice = 0.890)
-- Missed the lateral segment of the left lobe -- because we find a single seed and flood from it, but the pieces are disconnected in the slices we've chosen
-- Floods beyond the correct boundary in the direction of the aorta due to a weak edge
-
 Ribs
 
 - Reasonable (Dice = 0.773)
@@ -87,7 +72,9 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 
 \item \textbf{Kidneys}. Only the right kidney was relevant in this case, as the left kidney had been entirely overtaken by a huge tumour. As indicated by the high Dice similarity coefficient of $0.949$, the automated result for the kidney that was present was good. The minor discrepancies are primarily due to the automated identifier slightly oversegmenting the region around the renal pelvis.
 
-\item \textbf{Liver}. Given the relative complexity of liver identification compared to identifying other features, the automated result in this case is fairly good, with a Dice similarity coefficient of $0.890$. However, Figure~\ref{fig:validation-BT-2-60-80}(d) illustrates that the lateral segment of the left lobe is clearly missed. This is due to the current approach doing only single-seed region growing -- in the slices chosen, the lateral segment of the left lobe and the rest of the liver are not connected (see Figure~\ref{fig:validation-BT-2-60-80-liver-disconnected}), so the algorithm finds one part of the liver but not the other. This could be rectified in this case by using multi-seed region growing, although some care would need to be taken over choosing appropriate seeds to make sure that other features in the area were not mistakenly identified as being part of the liver.
+\item \textbf{Liver}. Given the relative complexity of liver identification compared to identifying other features, the automated result in this case is fairly good, with a Dice similarity coefficient of $0.890$. However, Figure~\ref{fig:validation-BT-2-60-80}(d) illustrates that the lateral segment of the left lobe is clearly missed. This is due to the current approach doing only single-seed region growing -- in the slices chosen, the lateral segment of the left lobe and the rest of the liver are not connected (see Figure~\ref{fig:validation-BT-2-60-80-liver-disconnected}), so the algorithm finds one part of the liver but not the other. This could be rectified in this case by using multi-seed region growing, although some care would need to be taken over choosing appropriate seeds to make sure that other features in the area were not mistakenly identified as being part of the liver. A further problem with the automated liver result is that it floods beyond the boundary of the liver in the direction of the aorta (see Figure~\ref{fig:validation-BT-2-60-80}(c)). As with the aorta result, this is due to a weak boundary, and a level sets approach might be more effective.
+
+\item \textbf{Ribs}. TODO
 
 \end{itemize}
 
@@ -210,21 +197,31 @@ TODO
 \footnotesize Spleen & \footnotesize 46129 & \footnotesize 55049 & \footnotesize 1922 & \footnotesize 10842 & \footnotesize 44207 & \footnotesize 0.874 \\
 \end{tabular}
 \end{center}
-\caption{A numeric comparison of the gold standard and automated results for the SD-2-70-90 feature identification case study. (All entries except those for the similarity coefficient are in voxels.)}
+\caption{A numeric comparison of the automated and gold standard results for the SD-2-70-90 feature identification case study. (All entries except those for the similarity coefficient are in voxels.)}
 \label{tbl:validation-SD-2-70-90}
 \end{table}
 %---
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Gold Standard Result]
-	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-goldstandard.png}}%
+	\subfigure[Automated Result ($A$)]
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-target.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[Automated Result]
-	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-target.png}}%
-\caption{A visual comparison of the gold standard and automated results for the SD-2-70-90 feature identification case study}
+	\subfigure[Gold Standard Result ($G$)]
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-goldstandard.png}}%
+	%
+	\\
+	%
+	\subfigure[$A - G$]
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-TminusG.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[$G - A$]
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-GminusT.png}}%
+\caption{A visual comparison of the automated and gold standard results for the SD-2-70-90 feature identification case study}
 \label{fig:validation-SD-2-70-90}
 \end{stusubfig}
 %---
@@ -298,7 +295,7 @@ TODO
 \footnotesize Spleen & \footnotesize 32048 & \footnotesize 36537 & \footnotesize 1240 & \footnotesize 5729 & \footnotesize 30808 & \footnotesize 0.898 \\
 \end{tabular}
 \end{center}
-\caption{A numeric comparison of the gold standard and automated results for the MC-2-110-130 feature identification case study. (All entries except those for the similarity coefficient are in voxels.)}
+\caption{A numeric comparison of the automated and gold standard results for the MC-2-110-130 feature identification case study. (All entries except those for the similarity coefficient are in voxels.)}
 \label{tbl:validation-MC-2-110-130}
 \end{table}
 %---
@@ -389,21 +386,31 @@ TODO (the left kidney is missed due to a tumour; the spleen is missed because th
 \footnotesize Spleen & \footnotesize 0 & \footnotesize 20179 & \footnotesize 0 & \footnotesize 20179 & \footnotesize 0 & \footnotesize 0.000 \\
 \end{tabular}
 \end{center}
-\caption{TODO}
+\caption{A numeric comparison of the automated and gold standard results for the EB-2-60-80 feature identification case study. (All entries except those for the similarity coefficient are in voxels.)}
 \label{tbl:validation-EB-2-60-80}
 \end{table}
 %---
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Gold Standard Result]
-	{\includegraphics[width=.45\linewidth]{validation/validation-EB-2-60-80-goldstandard.png}}%
+	\subfigure[Automated Result ($A$)]
+	{\includegraphics[width=.45\linewidth]{validation/validation-EB-2-60-80-target.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[Automated Result]
-	{\includegraphics[width=.45\linewidth]{validation/validation-EB-2-60-80-target.png}}%
-\caption{A visual comparison of the gold standard and automated results for the EB-2-60-80 feature identification case study}
+	\subfigure[Gold Standard Result ($G$)]
+	{\includegraphics[width=.45\linewidth]{validation/validation-EB-2-60-80-goldstandard.png}}%
+	%
+	\\
+	%
+	\subfigure[$A - G$]
+	{\includegraphics[width=.45\linewidth]{validation/validation-EB-2-60-80-TminusG.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[$G - A$]
+	{\includegraphics[width=.45\linewidth]{validation/validation-EB-2-60-80-GminusT.png}}%
+\caption{A visual comparison of the automated and gold standard results for the EB-2-60-80 feature identification case study}
 \label{fig:validation-EB-2-60-80}
 \end{stusubfig}
 %---
