@@ -83,7 +83,11 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 %
 \begin{itemize}
 
-\item \textbf{Aorta}. As quantified by the relatively high Dice similarity coefficient of $0.859$ in Table~\ref{tbl:validation-BT-2-60-80}, the automated result for the aorta corresponds fairly well to the gold standard in this case. However, as shown in Figure~\ref{fig:validation-BT-2-60-80}(c), the automated result does flood slightly beyond the aorta itself. Referring back to one of the original slices (see Figure~\ref{fig:validation-BT-2-60-80-aorta-weakedge}), this is because the boundary between the aorta and an adjacent blood vessel (the left renal vein) is quite weak, and the stratified region growing algorithm thus does not know when to stop. This could perhaps be rectified by using level sets instead of region growing.
+\item \textbf{Aorta}. As quantified by the relatively high Dice similarity coefficient of $0.859$ in Table~\ref{tbl:validation-BT-2-60-80}, the automated result for the aorta corresponds fairly well to the gold standard in this case. However, as shown in Figure~\ref{fig:validation-BT-2-60-80}(c), the automated result does flood slightly beyond the aorta itself. Referring back to one of the original slices (see Figure~\ref{fig:validation-BT-2-60-80-aorta-weakedge}), this is because the boundary between the aorta and an adjacent blood vessel (the left renal vein) is quite weak, and the stratified region growing algorithm thus does not know when to stop. This could perhaps be rectified by using level sets instead of region growing. A further problem is that the automated result slightly undersegments the outer boundary, as shown in Figure~\ref{fig:validation-BT-2-60-80}(d). This is primarily an issue with the original segmentation produced when constructing the partition forest.
+
+\item \textbf{Kidneys}. Only the right kidney was relevant in this case, as the left kidney had been entirely overtaken by a huge tumour. As indicated by the high Dice similarity coefficient of $0.949$, the automated result for the kidney that was present was good. The minor discrepancies are primarily due to the automated identifier slightly oversegmenting the region around the renal pelvis.
+
+\item \textbf{Liver}. Given the relative complexity of liver identification compared to identifying other features, the automated result in this case is fairly good, with a Dice similarity coefficient of $0.890$. However, Figure~\ref{fig:validation-BT-2-60-80}(d) illustrates that the lateral segment of the left lobe is clearly missed. This is due to the current approach doing only single-seed region growing -- in the slices chosen, the lateral segment of the left lobe and the rest of the liver are not connected (see Figure~\ref{fig:validation-BT-2-60-80-liver-disconnected}), so the algorithm finds one part of the liver but not the other. This could be rectified in this case by using multi-seed region growing, although some care would need to be taken over choosing appropriate seeds to make sure that other features in the area were not mistakenly identified as being part of the liver.
 
 \end{itemize}
 
@@ -132,7 +136,11 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 %---
 
 %---
-\stufigex{height=6cm}{validation/validation-BT-2-60-80-aorta-weakedge.png}{TODO}{fig:validation-BT-2-60-80-aorta-weakedge}{p}
+\stufigex{height=8cm}{validation/validation-BT-2-60-80-aorta-weakedge-labelled.png}{The aorta identifier can flood into adjacent blood vessels, such as the left renal vein, due to weak boundaries in the original images}{fig:validation-BT-2-60-80-aorta-weakedge}{p}
+%---
+
+%---
+\stufigex{height=8cm}{validation/validation-BT-2-60-80-liver-disconnected-labelled.png}{The liver identifier misses the lateral segment of the left lobe in the BT-2 case study because it is not connected to the rest of the liver in the slices chosen}{fig:validation-BT-2-60-80-liver-disconnected}{p}
 %---
 
 \afterpage{\clearpage}
