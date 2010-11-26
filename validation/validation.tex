@@ -18,10 +18,20 @@ The validation work undertaken here forms an important part of the basis for the
 %---
 
 %##################################################################################################
-\section{Validation of Feature Identifiers}
+\section{Validation of 3D Feature Identifiers}
 %##################################################################################################
 
-TODO
+To validate my 3D feature identifiers, I undertook four detailed case studies to test how well they worked on sets of slices from different series. An alternative approach of testing them on a larger number of series, but with less detailed individual analysis, would also have been possible, but in my view further work must be done on improving the robustness of the identifiers before such larger-scale validation really makes sense. The aim here is mainly to illustrate some of the areas in which the identifiers currently succeed or fail in order to highlight areas for further work.
+
+For each case study, I produced a `gold standard' result by manually identifying the aorta, kidneys, liver, ribs, spinal canal, spine and spleen using the validation tools described in Appendix~\ref{chap:appendixval}. The resulting features were checked, and corrected where necessary, by Dr Zoe Traill, a Consultant Radiologist at the Churchill Hospital, Oxford. I then identified the same features using the automated multi-feature identifier. To perform a comparison, the gold standard result ($G$) and automated result ($A$) were used to construct three derivative multi-feature selections:
+%
+\begin{enumerate}
+\item $A - G$, which contains the parts of the features that were identified by the automated identifier but should not have been.
+\item $G - A$, which contains the parts of the features that were missed by the automated identifier.
+\item $A \cap G$, which contains the parts of the features that were correctly identified.
+\end{enumerate}
+%
+These were then used to calculate the Dice similarity coefficient for each feature, as described in \S\ref{sec:appendixval-featurecomparisons}, providing a quantitative measure of the extent to which the automated and gold standard results correspond.
 
 %################################################
 \subsection{Series BT-2, Slices $60$--$80$}
@@ -31,7 +41,7 @@ TODO
 
 Aorta
 
-- Fairly good (Dice = 0.859), but automated result floods out into another blood vessel slightly -- which one, and why?
+- Fairly good (Dice = 0.859), but automated result floods out into the left renal vein slightly due to a weak edge
 
 Kidneys
 
@@ -41,8 +51,8 @@ Kidneys
 Liver
 
 - Fairly good (Dice = 0.890)
-- Missed the lateral segment of the left lobe -- why? (probably because we find a single seed and flood from it, but the pieces are disconnected in the slices we've chosen)
-- Floods beyond the correct boundary in the direction of the aorta -- why? (probably due to weak edges)
+- Missed the lateral segment of the left lobe -- because we find a single seed and flood from it, but the pieces are disconnected in the slices we've chosen
+- Floods beyond the correct boundary in the direction of the aorta due to a weak edge
 
 Ribs
 
@@ -74,7 +84,7 @@ TODO
 %---
 \begin{table}[p]
 \begin{center}
-\begin{tabular}{cccccccc}
+\begin{tabular}{c|ccccccc}
 \footnotesize \textbf{Feature} & \footnotesize \textbf{Automated (A)} & \footnotesize \textbf{Gold (G)} & \footnotesize \textbf{A -- G} & \footnotesize \textbf{G -- A} & \footnotesize \textbf{A $\cap$ G} & \footnotesize \textbf{Dice} & \footnotesize \textbf{Jaccard} \\
 \hline
 \footnotesize Aorta & \footnotesize 13940 & \footnotesize 13973 & \footnotesize 1949 & \footnotesize 1982 & \footnotesize 11991 & \footnotesize 0.859 & \footnotesize 0.753 \\
@@ -86,7 +96,7 @@ TODO
 \footnotesize Spleen & \footnotesize 11841 & \footnotesize 15077 & \footnotesize 359 & \footnotesize 3595 & \footnotesize 11482 & \footnotesize 0.853 & \footnotesize 0.744 \\
 \end{tabular}
 \end{center}
-\caption{TODO}
+\caption{A numeric comparison of the gold standard and automated results for the BT-2-60-80 feature identification case study. (All entries except those for the similarity coefficients are in voxels.)}
 \label{tbl:validation-BT-2-60-80}
 \end{table}
 %---
@@ -100,7 +110,7 @@ TODO
 	%
 	\subfigure[Automated Result]
 	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-target.png}}%
-\caption{A comparison of the gold standard and automated results for the BT-2-60-80 feature identification case study}
+\caption{A visual comparison of the gold standard and automated results for the BT-2-60-80 feature identification case study}
 \label{fig:validation-BT-2-60-80}
 \end{stusubfig}
 %---
@@ -160,7 +170,7 @@ TODO
 %---
 \begin{table}[p]
 \begin{center}
-\begin{tabular}{cccccccc}
+\begin{tabular}{c|ccccccc}
 \footnotesize \textbf{Feature} & \footnotesize \textbf{Automated (A)} & \footnotesize \textbf{Gold (G)} & \footnotesize \textbf{A -- G} & \footnotesize \textbf{G -- A} & \footnotesize \textbf{A $\cap$ G} & \footnotesize \textbf{Dice} & \footnotesize \textbf{Jaccard} \\
 \hline
 \footnotesize Aorta & \footnotesize 12799 & \footnotesize 9848 & \footnotesize 3619 & \footnotesize 668 & \footnotesize 9180 & \footnotesize 0.811 & \footnotesize 0.682 \\
@@ -172,7 +182,7 @@ TODO
 \footnotesize Spleen & \footnotesize 46129 & \footnotesize 55049 & \footnotesize 1922 & \footnotesize 10842 & \footnotesize 44207 & \footnotesize 0.874 & \footnotesize 0.776 \\
 \end{tabular}
 \end{center}
-\caption{TODO}
+\caption{A numeric comparison of the gold standard and automated results for the SD-2-70-90 feature identification case study. (All entries except those for the similarity coefficients are in voxels.)}
 \label{tbl:validation-SD-2-70-90}
 \end{table}
 %---
@@ -186,7 +196,7 @@ TODO
 	%
 	\subfigure[Automated Result]
 	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-target.png}}%
-\caption{A comparison of the gold standard and automated results for the SD-2-70-90 feature identification case study}
+\caption{A visual comparison of the gold standard and automated results for the SD-2-70-90 feature identification case study}
 \label{fig:validation-SD-2-70-90}
 \end{stusubfig}
 %---
@@ -248,7 +258,7 @@ TODO
 %---
 \begin{table}[p]
 \begin{center}
-\begin{tabular}{cccccccc}
+\begin{tabular}{c|ccccccc}
 \footnotesize \textbf{Feature} & \footnotesize \textbf{Automated (A)} & \footnotesize \textbf{Gold (G)} & \footnotesize \textbf{A -- G} & \footnotesize \textbf{G -- A} & \footnotesize \textbf{A $\cap$ G} & \footnotesize \textbf{Dice} & \footnotesize \textbf{Jaccard} \\
 \hline
 \footnotesize Aorta & \footnotesize 15799 & \footnotesize 15036 & \footnotesize 1805 & \footnotesize 1042 & \footnotesize 13994 & \footnotesize 0.908 & \footnotesize 0.831 \\
@@ -260,7 +270,7 @@ TODO
 \footnotesize Spleen & \footnotesize 32048 & \footnotesize 36537 & \footnotesize 1240 & \footnotesize 5729 & \footnotesize 30808 & \footnotesize 0.898 & \footnotesize 0.816 \\
 \end{tabular}
 \end{center}
-\caption{TODO}
+\caption{A numeric comparison of the gold standard and automated results for the MC-2-110-130 feature identification case study. (All entries except those for the similarity coefficients are in voxels.)}
 \label{tbl:validation-MC-2-110-130}
 \end{table}
 %---
@@ -338,7 +348,7 @@ TODO (the left kidney is missed due to a tumour; the spleen is missed because th
 %---
 \begin{table}[p]
 \begin{center}
-\begin{tabular}{cccccccc}
+\begin{tabular}{c|ccccccc}
 \footnotesize \textbf{Feature} & \footnotesize \textbf{Automated (A)} & \footnotesize \textbf{Gold (G)} & \footnotesize \textbf{A -- G} & \footnotesize \textbf{G -- A} & \footnotesize \textbf{A $\cap$ G} & \footnotesize \textbf{Dice} & \footnotesize \textbf{Jaccard} \\
 \hline
 \footnotesize Aorta & \footnotesize 10365 & \footnotesize 9416 & \footnotesize 1969 & \footnotesize 1020 & \footnotesize 8396 & \footnotesize 0.849 & \footnotesize 0.737 \\
@@ -365,7 +375,7 @@ TODO (the left kidney is missed due to a tumour; the spleen is missed because th
 	%
 	\subfigure[Automated Result]
 	{\includegraphics[width=.45\linewidth]{validation/validation-EB-2-60-80-target.png}}%
-\caption{A comparison of the gold standard and automated results for the EB-2-60-80 feature identification case study}
+\caption{A visual comparison of the gold standard and automated results for the EB-2-60-80 feature identification case study}
 \label{fig:validation-EB-2-60-80}
 \end{stusubfig}
 %---

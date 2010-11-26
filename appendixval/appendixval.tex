@@ -217,6 +217,7 @@ The \texttt{finish_drawing()} method itself first invokes \texttt{selected_posit
 
 %##################################################################################################
 \section{Feature Comparisons}
+\label{sec:appendixval-featurecomparisons}
 %##################################################################################################
 
 In order to facilitate comparisons between the results of the automatic feature identifiers and manually-produced, gold standard results for the same image volumes, \emph{millipede} allows the user to maintain multiple feature selections for an image volume at the same time. These are managed using the dialog box shown in Figure~\ref{fig:appendixval-featureselectionsdialog}. The user can:
@@ -244,16 +245,10 @@ The validation dialog compares two feature selections on a per-feature basis, di
 
 \newpage
 
-\noindent Finally, it uses these values to calculate the commonly-used Dice and Jaccard similarity coefficients for each feature. Letting $T$ be the target for a particular feature, $\mathit{GS}$ be the gold standard result for the same feature, and $\mbox{voxels}(S)$ be the voxel count of the feature in selection $S$, the Dice similarity coefficient for the feature is defined as:
+\noindent Finally, it uses these values to calculate the commonly-used Dice similarity coefficient for each feature. Letting $T$ be the target for a particular feature, $\mathit{GS}$ be the gold standard result for the same feature, and $\mbox{voxels}(S)$ be the voxel count of the feature in selection $S$, the Dice similarity coefficient for the feature is defined as:
 %
 \[
 \frac{2 \times \mbox{voxels}(T \cap \mathit{GS})}{\mbox{voxels}(T) + \mbox{voxels}(\mathit{GS})}
 \]
 %
-Note that this attains a maximum of $1$ when $T = \mathit{GS}$ (i.e.~when the target feature exactly matches that in the gold standard result), and a minimum of $0$ when $T \cap \mathit{GS} = \emptyset$. The Jaccard similarity coefficient also shares this property, but is defined differently:
-%
-\[
-\frac{\mbox{voxels}(T \cap \mathit{GS})}{\mbox{voxels}(T \cup \mathit{GS})}
-\]
-%
-Here, when $T = \mathit{GS}$, $T \cap \mathit{GS} = T = \mathit{GS} = T \cup \mathit{GS}$.
+Note that this attains a maximum of $1$ when $T = \mathit{GS}$ (i.e.~when the target feature exactly matches that in the gold standard result), and a minimum of $0$ when $T \cap \mathit{GS} = \emptyset$.
