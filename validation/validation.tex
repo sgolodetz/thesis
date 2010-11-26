@@ -79,7 +79,13 @@ Spleen
 
 \fi
 
-TODO
+The first case study was of slices $60$--$80$ from series $2$ of a patient called BT. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-BT-2-60-80} and Figure~\ref{fig:validation-BT-2-60-80}. The identified features can be analysed as follows:
+%
+\begin{itemize}
+
+\item \textbf{Aorta}. TODO
+
+\end{itemize}
 
 %---
 \begin{table}[p]
@@ -96,21 +102,31 @@ TODO
 \footnotesize Spleen & \footnotesize 11841 & \footnotesize 15077 & \footnotesize 359 & \footnotesize 3595 & \footnotesize 11482 & \footnotesize 0.853 \\
 \end{tabular}
 \end{center}
-\caption{A numeric comparison of the gold standard and automated results for the BT-2-60-80 feature identification case study. (All entries except those for the similarity coefficient are in voxels.)}
+\caption{A numeric comparison of the automated and gold standard results for the BT-2-60-80 feature identification case study. (All entries except those for the similarity coefficient are in voxels.)}
 \label{tbl:validation-BT-2-60-80}
 \end{table}
 %---
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Gold Standard Result]
-	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-goldstandard.png}}%
+	\subfigure[Automated Result ($A$)]
+	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-target.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[Automated Result]
-	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-target.png}}%
-\caption{A visual comparison of the gold standard and automated results for the BT-2-60-80 feature identification case study}
+	\subfigure[Gold Standard Result ($G$)]
+	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-goldstandard.png}}%
+	%
+	\\
+	%
+	\subfigure[$A - G$]
+	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-TminusG.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[$G - A$]
+	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-GminusT.png}}%
+\caption{A visual comparison of the automated and gold standard results for the BT-2-60-80 feature identification case study}
 \label{fig:validation-BT-2-60-80}
 \end{stusubfig}
 %---
