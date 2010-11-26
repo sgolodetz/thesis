@@ -83,7 +83,7 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 %
 \begin{itemize}
 
-\item \textbf{Aorta}. TODO
+\item \textbf{Aorta}. As quantified by the relatively high Dice similarity coefficient of $0.859$ in Table~\ref{tbl:validation-BT-2-60-80}, the automated result for the aorta corresponds fairly well to the gold standard in this case. However, as shown in Figure~\ref{fig:validation-BT-2-60-80}(c), the automated result does flood slightly beyond the aorta itself. Referring back to one of the original slices (see Figure~\ref{fig:validation-BT-2-60-80-aorta-weakedge}), this is because the boundary between the aorta and an adjacent blood vessel (the left renal vein) is quite weak, and the stratified region growing algorithm thus does not know when to stop. This could perhaps be rectified by using level sets instead of region growing.
 
 \end{itemize}
 
@@ -129,6 +129,10 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 \caption{A visual comparison of the automated and gold standard results for the BT-2-60-80 feature identification case study}
 \label{fig:validation-BT-2-60-80}
 \end{stusubfig}
+%---
+
+%---
+\stufigex{height=6cm}{validation/validation-BT-2-60-80-aorta-weakedge.png}{TODO}{fig:validation-BT-2-60-80-aorta-weakedge}{p}
 %---
 
 \afterpage{\clearpage}
