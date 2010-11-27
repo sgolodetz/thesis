@@ -829,38 +829,12 @@ This latter problem was the motivation behind the development of a simpler, tree
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[After rooting it: note the dummy root edge that gets added above the chosen root]
-	{\hspace{16mm}\includegraphics[height=6cm]{segmentation/segmentation-waterfall-nicholls-root-after.png}\hspace{16mm}}%
-\caption{Nicholls' algorithm starts by picking a node at which to root the MST and adding a dummy root edge}
+	\subfigure[After rooting it]
+	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-nicholls-root-after.png}}%
+\caption{Nicholls' algorithm starts by picking a node at which to root the MST}% and adding a dummy root edge above the chosen root}
 \label{fig:segmentation-waterfall-nicholls-root}
 \end{stusubfig}
 %---
-
-Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterfall-nicholls-root}), adding a dummy `root edge' with a value strictly greater than the values of the edges descending from the root node (I will henceforth -- and without ambiguity -- call edges descending from a node children of the edge ascending from that node). The value chosen is unimportant, but $\infty$ or $1$ greater than the maximum value on a child edge are sensible choices. Each pass of the algorithm is then invoked on the root edge, and proceeds recursively as follows:
-
-%-
-\begin{enumerate}
-
-\item If the current edge is a leaf edge (i.e.~it has no child edges) then it is marked as a non-guard edge.
-
-\item Otherwise:
-
-%--
-\begin{enumerate}
-
-\item The algorithm is run recursively on all the child edges.
-
-\item A child edge with minimum value is chosen (if one or more of the children with minimum value is a guard edge, one of those is chosen in preference to a non-guard). This is then referred to as the `lowest child'. The value on the current edge is compared to the value on the lowest child. If its value is less than that of the lowest child, it is marked as a non-guard edge; otherwise it is marked as a guard and the lowest child is marked as a non-guard.
-
-\item All non-guard children are now elided.
-
-\end{enumerate}
-%--
-
-\end{enumerate}
-%-
-
-A case analysis of what is going on should prove illuminating. There are in fact only two cases to consider: either the current edge (the parent edge) \emph{isn't} strictly the lowest leading out of a node, in which case at least part of the implied flow from the node is along the lowest child (see Figure~\ref{fig:segmentation-waterfall-nicholls-cases}(a)), or it is, in which case the implied flow from the node is entirely along the parent (see Figure~\ref{fig:segmentation-waterfall-nicholls-cases}(b)). In the first case, the algorithm arbitrarily assumes that all the implied flow is along the lowest child. In both cases, the various child edges are then elided (or not) accordingly. Figure~\ref{fig:segmentation-waterfall-nicholls-example} illustrates how the algorithm works on the same graph used to illustrate Marcotegui's algorithm above.
 
 %---
 \begin{stusubfig}{p}
@@ -897,6 +871,32 @@ A case analysis of what is going on should prove illuminating. There are in fact
 \label{fig:segmentation-waterfall-nicholls-example}
 \end{stusubfig}
 %---
+
+Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterfall-nicholls-root}), adding a dummy `root edge' with a value strictly greater than the values of the edges descending from the root node (I will henceforth -- and without ambiguity -- call edges descending from a node children of the edge ascending from that node). The value chosen is unimportant, but $\infty$ or $1$ greater than the maximum value on a child edge are sensible choices. Each pass of the algorithm is then invoked on the root edge, and proceeds recursively as follows:
+
+%-
+\begin{enumerate}
+
+\item If the current edge is a leaf edge (i.e.~it has no child edges) then it is marked as a non-guard edge.
+
+\item Otherwise:
+
+%--
+\begin{enumerate}
+
+\item The algorithm is run recursively on all the child edges.
+
+\item A child edge with minimum value is chosen (if one or more of the children with minimum value is a guard edge, one of those is chosen in preference to a non-guard). This is then referred to as the `lowest child'. The value on the current edge is compared to the value on the lowest child. If its value is less than that of the lowest child, it is marked as a non-guard edge; otherwise it is marked as a guard and the lowest child is marked as a non-guard.
+
+\item All non-guard children are now elided.
+
+\end{enumerate}
+%--
+
+\end{enumerate}
+%-
+
+A case analysis of what is going on should prove illuminating. There are in fact only two cases to consider: either the current edge (the parent edge) \emph{isn't} strictly the lowest leading out of a node, in which case at least part of the implied flow from the node is along the lowest child (see Figure~\ref{fig:segmentation-waterfall-nicholls-cases}(a)), or it is, in which case the implied flow from the node is entirely along the parent (see Figure~\ref{fig:segmentation-waterfall-nicholls-cases}(b)). In the first case, the algorithm arbitrarily assumes that all the implied flow is along the lowest child. In both cases, the various child edges are then elided (or not) accordingly. Figure~\ref{fig:segmentation-waterfall-nicholls-example} illustrates how the algorithm works on the same graph used to illustrate Marcotegui's algorithm above.
 
 The arbitrary assumption that all the implied flow is along the lowest child in the first case is this algorithm's way of dealing with non-minimal plateaux in the MST. It is a valid way of dealing with the problem (in that any choice here is arguably valid), but it is not robust: in particular, the selected direction of implied flow from a particular node depends on both where the MST is rooted, and the specific method used to choose the lowest child. It also ignores the possibility that part of the implied flow is along the parent. All of this fundamentally affects which edges are elided, and hence the result of the segmentation. In the following subsection, I will present an alternative tree-based algorithm which deals with this issue in a more robust manner.
 
