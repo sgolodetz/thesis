@@ -14,7 +14,7 @@
 \RequirePackage{alltt}
 \RequirePackage{amsfonts}
 \RequirePackage{amsthm}
-\RequirePackage{bold-extra}									% not installed by default -- MUST be provided with smgthesis.cls
+\RequirePackage{bold-extra}								% not installed by default -- MUST be provided with smgthesis.cls
 \RequirePackage{color}
 \RequirePackage{enumitem}
 \RequirePackage{epigraph}
@@ -30,7 +30,7 @@
 \RequirePackage{hyphenat}
 \restoresymbol{hyp}{BreakableUnderscore}
 
-\RequirePackage{latexsym}										% include extra symbols like \Box and \sqsubset
+\RequirePackage{latexsym}								% include extra symbols like \Box and \sqsubset
 \RequirePackage{listings}
 \RequirePackage{lscape}
 \RequirePackage{makeidx} \makeindex
@@ -38,7 +38,7 @@
 \RequirePackage{setspace}
 \RequirePackage{subfigure}
 %\RequirePackage{times}
-\RequirePackage[notlof,nottoc]{tocbibind}		% include the bibliography in the table of contents
+\RequirePackage[notlof,notlot,nottoc]{tocbibind}		% include the bibliography in the table of contents
 \RequirePackage{url}
 \RequirePackage{varwidth}
 \RequirePackage{vmargin}
