@@ -511,18 +511,18 @@ y = \frac{8}{1 + \exp(\frac{106x}{255} - 6)},
 a function which starts off at nearly $8$ when $x = 0$, then drops off rapidly to nearly zero at around $x = 30$ (see Figure~\ref{fig:segmentation-watershed-sigmoid}).
 
 %---
-\stufigex{height=9cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{p}
+\stufigex{height=8cm}{segmentation/segmentation-watershed-sigmoid.png}{An example sigmoid function that maps the edge estimate at a pixel to the standard deviation of the Gaussian filter to apply there}{fig:segmentation-watershed-sigmoid}{p}
 %---
 
 SVGF works well when applied to images as part of a pipeline (see Figure~\ref{fig:segmentation-watershed-svgfpipeline}). In particular, we perform a small amount of Gaussian filtering on the image first: this blurs the image enough to remove some of the noise, but not enough to blur the important edges. The SVGF filter can then be used as a finer filter which carefully removes some of the noise remaining after applying the Gaussian.
 
 %---
-\stufigex{height=13cm}{segmentation/segmentation-watershed-svgfpipeline.png}{The SVGF pipeline}{fig:segmentation-watershed-svgfpipeline}{p}
+\stufigex{height=11cm}{segmentation/segmentation-watershed-svgfpipeline.png}{The SVGF pipeline}{fig:segmentation-watershed-svgfpipeline}{p}
 %---
 
 \subparagraph{Anisotropic Diffusion Filtering}
 
-An alternative, more conventional, approach to edge-preserving image filtering is a techique known as anisotropic diffusion filtering (ADF), originally introduced by Perona and Malik in \cite{perona90}. A good introduction to ADF appears in the Insight Toolkit Software Guide \cite{itk}, which I will summarise here in a manner that presumes somewhat less prior knowledge. The idea behind ADF comes from the fact that solving a heat equation of the form
+An alternative, more conventional, approach to edge-preserving image filtering is a techique known as anisotropic diffusion filtering (ADF), originally introduced by Perona and Malik in \cite{perona90}. A good introduction to ADF appears in the Insight Toolkit Software Guide \cite{itk}, which I summarise here in a manner that presumes somewhat less prior knowledge. The idea behind ADF comes from the fact that solving a heat equation of the form
 %
 \[
 \pd{I(x,y,t)}{t} = \nabla^2 I(x,y,t) \equiv \nabla \cdot \nabla I(x,y,t)
@@ -562,13 +562,13 @@ What we need is a way of transforming our input image into one where the feature
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[A sample medical image (courtesy of the Churchill Hospital, Oxford)]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-medicalimage.png}}%
+	\subfigure[A sample medical image]
+	{\includegraphics[height=5cm]{segmentation/segmentation-watershed-medicalimage.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The corresponding gradient magnitude image]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-gradientmagnitudemedicalimage.png}}%
+	{\hspace{12mm}\includegraphics[height=5cm]{segmentation/segmentation-watershed-gradientmagnitudemedicalimage.png}\hspace{12mm}}%
 \caption{To a first approximation, the value of the gradient magnitude image is relatively low within organs, and relatively high at their edges}
 \label{fig:segmentation-watershed-gradientmagnitude}
 \end{stusubfig}
@@ -581,13 +581,13 @@ What we need is a way of transforming our input image into one where the feature
 %---
 \begin{stusubfig}{p}
 	\subfigure[Segmentation of a Hounsfield image before windowing]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-hounsfieldvswindowed-h.png}}%
+	{\includegraphics[height=5cm]{segmentation/segmentation-watershed-hounsfieldvswindowed-h.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[Segmentation of the same image after windowing]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-hounsfieldvswindowed-w.png}}%
-\caption{Windowing images before segmenting them leads to a less pronounced oversegmentation}
+	{\hspace{4mm}\includegraphics[height=5cm]{segmentation/segmentation-watershed-hounsfieldvswindowed-w.png}\hspace{4mm}}%
+\caption{Windowing images before segmenting them leads to a less pronounced oversegmentation -- note in particular the generally larger regions in (b)}
 \label{fig:segmentation-watershed-hounsfieldvswindowed}
 \end{stusubfig}
 %---
@@ -672,22 +672,22 @@ The waterfall transform is a multi-pass, hierarchical segmentation method. It ge
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[After the first waterfall iteration]
+	\subfigure[After the 1st waterfall iteration]
 	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-partitionsequence-c.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[After the second waterfall iteration]
+	\subfigure[After the 2nd waterfall iteration]
 	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-partitionsequence-d.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[After the third waterfall iteration]
+	\subfigure[After the 3rd waterfall iteration]
 	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-partitionsequence-e.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[After the fourth waterfall iteration]
+	\subfigure[After the 4th waterfall iteration]
 	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-partitionsequence-f.png}}%
 \caption{A waterfall partition sequence (note that the final, single-region partition is not shown)}
 \label{fig:segmentation-waterfall-partitionsequence}
@@ -772,10 +772,6 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 \end{stusubfig}
 %---
 
-\item \emph{Elision of Local Minima}. Having determined the local minima of the MST, we next elide all the edges in them: this is equivalent to merging minimal plateaux in a landscape into single points to which water can be considered to run down. In the original paper (and in the diagrams, for reasons of clarity), the nodes at the ends of an edge are assigned the same label\fxnote{[IDV] I can't see any labelled nodes in that figure}, rather than the edge itself being elided, but the end result is the same. See Figure~\ref{fig:segmentation-waterfall-marcotegui-localminima}(b) for an illustration.
-
-\item \emph{Propagation}. Finally, we flood out from the nodes which now represent the local minima (so-called `marker nodes'\fxnote{[IDV] Explain connection with markers from earlier}) along the edges, in non-decreasing order of edge weight, starting from the edges directly adjacent to the marker nodes. Each edge considered will either join a marker node to another marker node, in which case it should be ignored (since eliding it would mean merging two catchment basins in the MST), or it will join a marker to a non-marker, in which case it should be elided. An illustration of the process is shown in Figure~\ref{fig:segmentation-waterfall-marcotegui-propagation}.
-
 %---
 \begin{stusubfig}{p}
 	\subfigure[The start of the propagation]
@@ -810,6 +806,10 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 \end{stusubfig}
 %---
 
+\item \emph{Elision of Local Minima}. Having determined the local minima of the MST, we next elide all the edges in them: this is equivalent to merging minimal plateaux in a landscape into single points to which water can be considered to run down. In the original paper (and in the diagrams, for reasons of clarity), the nodes at the ends of an edge are assigned the same label\fxnote{[IDV] I can't see any labelled nodes in that figure}, rather than the edge itself being elided, but the end result is the same. See Figure~\ref{fig:segmentation-waterfall-marcotegui-localminima}(b) for an illustration.
+
+\item \emph{Propagation}. Finally, we flood out from the nodes which now represent the local minima (so-called `marker nodes'\fxnote{[IDV] Explain connection with markers from earlier}) along the edges, in non-decreasing order of edge weight, starting from the edges directly adjacent to the marker nodes. Each edge considered will either join a marker node to another marker node, in which case it should be ignored (since eliding it would mean merging two catchment basins in the MST), or it will join a marker to a non-marker, in which case it should be elided. An illustration of the process is shown in Figure~\ref{fig:segmentation-waterfall-marcotegui-propagation}.
+
 \end{enumerate}
 
 A more implementation-focused description of the algorithm, including code, can be found in \cite{golodetz08}. It is important to note that the order in which edges should be processed during the propagation step is not in general well-defined (note that I wrote `non-decreasing' rather than `increasing' order of edge weight above, since multiple edges under consideration can have the same weight). The `obvious' implementation of the propagation step uses a priority queue and pops a lowest adjacent edge for consideration each time: thus the next edge to be considered ends up depending fundamentally on the way the priority queue is implemented. This has significant consequences: as mentioned previously, the issue of how to handle non-minimal plateaux in a landscape is possibly the key problem to be faced when implementing a watershed-based method. Whilst it can be argued that the quality of the resulting segmentation is what is most important (in other words, as long as the end result is semantically interesting, the choice made about handling non-minimal plateaux can be somewhat arbitrary), it is nevertheless undesirable to have the segmentation output depend closely on the implementation of an internal data structure which may in principle be subject to change. I will return to this issue in the following subsections.\fxnote{[IDV] [Refer to the subsections explicitly]}
@@ -830,7 +830,7 @@ This latter problem was the motivation behind the development of a simpler, tree
 	\hspace{4mm}%
 	%
 	\subfigure[After rooting it: note the dummy root edge that gets added above the chosen root]
-	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-nicholls-root-after.png}}%
+	{\hspace{16mm}\includegraphics[height=6cm]{segmentation/segmentation-waterfall-nicholls-root-after.png}\hspace{16mm}}%
 \caption{Nicholls' algorithm starts by picking a node at which to root the MST and adding a dummy root edge}
 \label{fig:segmentation-waterfall-nicholls-root}
 \end{stusubfig}
@@ -864,12 +864,12 @@ A case analysis of what is going on should prove illuminating. There are in fact
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[The edge under consideration is not the unique lowest edge]
+	\subfigure[The considered edge is not the unique lowest edge]
 	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-nicholls-cases-a.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[The edge under consideration is the unique lowest edge]
+	\subfigure[The considered edge is the unique lowest edge]
 	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-nicholls-cases-b.png}}%
 \caption{Case analysis for the recursive step of Nicholls' algorithm: black edges are non-guards, red edges are guards, blue edges are those which have been elided and the green edge is the one under active consideration. The arrow (on the node) indicates the direction in which the algorithm presumes water to flow.}
 \label{fig:segmentation-waterfall-nicholls-cases}
