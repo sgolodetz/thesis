@@ -3,12 +3,12 @@ function identify_liver_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\
 	var candidates : List<NodeID> := filter_branch_nodes(is_candidate);
 
 	// Step 2: Pick the best candidate (namely, the one with the smallest xMin).
-	var bestCandidate : ref NodeID;
+	var bestCandidate : NodeID?;
 	var bestXMin : int := $\infty$;
 	for each candidate $\in$ candidates
 		var properties : BranchProperties := forest().branch_properties(candidate);
 		if properties.x_min() $<$ bestXMin then
-			bestCandidate := ref candidate;
+			bestCandidate := candidate;
 			bestXMin := properties.x_min();
 	if bestCandidate = null then return;
 

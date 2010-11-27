@@ -1,0 +1,36 @@
+function identify_spleen_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
+
+	// Step 1: Filter for spleen candidates.
+	var candidates : List<NodeID> := filter_branch_nodes(is_candidate);
+
+	// Step 2: Pick the best candidate (namely, the one with the largest xMax).
+	var bestCandidate : NodeID?;
+	var bestXMax : int := $-\infty$;
+	for each candidate $\in$ candidates
+		var properties : BranchProperties := forest().branch_properties(candidate);
+		if properties.x_max() $>$ bestXMax then
+			bestCandidate := candidate;
+			bestXMax := properties.x_max();
+	if bestCandidate = null then return;
+
+	// Step 3: Mark the best candidate as spleen.
+	mfs.identify_node(bestCandidate, SPLEEN);
+
+function is_candidate : (node : NodeID; properties : BranchProperties) $\to$ bool
+
+	var volumeSize : Vec<int,3> := dicom_volume().size();
+	var sliceCount : int := properties.z_max() + 1 - properties.z_min();
+	var minVoxels : int := 1000 * sliceCount;
+	var maxVoxels : int := 7000 * sliceCount;
+	return
+			// In the lowest branch layer (higher nodes generally stretch too far).
+			node.layer() = 1 and
+
+			// Reasonable grey value.
+			140 $\le$ properties.mean_grey_value() $\le$ 170 and
+
+			// Must stretch sufficiently far to the right of the image.
+			properties.x_max() $\ge$ volumeSize.x * 0.8 and
+
+			// Reasonable size.
+			minVoxels $\le$ properties.voxel_count() $\le$ maxVoxels;
