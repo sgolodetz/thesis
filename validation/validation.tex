@@ -422,7 +422,25 @@ TODO (the left kidney is missed due to a tumour; the spleen is missed because th
 \section{Validation of Volume Calculations}
 %##################################################################################################
 
-TODO: \cite{woodard86}
+The ideal way to validate my volume calculations would have been to correlate them with real-world volumes calculated independently by the medics, but unfortunately these were not available. However, I was able to obtain the \emph{masses} of patients' organs calculated post-mortem as part of a study into the feasibility of performing virtual autopsies \cite{?}. These provided a reasonable (if not perfect) substitute for the volumes, since the major soft-tissue organs have known, and roughly uniform, densities (this is why they appear homogeneous on CT scans, since the Hounsfield scale used for CT images measure radiodensity). In conjunction with Dr Zoe Traill, the radiologist, it was therefore decided to focus on four different features -- the left and right kidneys, liver and spleen. I thus drew round these features in $19$ series ($740$ slices in total), with the results being checked, and corrected where necessary, by Dr Traill. The calculated volumes (in $\mathit{cm}^3$) resulting from this manual feature identification process are shown in Table~\ref{tbl:validation-volcalc}, alongside the corresponding masses (in $g$) calculated during the autopsies.
+
+When drawing round the features, I was careful to include any cysts on the kidneys, as Dr Traill asserted that these would have been included when weighing the organs during the autopsy. In one case -- for the right kidney of patient OX46 -- this significantly affected the result, due to a large ($80\mathit{mm}$ diameter) cyst being included in the volume calculation whilst not appearing to affect the mass in a similar way. It was hypothesised that this may have been due to the cyst bursting before the kidney was weighed. For that reason, the result in question was specifically excluded as an outlier.
+
+As shown in Table~$3$ of \cite{woodard86}, the accepted densities of the kidneys, liver and spleen are respectively $1050 \; \mathit{kg} \; m^{-3} = 1.05 \; g \; \mathit{cm}^{-3}$, $1050$--$1070 \; \mathit{kg} \; m^{-3} = 1.05$--$1.07 \; g \; \mathit{cm}^{-3}$ and $1060 \; \mathit{kg} m^{-3} = 1.06 \; g \; \mathit{cm}^{-3}$. The validation method involved graphing volumes (on the $x$ axis) against masses (on the $y$ axis) for each feature. Given the uniform densities of the organs involved, each graph was expected to be linear. It was therefore possible to fit a linear regression line in each case, whose gradient was expected to be reasonably close to the accepted density of the feature in $g \; \mathit{cm}^{-3}$.
+
+As illustrated by the graphs in Figures~\ref{fig:validation-volcalc-leftkidney} to \ref{fig:validation-volcalc-spleen}, these expectations were largely borne out. To $2$ decimal places, the densities (in $g \; \mathit{cm}^{-3}$) of the organs as calculated from the linear regression lines on the graphs were $1.15$ for the left kidney, $1.12$ for the right kidney, $1.07$ for the liver and $1.14$ for the spleen. These were considered to be reasonably good results, especially for the liver.
+
+There are number of sources of potential inaccuracy which can explain the discrepancies between the calculated densities and the accepted densities provided in \cite{woodard86}:
+%
+\begin{enumerate}
+
+\item At the volume calculation end, it is sometimes very difficult even for an experienced radiologist to be certain of the precise boundary round a given organ -- indeed, subjectivity between different radiologists is a known issue in segmentation validation \cite{?}. Since the series used for validation here were all imaged post-mortem (and thus without the benefit of a contrast agent), being certain of the precise boundaries was more than usually difficult for some patients in this case.
+
+\item At the mass calculation end, the precise masses calculated depend on the way in which the organs are resected during the autopsies. It is highly unlikely that anyone performing an organ resection would be able to attain an organ boundary that precisely matched that shown on the CT scan. (Indeed, having witnessed an operation in the past and seen some of the difficulties involved in surgical procedures, I find it encouraging that the results match up as closely as they do in this case.)
+
+\item TODO
+
+\end{enumerate}
 
 %---
 \begin{landscape}
