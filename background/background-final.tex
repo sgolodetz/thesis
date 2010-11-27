@@ -95,7 +95,7 @@ Owing to difficulties like this, applications are often designed so that thresho
 H(T) = -F(T) \log_2 F(T) - F^*(T) \log_2 F^*(T)
 \]
 %
-and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in the absence of any other knowledge, the maximum entropy principle tells us that the information contained in the thresholded image is maximised by picking a threshold which classifies half the pixels as background and half as foreground. This makes intuitive sense, but is too simplistic an approach for the majority of applications. Better alternatives have been developed (see \cite{sezgin04}), but are beyond the scope of this dissertation.
+and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in the absence of any other knowledge, the maximum entropy principle tells us that the information contained in the thresholded image is maximised by picking a threshold which classifies half the pixels as background and half as foreground. This makes intuitive sense, but is too simplistic an approach for the majority of applications. Better alternatives have been developed (see \cite{sezgin04}), but are beyond the scope of this thesis.
 
 \item \emph{Object attribute-based methods.} These pick thresholds based on a comparison between the original grey-level image and the binarized (i.e.~segmented into two classes) version of it. For example, the method of Hertz and Schafer \cite{hertz88} picks the threshold that yields a binarized image whose edge field maximally corresponds to that of the original image. The edge fields in this case are obtained via the well-known Sobel operator \cite{gonzalez02}.
 
@@ -162,7 +162,7 @@ Region growing methods for segmentation essentially work as follows. First, one 
 	%
 	\subfigure[Final state]
 	{\includegraphics[height=4.5cm]{background/background-segmentation-regiongrowing-process-d.png}}%
-\caption{An example region growing process -- black pixels are those not yet considered, red pixels are those currently in the region, green pixels are those under consideration, and yellow pixels are those that already failed the similarity criterion. The algorithm terminates when there are no further pixels to consider. The final segmented object is shown in red in (d).}
+\caption{An example region growing process -- black pixels are those not yet considered, red pixels are those currently in the region, green pixels are those under consideration, and yellow pixels are those that already failed the similarity criterion. The algorithm terminates when there are no further pixels to consider. The final result is shown in red in (d).}
 \label{fig:background-segmentation-regiongrowing-process}
 \end{stusubfig}
 %---
@@ -191,7 +191,6 @@ function grow_region
 			if not visited.contains(neighbour) then
 				if criterion(neighbour) = true then queue.push(neighbour);
 				visited.insert(neighbour);
-			
 	return result;
 \end{lstlisting}
 \end{stulisting}
@@ -447,22 +446,22 @@ An example illustrating the performance of a level set approach (the \emph{geode
 %---
 \begin{stusubfig}{p}
 	\subfigure[The initial CT image, with seeds marked]
-	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-a.png}}%
+	{\includegraphics[height=4.5cm]{background/background-segmentation-levelsets-ct-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The right kidney result]
-	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-b.png}}%
+	{\includegraphics[height=4.5cm]{background/background-segmentation-levelsets-ct-b.png}}%
 	%
 	\\
 	%
 	\subfigure[The left kidney result]
-	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-c.png}}%
+	{\includegraphics[height=4.5cm]{background/background-segmentation-levelsets-ct-c.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[Both results superimposed on the initial image]
-	{\includegraphics[height=5cm]{background/background-segmentation-levelsets-ct-d.png}}%
+	{\includegraphics[height=4.5cm]{background/background-segmentation-levelsets-ct-d.png}}%
 \caption{The results of using the \emph{geodesic active contours} level set method from the \emph{Insight Toolkit} to identify the kidneys in an example CT image. The (large number of) parameters had to be carefully tweaked by hand for each kidney, which is a downside of level set approaches.}
 \label{fig:background-segmentation-levelsets-ct}
 \end{stusubfig}
@@ -657,7 +656,7 @@ It is sometimes possible to achieve better results by combining a number of diff
 \stufigex{height=8cm}{background/background-segmentation-hybrid-soler.png}{An automatic 3D reconstruction of patients from medical images, as performed by the IRCAD surgical planning tools developed using the work of Luc Soler et al.\ (the figure is reproduced from \cite{soler-imvie})}{fig:background-segmentation-hybrid-soler}{t}
 %---
 
-Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{ng06}, Ng et al.\ precede a watershed segmentation of MRI images of the head with a K-means clustering step -- this has the effect of hugely reducing the oversegmentation that the watershed would otherwise produce. It is a method that works particularly well for head segmentation, where the number of clusters is well-known a priori (in this case, the authors note that the types of tissue present tend to be `bone, soft tissue, fat and background'). There are several hybrid segmentation methods in \cite{itk}: in one, the authors combine fuzzy connectedness, Voronoi diagram classification and deformable models; in another, they combine Gibbs priors and deformable models. The details of these techniques are beyond the scope of this dissertation, but an implementation of the methods can be found in the freely-available \emph{Insight Toolkit} \cite{itk}.\fxnote{[IDV] [This needs a reference]}
+Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{ng06}, Ng et al.\ precede a watershed segmentation of MRI images of the head with a K-means clustering step -- this has the effect of hugely reducing the oversegmentation that the watershed would otherwise produce. It is a method that works particularly well for head segmentation, where the number of clusters is well-known a priori (in this case, the authors note that the types of tissue present tend to be `bone, soft tissue, fat and background'). There are several hybrid segmentation methods in \cite{itk}: in one, the authors combine fuzzy connectedness, Voronoi diagram classification and deformable models; in another, they combine Gibbs priors and deformable models. The details of these techniques are beyond the scope of this thesis, but an implementation of the methods can be found in the freely-available \emph{Insight Toolkit} \cite{itk}.\fxnote{[IDV] [This needs a reference]}
 
 \fxnote{[IDV] I'd put a section/paragraph on ITK here}
 
@@ -688,7 +687,7 @@ Partition trees can be either incomplete or complete. An incomplete partition tr
 
 There are essentially two ways of constructing partition trees -- top-down or bottom-up. Top-down approaches start with a root node representing the entire entity, and recursively split it until some desired termination criteria are satisfied. Bottom-up approaches, by contrast, start with a partition of the entity into the smallest sub-entities possible. One common bottom-up approach makes this partition the lowest layer of the tree, then iteratively (a) clones the current highest layer of the tree and (b) merges some of the nodes in it together. The process terminates when the highest layer of the tree contains exactly one node (the root). Note that this technique naturally produces complete partition trees. An alternative bottom-up approach is to iteratively merge pairs of nodes together: this produces a data structure known as a dendogram, which is an incomplete tree (even if it is sometimes depicted graphically with all its leaves in a single layer). Whilst top-down approaches can also theoretically produce complete partition trees, they tend not to in practice. When bottom-up approaches are terminated early (i.e.~whilst the highest layer still contains more than one node), they construct not a partition tree, with a single root, but a forest of such trees (which can naturally be called a \emph{partition forest}). I have devised a number of novel algorithms for working with partition forests, and these are the subject of Chapter~\ref{chap:ipfs}.
 
-Since representing entities hierarchically is a fundamental way in which we, as humans, seek to manage the inherent complexity of the world around us, partition hierarchy usage is fairly common in computer science. The varied contexts in which partition hierarchies can be used, to name but a few, include image representation, hierarchical pathfinding, and world representation. World representation, whilst a fascinating topic in its own right, is sadly somewhat outside the scope of this dissertation, but the interested reader can find a detailed description of one approach to it (binary space partitioning, as originally presented in \cite{fuchs80}) in the appendices of my undergraduate project report \cite{golodetz06}. Hierarchical pathfinding, somewhat surprisingly, is more relevant, in that it provides a direct application for the partition forest algorithms I describe in Chapter~\ref{chap:ipfs}. For that reason, both image representation and hierarchical pathfinding are now discussed in more detail.
+Since representing entities hierarchically is a fundamental way in which we, as humans, seek to manage the inherent complexity of the world around us, partition hierarchy usage is fairly common in computer science. The varied contexts in which partition hierarchies can be used, to name but a few, include image representation, hierarchical pathfinding, and world representation. World representation, whilst a fascinating topic in its own right, is sadly somewhat outside the scope of this thesis, but the interested reader can find a detailed description of one approach to it (binary space partitioning, as originally presented in \cite{fuchs80}) in the appendices of my undergraduate project report \cite{golodetz06}. Hierarchical pathfinding, somewhat surprisingly, is more relevant, in that it provides a direct application for the partition forest algorithms I describe in Chapter~\ref{chap:ipfs}. For that reason, both image representation and hierarchical pathfinding are now discussed in more detail.
 
 %################################################
 \subsection{Image Representation}
@@ -699,7 +698,7 @@ The `grid-of-pixels' representation of images is by far the most familiar, but i
 
 One hierarchical representation is the binary partition tree (BPT), originally described by Salembier and Garrido in \cite{salembier00}. A BPT is an incomplete, binary tree containing limited region adjacency information (each node is implicitly connected to its sibling). The construction process described in \cite{salembier00} starts from an initial partition and iteratively merges pairs of adjacent regions in increasing order of dissimilarity. The result of each merge becomes a region which is then considered with the rest. (The process thus constructs a dendogram.) The algorithm terminates when either a single region, or a user-specified number of regions, remains. Descriptors (properties) can be assigned to each node, and the descriptor of a parent node can often be calculated from those of its children. These descriptors can then be used by feature identification algorithms. BPTs have seen use in e.g.~\cite{cooray01,salembier02}. The original BPT framework is easily customisable, in the sense that different trees can be created by using a different region similarity criterion (thus altering the merging order) and termination criterion. In \cite{bennstrom04}, Bennstr\"om et al.\ defined a so-called `quasi-inclusion' criterion for region similarity that orders regions for merging based on the extent to which they are contained within each others' convex hulls. The corresponding termination criterion simply specifies a quasi-inclusion threshold: for instance, that merging should continue until all the regions that are at least 50\% contained within another region's convex hull have been merged. In \cite{al-haj08}, Al-Haj and Al Aghbari essentially define yet another alternative merging order for colour image segmentation via the use of spatio-visual grouping rules, calling the result a `semantic segmentation tree'.
 
-An alternative hierarchical representation, and one which is of key interest for the purposes of this dissertation, is what I call an image partition forest \cite{gvccimi08,gvcispa09}. This has appeared under a variety of other names in the literature: among others, hierarchy of (region adjacency) graphs \cite{kropatsch04,nacken95,shen97}, hierarchical attributed region adjacency graph \cite{fischer04}, hierarchy of partitions \cite{haxhimusa03,lezoray06}, picture tree \cite{andrade03}, graph pyramid \cite{kerren06}, bounded irregular pyramid \cite{marfil07} and segmentation graph \cite{borenstein06}. (It has also appeared as a hierchical image representation with no specific name, e.g.~\cite{qimin04,yu02}.)
+An alternative hierarchical representation, and one which is of key interest for the purposes of this thesis, is what I call an image partition forest \cite{gvccimi08,gvcispa09}. This has appeared under a variety of other names in the literature: among others, hierarchy of (region adjacency) graphs \cite{kropatsch04,nacken95,shen97}, hierarchical attributed region adjacency graph \cite{fischer04}, hierarchy of partitions \cite{haxhimusa03,lezoray06}, picture tree \cite{andrade03}, graph pyramid \cite{kerren06}, bounded irregular pyramid \cite{marfil07} and segmentation graph \cite{borenstein06}. (It has also appeared as a hierchical image representation with no specific name, e.g.~\cite{qimin04,yu02}.)
 
 An image partition forest is a complete (i.e.~its lowest layer is complete), n-ary forest. It is constructed using the bottom-up approach that takes an initial partition and then iteratively (a) clones the highest layer and (b) merges some of the regions in it. The way in which regions are chosen to merge in each layer varies between approaches. In my work I used the waterfall transform \cite{marcotegui05} for this, which essentially performs a watershed transform to segment the region adjacency graph of the current highest layer, but any number of other methods are possible: for instance, the algorithm in \cite{yu02} takes the current highest layer, merges neighbouring regions whose similarity measure is below a given threshold, and then merges any singleton regions with their nearest neighbour. As with BPTs, region properties can be assigned to each node and used for later feature identification.
 
