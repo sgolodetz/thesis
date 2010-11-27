@@ -436,11 +436,15 @@ There are number of sources of potential inaccuracy which can explain the discre
 
 \item At the volume calculation end, it is sometimes very difficult even for an experienced radiologist to be certain of the precise boundary round a given organ -- indeed, subjectivity between different radiologists is a known issue in segmentation validation \cite{?}. Since the series used for validation here were all imaged post-mortem (and thus without the benefit of a contrast agent), being certain of the precise boundaries was more than usually difficult for some patients in this case.
 
-\item At the mass calculation end, the precise masses calculated depend on the way in which the organs are resected during the autopsies. It is highly unlikely that anyone performing an organ resection would be able to attain an organ boundary that precisely matched that shown on the CT scan. (Indeed, having witnessed an operation in the past and seen some of the difficulties involved in surgical procedures, I find it encouraging that the results match up as closely as they do in this case.)
+\item At the mass calculation end, the precise masses calculated depend on the way in which the organs are resected during the autopsies. It is highly unlikely that anyone performing an organ resection would be able to attain an organ boundary that precisely matched that shown on the CT scan.
 
-\item TODO
+%(Indeed, having witnessed an operation in the past and seen some of the difficulties involved in surgical procedures, I find it encouraging that the results match up as closely as they do in this case.)
+
+\item In many of the series being validated, cysts were present on one or both kidneys. Depending on the type of cyst involved, these were either more or less dense than the adjoining kidney tissue, thus affecting the uniform density assumption. In most cases, however, these cysts were not large enough to significantly affect the results.
 
 \end{enumerate}
+%
+Given the above factors affecting the results, I consider that my volume calculation method itself is relatively accurate. From a medical perspective, this suggests that it may be possible to predict the masses of organs by using volumes calculated from CT scans. This could be useful in cases where it is considered undesirable to perform an autopsy.
 
 %---
 \begin{landscape}
