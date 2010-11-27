@@ -6,8 +6,6 @@
 
 In Chapter~\ref{chap:background}, the major techniques currently in use for medical image segmentation were surveyed, with the intent of placing the specific methods I used for my work within the context of the field as a whole. This chapter builds on that foundation by discussing both my goals and the methods I then chose to try to achieve them, with particular emphasis on their appropriateness in each case. The aim is to address the question of why my research was undertaken in the manner it was, before focusing on how it was undertaken in Chapters~\ref{chap:ipfs} through \ref{chap:featureid}. This chapter concludes with a discussion of the real-world context of the work, since medical imaging research is not an activity that can be undertaken without substantial collaboration with those in the medical profession. This forms part of the essential background for my critical assessment in Chapter~\ref{chap:assessment}.
 
-\newpage
-
 %---
 \section{Goals}
 
@@ -27,7 +25,7 @@ The goal I therefore adopted for my segmentation and feature identification work
 \section{Methods}
 
 %---
-\begin{figure}[p]
+\begin{table}[p]
 \begin{center}
 \footnotesize
 \begin{tabular}{p{3cm}||p{6cm}|p{6cm}}
@@ -94,10 +92,10 @@ The goal I therefore adopted for my segmentation and feature identification work
 \end{center}
 \caption{A comparison of available segmentation methods}
 \label{fig:methodology-methods-comparison}
-\end{figure}
+\end{table}
 %---
 
-As discussed in detail in Chapter~\ref{chap:background}, there are a wide variety of image segmentation and feature identification methods currently used. Having compared (see Figure~\ref{fig:methodology-methods-comparison}) the relative advantages and disadvantages of a number of methods, however, I decided that a segmentation approach based on the watershed and waterfall transforms was the most appropriate choice for my research, as it has a number of useful properties:
+As discussed in detail in Chapter~\ref{chap:background}, there are a wide variety of image segmentation and feature identification methods currently used. Having compared (see Table~\ref{fig:methodology-methods-comparison}) the relative advantages and disadvantages of a number of methods, however, I decided that a segmentation approach based on the watershed and waterfall transforms was the most appropriate choice for my research, as it has a number of useful properties:
 %
 \begin{enumerate}
 
@@ -115,7 +113,7 @@ As discussed in detail in Chapter~\ref{chap:background}, there are a wide variet
 %
 The watershed and waterfall transforms, and the way in which I used them to construct a partition hierarchy, are described in Chapter~\ref{chap:segmentation}. To actually identify features within the hierarchy, I used two separate approaches, both of which are discussed in more detail in Chapter~\ref{chap:featureid}. For distinctive features such as ribs, I simply applied a Bayesian classifier to each region in the hierarchy. This was appropriate because each rib generally corresponded directly to a very small number (usually $1$ or $2$) of regions in the hierarchy.
 
-For other features, I developed a more sophisticated region growing approach that works on the adjacency graphs of the hierarchy. Region growing was an appropriate technique in this case because the disadvantages listed for it in Figure~\ref{fig:methodology-methods-comparison} were less applicable here. Firstly, seed regions in the hierarchy were relatively easy to generate, as a result of the large number of properties associated with each region on which such a decision could be based. Secondly, the features being identified (e.g.~the spine and kidneys) were relatively homogeneous in the image, so the results produced tended not to contain an excessive number of holes. Finally, my method produced as its result the selection of a manageable number of nodes in the partition hierarchy, which could be easily edited using the hierarchy algorithms presented in Chapter~\ref{chap:ipfs}.
+For other features, I developed a more sophisticated region growing approach that works on the adjacency graphs of the hierarchy. Region growing was an appropriate technique in this case because the disadvantages listed for it in Table~\ref{fig:methodology-methods-comparison} were less applicable here. Firstly, seed regions in the hierarchy were relatively easy to generate, as a result of the large number of properties associated with each region on which such a decision could be based. Secondly, the features being identified (e.g.~the spine and kidneys) were relatively homogeneous in the image, so the results produced tended not to contain an excessive number of holes. Finally, my method produced as its result the selection of a manageable number of nodes in the partition hierarchy, which could be easily edited using the hierarchy algorithms presented in Chapter~\ref{chap:ipfs}.
 
 %---
 \section{Real-World Context}
@@ -129,4 +127,4 @@ Since establishing medical links, the project has proceeded well from the perspe
 %---
 \section{Chapter Summary}
 
-This chapter has explained the goals of my doctorate and the methods I chose to try to achieve them, and discussed in detail why both were appropriate. It has also looked at the real-world context of my doctorate, and how that affected the way my research proceeded. The following three chapters now turn to look at the research itself. In Chapter~\ref{chap:ipfs}, therefore, I will describe and define partition forests, the key data structure I used to represent images for feature identification purposes, and present novel algorithms for working with them.
+This chapter has explained the goals of my doctorate and the methods I chose to try to achieve them, and discussed in detail why both were appropriate. It has also looked at the real-world context of my doctorate, and how that affected the way my research proceeded. The following three chapters now turn to look at the research itself. In Chapter~\ref{chap:ipfs}, therefore, I will describe partition forests, the key data structure I used to represent images for feature identification purposes, and present novel algorithms for working with them.
