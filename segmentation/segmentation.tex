@@ -946,7 +946,72 @@ The proposed algorithm is a tree-based rainfalling method, and works in two recu
 %-
 
 %---
-\stufigex{width=.95\linewidth}{segmentation/segmentation-waterfall-smg-mergecases.png}{Case analysis for the edge elision step of my waterfall algorithm (a blue edge indicates that the edge would be elided; a red edge indicates that it wouldn't)}{fig:segmentation-waterfall-smg-mergecases}{p}
+\begin{stusubfig}{p}
+	\subfigure[UI/UI]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-uiui.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[UI/UO]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-uiuo.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[UO/AO]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-uiao.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[UI/NF]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-uinf.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[NF/NF]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-nfnf.png}}%
+	%
+	\\
+	%
+	\subfigure[UO/UO]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-uouo.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[UO/AI]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-uoai.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[UO/AO]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-uoao.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[UO/NF]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-uonf.png}}%
+	%
+	\\
+	%
+	\subfigure[AO/AI]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-aoai.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[AO/AO]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-aoao.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[NF/AI]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-nfai.png}}%
+	%
+	\hspace{4mm}
+	%
+	\subfigure[NF/AO]
+	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-nfao.png}}%
+\caption{Case analysis for the edge elision step of my waterfall algorithm (a blue edge indicates that the edge would be elided; a red edge indicates that it wouldn't). The labels are AI = ambiguous in, AO = ambiguous out, NF = no flow, UI = unambiguous in and UO = unambiguous out.}
+\label{fig:segmentation-waterfall-smg-mergecases}
+\end{stusubfig}
 %---
 
 It is possible to perform a case analysis for the first pass and the route resolution step 2(a) as well (see Figures~\ref{fig:segmentation-waterfall-smg-pass1cases} and \ref{fig:segmentation-waterfall-smg-resolutioncases}), and this is helpful to clarify the workings of the algorithm. As illustrated in the diagram, there are six cases for the first pass:\fxnote{[IDV] [These should be typeset as proper lists]} (a) the node has a unique path of steepest descent down a child edge; (b) the node has a unique path of steepest descent up the parent edge; (c) the node has more than one path of steepest descent (and the parent edge is not a possible path of steepest descent); (d) the node has more than one \emph{downwards} path of steepest descent (but the parent edge still needs to be considered); (e) there is no flow out of the node and (f) there is no downwards flow out of the node (but the parent edge still needs to be considered). For the resolution step, there are four cases: (a) the arrow from the parent node points towards us; (b) there is no flow from the parent node; (c) there is an equally good route via the parent node and (d) there is a better route via the parent node. Figure~\ref{fig:segmentation-waterfall-smg-example} illustrates how the algorithm works on the now familiar graph used to demonstrate the workings of the previous two waterfall approaches.
@@ -964,12 +1029,12 @@ It is possible to perform a case analysis for the first pass and the route resol
 	\hspace{4mm}%
 	%
 	\subfigure[The node has more than one path of steepest descent (and the parent edge is not a possible path of steepest descent)]
-	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-c.png}}%
+	{\hspace{8mm}\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-c.png}\hspace{8mm}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The node has more than one \emph{downwards} path of steepest descent (but the parent edge still needs to be considered)]
-	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-d.png}}%
+	{\hspace{8mm}\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-d.png}\hspace{8mm}}%
 	%
 	\hspace{4mm}%
 	%
@@ -979,7 +1044,7 @@ It is possible to perform a case analysis for the first pass and the route resol
 	\hspace{4mm}%
 	%
 	\subfigure[There is no downwards flow out of the node (but the parent edge still needs to be considered)]
-	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-f.png}}%
+	{\hspace{8mm}\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-smg-pass1cases-f.png}\hspace{8mm}}%
 \caption{Case analysis for the first pass of my waterfall algorithm}
 \label{fig:segmentation-waterfall-smg-pass1cases}
 \end{stusubfig}
