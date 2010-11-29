@@ -1033,6 +1033,28 @@ For this reason, it is necessary to introduce a more sophisticated approach to p
 \subsection{Data Structure}
 %################################################
 
+%---
+\begin{stusubfig}{p}
+	\subfigure[Selected nodes in multiple layers]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-hierarchicalstructure-a.png}}%
+	\hspace{8mm}%
+	\subfigure[Corresponding pixel selection]{\includegraphics[width=.45\linewidth]{ipfs/ipfs-selection-hierarchicalstructure-b.png}}%
+\caption{The selection of a set of nodes in multiple forest layers corresponds to the selection of a set of pixels in the leaf layer}
+\label{fig:ipfs-selection-hierarchicalstructure}
+\end{stusubfig}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-multiplerepresentations-a.png}}%
+	\hspace{4mm}%
+	\subfigure[]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-multiplerepresentations-b.png}}%
+	\hspace{4mm}%
+	\subfigure[]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-multiplerepresentations-c.png}}%
+\caption{There are many non-redundant representations of the same set of pixels}
+\label{fig:ipfs-selection-multiplerepresentations}
+\end{stusubfig}
+%---
+
 The partition forest selection data structure should contain an array of sets of node indices, one per forest layer, and some type of pointer to the partition forest to which it corresponds.\footnote{The actual code also contains a pointer to the application's command manager and a `composite listener' to allow observers to listen to changes in the selection, but these are implementation details.} In C++, this can be implemented as follows (noting that \texttt{shared_ptr} is a kind of reference-counted smart pointer):
 
 \begin{lstlisting}[style=Default,language=C++]
@@ -1048,17 +1070,7 @@ class PartitionForestSelection
 };
 \end{lstlisting}
 
-The \texttt{nodes} data member will contain nodes that represent the selection, but many representations are possible. Specifically, we note that the selection of a set of nodes in multiple layers of the forest corresponds to the selection of a set of pixels (or voxels, in 3D) in the forest's leaf layer (see Figure~\ref{fig:ipfs-selection-hierarchicalstructure}). This is a many-to-one relationship: there are many node selections that correspond to the same pixel selection (it is possible to define an equivalence relation that makes all the node selections corresponding to the selection of a particular set of pixels equivalent). However, we are only interested in non-redundant representations of the pixel selection: more precisely, in sets of nodes that partition the pixel selection (they cover all the pixels and do not overlap). As Figure~\ref{?} illustrates, there are still many sets of nodes that would satisfy this criterion for a given pixel selection, but of the sets whose size is the smallest, there is always one unique set whose nodes are in the highest forest layers possible. We describe this as the \emph{hierarchical node representation} of a given pixel selection $S$, and denote it $\textbf{HNR}(S)$. This is an ideal representation for partition forest selections, because it contains all the information necessary and in the most compact form possible. We thus maintain precisely the nodes in $\textbf{HNR}(S)$ in the \texttt{nodes} data member, for whatever $S$ happens to be selected at the time.
-
-%---
-\begin{stusubfig}{p}
-	\subfigure[Selected nodes in multiple layers]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-selection-hierarchicalstructure-a.png}}%
-	\hspace{4mm}%
-	\subfigure[Corresponding pixel selection]{\includegraphics[width=.4\linewidth]{ipfs/ipfs-selection-hierarchicalstructure-b.png}}%
-\caption{The selection of a set of nodes in multiple forest layers corresponds to the selection of a set of pixels in the leaf layer}
-\label{fig:ipfs-selection-hierarchicalstructure}
-\end{stusubfig}
-%---
+\noindent The \texttt{nodes} data member will contain nodes that represent the selection, but many representations are possible. Specifically, we note that the selection of a set of nodes in multiple layers of the forest corresponds to the selection of a set of pixels (or voxels, in 3D) in the forest's leaf layer (see Figure~\ref{fig:ipfs-selection-hierarchicalstructure}). This is a many-to-one relationship: there are many node selections that correspond to the same pixel selection (it is possible to define an equivalence relation that makes all the node selections corresponding to the selection of a particular set of pixels equivalent). However, we are only interested in non-redundant representations of the pixel selection: more precisely, in sets of nodes that partition the pixel selection (they cover all the pixels and do not overlap). As Figure~\ref{fig:ipfs-selection-multiplerepresentations} illustrates, there are still many sets of nodes that would satisfy this criterion for a given pixel selection, but of the sets whose size is the smallest, there is always one unique set whose nodes are in the highest forest layers possible. We describe this as the \emph{hierarchical node representation} of a given pixel selection $S$, and denote it $\textbf{HNR}(S)$. This is an ideal representation for partition forest selections, because it contains all the information necessary and in the most compact form possible. We thus maintain precisely the nodes in $\textbf{HNR}(S)$ in the \texttt{nodes} data member, for whatever $S$ happens to be selected at the time.
 
 %################################################
 \subsection{Overview of Algorithms}

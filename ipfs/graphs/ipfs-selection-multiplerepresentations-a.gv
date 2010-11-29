@@ -1,0 +1,19 @@
+graph
+{
+	node [shape=circle];
+
+	n20 -- n10;
+	n20 -- n12;
+	n10 -- n00;
+	n10 -- n01;
+	n10 -- n03;
+	n12 -- n02;
+
+	n00 [label="(0,0)", color=red];
+	n01 [label="(0,1)", color=red];
+	n02 [label="(0,2)", color=red];
+	n03 [label="(0,3)", color=red];
+	n10 [label="(1,0)"];
+	n12 [label="(1,2)"];
+	n20 [label="(2,0)"];
+}
