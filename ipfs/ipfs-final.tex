@@ -1013,7 +1013,19 @@ TODO
 \label{sec:ipfs-selections}
 %##################################################################################################
 
-In order for users to interact with partition forests, they must be able to select parts of them with which to work (we have seen examples of this when describing the mutating algorithms in the previous section). It is in principle easy enough to manage the selection of individual nodes -- by maintaining a set of currently selected nodes, for instance -- and this suffices when selecting nodes in a single layer of the forest. However, in an interactive system, there are times when it is desirable to be able to manage the selection of nodes in multiple layers of the hierarchy -- for instance, the user may wish to select a large region in one layer and then refine it by deselecting some of its children in the layer below (see Figure~\ref{?}). For this, the simplistic approach is insufficient, because it ignores the forest's hierarchical structure. In particular, with this scheme, the selection of a node in one layer does not imply that its children in the layer below are also selected -- so it is impossible to deselect some of them as desired. Furthermore, the simple approach allows the simultaneous selection of a node and some (but not all) of its descendants, making the selection system unintuitive and hard to use (if the user chooses to deselect a node, it is rather confusing if some of it remains selected afterwards).
+In order for users to interact with partition forests, they must be able to select parts of them with which to work (we have seen examples of this when describing the mutating algorithms in the previous section). It is in principle easy enough to manage the selection of individual nodes -- by maintaining a set of currently selected nodes, for instance -- and this suffices when selecting nodes in a single layer of the forest. However, in an interactive system, there are times when it is desirable to be able to manage the selection of nodes in multiple layers of the hierarchy -- for instance, the user may wish to select a large region in one layer and then refine it by deselecting some of its children in the layers below (see Figure~\ref{fig:ipfs-selection-multilayermotivation}). For this, the simplistic approach is insufficient, because it ignores the forest's hierarchical structure. In particular, with this scheme, the selection of a node in one layer does not imply that its descendants in the layers below are also selected -- so it is impossible to deselect some of them as desired. Furthermore, the simple approach allows the simultaneous selection of a node and some (but not all) of its descendants, making the selection system unintuitive and hard to use (if the user chooses to deselect a node, it is rather confusing if some of it remains selected afterwards).
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Selecting a node in layer $3$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-multilayermotivation-a.png}}%
+	\hspace{4mm}%
+	\subfigure[Viewing it at layer $1$]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-multilayermotivation-b.png}}%
+	\hspace{4mm}%
+	\subfigure[After refining it]{\includegraphics[width=.3\linewidth]{ipfs/ipfs-selection-multilayermotivation-c.png}}%
+\caption{The motivation for a multi-layer selection approach -- users may want to select large regions in one layer and then refine them by deselecting some of their descendants in lower layers}
+\label{fig:ipfs-selection-multilayermotivation}
+\end{stusubfig}
+%---
 
 For this reason, it is necessary to introduce a more sophisticated approach to partition forest selection that takes hierarchy into account. In what follows, I therefore describe a novel data structure and algorithms for partition forest selection (expanding on work originally presented in \cite{gvcispa09}) that treat the selection of a node as implicitly selecting the subtree of which it is the root, without an implementation having to explicitly maintain the set of selected nodes in the subtree (which would be prohibitively expensive). This solves both of the problems described above. I also describe how partition forest selections should be updated in response to changes to the partition forest to which they refer (implemented in practice using the standard \emph{observer} pattern \cite{gamma95}) -- this is clearly crucially important when implementing an interactive system, especially since the selections could otherwise end up referring to forest nodes that no longer exist.
 
@@ -1055,6 +1067,8 @@ Having defined the partition forest selection data structure, and in particular 
 \end{enumerate}
 
 \noindent The \textbf{binary set} algorithms \emph{combine selections} and \emph{subtract selections} also need to be implemented if selections are to be compared for validation purposes, but these can be trivially implemented in terms of \emph{node selection} and \emph{node deselection} (see Appendix~\ref{chap:appendixpf}).
+
+\afterpage{\clearpage}
 
 %################################################
 \subsection{Core Algorithms}
