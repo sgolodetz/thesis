@@ -79,13 +79,13 @@ function children_of
 function find_common_ancestor_layer
 :	(component : Set<int>; layerIndex : int) $\to$ int
 
-	var curs : Set<int> := component;
+	var curs : ref Set<int> := ref component;
 	while layerIndex $\le$ highest_layer() and curs.size() > 1
 		var layer : ForestLayer := forest_layer(layerIndex);
 		var parents : Set<int>;
 		for each n : int $\in$ curs
 			parents.insert(layer.node_parent(n));
-		curs := parents;
+		curs := ref parents;
 		layerIndex := layerIndex + 1;
 	return layerIndex;
 \end{lstlisting}
