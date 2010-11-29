@@ -425,7 +425,7 @@ O(\#children(\mathit{canonical}) \; + \\
 \left(\sum_{x \in \mathit{others}} \#\mathit{adjacent\_edges}(x)\right) \log e_m)
 \end{eqnarray*}
 %
-Note in passing that this is upper-bounded by $O(n_b \log n_b + e_m \log e_m)$.
+Simplifying even further, this can be upper-bounded by $O(n_b \log n_b + e_m \log e_m)$.
 
 \paragraph{Undoing the Command}
 
@@ -563,7 +563,13 @@ In terms of complexity analysis, lines $4-6$ in Listing~\ref{code:ipfs-forest-sp
 O\left( \sum_{\mathit{group} \in \mathit{groups}} \sum_{n \in \mathit{group}} (\log e_b + \#\mathit{adjacent\_edges}(n) (\log n_b + \log e_s)) \right)
 \]
 %
-This is also the complexity of the entire algorithm, since the edge propagation step is the dominant cost involved.
+This is also the complexity of the entire algorithm, since the edge propagation step is the dominant cost involved. To simplify this further, at the cost of a looser upper bound, observe that $n$ iterates over all the children of the node being split, so this becomes:
+%
+\[
+O\left( \sum_{n \in \mathit{children}(node)} (\log e_b + \#\mathit{adjacent\_edges}(n) (\log n_b + \log e_s)) \right)
+\]
+%
+Since $\#\mathit{children}(node) \le n_b$, the first part of the sum is $O(n_b \log e_b)$. The second part is $O(e_b (\log n_b + \log e_s))$, since each edge in the layer below can only appear as the adjacent edge of at most two children. A simpler upper-bound for the entire algorithm is thus just $O(e_b (\log n_b + \log e_s))$.
 
 \paragraph{Undoing the Command}
 
