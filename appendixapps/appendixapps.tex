@@ -4,7 +4,23 @@
 %---
 \section{Volume Visualization}
 
-TODO
+One key application of my feature identification work in Chapter~\ref{chap:featureid} is to enable medics to visualize the state of a patient's organs in 3D. As part of my work, I therefore implemented a 3D visualizer in both the \emph{centipede} and \emph{millipede} systems, making use of the multiple material marching cubes algorithm described by Wu and Sullivan \cite{wu03}. In the final system, \emph{millipede}, the visualizer was implemented in its own window, with simple slider controls allowing the user to alter the focus point, distance, azimuth and inclination, and to clip the model along the three principal axes to look inside different features (see Figure~\ref{fig:appendixapps-visdialog}). Individual features can also be enabled/disabled as necessary. (This slider-based interface was designed to be easier for the medics to control than the corresponding interface in \emph{centipede}, which used \emph{Quake}-style keyboard controls.)
+
+%---
+\stufigex{height=12cm}{appendixapps/appendixapps-visdialog.png}{The 3D visualization window implemented in \emph{millipede}}{fig:appendixapps-visdialog}{p}
+%---
+
+As I discussed in two magazine articles for the Association of C and C++ Users \cite{golodetz08vis1,golodetz08vis2}, the goal of Wu and Sullivan's approach, in common with other visualization techniques, is to convert a labelled volume (e.g.~with labels such as `kidney', `liver', etc.) into a 3D mesh. It achieves this in three stages:
+%
+\begin{enumerate}
+
+\item \textbf{Mesh Generation}. This takes a 3D label volume of size $(X+1) \times (Y+1) \times (Z+1)$ and treats it as a 3D cube array of size $X \times Y \times Z$, where each cube has $8$ labels from the original volume (one at each vertex). For each cube whose vertex labels are not all identical, mesh faces are generated to keep the different labels apart.
+\item \textbf{Laplacian Smoothing}. The mesh generated in Step $1$ is generally less than perfectly smooth. This is a particular problem in the case of medical images, where the thickness of each axial slice can often be much larger than the in-plane distance between the centres of adjacent pixels (also known as the \emph{pixel spacing}), leading to a phenomenon known as `stair-stepping'. The Laplacian smoothing stage is effectively an averaging process, moving mesh nodes a small distance towards their neighbours in order to make a smoother mesh. The details of this can be found in \cite{wu03} or \cite{golodetz08vis2}.
+\item \textbf{Mesh Decimation}. The mesh generated in Step $1$ generally contains far too many triangles, and this is still the case post-smoothing. A low triangle count is desirable because (among other reasons) it speeds up rendering and allows the mesh to be more easily stored and transmitted. The final stage of the Wu and Sullivan algorithm thus involves decimating the mesh -- that is, reducing the number of triangles in the mesh in a way that aims to preserve its basic topology (i.e.~that degrades its visual appearance to the least extent possible). It is often possible to reduce the triangle count of a mesh by well over $50\%$ without seriously damaging the way it looks.
+
+\end{enumerate}
+%
+The implementation details of the algorithm are sadly outside the scope of this thesis, but a detailed discussion of the \emph{centipede} implementation can be found in the aforementioned articles, and the \emph{millipede} source code will be made available online for the benefit of the interested reader. The \emph{millipede} implementation may be more interesting for anyone wishing to parallelize the code, as it uses a job-based design.
 
 %---
 \section{Volume Estimation}
