@@ -774,11 +774,11 @@ The preconditions to be checked for zipping can be deduced from the precondition
 
 \begin{enumerate}
 
-\item There must be chains to zip. (This can be trivially checked in $O(1)$ time.)
-\item Each chain must be non-empty and consist only of valid nodes (TODO).
-\item No chain must extend down as far as the leaf layer of the forest -- this guarantees that we will not be trying to merge leaf layer nodes. (This can be checked in $O(\#\mathit{chains})$ time.)
-\item The highest nodes in the chains must be siblings of each other. Note that there is no need to check that other corresponding nodes in the chains are siblings, as merging their parents in the previous iteration of the loop will automatically guarantee that they share the same parent. (TODO)
-\item The sets of nodes to be merged in each layer must be connected. (TODO)
+\item There must be chains to zip.% (This can be trivially checked in $O(1)$ time.)
+\item Each chain must be non-empty and consist only of valid nodes.
+\item No chain must extend down as far as the leaf layer of the forest -- this guarantees that we will not be trying to merge leaf layer nodes.% (This can be checked in $O(\#\mathit{chains})$ time.)
+\item The highest nodes in the chains must be siblings of each other. Note that there is no need to check that other corresponding nodes in the chains are siblings, as merging their parents in the previous iteration of the loop will automatically guarantee that they share the same parent.
+\item The sets of nodes to be merged in each layer must be connected.
 
 \end{enumerate}
 
@@ -1009,7 +1009,7 @@ There are three preconditions that must be checked for parent switching (see Lis
 
 \begin{enumerate}
 
-\item The node being moved must exist. (TODO)
+\item The node being moved must exist.
 \item The proposed new parent must exist.
 \item The node must be adjacent to at least one child of its proposed new parent.
 
@@ -1029,7 +1029,9 @@ Pseudo-code to implement parent switching is shown in Listing~\ref{code:ipfs-for
 
 \paragraph{Complexity Analysis}
 
-TODO
+In terms of complexity analysis, we must first analyse the complexity of \texttt{find_common_ancestor_layer_and_new_chain} (see Listing~\ref{?}). In that listing, Lines $4$--$5$ are clearly $O(1)$, whilst the loop in lines $6$--$11$ requires slightly more analysis. Letting $\ell = \mathit{layerIndex}$, within each iteration of the loop, lines $7$, $8$ and $11$ are $O(1)$ and lines $9$ and $10$ are both $O(\log n_\ell)$. Letting $\ell_0$ be the initial value of $\mathit{layerIndex}$ and $L = \mathit{highest\_layer()}$, the cost of the loop as a whole is thus $O(\sum_{\ell=\ell_0}^L \log n_\ell)$, which is loosely upper-bounded by $O((L+1-\ell_0) \log n_{\ell_0})$. This is also the cost of the entire function.
+
+Returning to \texttt{parent_switch} in Listing~\ref{code:ipfs-forest-parentswitch}, lines $26$, $28$--$29$, $34$ and $40$--$42$ are all either $O(1)$ or amortised $O(1)$. Line $27$ is $O(\log n_c)$ due to the parent lookup. By the analysis given above, lines $30$--$31$ are $O((L+1-p) \log n_p)$. The most costly lines in the function are the unzipping and zipping on lines $35$ and $43$, both of which are $O((L+1-c) e_{c-1} \log e_{c-1})$. This is thus the overall complexity of the algorithm.
 
 \afterpage{\clearpage}
 \newpage

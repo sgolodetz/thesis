@@ -3,8 +3,8 @@ function parent_switch
 
 	if checkPreconditions = CHECK_PRECONDITIONS then
 		// Check that the node itself is a valid node.
-		var layerN : ForestLayer? := checked_forest_layer(node.layer());
-		if layerN = null or not layerN.has_node(node.index()) then throw;
+		var layerC : ForestLayer? := checked_forest_layer(node.layer());
+		if layerC = null or not layerC.has_node(node.index()) then throw;
 
 		// Check that the proposed new parent is a valid node.
 		var layerP : BranchLayer? := checked_branch_layer(node.layer() + 1);
@@ -14,7 +14,7 @@ function parent_switch
 		// parent.
 		var adjacent : bool := false;
 		for each c : int $\in$ layerP.node_children(newParent)
-			if layerN.has_edge(node.index(), c) then
+			if layerC.has_edge(node.index(), c) then
 				adjacent := true;
 				break;
 		if not adjacent then throw;
@@ -23,8 +23,8 @@ function parent_switch
 
 	// Find the common ancestor layer of the old and new parents, and the chain
 	// leading down to the new parent.
-	var layerN : ForestLayer := forest_layer(node.layer());
-	var oldParent : int := layerN.node_parent(node.index());
+	var layerC : ForestLayer := forest_layer(node.layer());
+	var oldParent : int := layerC.node_parent(node.index());
 	var commonAncestorLayer : int;
 	var newChain : Chain;
 	(commonAncestorLayer, newChain) =
