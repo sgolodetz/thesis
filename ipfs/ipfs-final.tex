@@ -912,7 +912,25 @@ For the example given in Figure~\ref{fig:ipfs-forest-nonsiblingnodemerging}, the
 
 \paragraph{Complexity Analysis}
 
-TODO
+In terms of complexity analysis, we must first analyse the complexity of \texttt{find_common_ancestor_layer} (see Listing~\ref{code:appendixpf-findcommonancestorlayer}). In that listing, line $4$ is clearly $O(1)$. Within the loop in lines $5$--$11$, lines $6$, $7$, $10$ and $11$ are only $O(1)$ per iteration, and can therefore be discounted. The interesting part of the code is lines $8$--$9$. Observe that $\#\mathit{curs}$ is initially equal to $\#\mathit{component}$, and then drops to $1$ in a non-increasing manner. As an upper-bound, we may therefore safely assume that the worst case is when $\#\mathit{curs}$ stays at $\#\mathit{component}$ until the highest layer is reached, at which point it drops to $1$, i.e.~that there are always $O(\#\mathit{component})$ iterations of the inner loop. Letting $\ell = \mathit{layerIndex}$, the cost per iteration of the parent lookup in line $9$ is clearly $O(\log n_\ell)$, whence the cost of parent lookups over all iterations is $O(\#\mathit{component} \log n_\ell)$. Over all iterations of the loop, the cost of the set insertions in line $9$ is $O(\log(\#\mathit{component}!))$. The total cost of the inner loop is thus $O(\#\mathit{component} \log n_\ell + \log(\#\mathit{component}!))$. Letting $\ell_0$ be the initial value of $\mathit{layerIndex}$, and $L = \mathit{highest\_layer()}$, the overall complexity of the function as a whole is thus:
+%
+\[
+O\left( \sum_{\ell=\ell_0}^L (\#\mathit{component} \log n_\ell + \log(\#\mathit{component}!)) \right)
+\]
+%
+Since $\log(\#\mathit{component}!)$ is $O(\#\mathit{component} \log \#\mathit{component})$, and both $n_\ell$ and $\#\mathit{component}$ are $\le n_{\ell_0}$, this simplifies to:
+%
+\[
+O\left( \sum_{\ell=\ell_0}^L \#\mathit{component} \log n_{\ell_0} \right)
+\]
+%
+Since nothing inside the sum depends on $\ell$, this becomes $O((L+1-\ell_0) \#\mathit{component} \log n_{\ell_0})$, or even just $O(L n_{\ell_0} \log n_{\ell_0})$.
+
+Returning to \texttt{merge_nonsibling_nodes} in Listing~\ref{code:ipfs-forest-mergenonsiblingnodes}, lines $19$--$23$ are trivially $O(1)$. Lines $24$--$25$ are $O(\log(\#\mathit{nodes}!))$. As per previous analysis of \texttt{find_connected_components}, line $26$ is $O(\#\mathit{indices} \log e_m) = O(\#\mathit{nodes} \log e_m)$, where $m$ is the layer containing the nodes being merged. The major cost of the function clearly comes from the loop in lines $29$--$51$. Per iteration, line $30$ is clearly $O(1)$. By the analysis above, line $34$ is $O((L+1-m) \#\mathit{component} \log n_m)$. Line $41$ is $O(1)$. The inner loop in lines $42$--$47$ requires more analysis. Within that loop, everything except the unzip in line $45$ is clearly $O(1)$ or amortised $O(1)$, which we can discount. The unzip itself is run for every node in $\mathit{nodes}$. In the worst case, each node may be unzipped to the top of the hierarchy. Bearing in mind the earlier analysis of unzip, the overall work (over all iterations of the outer loop) done by line $45$ is thus $O(\#\mathit{nodes} (L+1-m) e_{m-1} \log e_{m-1})$. The final line in the outer loop, line $51$, does two things: a zip operation and an insertion into the \texttt{mergedNodes} set. Over all iterations of the outer loop, the insertions only cost $O(\log(\#\mathit{ccs}!))$, so they can be discounted. As per earlier analysis of zip, each zip here is $O((L+1-m) e_{m-1} \log e_{m-1})$, making the total complexity for zip over all iterations of the loop $O(\#\mathit{ccs} (L+1-m) e_{m-1} \log e_{m-1})$. The complexity of the algorithm as a whole is thus dominated by the cost of the unzips (since $\#\mathit{ccs} \le \#\mathit{nodes}$), and is simply:
+%
+\[
+O(\#\mathit{nodes} (L+1-m) e_{m-1} \log e_{m-1})
+\]
 
 \afterpage{\clearpage}
 \newpage
@@ -1029,7 +1047,7 @@ Pseudo-code to implement parent switching is shown in Listing~\ref{code:ipfs-for
 
 \paragraph{Complexity Analysis}
 
-In terms of complexity analysis, we must first analyse the complexity of \texttt{find_common_ancestor_layer_and_new_chain} (see Listing~\ref{?}). In that listing, Lines $4$--$5$ are clearly $O(1)$, whilst the loop in lines $6$--$11$ requires slightly more analysis. Letting $\ell = \mathit{layerIndex}$, within each iteration of the loop, lines $7$, $8$ and $11$ are $O(1)$ and lines $9$ and $10$ are both $O(\log n_\ell)$. Letting $\ell_0$ be the initial value of $\mathit{layerIndex}$ and $L = \mathit{highest\_layer()}$, the cost of the loop as a whole is thus $O(\sum_{\ell=\ell_0}^L \log n_\ell)$, which is loosely upper-bounded by $O((L+1-\ell_0) \log n_{\ell_0})$. This is also the cost of the entire function.
+In terms of complexity analysis, we must first analyse the complexity of \texttt{find_common_ancestor_layer_and_new_chain} (see Listing~\ref{code:appendixpf-findcommonancestorlayerandnewchain}). In that listing, Lines $4$--$5$ are clearly $O(1)$, whilst the loop in lines $6$--$11$ requires slightly more analysis. Letting $\ell = \mathit{layerIndex}$, within each iteration of the loop, lines $7$, $8$ and $11$ are $O(1)$ and lines $9$ and $10$ are both $O(\log n_\ell)$. Letting $\ell_0$ be the initial value of $\mathit{layerIndex}$ and $L = \mathit{highest\_layer()}$, the cost of the loop as a whole is thus $O(\sum_{\ell=\ell_0}^L \log n_\ell)$, which is loosely upper-bounded by $O((L+1-\ell_0) \log n_{\ell_0})$. This is also the cost of the entire function.
 
 Returning to \texttt{parent_switch} in Listing~\ref{code:ipfs-forest-parentswitch}, lines $26$, $28$--$29$, $34$ and $40$--$42$ are all either $O(1)$ or amortised $O(1)$. Line $27$ is $O(\log n_c)$ due to the parent lookup. By the analysis given above, lines $30$--$31$ are $O((L+1-p) \log n_p)$. The most costly lines in the function are the unzipping and zipping on lines $35$ and $43$, both of which are $O((L+1-c) e_{c-1} \log e_{c-1})$. This is thus the overall complexity of the algorithm.
 
