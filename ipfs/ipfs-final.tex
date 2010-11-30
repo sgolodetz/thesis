@@ -698,7 +698,7 @@ Analysing the algorithm as a whole, it is clear from the above that the only sig
 O\left( \sum_{i=u}^{\mathit{toLayer} - 1} \mathit{split\_node\_cost}(\mathit{parent}_i, \mathit{ccs}_i) \right)
 \]
 %
-The observation to be made from this is that the complexity of the unzip is the same as the sum of the complexities of the individual splits it entails -- the work involved to find the splits and to update the chains is far less costly and can be ignored. To simplify this further, at the cost of a looser upper bound, recall that the cost of splitting a node in layer $s$ is $O(e_{s-1} \log e_{s-1})$. The complexity here thus becomes:
+The observation to be made from this is that the complexity of the unzip is the same as the sum of the complexities of the individual splits it entails -- the work involved to find the splits and to update the chains is far less costly and can be ignored. To simplify this further, recall that the cost of splitting a node in layer $s$ is $O(e_{s-1} \log e_{s-1})$. The complexity here thus becomes:
 %
 \[
 O\left( \sum_{i=u}^{\mathit{toLayer} - 1} (e_{i-1} \log e_{i-1}) \right)
