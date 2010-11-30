@@ -7,7 +7,7 @@
 One key application of my feature identification work in Chapter~\ref{chap:featureid} is to enable medics to visualize the state of a patient's organs in 3D. As part of my work, I therefore implemented a 3D visualizer in both the \emph{centipede} and \emph{millipede} systems, making use of the multiple material marching cubes algorithm described by Wu and Sullivan \cite{wu03}. In the final system, \emph{millipede}, the visualizer was implemented in its own window, with simple slider controls allowing the user to alter the focus point, distance, azimuth and inclination, and to clip the model along the three principal axes to look inside different features (see Figure~\ref{fig:appendixapps-visdialog}). Individual features can also be enabled/disabled as necessary. (This slider-based interface was designed to be easier for the medics to control than the corresponding interface in \emph{centipede}, which used \emph{Quake}-style keyboard controls.)
 
 %---
-\stufigex{height=12cm}{appendixapps/appendixapps-visdialog.png}{The 3D visualization window implemented in \emph{millipede}}{fig:appendixapps-visdialog}{p}
+\stufigex{height=14cm}{appendixapps/appendixapps-visdialog.png}{The 3D visualization window implemented in \emph{millipede}}{fig:appendixapps-visdialog}{t}
 %---
 
 As I discussed in two magazine articles for the Association of C and C++ Users \cite{golodetz08vis1,golodetz08vis2}, the goal of Wu and Sullivan's approach, in common with other visualization techniques, is to convert a labelled volume (e.g.~with labels such as `kidney', `liver', etc.) into a 3D mesh. It achieves this in three stages:
@@ -23,6 +23,13 @@ As I discussed in two magazine articles for the Association of C and C++ Users \
 The implementation details of the algorithm are sadly outside the scope of this thesis, but a detailed discussion of the \emph{centipede} implementation can be found in the aforementioned articles, and the \emph{millipede} source code will be made available online for the benefit of the interested reader. The \emph{millipede} implementation may be more interesting for anyone wishing to parallelize the code, as it uses a job-based design.
 
 %---
-\section{Volume Estimation}
+\section{Volume Calculation}
 
-TODO
+\emph{Volume calculation} is another clinically-useful application of feature identification. As one example, for surgeons planning a \emph{partial nephrectomy} operation (i.e.~an operation to remove part of a patient's kidney), it is important to know how the loss of renal volume involved will translate to a loss of renal function for the patient after the operation. Calculating the volumes involved from images, as was done in a study with which I assisted (see \cite{pbgmvc09}), can save the medics a great deal of work. Volume calculations are also useful for clinicians assessing a patient's response to therapy -- e.g.~a decrease in the size of a tumour may sometimes indicate that a treatment is working and should be continued.
+
+The volume calculator I implemented in \emph{millipede} is simple but effective -- all the real work is in identifying the features involved. Given a labelled 3D image, calculating the volumes of individual features is as simple as iterating over the grid, summing all the voxels marked with a particular label, and scaling the result by the real-world size of a voxel in $\mathit{cm}^3$ (this can be easily calculated from the DICOM meta-data associated with each image). The results can then be rounded to the desired degree of accuracy and presented to the user, as in Figure~\ref{fig:appendixapps-volumedialog}.
+
+%---
+\vspace{1cm}
+\stufigex{height=8cm}{appendixapps/appendixapps-volumedialog.png}{The volume calculation window implemented in \emph{millipede}}{fig:appendixapps-volumedialog}{H}
+%---
