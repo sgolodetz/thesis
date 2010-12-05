@@ -390,7 +390,7 @@ on an image $I_0(x,y)$, by setting $I(x,y,0) = I_0(x,y)$ as the initial conditio
 \pd{I(x,y,t)}{t} = \nabla \cdot c(|\nabla I(x,y,t)|) \nabla I(x,y,t).
 \]
 %
-We thereby introduce a prior expectation of where the edges to be into the equation, allowing us to influence the smoothing process so as to preserve them. The key to this is in how we specify $c$. We want the image to be blurred less where $|\nabla I|$ is large (i.e.~where we presume there to be edges), so $c$ must yield a small value for large $|\nabla I|$ and a larger value for small $|\nabla I|$. There are an infinite number of functions which would satisfy this, but an effective $c$ from the literature (and, in particular, the one used in the Insight Toolkit \cite{itk} implementation I used) is given by
+We thereby introduce a prior expectation of where we expect the edges to be into the equation, allowing us to influence the smoothing process so as to preserve them. The key to this is in how we specify $c$. We want the image to be blurred less where $|\nabla I|$ is large (i.e.~where we presume there to be edges), so $c$ must yield a small value for large $|\nabla I|$ and a larger value for small $|\nabla I|$. There are an infinite number of functions which would satisfy this, but an effective $c$ from the literature (and, in particular, the one used in the Insight Toolkit \cite{itk} implementation I used) is given by
 %
 \[
 c(|\nabla I|) = e^{-\frac{|\nabla I|^2}{2k^2}},
