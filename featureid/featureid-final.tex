@@ -1,8 +1,6 @@
 \chapter{Identifying Features using IPFs}
 \label{chap:featureid}
 
-\vspace{-\baselineskip}
-
 %##################################################################################################
 \section{Chapter Overview}
 %##################################################################################################
@@ -11,7 +9,9 @@ In the previous chapter, we saw how to construct image partition forests from me
 
 Before looking at how to identify specific features in detail, I first describe a few techniques that can be used when constructing new feature identifiers. These range from simple node filtering to more novel methods such as \emph{stratified region growing}. I then describe two different classes of feature identifier: (1) those that identify features in 2D axial (X-Y) CT slices, as were implemented in my trial system, \emph{centipede}, and described in papers such as \cite{gvccimi08} and \cite{gvcispa09}, and (2) those that identify features in 3D CT volumes, as have been implemented in my final system, \emph{millipede}. (The approaches needed in the two cases have a certain amount in common, but differ in the details: for instance, when identifying the spine in 3D volumes, it is possible to use the property that it is a feature that extends through all the axial slices. This is quite powerful, since few 3D regions will do so. The same approach evidently cannot be used in 2D, since there is only one slice.)
 
-This lays the foundation for Chapter~\ref{chap:validation}, in which the 3D identifiers used in \emph{millipede} will be validated against manually-produced, `gold-standard' results to quantify their accuracy. (The same will not be done for the 2D identifiers in \emph{centipede}, as they have now been superseded by their 3D counterparts; however, the quality of the 2D spine results was categorised in \cite{gvcispa09}.)
+This lays the foundation for Chapter~\ref{chap:validation}, in which the 3D identifiers used in \emph{millipede} will be validated against manually-produced, `gold-standard' results to quantify their accuracy.
+
+%(The same will not be done for the 2D identifiers in \emph{centipede}, as they have now been superseded by their 3D counterparts; however, the quality of the 2D spine results was categorised in \cite{gvcispa09}.)
 
 %##################################################################################################
 \section{General Techniques}
