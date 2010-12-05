@@ -1021,15 +1021,11 @@ Having now seen how the watershed and waterfall transforms can be implemented, i
 
 We observe that the image watershed algorithm described earlier can be used to produce an initial (relatively fine) partition of the image, which is then iteratively refined by the waterfall to give a sequence of ever coarser partitions. The basic idea, therefore, is that the lowest branch layer of the forest will correspond to the initial partition of the image output by the watershed, with higher branch layers being created by the waterfall; how to arrange this is described in \S\ref{subsec:segmentation-ipfconstruction-volumeatonce}.
 
-Whilst this simple `volume-at-once' method works well for the natural approach of performing 3D segmentation on a 3D image volume, there are rare occasions when it is desirable to segment a 3D image volume slice by slice in a given direction. For instance, if each axial slice is especially thick in comparison to the in-plane spacing between image pixels, then 3D segmentation might not always produce in-plane results that are as good as those that might be obtained by segmenting in 2D. For that reason, I developed an alternative subvolume-based forest construction method that allows the user to segment a 3D volume in either 2D or 3D as desired. This is described in \S\ref{subsec:segmentation-ipfconstruction-subvolume}. Before describing either method, however, it is first necessary to describe the way in which region properties are handled.
+Whilst this simple `volume-at-once' method works well for the natural approach of performing 3D segmentation on a 3D image volume, there are rare occasions when it is desirable to segment a 3D image volume slice by slice in a given direction. For instance, if each axial slice is especially thick in comparison to the in-plane spacing between image pixels, then 3D segmentation might not always produce in-plane results that are as good as those that might be obtained by segmenting each axial slice separately. For that reason, I additionally developed an alternative subvolume-based forest construction method that allows the user to segment a 3D volume in either 2D or 3D as desired. This is described in \S\ref{subsec:segmentation-ipfconstruction-subvolume}. Before describing either method, however, it is first necessary to describe the way in which region properties are handled.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Region Properties}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-%~~~~~~~~~~~~~~~~~~~~~~~
-\paragraph{Discussion}
-%~~~~~~~~~~~~~~~~~~~~~~~
 
 As per the description of IPFs in the previous chapter, it is possible to associate properties with forest nodes that in some way describe the regions they represent. We can use this to provide necessary information to feature identification algorithms, in particular those that will be described in the next chapter. (As a simple example, such algorithms might look for regions whose mean grey value was greater than a certain threshold, and we might arrange for a mean grey value property to be calculated for each region to support this.)
 
@@ -1048,6 +1044,8 @@ For the feature identification algorithms in Chapter~\ref{chap:featureid}, at le
 
 \item \emph{Grey Value} ($g$). The value of the pixel in the grey value image that results from applying a CT windowing transformation to the original Hounsfield image.
 
+\item \emph{Grey Value Gradient Magnitude} ($|\nabla g|$). The value of the pixel in the gradient magnitude of the grey value image. (This must be stored in order to calculate the edge weights between adjacent pixels on-the-fly -- storing it is less costly than storing all the actual edges.)
+
 \item \emph{Hounsfield Value} ($h$). The original Hounsfield Unit (HU) value of the pixel.
 
 \item \emph{Position} ($\mathbf{p}$). The position of the pixel, as a vector in either $\mathbb{R}^2$ (in 2D) or $\mathbb{R}^3$ (in 3D). (Note that careful programming can allow us to avoid storing this explicitly.)
@@ -1055,18 +1053,20 @@ For the feature identification algorithms in Chapter~\ref{chap:featureid}, at le
 \end{itemize}
 %---
 
-\noindent For a branch node $b$, with receptive region (i.e.~the set of leaf nodes below $b$ in the IPF) $L$, the necessary properties are:
+\noindent For a branch node $b$, with receptive region (i.e.~the set of leaf nodes below $b$ in the IPF) $R$, the necessary properties are:
 
 %---
 \begin{itemize}
 
-\item \emph{Area} ($|L|$). The area of the region, in pixels.
+\item \emph{Area} ($|R|$). The area of the region, in pixels.
 
-\item \emph{Central Moments} ($\mu_{20}$, $\mu_{11}$, $\mu_{02}$). The $20$, $11$ and $02$ central moments of the region, all of which are scalars $\in \mathbb{R}$. The $uv$ central moment is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} (x(\ell) - \bar{x}(b))^u (y(\ell) - \bar{y}(b))^v$, where $x(\ell)$ and $y(\ell)$ denote the $x$ and $y$ components of $\mathbf{p}(\ell)$, and $\bar{x}(b)$ and $\bar{y}(b)$ denote the $x$ and $y$ components of $\mathbf{c}(b)$. These statistical properties of the region are used when calculating the region's elongatedness.
+\item \emph{Bounds} ($\mathbf{mins}$, $\mathbf{maxs}$). The minimum and maximum spatial bounds of the region, as vectors in either $\mathbb{R}^2$ (in 2D) or $\mathbb{R}^3$ (in 3D). These are defined as $\mathbf{mins}.i = \min_{\ell \in R} \mathbf{p}(\ell).i$ and $\mathbf{maxs}.i = \max_{\ell \in R} \mathbf{p}(\ell).i$ for $i \leftarrow \{x,y\}$ (in 2D) or $i \leftarrow \{x,y,z\}$ (in 3D).
 
-\item \emph{Centroid} ($\mathbf{c}$). The centre of the region, as a vector in either $\mathbb{R}^2$ (in 2D) or $\mathbb{R}^3$ (in 3D). This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} \mathbf{p}(\ell)$.
+\item \emph{Central Moments} ($\mu_{20}$, $\mu_{11}$, $\mu_{02}$). The $20$, $11$ and $02$ central moments of the region, all of which are scalars $\in \mathbb{R}$. The $uv$ central moment is defined as $\displaystyle \frac{1}{|R|} \sum_{\ell \in R} (x(\ell) - \bar{x}(b))^u (y(\ell) - \bar{y}(b))^v$, where $x(\ell)$ and $y(\ell)$ denote the $x$ and $y$ components of $\mathbf{p}(\ell)$, and $\bar{x}(b)$ and $\bar{y}(b)$ denote the $x$ and $y$ components of $\mathbf{c}(b)$. These statistical properties of the region are used when calculating the region's elongatedness.
 
-\item \emph{Elongatedness ($e$)}. The ratio between the lengths of the major and minor axes of the minimum bounding ellipse of the region. This can be calculated using principal component analysis. In particular, if we define the covariance matrix of $L$ to be
+\item \emph{Centroid} ($\mathbf{c}$). The centre of the region, as a vector in either $\mathbb{R}^2$ (in 2D) or $\mathbb{R}^3$ (in 3D). This is defined as $\displaystyle \frac{1}{|R|} \sum_{\ell \in R} \mathbf{p}(\ell)$.
+
+\item \emph{Elongatedness ($e$)}. The ratio between the lengths of the major and minor axes of the minimum bounding ellipse of the region. This can be calculated using principal component analysis. In particular, if we define the covariance matrix of $R$ to be
 %
 \[
 \left(
@@ -1079,17 +1079,17 @@ For the feature identification algorithms in Chapter~\ref{chap:featureid}, at le
 %
 and calculate the eigenvalues $\lambda_1 > \lambda_2$ of this matrix, then the elongatedness of the region can be calculated as $|\sqrt{\lambda_1}| / |\sqrt{\lambda_2}|$.
 
-\item \emph{Grey Value Max} ($M_g$). The maximum grey value of a pixel in the region. This is defined as $\displaystyle \max_{\ell \in L} g(\ell)$.
+\item \emph{Grey Value Max} ($M_g$). The maximum grey value of a pixel in the region. This is defined as $\displaystyle \max_{\ell \in R} g(\ell)$.
 
-\item \emph{Grey Value Mean} ($\bar{g}$). The mean grey value of a pixel in the region, as a scalar $\in \mathbb{R}$. This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} g(\ell)$.
+\item \emph{Grey Value Mean} ($\bar{g}$). The mean grey value of a pixel in the region, as a scalar $\in \mathbb{R}$. This is defined as $\displaystyle \frac{1}{|R|} \sum_{\ell \in R} g(\ell)$.
 
-\item \emph{Grey Value Variance ($\upsilon_g$)}. The variance of the distribution of grey values for all pixels in the region. This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} (g(\ell) - \bar{g}(b))^2$.
+\item \emph{Grey Value Variance ($\upsilon_g$)}. The variance of the distribution of grey values for all pixels in the region. This is defined as $\displaystyle \frac{1}{|R|} \sum_{\ell \in R} (g(\ell) - \bar{g}(b))^2$.
 
-\item \emph{Hounsfield Value Max} ($M_h$). The maximum HU value of a pixel in the region. This is defined as $\displaystyle \max_{\ell \in L} h(\ell)$.
+\item \emph{Hounsfield Value Max} ($M_h$). The maximum HU value of a pixel in the region. This is defined as $\displaystyle \max_{\ell \in R} h(\ell)$.
 
-\item \emph{Hounsfield Value Mean} ($\bar{h}$). The mean HU value of a pixel in the region. This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} h(\ell)$.
+\item \emph{Hounsfield Value Mean} ($\bar{h}$). The mean HU value of a pixel in the region. This is defined as $\displaystyle \frac{1}{|R|} \sum_{\ell \in R} h(\ell)$.
 
-\item \emph{Hounsfield Value Variance ($\upsilon_h$)}. The variance of the HU distribution for all pixels in the region. This is defined as $\displaystyle \frac{1}{|L|} \sum_{\ell \in L} (h(\ell) - \bar{h}(b))^2$.
+\item \emph{Hounsfield Value Variance ($\upsilon_h$)}. The variance of the HU distribution for all pixels in the region. This is defined as $\displaystyle \frac{1}{|R|} \sum_{\ell \in R} (h(\ell) - \bar{h}(b))^2$.
 
 \end{itemize}
 %---
@@ -1104,7 +1104,7 @@ It is necessary to show how the properties of several leaf nodes can be combined
 
 \subparagraph{Branch Properties from Leaf Children}
 
-Suppose a branch node $b$ has $k \ge 1$ (leaf) children, denoted $c_1$ to $c_k$. Then most of the properties of $b$ can be calculated directly from the definitions above (substituting the set $\{c_1,\ldots,c_k\}$ for $L$). The calculations of the variances, however, use the raw score method rather than the definition given above, as it is much more efficient. For example, for the grey value variance, this is:
+Suppose a branch node $b$ has $k \ge 1$ (leaf) children, denoted $c_1$ to $c_k$. Then most of the properties of $b$ can be calculated directly from the definitions above (substituting the set $\{c_1,\ldots,c_k\}$ for $R$). The calculations of the variances, however, use the raw score method rather than the definition given above, as it is much more efficient. For example, for the grey value variance, this is:
 %
 \[
 \upsilon_g(b) = \frac{\sum_{i=1}^k g(c_i)^2 - \frac{(\sum_{i=1}^k g(c_i))^2}{k}}{k}
@@ -1117,6 +1117,10 @@ Suppose a branch node, $b$, with pixel set $B$, has $k \ge 1$ (branch) children,
 \begin{centreditemize}
 
 \item $\displaystyle |B| = \sum_{i=1}^k |C_i|$
+
+\item $\displaystyle \forall j \cdot \mathbf{mins}(b).j = \min_{i=1}^k \mathbf{mins}(c_i).j$
+
+\item $\displaystyle \forall j \cdot \mathbf{maxs}(b).j = \max_{i=1}^k \mathbf{maxs}(c_i).j$
 
 \item $\displaystyle \mathbf{c}(b) = \frac{1}{|B|} \sum_{i=1}^k |C_i| \mathbf{c}(c_i)$
 
