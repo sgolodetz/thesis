@@ -201,9 +201,9 @@ The lower-complete transformation can be implemented straightforwardly using a b
 \label{code:segmentation-watershed-lowercomplete}
 \begin{lstlisting}[style=Default]
 function build_lower_complete
-: (image : Image<$\Omega,\mathbb{Z}^+$>) $\to$ Image<$\Omega,\mathbb{Z}^+$>
+: (image : Image<$\Omega$,int>) $\to$ Image<$\Omega$,int>
 
-	var lc : Image<$\Omega,\mathbb{Z}^+$>;
+	var lc : Image<$\Omega$,int>;
 	var queue : Queue<PixelCoords>;
 
 	// Initialise the queue with pixels that have a lower neighbour.
@@ -273,10 +273,10 @@ The implementation (see Listing~\ref{code:segmentation-watershed-arrowassignment
 \label{code:segmentation-watershed-arrowassignment}
 \begin{lstlisting}[style=Default]
 function construct_arrows
-: (lc : Image<$\Omega,\mathbb{Z}^+$>) $\to$ (Image<$\Omega$,PixelCoords>, Image<$\Omega,\mathbb{Z}^+$>)
+: (lc : Image<$\Omega$,int>) $\to$ (Image<$\Omega$,PixelCoords>, Image<$\Omega$,int>)
 
 	var arrows : Image<$\Omega$,PixelCoords>;
-	var labels : Image<$\Omega,\mathbb{Z}^+$>;
+	var labels : Image<$\Omega$,int>;
 
 	// Add all the minimum points to a disjoint set forest.
 	var labelCount : int(0);
@@ -330,7 +330,7 @@ function construct_arrows
 \label{code:segmentation-watershed-labelling}
 \begin{lstlisting}[style=Default]
 function resolve_all
-: (arrows : Image<$\Omega$,PixelCoords>; labels : ref Image<$\Omega,\mathbb{Z}^+$>) $\to \emptyset$
+: (arrows : Image<$\Omega$,PixelCoords>; labels : ref Image<$\Omega$,int>) $\to \emptyset$
 
 	for each p : PixelCoords $\in \Omega$
 		resolve_pixel(p, arrows, labels)
@@ -338,7 +338,7 @@ function resolve_all
 function resolve_pixel
 : (p : PixelCoords;
 	 arrows : Image<$\Omega$,PixelCoords>;
-	 labels : ref Image<$\Omega,\mathbb{Z}^+$) $\to$ PixelCoords
+	 labels : ref Image<$\Omega$,int) $\to$ PixelCoords
 
 	var parent : PixelCoords := arrows(p);
 	if parent $\ne$ p then

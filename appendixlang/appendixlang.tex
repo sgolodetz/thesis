@@ -1,6 +1,8 @@
 \chapter{Pseudo-Code Language Reference}
 \label{chap:appendixlang}
 
+\enlargethispage*{\baselineskip}
+
 The language I have devised for the pseudo-code listings in this thesis is intended to be relatively self-explanatory to an experienced computer scientist, but this language reference is provided to clarify any points of doubt that may remain. In general, the language has been designed with brevity and simplicity in mind -- the idea is to convey the essence of the algorithms without burdening the reader with irrelevant, language-specific details.
 
 %##################################################################################################
@@ -8,9 +10,9 @@ The language I have devised for the pseudo-code listings in this thesis is inten
 %##################################################################################################
 
 \begin{itemize}
-\item Indention is crucial, since we do without braces for reasons of brevity.
+\item Indentation is crucial, since we do without braces for reasons of brevity.
 \item Statements end in semi-colons, like in C++.
-\item Where not otherwise specified, constructs have the same meaning they would in C++.
+\item Where not otherwise specified, constructs have the meaning they would in C++.
 \end{itemize}
 
 %##################################################################################################
@@ -223,18 +225,10 @@ A \lstinline[language=Pseudocode]$while$ loop is written:
 while condition
 	<body>
 \end{lstlisting}
-
-%##################################################################################################
-\section{Mathematical Vectors}
-%##################################################################################################
-
-Mathematical vectors are treated specially to make life easier. For example, you can write:
 %
-\begin{lstlisting}[style=Snippet]
-var vi : Vec2i := (2,3);
-\end{lstlisting}
-%
-This creates a 2D vector with integer components $x = 2$ and $y = 3$.
+As in C++, it is possible to \lstinline[language=Pseudocode]$break$ or \lstinline[language=Pseudocode]$continue$ within a loop.
+
+%These have their usual effects -- \lstinline[language=Pseudocode]$break$ immediately exits the loop, and \lstinline[language=Pseudocode]$continue$ jumps back to the beginning of the loop to begin the next iteration.
 
 %##################################################################################################
 \section{Containers and Iterators}
@@ -253,7 +247,7 @@ All the containers you would find in C++ have direct equivalents in the pseudo-c
 %
 Implicit conversions between containers are supported where appropriate -- for example, a Vector$<$T$>$ can be automatically converted to a List$<$T$>$ without having to write it explicitly.
 
-Unlike in C++, where you would write an iterator over an int vector as std::vector$<$int$>$::iterator, here you just write VectorIterator$<$int$>$. There are corresponding ListIterator, SetIterator and MapIterator templates as well.
+Unlike in C++, where an int vector iterator would be std::vector$<$int$>$::iterator, here you just write VectorIterator$<$int$>$. There are corresponding ListIterator, SetIterator and MapIterator templates as well.
 
 As in C++, iterators can be dereferenced to access the container element to which they point. To dereference the iterator it, we just write *it. Furthermore, properties of the pointed-to element can be accessed directly using the \lstinline[language=Pseudocode]$->$ notation, i.e.~\lstinline[language=Pseudocode]$it->value$ means the same as \lstinline[language=Pseudocode]$(*it).value$, as in C++. We can increment an iterator it by writing \lstinline[language=Pseudocode]$++it$, and decrement it by writing \lstinline[language=Pseudocode]$--it$.
 
@@ -263,7 +257,19 @@ There are special notations for constructing containers, corresponding to how yo
 r := f({1,2,3});
 \end{lstlisting}
 %
-The corresponding notation for vectors, deques and lists is [1,2,3] -- note that in real life the fact that it is the same for all three would make parsing harder, but in pseudo-code we are less constrained.
+The corresponding notation for vectors, deques and lists is [1,2,3] -- note that in real life the fact that it is the same for all three would make compiling the code harder, but in pseudo-code we are less constrained.
+
+%##################################################################################################
+\section{Mathematical Vectors}
+%##################################################################################################
+
+Mathematical vectors are treated specially to make life easier. For example, you can write:
+%
+\begin{lstlisting}[style=Snippet]
+var vi : Vec2i := (2,3);
+\end{lstlisting}
+%
+This creates a 2D vector with integer components $x = 2$ and $y = 3$.
 
 %##################################################################################################
 \section{User-Defined Data Types}
