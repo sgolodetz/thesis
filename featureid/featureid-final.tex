@@ -761,7 +761,18 @@ TODO
 \stufigex{height=9cm}{featureid/featureid-3d-kidneysidentification-region.png}{The spatial constraints for kidneys -- they must not cross the spine centroid in the $x$ direction (indicated by the red line), and at least part of them must lie in one of the right kidney or left kidney boxes (marked RK and LK) below the green line}{fig:featureid-3d-kidneysidentification-region}{h}
 %---
 
-\noindent TODO (remember to mention that non-complete kidneys, e.g.~those with tumours on, are particularly vulnerable to being missed -- an example is the EB result, where one kidney has been perfectly identified and the other has been completely missed)
+\noindent Although kidneys are less easily distinguished in images than especially bright features such as the spine, they are still often represented by individual regions in the partition forest. For that reason, a kidneys identifier based on branch node filtering can be made to work relatively well. The identifier shown in Listing~\ref{code:featureid-3d-kidneysidentification} operates on this principle. A number of criteria are used to isolate a kidney, namely that a kidney region must:
+%
+\begin{itemize}
+\item Be in layer $3$ of the forest or above (empirical observation indicated that the medium-sized regions that correspond to kidneys are never found in lower layers).
+\item Have a mean grey value in the range $[160,190]$ (kidneys are generally a relatively bright grey in colour).
+\item Not cross the spine centroid in the $x$ direction (kidneys must be on one side of the body or the other, not in the middle).
+\item Extend back as far as the spine in the $y$ direction (kidneys are located posteriorly in the body).
+\item Have a reasonable $x$-$y$ \emph{aspect ratio} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
+\item Have a voxel count of between $2000$ and $6000$ voxels per (axial) slice.
+\end{itemize}
+%
+As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, the identifier has been used to produce appealing results for volumes from a number of different patients. However, as with some of the other identifiers, it needs further work to make it more robust on arbitrary series. In particular, the current approach struggles to deal with kidneys containing multiple cysts (see Figure~\ref{?}), because they tend to prevent a kidney being represented by a single region in the partition forest. For the same reason, it also has problems with kidneys affected by tumours. In the EB-2 case shown in Figure~\ref{fig:featureid-3d-kidneysidentification-results}(d), this results in the left kidney being completely missed due to the presence of a large tumour (see Figure~\ref{?}). It is anticipated that it should be possible to solve such problems using stratified region growing in the future.
 
 %---
 \begin{stulisting}[p]
