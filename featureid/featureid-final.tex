@@ -874,22 +874,26 @@ As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, t
 \subsection{Spleen Identification}
 %################################################
 
-Despite being relatively easily distinguished by a human looking at the CT images, the spleen does not in general tend to be perfectly represented by a single region in the partition forest. This is primarily due to rather weak boundaries between the spleen and some of its surrounding features, meaning that they tend to be inadvertently merged together during the segmentation process. Higher regions in the partition forest tend to oversegment the spleen, whilst lower ones tend to undersegment it (see Figure~\ref{?}).
+%---
+\stufigex{height=9cm}{featureid/featureid-3d-spleenidentification-region.png}{The sole spatial constraint for spleen seeds -- they must stretch into the right-hand $20\%$ of the image}{fig:featureid-3d-spleenidentification-region}{h}
+%---
+
+\noindent Despite being relatively easily distinguished by a human looking at the CT images, the spleen does not in general tend to be perfectly represented by a single region in the partition forest. This is primarily due to rather weak boundaries between the spleen and some of its surrounding features, meaning that they tend to be inadvertently merged together during the segmentation process.
 
 The current approach does not yet try to address this in detail (spleen identification in \emph{millipede} is still at a very early stage), but it is relatively successful at finding a suitable spleen seed that can be used as the input to other algorithms. It is not believed that stratified region growing is an appropriate approach in this case, due to the weak boundaries, but a level set approach may be more suitable.
 
 As shown in Listing~\ref{code:featureid-3d-spleenidentification}, the first step of the current identifier is to filter for spleen candidate regions. These must:
 %
 \begin{itemize}
-\item Be in the lowest branch layer (as noted, regions in higher layers tend to oversegment the spleen).
+\item Be in the lowest branch layer (regions in higher layers tend to oversegment the spleen).
 \item Have a mean grey value in the range $[140,170]$.
-\item Stretch sufficiently far to the right of the image (at least part of them must be in the right-hand $20\%$ of the image).
+\item Stretch into the right-hand $20\%$ of the image (see Figure~\ref{fig:featureid-3d-spleenidentification-region}).
 \item Have a voxel count of between $1000$ and $7000$ voxels per (axial) slice.
 \end{itemize}
 %
 The identifier takes the candidate regions identified in this way, and picks the one that stretches furthest to the right of the image. This is then selected as the spleen seed (and, at present, marked as the spleen).
 
-A few results of the current identifier are illustrated in Figure~\ref{fig:featureid-3d-spleenidentification-results}. It is evident that much further work needs to be done -- in particular, the identified spleen currently tends to contain holes, as seen in Figure~\ref{fig:featureid-3d-spleenidentification-results}(b), and indeed to miss parts of the spleen entirely. This is not surprising, because the identifier is as yet only finding seeds. Despite this, the results are in some cases surprisingly reasonable, as will be seen in the next chapter. As such, the identifier can at least seen be seen as providing a sound basis on which a more robust identifier can be built in the future.
+A few results of the current identifier are illustrated in Figure~\ref{fig:featureid-3d-spleenidentification-results}. It is evident that much further work needs to be done -- in particular, the identified spleen currently tends to contain holes, as seen in Figure~\ref{fig:featureid-3d-spleenidentification-results}(b), and indeed to miss parts of the spleen entirely. This is not unexpected, because the identifier is as yet only finding seeds. Despite this, the results are in some cases surprisingly reasonable, as will be seen in the next chapter. As such, the identifier can at least seen be seen as providing a sound basis on which a more robust identifier can be built in the future.
 
 %---
 \begin{stulisting}[p]
