@@ -736,7 +736,34 @@ As illustrated in Figure~\ref{fig:featureid-3d-aortaidentification-results}, thi
 \subsection{Liver Identification}
 %################################################
 
-TODO
+In comparison to other abdominal features, the liver is notably harder to identify, due to its large size (meaning it potentially adjoins many other features that may have a similar grey value distribution) and wildly varying shape (e.g.~see Figure~\ref{?}). For that reason, the liver identifier implemented in \emph{millipede} is currently at a relatively incipient stage, and further work will be required to improve its accuracy and robustness. Some sample results of the current approach are shown in Figure~\ref{fig:featureid-3d-liveridentification-results} for illustrative purposes, but a more detailed analysis will be conducted in Chapter~\ref{chap:validation}.
+
+At present, as shown in Listing~\ref{code:featureid-3d-liveridentification}, the identifier is primarily based around a stratified region growing approach. It begins by looking for candidate liver seeds in the partition forest. These must:
+%
+\begin{itemize}
+\item Be in the lowest branch layer of the forest (empirical observation indicated that regions in higher layers almost invariably extend beyond the liver boundary).
+\item Contain at least $800$ voxels per (axial) slice (this is a necessarily low limit, because the cross-section of the liver actually becomes quite small as we go down the body).
+\item Have a mean grey value in the range $[150,190]$.
+\item Be at least partly on the left-hand side of the image.
+\end{itemize}
+%
+Put simplistically, the filtering process in this case essentially entails trying to find large, grey regions that are on the left-side of the image (i.e.~the right side of the body) and that do not oversegment the liver. Having found a suitable set of liver candidates, the identifier next picks the one which is furthest to the left of the image as the `best' candidate. It grows a region from this using stratified region growing, using a grow condition that only causes adjacent regions to be added if they:
+%
+\begin{itemize}
+\item Do not stretch further to the left of the image than the original seed.
+\item Have a mean grey value that is:
+
+\begin{itemize}
+\item In the range $[150,190]$
+\item Within $15$ of the mean grey value of the seed
+\item Within $10$ of the mean grey value of the region from which the attempted flooding happened
+\end{itemize}
+
+\end{itemize}
+%
+As is usual where region growing approaches are concerned, the region grown using this condition may well contain holes. The final step of the identifier is therefore to fill these in using conditional morphological closing. The condition applied is that regions should only be dilated to / eroded from where their mean grey value is $\ge 140$ -- this allows regions that are very slightly darker than would be acceptable for a liver seed to be filled in, whilst trying to prevent the outer boundary of the identified liver from being damaged in the process.
+
+As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3d-liveridentification-results}), the identifier only achieves rather mixed success at present. The major issue is that with a large organ such as the liver, there is a high probability that its boundary will be weak somewhere. For that reason, stratified region growing may not be the right technique to use in this case -- it has a natural tendency to flood through the weak liver boundary and into surrounding features. Trying to restrain this by varying the grow condition can help, but usually at the cost of then undersegmenting the liver. A better approach in future might be to use branch node filtering to find suitable seeds (as here), but then use those to initialise a level set method. This is looked at in more detail in the following chapters.
 
 %---
 \begin{stulisting}[p]
