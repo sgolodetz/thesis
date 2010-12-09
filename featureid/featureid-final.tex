@@ -736,7 +736,26 @@ As illustrated in Figure~\ref{fig:featureid-3d-aortaidentification-results}, thi
 \subsection{Liver Identification}
 %################################################
 
-In comparison to other abdominal features, the liver is notably harder to identify, due to its large size (meaning it potentially adjoins many other features that may have a similar grey value distribution) and wildly varying shape (e.g.~see Figure~\ref{?}). For that reason, the liver identifier implemented in \emph{millipede} is currently at a relatively incipient stage, and further work will be required to improve its accuracy and robustness. Some sample results of the current approach are shown in Figure~\ref{fig:featureid-3d-liveridentification-results} for illustrative purposes, but a more detailed analysis will be conducted in Chapter~\ref{chap:validation}.
+%---
+\begin{stusubfig}{h}
+	\subfigure[]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-3d-liveridentification-shapevariation-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-3d-liveridentification-shapevariation-b.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.3\linewidth]{featureid/featureid-3d-liveridentification-shapevariation-c.png}}%
+\caption{Liver cross-sections can be a variety of different shapes}
+\label{fig:featureid-3d-liveridentification-shapevariation}
+\end{stusubfig}
+%---
+
+\noindent In comparison to other abdominal features, the liver is notably harder to identify, due to its large size (meaning it potentially adjoins many other features that may have a similar grey value distribution) and wildly varying shape (e.g.~see Figure~\ref{fig:featureid-3d-liveridentification-shapevariation}). For that reason, the liver identifier implemented in \emph{millipede} is currently at a relatively incipient stage, and further work will be required to improve its accuracy and robustness. Some sample results of the current approach are shown in Figure~\ref{fig:featureid-3d-liveridentification-results} for illustrative purposes, but a more detailed analysis will be conducted in Chapter~\ref{chap:validation}.
 
 At present, as shown in Listing~\ref{code:featureid-3d-liveridentification}, the identifier is primarily based around a stratified region growing approach. It begins by looking for candidate liver seeds in the partition forest. These must:
 %
@@ -766,15 +785,7 @@ As is usual where region growing approaches are concerned, the region grown usin
 As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3d-liveridentification-results}), the identifier only achieves rather mixed success at present. The major issue is that with a large organ such as the liver, there is a high probability that its boundary will be weak somewhere. For that reason, stratified region growing may not be the right technique to use in this case -- it has a natural tendency to flood through the weak liver boundary and into surrounding features. Trying to restrain this by varying the grow condition can help, but usually at the cost of then undersegmenting the liver. A better approach in future might be to use branch node filtering to find suitable seeds (as here), but then use those to initialise a level set method. This is looked at in more detail in the following chapters.
 
 %---
-\begin{stulisting}[p]
-\caption{Liver Identification in 3D}
-\label{code:featureid-3d-liveridentification}
-\lstinputlisting[style=Default]{featureid/featureid-3d-liveridentification.lst}
-\end{stulisting}
-%---
-
-%---
-\begin{stusubfig}{p}
+\begin{stusubfig}{!b}
 	\subfigure[Series SD-2 (Slices 55--87)]
 	{\includegraphics[height=8cm]{featureid/featureid-3d-liveridentification-SD-2-55-87-c.png}}%
 	%
@@ -785,6 +796,14 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \caption{The results of running spine, spinal canal and liver identification on slices from two different image series}
 \label{fig:featureid-3d-liveridentification-results}
 \end{stusubfig}
+%---
+
+%---
+\begin{stulisting}[p]
+\caption{Liver Identification in 3D}
+\label{code:featureid-3d-liveridentification}
+\lstinputlisting[style=Default]{featureid/featureid-3d-liveridentification.lst}
+\end{stulisting}
 %---
 
 \afterpage{\clearpage}
