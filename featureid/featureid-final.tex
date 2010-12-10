@@ -718,8 +718,10 @@ As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this
 %################################################
 
 %---
-\stufigex{height=9cm}{featureid/featureid-3d-aortaidentification-region-overlay.png}{TODO -- The spatial constraints for aorta seeds -- they (a) must lie at least partly in the small, green box just above the spine, (b) may lie partly in the boxes marked in yellow, and (c) must not lie below or to the left of the red lines}{fig:featureid-3d-aortaidentification-region}{h}
+\stufigex{height=7.5cm}{featureid/featureid-3d-aortaidentification-region.png}{The spatial constraints for aorta seeds -- the seed's left-hand side must lie between the red lines, and the top of the spine (represented by the green line) must lie between the top of the seed and $20$ voxels below the bottom of it}{fig:featureid-3d-aortaidentification-region}{h}
 %---
+
+\vspace{-5mm}
 
 \noindent As with ribs identification, branch node filtering on its own is generally insufficient when identifying the aorta. Instead, it is used to produce an initial selection of seeds, which are then refined by careful post-processing. Seeds to be added to the initial selection must:
 %
