@@ -486,9 +486,13 @@ In terms of results, a qualitative assessment of the identifier conducted for \c
 \section{Feature Identification in 3D Volumes}
 %##################################################################################################
 
+\vspace{-.7\baselineskip}
+
 %################################################
 \subsection{Overview}
 %################################################
+
+\vspace{-.3\baselineskip}
 
 Whilst identifying features in 2D can be made to work well much of the time, as was seen in the previous section, such an approach fails to take advantage of important information that is available in adjacent image slices. This can be particularly problematic at the extremities of particular features, or when the cross-section through a feature in a particular slice is not very well distinguished from surrounding tissue. For example, we might not be able to confidently identify a small region as being the right kidney when we can only see the slice in which it lies (see Figure~\ref{fig:featureid-3d-advantage}(a)), but we could be substantially more confident about doing so if we could see the slice below it (see Figure~\ref{fig:featureid-3d-advantage}(b)).
 
@@ -843,8 +847,10 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 %################################################
 
 %---
-\stufigex{height=9cm}{featureid/featureid-3d-kidneysidentification-region.png}{The spatial constraints for kidneys -- they must not cross the spine centroid in the $x$ direction (indicated by the red line), and at least part of them must lie in one of the right kidney or left kidney boxes (marked RK and LK) below the green line}{fig:featureid-3d-kidneysidentification-region}{h}
+\stufigex{height=7.5cm}{featureid/featureid-3d-kidneysidentification-region.png}{The spatial constraints for kidneys -- they must not cross the spine centroid in the $x$ direction (indicated by the red line), and at least part of them must lie in one of the right kidney or left kidney boxes (marked RK and LK) below the green line}{fig:featureid-3d-kidneysidentification-region}{h}
 %---
+
+\vspace{-5mm}
 
 \noindent Although kidneys are less easily distinguished in images than especially bright features such as the spine, they are still often represented by individual regions in the partition forest. For that reason, a kidneys identifier based on branch node filtering can be made to work relatively well. The identifier shown in Listing~\ref{code:featureid-3d-kidneysidentification} operates on this principle. A number of criteria are used to isolate a kidney, namely that a kidney region must:
 %
@@ -857,7 +863,21 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \item Have a voxel count of between $2000$ and $6000$ voxels per (axial) slice.
 \end{itemize}
 %
-As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, the identifier has been used to produce appealing results for volumes from a number of different patients. However, as with some of the other identifiers, it needs further work to make it more robust on arbitrary series. In particular, the current approach struggles to deal with kidneys containing multiple cysts (see Figure~\ref{?}), because they tend to prevent a kidney being represented by a single region in the partition forest. For the same reason, it also has problems with kidneys affected by tumours. In the EB-2 case shown in Figure~\ref{fig:featureid-3d-kidneysidentification-results}(d), this results in the left kidney being completely missed due to the presence of a large tumour (see Figure~\ref{?}). It is anticipated that it should be possible to solve such problems using stratified region growing in the future.
+As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, the identifier has been used to produce appealing results for volumes from a number of different patients. However, as with some of the other identifiers, it needs further work to make it more robust on arbitrary series. In particular, the current approach struggles to deal with kidneys affected by tumours, partly because they tend to prevent a kidney from being represented by a single region in the partition forest. In the EB-2 case shown in Figure~\ref{fig:featureid-3d-kidneysidentification-results}(d), this results in the left kidney being completely missed due to the presence of a large tumour (see Figure~\ref{fig:featureid-3d-kidneysidentification-tumourhandling}). It is anticipated that it should be possible to solve such problems using a stratified region growing approach in the future, but it will be important to define precisely what should be segmented in cases like this (there is, at the very least, a choice between segmenting just the normal kidney tissue, or the normal kidney tissue and all \emph{internal} kidney tumours, or the normal kidney tissue and all kidney tumours in general).
+
+%---
+\begin{stusubfig}{!t}
+	\subfigure[The original CT image]
+	{\includegraphics[height=5.5cm]{featureid/featureid-3d-kidneysidentification-tumourhandling-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[The relevant partition in the forest]
+	{\hspace{4mm}\includegraphics[height=5.5cm]{featureid/featureid-3d-kidneysidentification-tumourhandling-b.png}\hspace{4mm}}%
+\caption{Tumours can interfere with kidney segmentation -- in this example, the tumour has prevented the left kidney of the EB-2 series from being represented by a single region in the partition forest, which will cause it to be missed by the kidneys identifier}
+\label{fig:featureid-3d-kidneysidentification-tumourhandling}
+\end{stusubfig}
+%---
 
 %---
 \begin{stulisting}[p]
