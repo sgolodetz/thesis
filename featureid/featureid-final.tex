@@ -171,7 +171,7 @@ The non-structured opening operator of size $n$ first erodes $S$ and then dilate
 \sigma^{(n)} = \delta^{(n)} \bullet \epsilon^{(n)}
 \]
 %
-The intuition is that this starts by removing small, irrelevant pieces and making larger pieces smaller, and then roughly restores the larger pieces to their original size again (this isn't strictly true, since information is lost when the larger pieces are eroded, but it is a useful way of thinking about it). The way opening works is illustrated in Figure~\ref{?}.
+The intuition is that this starts by removing small, irrelevant pieces and making larger pieces smaller, and then roughly restores the larger pieces to their original size again (this isn't strictly true, since information is lost when the larger pieces are eroded, but it is a useful way of thinking about it).
 
 As with the image-based opening described in \cite{gonzalez02}, graph-based opening is useful for things like removing narrow connections between larger pieces of the selection. Somewhat wider connections can be removed by opening with a larger size, but this runs the risk of adversely affecting the rest of the selection.
 
@@ -212,7 +212,7 @@ Closing is a good tool for filling in holes. Larger holes can be filled in by cl
 \subsubsection{Conditioning}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The operators as described thus far are useful, but can be quite blunt instruments. For example, dilation takes no account of what is beyond the boundaries when expanding the selection, so it can be difficult to avoid damaging the outer boundary of the selection when trying to fill holes (see Figure~\ref{?}(b)). Better results (see Figure~\ref{?}(c)) can be obtained by allowing the user to specify \emph{conditions} that determine when to allow dilation into or erosion of a graph node, e.g.~that a node beyond the boundary should only be added to the selection during dilation if its mean grey value lies in a particular range. This approach is known (for obvious reasons) as \emph{conditional morphology}; implementations of the conditional morphological operators are shown in Listing~\ref{code:featureid-techniques-conditionalmorphology}. These are the operators that we will use in practice when implementing the 3D feature identifiers described later.
+The operators as described thus far are useful, but can be quite blunt instruments. For example, whilst closing is a better tool for closing holes than dilation, in that it preserves the general size of the selection, it still has a tendency to damage the selection's outer boundary (see Figures~\ref{fig:featureid-techniques-conditionalclosing}(b) and (d)). Better results (see Figures~\ref{fig:featureid-techniques-conditionalclosing}(c) and (e)) can be obtained by allowing the user to specify \emph{conditions} that determine when to allow dilation into or erosion of a graph node, e.g.~that a node beyond the boundary should only be added to the selection during dilation if its mean grey value lies in a particular range. This approach is known (for obvious reasons) as \emph{conditional morphology}; implementations of the conditional morphological operators are shown in Listing~\ref{code:featureid-techniques-conditionalmorphology}. These are the operators that we will use in practice when implementing the 3D feature identifiers described later.
 
 %---
 \begin{stulisting}[p]
