@@ -1101,7 +1101,7 @@ For this reason, it is necessary to introduce a more sophisticated approach to p
 \end{stusubfig}
 %---
 
-The partition forest selection data structure should contain an array of sets of node indices, one per forest layer, and some type of pointer to the partition forest to which it corresponds.\footnote{The actual code also contains a pointer to the application's command manager and a `composite listener' to allow observers to listen to changes in the selection, but these are implementation details.} In C++, this can be implemented as follows (noting that \texttt{shared_ptr} is a kind of reference-counted smart pointer):
+The partition forest selection data structure should contain an array of sets of node indices, one per forest layer, and some type of pointer to the partition forest to which it corresponds.\footnote{The actual code also contains a pointer to the application's command manager and a `composite listener' to allow observers to listen to changes in the selection, but these are implementation details.} In C++, this can be implemented as follows (noting that \texttt{shared_ptr} is a kind of reference-counted smart pointer -- e.g.~see \cite{btcppsl-sharedptr}):
 
 \begin{lstlisting}[style=Default,language=C++]
 template <typename LeafLayer, typename BranchLayer>
