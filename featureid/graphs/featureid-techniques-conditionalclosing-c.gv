@@ -1,0 +1,34 @@
+graph
+{
+	node [shape=circle, style=filled, fillcolor=white, label=""];
+
+	a -- b -- c -- d -- e -- f;
+	g -- h -- i -- j -- k -- l;
+	m -- n -- o -- p -- q -- r;
+
+	a -- g -- m;
+	b -- h -- n;
+	c -- i -- o;
+	d -- j -- p;
+	e -- k -- q;
+	f -- l -- r;
+
+	a [pos="0,2!", fillcolor=green];
+	b [pos="1,2!", fillcolor=green];
+	c [pos="2,2!", fillcolor=black];
+	d [pos="3,2!", fillcolor=black];
+	e [pos="4,2!", fillcolor=black];
+	f [pos="5,2!", fillcolor=black];
+	g [pos="0,1!", fillcolor=green];
+	h [pos="1,1!", fillcolor=green];
+	i [pos="2,1!", fillcolor=green];
+	j [pos="3,1!", fillcolor=black];
+	k [pos="4,1!", fillcolor=blue];
+	l [pos="5,1!", fillcolor=black];
+	m [pos="0,0!", fillcolor=green];
+	n [pos="1,0!", fillcolor=black];
+	o [pos="2,0!", fillcolor=black];
+	p [pos="3,0!", fillcolor=black];
+	q [pos="4,0!", fillcolor=black];
+	r [pos="5,0!", fillcolor=black];
+}

@@ -222,6 +222,35 @@ The operators as described thus far are useful, but can be quite blunt instrumen
 \end{stulisting}
 %---
 
+%---
+\begin{stusubfig}{p}
+	\subfigure[The initial selection]
+	{\includegraphics[width=.45\linewidth]{featureid/featureid-techniques-conditionalclosing-a.png}}%
+	%
+	\\ \vspace{5mm}%
+	%
+	\subfigure[After dilating (a)]
+	{\includegraphics[width=.45\linewidth]{featureid/featureid-techniques-conditionalclosing-b.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After conditionally dilating (a)]
+	{\includegraphics[width=.45\linewidth]{featureid/featureid-techniques-conditionalclosing-c.png}}%
+	%
+	\\ \vspace{5mm}%
+	%
+	\subfigure[After eroding (b)]
+	{\includegraphics[width=.45\linewidth]{featureid/featureid-techniques-conditionalclosing-d.png}}%
+	%
+	\hspace{8mm}%
+	%
+	\subfigure[After conditionally eroding (c)]
+	{\includegraphics[width=.45\linewidth]{featureid/featureid-techniques-conditionalclosing-e.png}}%
+\caption{Comparing normal morphological closing with conditional morphological closing. In (b) and (d), the initial selection in (a) is morphologically closed using the normal approach -- this fills in the hole on the right, but also affects the boundary on the left of the selection. In (c) and (e), which together illustrate \emph{conditional} morphological closing on (a), the inner hole is still filled, but damage to the boundary is prevented by using a condition that prevents dilation into / erosion from the pixels beyond the boundary (we assume that such a condition can be specified in this case for illustrative purposes). Colour Scheme: Blue nodes are those that have just been added by dilation and red nodes are those that have just been removed by erosion. The condition is indicated by colouring nodes that are excluded from dilation / erosion in green.}
+\label{fig:featureid-techniques-conditionalclosing}
+\end{stusubfig}
+%---
+
 %################################################
 \subsection{Connected Component Analysis}
 %################################################
