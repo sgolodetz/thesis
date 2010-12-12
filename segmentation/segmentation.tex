@@ -368,6 +368,7 @@ Having seen how to apply a watershed transform to generic grey-scale images, we 
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Smoothness}
+\label{subsubsec:segmentation-watershed-ct-smoothness}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A key issue which arises when applying the watershed to CT images is their lack of smoothness (especially in the presence of noise). The images have many local minima, most of them spurious: this is analogous to working with a highly pock-marked landscape (see Figure~\ref{fig:segmentation-watershed-pockmarkedlandscape}). Such a landscape will have many catchment basins; running a watershed algorithm on a non-smooth image will thus greatly over-segment it (each minor dimple in the landscape gets treated as a separate catchment basin). Figure~\ref{fig:segmentation-watershed-adfexample}(e), which shows the result of running my implementation of Meijster and Roerdink's watershed algorithm on a raw CT image, illustrates this problem -- note the vast number of individual regions with little semantic meaning.
@@ -466,6 +467,7 @@ What we need is a way of transforming our input image into one where the feature
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Hounsfield Units and Windowing}
+\label{subsubsec:segmentation-watershed-ct-windowing}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A final issue to contend with when working with CT images concerns the Hounsfield scale used for their pixel values. These values, measured in Hounsfield Units (HU), are based on the radiodensity of materials with respect to water, and range from $-1024$ to $3071$. Materials that have a lower radiodensity than water, such as fatty tissue, have negative Hounsfield values; conversely, those with a greater radiodensity than water, such as muscle, have positive values. On this scale, for example, air is at $-1000$ HU, whereas bone appears at $400$ HU or more. The scale is calibrated so that water itself is at $0$ HU.
@@ -1184,6 +1186,28 @@ Suppose a branch node, $b$, with pixel set $B$, has $k \ge 1$ (branch) children,
 \subsection{The Volume-at-once Method}
 \label{subsec:segmentation-ipfconstruction-volumeatonce}
 %################################################
+
+Recall from the section overview that the goal of both the IPF construction methods presented in this thesis is to build the type of IPF shown in Figure~\ref{fig:segmentation-ipfconstruction-goal}. There are three key issues to be tackled in each case:
+%
+\begin{enumerate}
+\item How to construct the leaf layer from the input Hounsfield image.
+\item How to construct the lowest branch layer (intuitively corresponding to the watershed result).
+\item How to construct the higher branch layers (intuitively corresponding to the sequence of waterfall results).
+\end{enumerate}
+%
+At a high level, the volume-at-once method deals with each of these issues as follows. The leaf layer is constructed directly from the Hounsfield image, with a one-to-one correspondence between leaf layer nodes and image voxels. The lowest branch layer is constructed directly from the result of running a watershed algorithm on the whole of the (pre-processed) source image. Each higher branch layer is constructed by cloning the current top-most layer of the forest and using a waterfall iteration to merge some of the regions in the clone together in order to form a coarser partition of the original image. The details of each of these processes are now examined in more detail.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Constructing the Leaf Layer}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In essence, constructing a leaf layer from a Hounsfield image is a fairly trivial process. The Hounsfield image is first windowed (as discussed in \S\ref{subsubsec:segmentation-watershed-ct-windowing}) to produce the `grey value' image. This is then smoothed using anisotropic diffusion filtering to produce the `grey value gradient magnitude' image. Finally, these three images are passed as input to the leaf layer construction process, which creates a leaf node for each image voxel location and extracts the leaf node properties for that voxel -- i.e.~the grey value, grey value gradient magnitude and Hounsfield value, as per the previous section -- from their respective images. (Note that voxel position is not stored as a leaf node property, as it can be inferred from the index of a leaf node and the dimensions of the input images.)
+
+It remains to specify the region adjacency graph for the leaf layer. As Figure~\ref{fig:segmentation-ipfconstruction-goal} indicates, this simply connects every voxel to its neighbours (recalling that neighbourhood depends on what notion of connectivity we chose: see Figure~\ref{fig:segmentation-watershed-connectivity}). This regularity makes it possible for sensible implementations to avoid storing the (many) edges of the leaf layer graph explicitly, a desirable aim given the generally large sizes of the images involved. Instead, edges and their weights are calculated on demand. An edge between adjacent voxels is weighted with the maximum of the two gradient magnitude values stored at the voxels (note that this is why gradient magnitude values are a leaf node property), as this provides an appropriate measure of the height of the boundary between them in the grey value gradient magnitude image. When a request is made for the adjacent edges or adjacent nodes of a particular voxel, the relevant set is constructed on-the-fly.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Constructing the Lowest Branch Layer}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 TODO
 
