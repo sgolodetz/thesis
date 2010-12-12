@@ -1236,7 +1236,7 @@ It will be seen in the next section that there is actually an alternative to con
 	%
 	\subfigure[The forest structure of the lowest two layers]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-ipfconstruction-lowestbranchlayer-d.png}}%
-\caption{The lowest two layers of the IPF}
+\caption{The lowest two layers of the partition forest}
 \label{fig:segmentation-ipfconstruction-lowestbranchlayer}
 \end{stusubfig}
 %---
@@ -1297,7 +1297,7 @@ struct VolumeAtOnceWaterfallPassListener
 	%
 	\subfigure[After the second waterfall iteration]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-ipfconstruction-higherlayers-e.png}}%
-\caption{Constructing the higher branch layers of a partition forest}
+\caption{Constructing the higher branch layers of a partition forest using the volume-at-once method}
 \label{fig:segmentation-ipfconstruction-higherlayers}
 \end{stusubfig}
 %---
@@ -1307,23 +1307,27 @@ struct VolumeAtOnceWaterfallPassListener
 \label{subsec:segmentation-ipfconstruction-subvolume}
 %################################################
 
-TODO
+As described previously, the volume-at-once method described in the previous section only allows a 3D image volume to be segmented using 3D segmentation. This is the natural approach, but there are times when it can be desirable to segment individual slices in 2D and then combine the results to form a single partition forest for further editing: this is the purpose of the subvolume method.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\subsubsection{Constructing the Leaf Layer}
+\subsubsection{Constructing the Lowest Layers}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO
-
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\subsubsection{Constructing the Lowest Branch Layer}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-TODO
+The subvolume method starts by generating the leaf layer and lowest branch layer for the overall volume. An example of the way this works for a volume containing three slices is shown in Figure~\ref{fig:segmentation-ipfconstruction-subvolumemethod-lowestlayers}. The first step is to split the 3D image volume into its constituent subvolumes (the slices, in the example) -- these must all be the same size. For each subvolume, we then construct a separate leaf layer and lowest branch layer, using the approaches described for the volume-at-once method -- in particular, a watershed algorithm is applied to segment each subvolume separately. Finally, the leaf layers for the various subvolumes are combined into a leaf layer for the overall volume, and the lowest branch layers for the subvolumes are combined to form the volume's lowest branch layer.
 
 %---
-\stufigex{height=19cm}{segmentation/segmentation-ipfconstruction-subvolumemethod-lowestlayers.png}{Constructing the lowest two layers using the subvolume method -- the image volume is divided into equally-sized pieces, each of which has a leaf layer ($\mathit{LL}$) and lowest branch layer ($\mathit{LBL}$) constructed for it as per the volume-at-once method. The corresponding layers are then combined together again to produce the leaf layer and lowest branch layer for the volume as a whole.}{fig:segmentation-ipfconstruction-subvolumemethod-lowestlayers}{p}
+\stufigex{height=19cm}{segmentation/segmentation-ipfconstruction-subvolumemethod-lowestlayers.png}{Constructing the lowest two layers using the subvolume method -- the image volume is divided into equally-sized pieces, each of which has a leaf layer ($\mathit{LL}$) and lowest branch layer ($\mathit{LBL}$) constructed for it as per the volume-at-once method. The corresponding layers are then combined together again to produce the leaf layer and lowest branch layer for the volume as a whole. This example works on a volume with three slices, but the approach generalises in the natural way.}{fig:segmentation-ipfconstruction-subvolumemethod-lowestlayers}{p}
 %---
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Constructing the Higher Layers}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Constructing the higher layers is somewhat more intricate. We want to be able to run a waterfall algorithm on each of the subvolumes separately (thus separately segmenting each subvolume), whilst still only constructing a single partition forest for the entire volume. To do this, we can start by building a minimum spanning tree for each subvolume's lowest branch layer and running a waterfall algorithm on it, just as we might in the volume-at-once method. However, because this time we are working with subvolumes, the waterfall in this case will call for nodes to be merged based on their indices in the individual subvolume's forest, not in the forest for the volume as a whole. Clearly, this presents us with a problem.
+
+The trick here is in how we implement the waterfall listener (see Listing~\ref{code:segmentation-ipfconstruction-subvolume-waterfalllistener}). Unlike the volume-at-once waterfall listener (see Listing~\ref{code:segmentation-ipfconstruction-volumeatonce-waterfalllistener}), this one maps the indices of the nodes to be merged in a subvolume's forest to their counterparts in the overall volume's forest before performing the merge on the the overall forest. The details of this process are not especially important here -- all that matters is that this allows us to run separate waterfall processes on each of the subvolumes whilst constructing a single partition forest for the volume as a whole.
+
+As a side note, it is worth observing that the subvolume method described here is not restricted to segmenting image volumes slice by slice -- it can be used to segment them using subvolumes of any size, provided that the subvolume dimensions divide evenly into those of the overall volume. For instance, Figure~\ref{fig:segmentation-ipfconstruction-subvolumemethod-anysize} shows the results of segmenting a $512 \times 512 \times 1$ image in $64 \times 64 \times 1$ chunks. Whilst primarily an implementation quirk at present, this does have potential uses. For instance, there is in principle no reason why the approach could not be extended to arbitrary subvolume sizes, at the expense of a far more complicated implementation, which might actually be useful if the user wanted to segment separate sections of the body using different segmentation parameters.
 
 %---
 \begin{stulisting}[p]
@@ -1370,11 +1374,11 @@ int SubvolumeToVolumeIndexMapper::operator()(int nodeIndex) const
 \end{stulisting}
 %---
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\subsubsection{Constructing the Higher Branch Layers}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%---
+\stufigex{height=6cm}{segmentation/segmentation-ipfconstruction-subvolumemethod-anysize.png}{One of the waterfall partitions resulting from segmenting a $512 \times 512 \times 1$ image in $64 \times 64 \times 1$ chunks}{fig:segmentation-ipfconstruction-subvolumemethod-anysize}{p}
+%---
 
-TODO
+\vspace{-\baselineskip}
 
 %##################################################################################################
 \section{Chapter Summary}
