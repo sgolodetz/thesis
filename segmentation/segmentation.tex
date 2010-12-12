@@ -1378,14 +1378,10 @@ The trick here is in how we implement the waterfall listener (see Listing~\ref{c
 
 As a side note, it is worth observing that the subvolume method described here is not restricted to segmenting image volumes slice by slice -- it can be used to segment them using subvolumes of any size, provided that the subvolume dimensions divide evenly into those of the overall volume. For instance, Figure~\ref{fig:segmentation-ipfconstruction-subvolumemethod-anysize} shows the results of segmenting a $512 \times 512 \times 1$ image in $64 \times 64 \times 1$ chunks. Whilst primarily an implementation quirk at present, this does have potential uses. For instance, there is in principle no reason why the approach could not be extended to arbitrary subvolume sizes, at the expense of a far more complicated implementation, which might actually be useful if the user wanted to segment separate sections of the body using different segmentation parameters.
 
-%\vspace{-.6\baselineskip}
-
 \newpage
 
 %##################################################################################################
 \section{Chapter Summary}
 %##################################################################################################
-
-%\vspace{-.4\baselineskip}
 
 In this chapter, we saw how to generate IPFs from medical images using the morphological watershed and waterfall transforms. The next chapter will show how the generated IPFs can be used when automatically identifying salient features in the original images.
