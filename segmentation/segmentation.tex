@@ -1321,6 +1321,55 @@ TODO
 
 TODO
 
+%---
+\stufigex{height=19cm}{segmentation/segmentation-ipfconstruction-subvolumemethod-lowestlayers.png}{Constructing the lowest two layers using the subvolume method -- the image volume is divided into equally-sized pieces, each of which has a leaf layer ($\mathit{LL}$) and lowest branch layer ($\mathit{LBL}$) constructed for it as per the volume-at-once method. The corresponding layers are then combined together again to produce the leaf layer and lowest branch layer for the volume as a whole.}{fig:segmentation-ipfconstruction-subvolumemethod-lowestlayers}{p}
+%---
+
+%---
+\begin{stulisting}[p]
+\caption{The Subvolume Waterfall Listener}
+\label{code:segmentation-ipfconstruction-subvolume-waterfalllistener}
+\begin{lstlisting}[style=Default,language=C++]
+template <typename Forest>
+struct SubvolumeWaterfallPassListener
+:	public WaterfallPass<typename Forest::EdgeWeight>::Listener
+{
+	//...
+
+	SubvolumeWaterfallPassListener(const Forest_Ptr& forest,
+								   const SubvolumeToVolumeIndexMapper& indexMapper)
+	:	m_forest(forest), m_indexMapper(indexMapper)
+	{}
+
+	void merge_nodes(int u, int v)
+	{
+		// Merge the corresponding nodes in the top-most layer of the forest.
+		std::set<PFNodeID> mergees;
+		mergees.insert(PFNodeID(m_forest->highest_layer(), m_indexMapper(u)));
+		mergees.insert(PFNodeID(m_forest->highest_layer(), m_indexMapper(v)));
+		m_forest->merge_sibling_nodes(mergees, Forest::DONT_CHECK_PRECONDITIONS);
+	}
+};
+
+int SubvolumeToVolumeIndexMapper::operator()(int nodeIndex) const
+{
+	// Step 1:	Calculate the position relative to the start of the subvolume.
+	itk::Index<3> subvolPos = {{
+		GridUtil::x_of(nodeIndex, m_subvolumeSize[0]),
+		GridUtil::y_of(nodeIndex, m_subvolumeSize[0], m_subvolumeSize[1]),
+		GridUtil::z_of(nodeIndex, m_subvolumeSize[0] * m_subvolumeSize[1])
+	}};
+
+	// Step 2:	Offset by the position of the start of the subvolume.
+	itk::Index<3> volPos = subvolPos + m_subvolumeStart;
+
+	// Step 3:	Convert to a volume index.
+	return (volPos[2] * m_volumeSize[1] + volPos[1]) * m_volumeSize[0] + volPos[0];
+}
+\end{lstlisting}
+\end{stulisting}
+%---
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Constructing the Higher Branch Layers}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
