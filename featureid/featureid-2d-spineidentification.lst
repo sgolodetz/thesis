@@ -1,12 +1,10 @@
 function identify_spine_2d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
-
 	var seeds : List<NodeID> := filter_branch_nodes(is_seed);
 	var result : PartitionForestSelection := find_preliminary_feature(seeds);
 	remove_unwanted_regions(result);
 	mfs.identify_selection(result, VERTEBRA);
 
 function find_preliminary_feature : (seeds : List<NodeID>) $\to$ PartitionForestSelection
-
 	var selection : PartitionForestSelection := make_selection(forest());
 
 	// Create a map of whether or not the seed has yet been reached during the flooding
@@ -51,7 +49,6 @@ function flood_from
 				flood_from(adj, used, partialFeature, seed);
 
 function remove_unwanted_regions : (ref selection : PartitionForestSelection) $\to$ $\emptyset$
-
 	for each n $\in$ selection.nodes()	// for each node in the selection representation
 		remove_unwanted_regions_below(n, selection);
 
