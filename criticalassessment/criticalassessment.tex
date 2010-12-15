@@ -58,8 +58,10 @@ My goal in developing a new algorithm was to make its results invariant to such 
 \item Like Nicholls' algorithm, it is reasonably easy to implement and runs in linear time.
 \item Because it carefully classifies the edges in the minimum spanning tree into different types, it is very useful when implementing other waterfall algorithms -- in particular, I was able to make use of it when implementing the first step of Marcotegui's algorithm.
 \end{itemize}
-%
-There are still some downsides, however:
+
+\newpage
+
+\noindent There are still some downsides, however:
 %
 \begin{itemize}
 \item Most notably, whilst the algorithm produces consistent results for a given minimum spanning tree, it \emph{cannot} produce consistent results for the graph from which the minimum spanning tree was constructed (this is a general problem for all minimum spanning tree-based implementations, including both the Nicholls and Marcotegui algorithms). The results of the algorithm thus still depend on which minimum spanning tree was constructed from the graph. There is no way around this other than to revert to a slower, graph-based implementation.
@@ -85,14 +87,16 @@ For these reasons, Nicholls' algorithm is still a generally preferable way of pe
 \section{Partition Forest Construction}
 %##################################################################################################
 
-In \S\ref{sec:segmentation-ipfconstruction}, I presented two separate algorithms for constructing partition forests -- the \emph{volume-at-once} method and the \emph{subvolume} method.
+In \S\ref{sec:segmentation-ipfconstruction}, I described two separate algorithms for constructing partition forests from 3D image volumes. Both algorithms construct a single partition forest for the entire image. The \emph{volume-at-once} method does this by hierarchically segmenting the entire image volume using morphological watershed and waterfall algorithms. The \emph{subvolume} method, by contrast, conceptually divides the image volume up into equally-sized pieces, segments each one separately and combines the results. This has the advantage of allowing individual slices to be segmented separately using 2D segmentation techniques.
 
-TODO
+When comparing these methods with those in the literature, it is important to be clear about what we want to compare. In particular, it is important to draw a distinction between the way in which partition forest construction methods work in the abstract, and their eventual concrete results. Since the actual results depend fundamentally on the segmentation techniques used in each case, any comparison between partition forest construction methods in terms of their outputs will inevitably degenerate into a comparison between the underlying segmentation techniques used. This is an interesting comparison to make (and in this thesis is made in Chapter~\ref{chap:methodology}), but it is an unwelcome digression for our purposes here. What is more useful here is to compare the construction techniques in terms of how they actually work.
+
+As mentioned in \S\ref{sec:background-partitionhierarchies}, there are essentially two ways of constructing partition hierarchies -- top-down and bottom-up. Both the volume-at-once and the subvolume methods are bottom-up, in the sense that they start with regions consisting of the individual pixels of the original image, and gradually merge regions together until some desired termination criterion is satisfied. TODO
 
 \iffalse
-+ Works for both 2D and 3D segmentation, because it's designed using subvolumes
-+ No comparison in the literature
-- Relatively slow, primarily because of the significant preprocessing time required (anisotropic diffusion filtering, at least as implemented in ITK, is slow as hell)
++ Subvolume method works for both 2D and 3D segmentation
++ Need to compare both methods to the literature
+- Both methods are relatively slow, primarily because of the significant preprocessing time required (anisotropic diffusion filtering, at least as implemented in ITK, is slow as hell)
 - Construction process uses twice as much memory as the finished partition forest
 \fi
 
