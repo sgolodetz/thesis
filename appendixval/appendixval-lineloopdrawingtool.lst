@@ -37,7 +37,6 @@ void LineLoopDrawingTool::mouse_released(const Vector2i& p_Pixels,
 void LineLoopDrawingTool::render() const
 {
 	LineBasedDrawingTool::render();
-
 	glPushAttrib(GL_POINT_BIT);
 	glPointSize(10.0f);
 	glEnable(GL_POINT_SMOOTH);
