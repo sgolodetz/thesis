@@ -39,12 +39,6 @@ These were then used to calculate the Dice similarity coefficient for each featu
 
 \iffalse
 
-Spine
-
-- Good (Dice = 0.926)
-- The automated result slightly oversegments the spine in places -- the top bit should be marked as rib
-- It also tends to miss bits branching off the spine lower down -- why? (primarily because we're using branch node filtering rather than region flooding at present, but also because some of the bits sticking out are quite dark)
-
 Spleen
 
 - Fairly good (Dice = 0.853)
@@ -66,7 +60,9 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 
 \item \textbf{Spinal Canal}. The spinal canal identifier works fairly well here, with a Dice similarity coefficient of $0.840$. The number of missed voxels ($309$) is relatively small in comparison to the overall size of the canal; the more significant issue is that the spinal canal has been somewhat oversegmented, hence the slightly high value for $A - G$ in this case. The major reason for this is that the spinal canal identifier currently works by filtering for suitable branch nodes (see Listing~\ref{code:featureid-3d-spinalcanalidentification}), and this relies on regions in the partition forest being exactly the right shape. For the spinal canal, this is roughly the case, which is why the approach works reasonably well. However, waterfall hierarchies converge relatively quickly (i.e.~the number of nodes in each layer decreases rapidly as we go towards the top of the forest) -- by the time enough smaller regions inside the spinal column have been merged to form a suitable region that can be identified as the spinal canal, surrounding regions inside the spinal column have usually been dragged in as well, ultimately leading to oversegmentation of the spinal canal. A possible way of improving the situation would be to use the outer contour of the existing result (which is generally fairly good) to initialise a level set method that could be used to refine the boundary.
 
-\item \textbf{Spine}. TODO
+\item \textbf{Spine}. As witnessed by a high Dice similarity coefficient of $0.926$, the spine identifier produces relatively good results in this case. However, as mentioned earlier, there is a tendency for the spine to be oversegmented at the expense of the ribs when there is a conflict between them. Furthermore, as can be seen in Figure~\ref{fig:validation-BT-2-60-80}(d), the identifier often misses the \emph{transverse processes} of the spine (that is, the pieces that protrude to the left and right of the main spinal column). This is primarily because the spine identifier currently uses a branch node filtering approach (see Listing~\ref{code:featureid-3d-spineidentification}), and the processes are not generally merged into the main spine region during forest construction (see Figure~\ref{fig:validation-BT-2-60-80-spine-transverseprocesses}). Since the primary aim of the spine identifier in this thesis is to provide a landmark that can be used when identifying other organs, this is not considered to be a major issue for our purposes here, but further work could be done to improve the identifier in this regard.
+
+\item \textbf{Spleen}. TODO
 
 \end{itemize}
 
@@ -120,6 +116,20 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 
 %---
 \stufigex{height=8cm}{validation/validation-BT-2-60-80-liver-disconnected-labelled.png}{The liver identifier misses the lateral segment of the left lobe in the BT-2 case study because it is not connected to the rest of the liver in the slices chosen}{fig:validation-BT-2-60-80-liver-disconnected}{p}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[]
+	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-spine-transverseprocesses-a-labelled.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.45\linewidth]{validation/validation-BT-2-60-80-spine-transverseprocesses-b.png}}%
+\caption{The spine identifier misses the transverse processes of the spine (a) in the BT-2 case study, because the hierarchical segmentation process does not merge them into the main spine region (b)}
+\label{fig:validation-BT-2-60-80-spine-transverseprocesses}
+\end{stusubfig}
 %---
 
 \afterpage{\clearpage}
