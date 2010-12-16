@@ -39,18 +39,6 @@ These were then used to calculate the Dice similarity coefficient for each featu
 
 \iffalse
 
-Ribs
-
-- Reasonable (Dice = 0.773)
-- But some ribs marked as spine -- because priority is currently given to the spine when there's a clash
-  - Hence the table shows a high value for G - A
-
-Spinal Canal
-
-- Fairly good (Dice = 0.840)
-- The automated result somewhat oversegments the canal -- why? (probably due to the fact that the regions within the spine only gradually get combined into a reasonable canal region that we could find, so that region ends up including all the bits inside the spine)
-  - Hence the table shows a high value for A - G
-
 Spine
 
 - Good (Dice = 0.926)
@@ -74,7 +62,11 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 
 \item \textbf{Liver}. Given the relative complexity of liver identification compared to identifying other features, the automated result in this case is fairly good, with a Dice similarity coefficient of $0.890$. However, Figure~\ref{fig:validation-BT-2-60-80}(d) illustrates that the lateral segment of the left lobe is clearly missed. This is due to the current approach doing only single-seed region growing -- in the slices chosen, the lateral segment of the left lobe and the rest of the liver are not connected (see Figure~\ref{fig:validation-BT-2-60-80-liver-disconnected}), so the algorithm finds one part of the liver but not the other. This could be rectified in this case by using multi-seed region growing, although some care would need to be taken over choosing appropriate seeds to make sure that other features in the area were not mistakenly identified as being part of the liver. A further problem with the automated liver result is that it floods beyond the boundary of the liver in the direction of the aorta (see Figure~\ref{fig:validation-BT-2-60-80}(c)). As with the aorta result, this is due to a weak boundary, and a level sets approach might be more effective.
 
-\item \textbf{Ribs}. TODO
+\item \textbf{Ribs}. The ribs are identified reasonably well in this case, with a Dice similarity coefficient of $0.773$. The main source of inaccuracy, as can be seen in Figures~\ref{fig:validation-BT-2-60-80}(c) and (d), is that the automated identifier has incorrectly identified the top-most ribs as spine (hence Table~\ref{tbl:validation-BT-2-60-80} contains a high $G - A$ value for ribs). As was mentioned in the previous chapter, this is a known problem with the current ribs identifier, in that it deliberately avoids marking as rib anything that has already been marked as spine, thus giving priority to the spine where there is a conflict between the two. This is considered a suitable area for further work.
+
+\item \textbf{Spinal Canal}. The spinal canal identifier works fairly well here, with a Dice similarity coefficient of $0.840$. The number of missed voxels ($309$) is relatively small in comparison to the overall size of the canal; the more significant issue is that the spinal canal has been somewhat oversegmented, hence the slightly high value for $A - G$ in this case. The major reason for this is that the spinal canal identifier currently works by filtering for suitable branch nodes (see Listing~\ref{code:featureid-3d-spinalcanalidentification}), and this relies on regions in the partition forest being exactly the right shape. For the spinal canal, this is roughly the case, which is why the approach works reasonably well. However, waterfall hierarchies converge relatively quickly (i.e.~the number of nodes in each layer decreases rapidly as we go towards the top of the forest) -- by the time enough smaller regions inside the spinal column have been merged to form a suitable region that can be identified as the spinal canal, surrounding regions inside the spinal column have usually been dragged in as well, ultimately leading to oversegmentation of the spinal canal. A possible way of improving the situation would be to use the outer contour of the existing result (which is generally fairly good) to initialise a level set method that could be used to refine the boundary.
+
+\item \textbf{Spine}. TODO
 
 \end{itemize}
 

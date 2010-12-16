@@ -87,6 +87,8 @@ My goal in developing a new algorithm was to make its results invariant to such 
 \item Because it carefully classifies the edges in the minimum spanning tree into different types, it is very useful when implementing other waterfall algorithms -- in particular, I was able to make use of it when implementing the first step of Marcotegui's algorithm.
 \end{itemize}
 
+\newpage
+
 \noindent There are still some downsides, however:
 %
 \begin{itemize}
@@ -144,12 +146,24 @@ Both of my forest construction methods could benefit from more efficient impleme
 \section{Feature Identification Techniques}
 %##################################################################################################
 
+In Chapter~\ref{chap:featureid}, I described a number of 2D and 3D techniques for identifying abdominal features. The 3D identifiers in particular were quantitatively validated in Chapter~\ref{chap:validation}, whilst the 2D spine identifier was qualitatively assessed in the original paper that introduced it \cite{gvcispa09}.
+
+%################################################
+\subsection{2D Identification Techniques}
+%################################################
+
+TODO
+
+%################################################
+\subsection{3D Identification Techniques}
+%################################################
+
 TODO
 
 \iffalse
 + The feature identifiers are relatively quick to run
 + The 2D ribs identifier is relatively effective, although it can miss ribs in some cases
-+ The 2D spine identifier is effective and robust (about 85% of results are pretty good)
++ The 2D spine identifier is effective and robust (about 85\% of results are pretty good)
 + The 3D spine identifier is relatively effective and robust, but has a tendency to flood into the ribs a bit
 + The 3D spinal canal identifier is relatively effective and robust, although the contour of the spinal canal is by no means perfect yet
 + The 3D kidneys identifier is a reasonable start, but requires further work both to make it more robust and to detect kidneys that are made up of multiple regions 
