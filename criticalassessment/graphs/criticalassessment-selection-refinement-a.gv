@@ -1,0 +1,25 @@
+graph
+{
+	node [style=filled, fillcolor=white, shape=circle, label=""];
+
+	n20 -- n10;
+	n20 -- n11;
+	n20 -- n15;
+	n10 -- n00;
+	n11 -- n01;
+	n11 -- n02;
+	n11 -- n03;
+	n11 -- n04;
+	n15 -- n05;
+
+	n00 [label="(0,0)", fillcolor=green];
+	n01 [label="(0,1)", fillcolor=green];
+	n02 [label="(0,2)", fillcolor=green];
+	n03 [label="(0,3)", fillcolor=green];
+	n04 [label="(0,4)", fillcolor=green];
+	n05 [label="(0,5)", fillcolor=green];
+	n10 [label="(1,0)"];
+	n11 [label="(1,1)"];
+	n15 [label="(1,5)"];
+	n20 [label="(2,0)", fillcolor=red];
+}
