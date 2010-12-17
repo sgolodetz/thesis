@@ -134,16 +134,6 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 \subsection{Series SD-2, Slices $70$--$90$}
 %################################################
 
-\iffalse
-
-Spleen
-
-- Fairly good (Dice = 0.874)
-- The automated result has missed a lot of the spleen -- why? (probably because I'm only finding a seed and not then flooding out from it)
-- The automated result contains a lot of holes -- why? (probably because I'm not currently doing any hole filling)
-
-\fi
-
 The second case study was of slices $70$--$90$ from series $2$ of a patient called SD. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-SD-2-70-90} and Figure~\ref{fig:validation-SD-2-70-90}. The identified features can be analysed as follows:
 %
 \begin{itemize}
@@ -288,6 +278,8 @@ Spleen
 
 \fi
 
+The third case study was of slices $110$--$130$ from series $2$ of a patient called MC. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-MC-2-110-130} and Figures~\ref{fig:validation-MC-2-110-130} and \ref{fig:validation-MC-2-110-130-differences}. The identified features can be analysed as follows:
+
 TODO
 
 %---
@@ -312,20 +304,39 @@ TODO
 
 %---
 \begin{stusubfig}{p}
-	\subfigure[Gold Standard Result]
-	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-goldstandard.png}}%
-	%
-	\hspace{4mm}%
-	%
-	\subfigure[Automated Result]
+	\subfigure[Automated Result ($A$)]
 	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-target.png}}%
 	%
 	\hspace{4mm}%
 	%
-	\subfigure[Automated Result (excluding liver)]
+	\subfigure[Gold Standard Result ($G$)]
+	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-goldstandard.png}}%
+	%
+	\\
+	%
+	\subfigure[Automated Result Excluding Liver ($A'$)]
 	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-target-noliver.png}}%
-\caption{TODO}
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Gold Standard Result Excluding Liver ($G'$)]
+	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-goldstandard-noliver.png}}%
+\caption{A visual comparison of the automated and gold standard results (with and without the liver) for the MC-2-110-130 feature identification case study}
 \label{fig:validation-MC-2-110-130}
+\end{stusubfig}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[$A - G$]{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-TminusG.png}}%
+	\hspace{4mm}%
+	\subfigure[$G - A$]{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-GminusT.png}}%
+	\\
+	\subfigure[$A' - G'$]{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-TminusG-noliver.png}}%
+	\hspace{4mm}%
+	\subfigure[$G' - A'$]{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-GminusT-noliver.png}}%
+\caption{The differences between the automated and gold standard results (with and without the liver) shown in Figure~\ref{fig:validation-MC-2-110-130}}
+\label{fig:validation-MC-2-110-130-differences}
 \end{stusubfig}
 %---
 
