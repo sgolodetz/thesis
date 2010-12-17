@@ -166,11 +166,11 @@ The second case study was of slices $70$--$90$ from series $2$ of a patient call
 
 \item \emph{Aorta}. As with the BT-2 series, the aorta is identified fairly well in this case (with a Dice similarity coefficient of $0.811$), but there is the same tendency as there to flood into neighbouring blood vessels somewhat. Figure~\ref{fig:validation-SD-2-70-90}(c) illustrates that the liver has also flooded out too far in this series, which interferes with the bottom part of the aorta in the figures (although note that since multi-feature selections can overlap, this only affects the visualization of the aorta and not its underlying identification result).
 
-\item \emph{Kidneys}. Only the left kidney was relevant in this case, as the patient had previously undergone a nephrectomy on their right kidney (i.e.~their right kidney had been taken out). The automated result for the left kidney is good (with a Dice similarity coefficient of $0.931$), although it is not quite as smooth as the gold standard in places. This is primarily an issue with the underlying hierarchical segmentation (see Figure~\ref{fig:validation-SD-2-70-90-kidneysdifference}).
+\item \emph{Kidneys}. Only the left kidney was relevant in this case, as the patient had previously undergone a nephrectomy on their right kidney (i.e.~their right kidney had been taken out). The automated result for the left kidney is good (with a Dice similarity coefficient of $0.931$), although it is not quite as smooth as the gold standard in places. This is primarily an issue with the underlying hierarchical segmentation (see Figure~\ref{fig:validation-SD-2-70-90-kidneys-difference}).
 
 \item \emph{Liver}. The automated liver result is good in this case (with a Dice similarity coefficient of $0.932$). Unlike in the BT-2 case study, no major part of the liver is missed here, because the liver is connected in the slices chosen. However, as before, there is flooding beyond the boundary of the liver in the direction of the aorta, due to weak edges in the image.
 
-\item \emph{Ribs}. TODO
+\item \emph{Ribs}. Whilst the ribs result is fairly good overall, with a Dice similarity coefficient of $0.819$, there are nevertheless some problems to be tackled. One of these is that the automated identifier can sometimes erroneously identify small, bright regions in the image that look like ribs but are actually unrelated (see Figure~\ref{fig:validation-SD-2-70-90-ribs-extraneous}). Whilst an attempt has been made to exclude such regions based on size or location in the image (see Listing~\ref{code:featureid-3d-ribsidentification}), better localization will ultimately be necessary to eliminate this problem. A further issue is that TODO
 
 \end{itemize}
 
@@ -221,14 +221,28 @@ The second case study was of slices $70$--$90$ from series $2$ of a patient call
 %---
 \begin{stusubfig}{p}
 	\subfigure[]
-	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-kidneysdifference-a.png}}%
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-kidneys-difference-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[]
-	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-kidneysdifference-b.png}}%
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-kidneys-difference-b.png}}%
 \caption{The difference (shown in yellow) between the gold standard and automated kidneys identification results for SD-2 is due to the underlying hierarchical segmentation, as seen in (b) -- the automated result identifies just the main kidney region, missing the real boundary in places}
-\label{fig:validation-SD-2-70-90-kidneysdifference}
+\label{fig:validation-SD-2-70-90-kidneys-difference}
+\end{stusubfig}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[]
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-ribs-extraneous-a-labelled.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-ribs-extraneous-b.png}}%
+\caption{The ribs identifier can sometimes erroneously identify small, bright regions of the image as ribs -- better localization is needed to prevent such mistakes}
+\label{fig:validation-SD-2-70-90-ribs-extraneous}
 \end{stusubfig}
 %---
 
