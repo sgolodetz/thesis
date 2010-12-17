@@ -136,17 +136,6 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 
 \iffalse
 
-Aorta
-
-- Fairly good (Dice = 0.811)
-- Floods out into a neighbouring blood vessel somewhat -- which one? same reason as for BT-2?
-
-Kidneys
-
-- Only one -- why? (can't remember)
-- Good (Dice = 0.931)
-- Automated result not quite as smooth -- why? (primarily an issue with the underlying segmentation)
-
 Liver
 
 - Good (Dice = 0.932)
@@ -177,7 +166,17 @@ Spleen
 
 \fi
 
-TODO
+The second case study was of slices $70$--$90$ from series $2$ of a patient called SD. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-SD-2-70-90} and Figure~\ref{fig:validation-SD-2-70-90}. The identified features can be analysed as follows:
+%
+\begin{itemize}
+
+\item \emph{Aorta}. As with the BT-2 series, the aorta is identified fairly well in this case (with a Dice similarity coefficient of $0.811$), but there is the same tendency as there to flood into neighbouring blood vessels somewhat. Figure~\ref{fig:validation-SD-2-70-90}(c) illustrates that the liver has also flooded out too far in this series, which interferes with the bottom part of the aorta in the figures (although note that since multi-feature selections can overlap, this only affects the visualization of the aorta and not its underlying identification result).
+
+\item \emph{Kidneys}. Only the left kidney was relevant in this case, as the patient had previously undergone a nephrectomy on their right kidney (i.e.~their right kidney had been taken out). The automated result for the left kidney is good (with a Dice similarity coefficient of $0.931$), although it is not quite as smooth as the gold standard in places. This is primarily an issue with the underlying hierarchical segmentation (see Figure~\ref{fig:validation-SD-2-70-90-kidneysdifference}).
+
+\item \emph{Liver}. TODO
+
+\end{itemize}
 
 %---
 \begin{table}[p]
@@ -220,6 +219,20 @@ TODO
 	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-GminusT.png}}%
 \caption{A visual comparison of the automated and gold standard results for the SD-2-70-90 feature identification case study}
 \label{fig:validation-SD-2-70-90}
+\end{stusubfig}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[]
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-kidneysdifference-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.45\linewidth]{validation/validation-SD-2-70-90-kidneysdifference-b.png}}%
+\caption{The difference (shown in yellow) between the gold standard and automated kidneys identification results for SD-2 is due to the underlying hierarchical segmentation, as seen in (b) -- the automated result identifies just the main kidney region, missing the real boundary in places}
+\label{fig:validation-SD-2-70-90-kidneysdifference}
 \end{stusubfig}
 %---
 
