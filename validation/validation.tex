@@ -242,11 +242,6 @@ Liver
 - General outline isn't too bad
 - Missed medial segment of left lobe -- why? (check scans)
 
-Spine
-
-- Good (Dice = 0.947)
-- Minor differences are probably due to slight subjectivity of the gold standard (but check scans)
-
 \fi
 
 The third case study was of slices $110$--$130$ from series $2$ of a patient called MC. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-MC-2-110-130} and Figures~\ref{fig:validation-MC-2-110-130} and \ref{fig:validation-MC-2-110-130-differences}. The identified features can be analysed as follows:
@@ -263,7 +258,7 @@ The third case study was of slices $110$--$130$ from series $2$ of a patient cal
 
 \item \emph{Spinal Canal}. The spinal canal is identified well in this case, with a Dice similarity coefficient of $0.933$. As in previous cases, however, the automated result is slightly oversegmented, for the same reasons as outlined there.
 
-\item \emph{Spine}. TODO
+\item \emph{Spine}. The spine result is good in this case, with a Dice similarity coefficient of $0.947$. The main issue to be tackled is that the top-most ribs are inadvertently identified as spine rather than rib here, as previously mentioned. As in the BT-2 case, the identifier also misses the transverse processes of the spine in places.
 
 \item \emph{Spleen}. As in previous cases, the spleen identifier primarily suffers from undersegmentation here. It produces what is in many ways a promising result (with a Dice similarity coefficient of $0.898$), but is not yet at the point where it can fully identify the spleen as a whole.
 
