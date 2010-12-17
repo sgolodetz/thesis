@@ -136,12 +136,6 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 
 \iffalse
 
-Liver
-
-- Good (Dice = 0.932)
-- Doesn't miss a major part of the liver this time, because it's connected in the slices chosen
-- Floods out towards the aorta -- why? (probably a weak edge)
-
 Ribs
 
 - Fairly good (Dice = 0.819)
@@ -174,7 +168,9 @@ The second case study was of slices $70$--$90$ from series $2$ of a patient call
 
 \item \emph{Kidneys}. Only the left kidney was relevant in this case, as the patient had previously undergone a nephrectomy on their right kidney (i.e.~their right kidney had been taken out). The automated result for the left kidney is good (with a Dice similarity coefficient of $0.931$), although it is not quite as smooth as the gold standard in places. This is primarily an issue with the underlying hierarchical segmentation (see Figure~\ref{fig:validation-SD-2-70-90-kidneysdifference}).
 
-\item \emph{Liver}. TODO
+\item \emph{Liver}. The automated liver result is good in this case (with a Dice similarity coefficient of $0.932$). Unlike in the BT-2 case study, no major part of the liver is missed here, because the liver is connected in the slices chosen. However, as before, there is flooding beyond the boundary of the liver in the direction of the aorta, due to weak edges in the image.
+
+\item \emph{Ribs}. TODO
 
 \end{itemize}
 
