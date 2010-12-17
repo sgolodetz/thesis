@@ -136,16 +136,6 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 
 \iffalse
 
-Spinal Canal
-
-- Fairly good (Dice = 0.862)
-- Somewhat oversegmented -- for the same reasons mentioned for BT-2
-
-Spine
-
-- Good (Dice = 0.965), partly on account of this patient's notably high bone density
-- Only minor differences, largely due to slight subjectivity of gold standard
-
 Spleen
 
 - Fairly good (Dice = 0.874)
@@ -166,7 +156,11 @@ The second case study was of slices $70$--$90$ from series $2$ of a patient call
 
 \item \emph{Ribs}. Whilst the ribs result is fairly good overall, with a Dice similarity coefficient of $0.819$, there are nevertheless some problems to be tackled. One of these is that the automated identifier can sometimes erroneously identify small, bright regions in the image that look like ribs but are actually unrelated (see Figure~\ref{fig:validation-SD-2-70-90-ribs-extraneous}). Whilst an attempt has been made to exclude such regions based on size or location in the image (see Listing~\ref{code:featureid-3d-ribsidentification}), better localization will ultimately be necessary to eliminate this problem. A further issue is that small parts of several ribs are missed because they appear greyer than usual in the images -- as shown in Figure~\ref{fig:validation-SD-2-70-90}(d), which shows the parts of features that have been missed, this is a relatively minor problem as far as each individual rib is concerned, but it is somewhat more significant from a statistical standpoint.
 
-\item \emph{Spinal Canal}. TODO
+\item \emph{Spinal Canal}. The spinal canal has been relatively well identified in this case, with a Dice similarity coefficient of $0.862$ and only $101$ voxels missed. However, as in the BT-2 case study (and for the same reasons), it is oversegmented within the spinal column.
+
+\item \emph{Spine}. The spine is particularly well identified in this case (with a Dice similarity coefficient of $0.965$. This is primarily a result of this patient's notably high bone density (notice how white the spine appears in Figure~\ref{fig:validation-SD-2-70-90-ribs-extraneous}(a)). There are some minor boundary differences between the automated identification and gold standard, but these do not greatly affect the results.
+
+\item \emph{Spleen}. TODO
 
 \end{itemize}
 
