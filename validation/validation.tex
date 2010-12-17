@@ -235,19 +235,6 @@ The second case study was of slices $70$--$90$ from series $2$ of a patient call
 
 \iffalse
 
-Aorta
-
-- Good (Dice = 0.908)
-- Minor differences -- why? (primarily a result of the underlying segmentation)
-- Overlapped by the liver, which has flooded out too far
-  - The "easy" way to fix this is to unidentify as liver anything also marked as aorta, and then to find the connected components of the remaining liver bits and only keep sensible ones -- but that doesn't solve the problem in the general case
-
-Kidneys
-
-- Fairly good (Dice = 0.906)
-- Flooded out a bit too far on the left kidney -- why? (check scans)
-- The automated result is a bit smoother than the gold standard (not surprising, the slices are 5mm thick and the Laplacian smoothing is not perfect)
-
 Liver
 
 - Fairly good (Dice = 0.848)
@@ -279,8 +266,16 @@ Spleen
 \fi
 
 The third case study was of slices $110$--$130$ from series $2$ of a patient called MC. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-MC-2-110-130} and Figures~\ref{fig:validation-MC-2-110-130} and \ref{fig:validation-MC-2-110-130-differences}. The identified features can be analysed as follows:
+%
+\begin{itemize}
 
-TODO
+\item \emph{Aorta}. As can be seen in Figures~\ref{fig:validation-MC-2-110-130-differences}(c) and (d), the aorta is identified well in this case, with a Dice similarity coefficient of $0.908$. The differences there are are largely due to the underlying hierarchical segmentation. A more noticeable issue in this case is that the automated liver result has flooded out too far (see Figure~\ref{fig:validation-MC-2-110-130})(a), obscuring the generally correct aorta result. A partial way of fixing this in the specific case shown here would be to unidentify as liver anything also marked as aorta, find the connected components of the remaining liver and keep only the largest one -- however, this would not solve the underlying problem of weak edges around the liver.
+
+\item \emph{Kidneys}. The kidneys result for this case is quite good, with a Dice similarity coefficient of $0.906$. However, both kidneys suffer from oversegmentation, as can be seen in Figure~\ref{fig:validation-MC-2-110-130-differences}(c). In the case of the left kidney, this is caused by a weak edge (see Figure~\ref{fig:validation-MC-2-110-130-leftkidney-weakedge}). For the right kidney, it is due to a subjective difference in how the kidney ought to be segmented -- the automated result chooses to include the renal pelvis in the segmentation result (see Figure~\ref{fig:validation-MC-2-110-130-rightkidney-difference}(a)), whilst the gold standard chooses to exclude it (see Figure~\ref{fig:validation-MC-2-110-130-rightkidney-difference}(b)). Note that in both cases, the automated result is less `stair-stepped' than the gold standard -- this is not surprising, because the slices in the image volume used are quite thick ($5\mathit{mm}$) and the gold standard was produced by drawing round the kidneys slice-by-slice, which inevitably leads to a somewhat stair-stepped result.
+
+\item \emph{Liver}. TODO
+
+\end{itemize}
 
 %---
 \begin{table}[p]
@@ -337,6 +332,34 @@ TODO
 	\subfigure[$G' - A'$]{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-GminusT-noliver.png}}%
 \caption{The differences between the automated and gold standard results (with and without the liver) shown in Figure~\ref{fig:validation-MC-2-110-130}}
 \label{fig:validation-MC-2-110-130-differences}
+\end{stusubfig}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[]
+	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-leftkidney-weakedge-a-labelled.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-leftkidney-weakedge-b.png}}%
+\caption{MC-2's left kidney shares a weak edge with an adjoining tumour (a) -- this leads to a less than perfect segmentation of the image (b), and causes the automated identifier to oversegment the left kidney}
+\label{fig:validation-MC-2-110-130-leftkidney-weakedge}
+\end{stusubfig}
+%---
+
+%---
+\begin{stusubfig}{p}
+	\subfigure[Automated Result]
+	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-rightkidney-difference-a.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[Gold Standard]
+	{\includegraphics[width=.45\linewidth]{validation/validation-MC-2-110-130-rightkidney-difference-b.png}}%
+\caption{The automated result for MC-2's right kidney chooses to include the renal pelvis, whilst the gold standard chooses not to include it}
+\label{fig:validation-MC-2-110-130-rightkidney-difference}
 \end{stusubfig}
 %---
 
