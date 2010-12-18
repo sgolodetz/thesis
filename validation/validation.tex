@@ -380,12 +380,6 @@ Spinal Canal
 - Fairly good (Dice = 0.856)
 - Again, somewhat oversegmented -- same reasons as for other series
 
-Spine
-
-- Good (Dice = 0.925)
-- Automated result missing some of the bits sticking out -- why? (primarily because using branch node filtering instead of region growing, but also because some of the bits may be quite dark)
-- Also segmenting bits it shouldn't -- which bits? (check scans)
-
 Spleen
 
 - Completely missed -- why? (perhaps because not enough of it in the slices chosen -- check scans)
@@ -399,6 +393,16 @@ The final case study is of slices $60$--$80$ from series $2$ of a patient called
 \item \emph{Aorta}. TODO
 
 \item \emph{Kidneys}. As can be seen in Figures~\ref{fig:validation-EB-2-60-80}(a) and (b), the right kidney result is good in this case (having a Dice similarity coefficient of $0.932$). Where there are minor differences, these are primarily around the renal pelvis. The left kidney, on the other hand, is completely missed by the automated identifier due to a large tumour (see Figure~\ref{fig:validation-EB-2-60-80-leftkidney-tumour}).
+
+\item \emph{Liver}. TODO
+
+\item \emph{Ribs}. TODO
+
+\item \emph{Spinal Canal}. TODO
+
+\item \emph{Spine}. The spine is identified fairly well in this case (with a Dice similarity coefficient of $0.925$), but as in previous cases, the transverse processes are missed. This is mainly because they tend to be darker than the rest of the spine on the scans, causing the grey level-based hierarchical segmentation approach used to merge them into surrounding regions rather than the spine. The automated identifier also slightly oversegments the spine in places (see Figure~\ref{fig:validation-EB-2-60-80}(c)), but in practice this amounts to relatively minor boundary issues spread over multiple slices (note that Figure~\ref{fig:validation-EB-2-60-80}(c) makes the result look worse than it is, because the oversegmentations of the spine and spinal canal appear in roughly the same place in the image).
+
+\item \emph{Spleen}. TODO
 
 \end{itemize}
 
