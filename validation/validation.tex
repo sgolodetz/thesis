@@ -366,12 +366,6 @@ Aorta
 - Automated result sticks out too far at the front -- why?
 - Automated result is also missing bits in places -- where, and why? (check scans)
 
-Liver
-
-- Good (0.948)
-- Missing small bits of the left lobe -- why? (primarily because they're not connected in the slices chosen)
-- Missing bits at the back -- why? (check scans)
-
 \fi
 
 The final case study is of slices $60$--$80$ from series $2$ of a patient called EB. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-EB-2-60-80} and Figure~\ref{fig:validation-EB-2-60-80}. The identified features can be analysed as follows:
@@ -382,9 +376,9 @@ The final case study is of slices $60$--$80$ from series $2$ of a patient called
 
 \item \emph{Kidneys}. As can be seen in Figures~\ref{fig:validation-EB-2-60-80}(a) and (b), the right kidney result is good in this case (having a Dice similarity coefficient of $0.932$). Where there are minor differences, these are primarily around the renal pelvis. The left kidney, on the other hand, is completely missed by the automated identifier due to a large tumour (see Figure~\ref{fig:validation-EB-2-60-80-leftkidney-tumour}).
 
-\item \emph{Liver}. TODO
+\item \emph{Liver}. The liver is identified well here, with a Dice similarity coefficient of $0.948$. However, some pieces of the liver are still missed, as shown in Figure~\ref{fig:validation-EB-2-60-80}(d). Specifically, the small piece of the lateral segment of the left lobe at the front of the liver is missed because it is disconnected from the rest of the liver in the slices chosen, and small parts of the right lobe and the medial segment of the left lobe are missed because the mean grey values of the regions representing them are slightly below the chosen threshold of $150$. Note that both of these issues were also observed in the previous case studies, suggesting that they are not series-specific. This will be discussed further when critically assessing the liver identifier in the next chapter.
 
-\item \emph{Ribs}. The ribs result is poor in this case, with a Dice similarity coefficient of only $0.488$. The primary cause is oversegmentation, due to this series containing many small, bright regions in the image that are not ribs (much like the example shown in Figure~\ref{fig:validation-SD-2-70-90-ribs-extraneous}). Whilst the current ribs identifier does manage to exclude some of these regions on size grounds, a better localization approach is needed to overcome this problem more generally.
+\item \emph{Ribs}. The ribs result is poor in this case, with a Dice similarity coefficient of only $0.488$. The primary cause is oversegmentation, due to this series containing many small, bright regions in the image that are not ribs (much like the example shown in Figure~\ref{fig:validation-SD-2-70-90-ribs-extraneous} for the SD-2 case study). Whilst the current ribs identifier does manage to exclude some of these regions on size grounds, a better localization approach is needed to overcome this problem more generally.
 
 \item \emph{Spinal Canal}. As witnessed by a Dice similarity coefficient of $0.856$, the spinal canal result is quite good in this case. However, as in previous cases, it is still somewhat oversegmented within the spinal column.
 
