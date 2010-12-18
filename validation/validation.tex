@@ -358,21 +358,11 @@ Another problem with the liver identification in this case is that it misses bot
 \subsection{Series EB-2, Slices $60$--$80$}
 %################################################
 
-\iffalse
-
-Aorta
-
-- Fairly good (Dice = 0.849)
-- Automated result sticks out too far at the front -- why?
-- Automated result is also missing bits in places -- where, and why? (check scans)
-
-\fi
-
 The final case study is of slices $60$--$80$ from series $2$ of a patient called EB. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-EB-2-60-80} and Figure~\ref{fig:validation-EB-2-60-80}. The identified features can be analysed as follows:
 %
 \begin{itemize}
 
-\item \emph{Aorta}. TODO
+\item \emph{Aorta}. The aorta result is reasonable in this case, with a Dice similarity coefficient of $0.849$. However, there is some flooding into adjacent blood vessels at the top of the aorta due to weak image edges. Part of the aorta is also undersegmented at the bottom due to calcification of the artery, which manifests itself as bright regions in the CT scans.
 
 \item \emph{Kidneys}. As can be seen in Figures~\ref{fig:validation-EB-2-60-80}(a) and (b), the right kidney result is good in this case (having a Dice similarity coefficient of $0.932$). Where there are minor differences, these are primarily around the renal pelvis. The left kidney, on the other hand, is completely missed by the automated identifier due to a large tumour (see Figure~\ref{fig:validation-EB-2-60-80-leftkidney-tumour}).
 
