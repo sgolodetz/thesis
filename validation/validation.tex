@@ -37,7 +37,7 @@ These were then used to calculate the Dice similarity coefficient for each featu
 \subsection{Series BT-2, Slices $60$--$80$}
 %################################################
 
-The first case study was of slices $60$--$80$ from series $2$ of a patient called BT. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-BT-2-60-80} and Figure~\ref{fig:validation-BT-2-60-80}. The identified features can be analysed as follows:
+The first case study is of slices $60$--$80$ from series $2$ of a patient called BT. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-BT-2-60-80} and Figure~\ref{fig:validation-BT-2-60-80}. The identified features can be analysed as follows:
 %
 \begin{itemize}
 
@@ -134,7 +134,7 @@ The first case study was of slices $60$--$80$ from series $2$ of a patient calle
 \subsection{Series SD-2, Slices $70$--$90$}
 %################################################
 
-The second case study was of slices $70$--$90$ from series $2$ of a patient called SD. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-SD-2-70-90} and Figure~\ref{fig:validation-SD-2-70-90}. The identified features can be analysed as follows:
+The second case study is of slices $70$--$90$ from series $2$ of a patient called SD. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-SD-2-70-90} and Figure~\ref{fig:validation-SD-2-70-90}. The identified features can be analysed as follows:
 %
 \begin{itemize}
 
@@ -233,7 +233,7 @@ The second case study was of slices $70$--$90$ from series $2$ of a patient call
 \subsection{Series MC-2, Slices $110$--$130$}
 %################################################
 
-The third case study was of slices $110$--$130$ from series $2$ of a patient called MC. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-MC-2-110-130} and Figures~\ref{fig:validation-MC-2-110-130} and \ref{fig:validation-MC-2-110-130-differences}. The identified features can be analysed as follows:
+The third case study is of slices $110$--$130$ from series $2$ of a patient called MC. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-MC-2-110-130} and Figures~\ref{fig:validation-MC-2-110-130} and \ref{fig:validation-MC-2-110-130-differences}. The identified features can be analysed as follows:
 %
 \begin{itemize}
 
@@ -364,12 +364,6 @@ Aorta
 - Automated result sticks out too far at the front -- why?
 - Automated result is also missing bits in places -- where, and why? (check scans)
 
-Kidneys
-
-- Right kidney is good (Dice = 0.932)
-- Left kidney is completely missed -- why? (primarily because of the tumour)
-- Minor differences for right kidney are probably due to slight subjectivity of gold standard
-
 Liver
 
 - Good (0.948)
@@ -394,11 +388,19 @@ Spine
 
 Spleen
 
-- Completely missed -- why? (check scans)
+- Completely missed -- why? (perhaps because not enough of it in the slices chosen -- check scans)
 
 \fi
 
-TODO (the left kidney is missed due to a tumour; the spleen is missed because there's not enough of it in the slices chosen (check this); the ribs are oversegmented because there are lots of unusually bright non-rib bits in EB-2)
+The final case study is of slices $60$--$80$ from series $2$ of a patient called EB. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-EB-2-60-80} and Figure~\ref{fig:validation-EB-2-60-80}. The identified features can be analysed as follows:
+%
+\begin{itemize}
+
+\item \emph{Aorta}. TODO
+
+\item \emph{Kidneys}. As can be seen in Figures~\ref{fig:validation-EB-2-60-80}(a) and (b), the right kidney result is good in this case (having a Dice similarity coefficient of $0.932$). Where there are minor differences, these are primarily around the renal pelvis. The left kidney, on the other hand, is completely missed by the automated identifier due to a large tumour (see Figure~\ref{fig:validation-EB-2-60-80-leftkidney-tumour}).
+
+\end{itemize}
 
 %---
 \begin{table}[p]
@@ -443,6 +445,10 @@ TODO (the left kidney is missed due to a tumour; the spleen is missed because th
 \caption{A visual comparison of the automated and gold standard results for the EB-2-60-80 feature identification case study}
 \label{fig:validation-EB-2-60-80}
 \end{stusubfig}
+%---
+
+%---
+\stufigex{height=8cm}{validation/validation-EB-2-60-80-leftkidney-tumour.png}{This slice shows why the automated identifier misses EB's left kidney -- we are trying to identify the region bounded by the yellow contour (the gold standard result), but the large tumour affecting the kidney causes the remaining kidney region to be too small to be identified successfully}{fig:validation-EB-2-60-80-leftkidney-tumour}{p}
 %---
 
 \afterpage{\clearpage}
