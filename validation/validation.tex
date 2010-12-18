@@ -380,10 +380,6 @@ Spinal Canal
 - Fairly good (Dice = 0.856)
 - Again, somewhat oversegmented -- same reasons as for other series
 
-Spleen
-
-- Completely missed -- why? (perhaps because not enough of it in the slices chosen -- check scans)
-
 \fi
 
 The final case study is of slices $60$--$80$ from series $2$ of a patient called EB. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-EB-2-60-80} and Figure~\ref{fig:validation-EB-2-60-80}. The identified features can be analysed as follows:
@@ -402,7 +398,7 @@ The final case study is of slices $60$--$80$ from series $2$ of a patient called
 
 \item \emph{Spine}. The spine is identified fairly well in this case (with a Dice similarity coefficient of $0.925$), but as in previous cases, the transverse processes are missed. This is mainly because they tend to be darker than the rest of the spine on the scans, causing the grey level-based hierarchical segmentation approach used to merge them into surrounding regions rather than the spine. The automated identifier also slightly oversegments the spine in places (see Figure~\ref{fig:validation-EB-2-60-80}(c)), but in practice this amounts to relatively minor boundary issues spread over multiple slices (note that Figure~\ref{fig:validation-EB-2-60-80}(c) makes the result look worse than it is, because the oversegmentations of the spine and spinal canal appear in roughly the same place in the image).
 
-\item \emph{Spleen}. TODO
+\item \emph{Spleen}. As with the left kidney, the spleen is unfortunately completely missed in this case. This is because in the partition forest for this image volume, there is no suitable spleen seed in layer $1$ (see Figure~\ref{fig:validation-EB-2-60-80-spleen-missed}) due to the region merging performed by the waterfall being slower than usual in this case. The underlying cause of this is that the CT window (see \S\ref{subsubsec:segmentation-watershed-ct-windowing}) stored with the EB-2 images is $50/350$ rather than the usual $40/400$ abdominal window. This affects the brightness and contrast of the image, and hence the way in which regions are merged. (When a $40/400$ window is used, a slightly better spleen result is obtained.) A sensible way to handle this issue is to ensure that a consistent window is used when segmenting the images, and further work should take care to do this.
 
 \end{itemize}
 
@@ -453,6 +449,10 @@ The final case study is of slices $60$--$80$ from series $2$ of a patient called
 
 %---
 \stufigex{height=8cm}{validation/validation-EB-2-60-80-leftkidney-tumour.png}{This slice shows why the automated identifier misses EB's left kidney -- we are trying to identify the region bounded by the yellow contour (the gold standard result), but the large tumour affecting the kidney causes the remaining kidney region to be too small to be identified successfully}{fig:validation-EB-2-60-80-leftkidney-tumour}{p}
+%---
+
+%---
+\stufigex{height=8cm}{validation/validation-EB-2-60-80-spleen-missed.png}{The spleen is missed in the EB-2 case study because there is no suitable spleen seed in layer $1$ (all the regions are too small). The gold standard outline of the spleen is shown in green, for comparison purposes.}{fig:validation-EB-2-60-80-spleen-missed}{p}
 %---
 
 \afterpage{\clearpage}
