@@ -1,0 +1,79 @@
+Issues:
+
+## Aorta - (1) Slight flooding into surrounding blood vessels caused by weak edges; (2) Sometimes less than perfect underlying segmentation
+
+  These are really the same problem in many ways. The major issue (given that we're not doing any region growing -- see the listing) is that the underlying segmentation can go wrong due to weak boundaries in the image. One possible fix would be the "initialise a level set" approach.
+
+## Kidneys - (1) Renal pelvis sometimes slightly oversegmented; (2) Tumours interfere with detection
+
+  Non-pathological kidneys are identified fairly well in contrast images.
+
+  The main problem caused by tumours is that they interfere with the underlying segmentation, causing a kidney not to be a single region. Since the current approach uses branch node filtering, this is a major problem. Switching to stratified region growing instead might help alleviate this somewhat. However, it is not always clear where the boundary between a kidney and a tumour lies (show example from BT).
+
+  Oversegmentation of the renal pelvis is also due to the underlying segmentation -- the bit inside the renal pelvis gets merged into the rest of the kidney. This may or may not be a major problem, depending on context.
+
+## Liver - (1) Flooding (sometimes serious) into surrounding features, particularly blood vessels; (2) Pieces missed due to connectivity; (3) Pieces missed due to low mean grey values falling below threshold
+
+  A useful start has been made, but the flooding is currently a major issue -- a hybrid level sets approach might profitably be used here.
+
+  Level sets (initialised by the liver seed found) might be preferable to try and reduce flooding into adjacent features. Connectivity issue can in principle be fixed by using multiple seeds. Low mean grey value issue should be helped by level set approach, but another option would be to derive an appropriate threshold from the grey value histogram of a particular image volume.
+
+## Ribs - (1) Conflict between spine and ribs - spine always wins at present, which can cause undersegmentation of ribs; (2) Small, bright regions can be erroneously identified as rib; (3) Some small greyer bits of rib can be missed
+
+  The spine/rib conflict needs a lot of further work. Better localization will be needed to exclude erroneous regions.
+
+## Spinal Canal - (1) Slightly oversegmented within spinal column (otherwise good)
+
+  Generally fairly good; the oversegmentation could perhaps be improved by using the current result to initialise a level sets approach that can refine the precise boundary.
+
+## Spine - (1) Transverse processes often missed; (2) Sometimes slightly oversegmented at the expense of the ribs; (3) Can be minor boundary issues in places
+
+  Generally fairly good, but further work needed on the details. Requirement that an individual region appears in every slice is probably a bit too draconian and should be relaxed.
+
+## Spleen - (1) Undersegmented because only finding a seed at present; (2) A poor underlying segmentation (e.g. caused by using a different CT window) can cause the spleen to be missed
+
+  This is showing signs of promise -- provided the image is segmented using the appropriate window, a reasonable seed is often found -- but is clearly a prime candidate for further work.
+
+## GENERAL ISSUES - (1) Focused on a small number of slices at a time (due to address space limitations on a 32-bit machine), further work will be needed when running on different numbers of slices; (2) The underlying segmentation is useful for finding suitable regions, but a hindrance when it comes to identifying the exact boundaries of features -- a hybrid approach involving level sets is a profitable area for further work; (3) Further work needs to be done on analysing which identification constraints are too rigid / too weak
+
+***
+
+BT-2
+
+Aorta - Weak boundary (floods out slightly), imperfect partition forest
+Right kidney - Renal pelvis slightly oversegmented
+Liver - Left lobe missed due to connectivity issue, weak boundary causes flooding towards aorta
+Ribs - Some ribs incorrectly identified as spine
+Spinal Canal - Slightly oversegmented within spinal column
+Spine - Slightly oversegmented at expense of ribs, transverse processes missed
+Spleen - Undersegmented because only finding seed
+
+SD-2
+
+Aorta - Floods out slightly
+Left kidney - Not totally smooth due to imperfect partition forest
+Liver - Weak boundary causes flooding towards aorta
+Ribs - Small, bright regions erroneously identified as rib; some small greyer bits of rib are missed
+Spinal Canal - Slightly oversegmented within spinal column
+Spine - Minor boundary differences, but pretty good
+Spleen - Undersegmented because only finding seed
+
+MC-2
+
+Aorta - Minor issues with the underlying hierarchical segmentation
+Kidneys - Good, but some oversegmentation - left kidney has a weak edge with an adjoining tumour, right kidney oversegments renal pelvis
+Liver - Weak boundaries cause significant flooding into aorta; parts of left lobe missed due to low mean grey values
+Ribs - Top-most ribs identified as spine; some greyer bits of rib are missed
+Spinal canal - Slightly oversegmented within spinal column
+Spine - Slightly oversegmented at expense of ribs, transverse processes missed
+Spleen - Undersegmented because only finding seed
+
+EB-2
+
+Aorta - Floods out slightly; partly undersegmented at bottom due to calcification
+Kidneys - Right kidney slightly oversegments renal pelvis; left kidney missed due to large tumour
+Liver - Small piece of lateral segment of left lobe missed due to connectivity issue; other small bits of liver missed due to low mean grey values
+Ribs - Small, bright regions erroneously identified as rib
+Spinal Canal - Slightly oversegmented within spinal column
+Spine - Transverse processes missed; minor boundary oversegmentation
+Spleen - Missed due to a poor underlying segmentation caused by using a different CT window

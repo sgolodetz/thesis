@@ -146,17 +146,76 @@ Both of my forest construction methods could benefit from more efficient impleme
 \section{Feature Identification Techniques}
 %##################################################################################################
 
-In Chapter~\ref{chap:featureid}, I described a number of 2D and 3D techniques for identifying abdominal features. The 3D identifiers in particular were quantitatively validated in Chapter~\ref{chap:validation}, whilst the 2D spine identifier was qualitatively assessed in the original paper that introduced it \cite{gvcispa09}.
+In Chapter~\ref{chap:featureid}, I described a number of 2D and 3D techniques for identifying abdominal features. The 3D identifiers in particular were quantitatively validated in Chapter~\ref{chap:validation}, whilst the 2D spine identifier was qualitatively analysed in the original paper that introduced it \cite{gvcispa09}. Based on this earlier analysis, each of the identifiers can now be critically evaluated.
 
 %################################################
 \subsection{2D Identification Techniques}
 %################################################
 
-TODO
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Ribs}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The 2D ribs identifier, described in \S\ref{?}, uses branch node filtering and Bayesian classification to identify regions in the partition forest that were potential ribs. This can work well provided that the ribs are represented by single, fairly bright regions in the partition forest, but it fails to identify multi-region ribs or those that are too dark. Additionally, a lack of sufficient data on which to train the Bayesian classifier meant that the probability distributions involved had to be constructed manually in this instance to avoid overfitting to a small number of series. The result is passable, but far better results can be obtained using the 3D ribs identifier assessed in the next section.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Spine}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The 2D spine identifier, described in \S\ref{?}, uses a stratified region growing approach. The results, as qualitatively assessed in \cite{gvc09}, are relatively good, with more than $85\%$ of the cases tested there being visually assessed as either perfect or very good. The remaining issue to be addressed is that both dark pieces of the spine, and small pieces that are disconnected from the main body of the spine, can sometimes be missed. However, for the most part, this identifier works well, even identifying some of the transverse processes of the spine that the corresponding 3D identifier is prone to miss.
 
 %################################################
 \subsection{3D Identification Techniques}
 %################################################
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Aorta}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The case studies in Chapter~\ref{chap:validation} showed that the aorta identifier is capable of producing relatively good results. One issue that does affect it is that the underlying segmentation performed by the watershed and waterfall transforms is at times less than ideal, often generating regions that segment the aorta relatively well, but also contain small pieces of surrounding blood vessels (see Figure~\ref{?}). TODO
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Kidneys}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As demonstrated in the case studies, the current kidneys identifier is fairly good at identifying non-pathological kidneys (that is, kidneys that are not diseased). However, it struggles to identify kidneys affected by tumours, because tumours tend to interfere with the underlying segmentation and prevent there from being a single region in the partition forest that can be identified as kidney. Since the current approach uses branch node filtering (see Listing~\ref{code:featureid-3d-kidneysidentification}), this can cause an entire kidney to be missed in the worst case. One potential way of tackling this problem would be to use a different approach based on stratified region growing. The idea would be to look for smaller regions that could represent part of a kidney, and then flood out from them to identify the rest of the normal kidney tissue. This would still be liable to encounter problems where there are weak edges between the kidneys and surrounding features, however. For such cases, an approach based on level sets might be a more appropriate choice.
+
+A second problem highlighted by the case studies is that there is a tendency to slightly oversegment the part of a kidney known as the \emph{renal pelvis}. This is because the blood vessels leading into the renal pelvis (the renal artery and vein) share roughly the same grey values as the surrounding kidney, making the precise boundary in some cases difficult to determine. For most purposes, this is a relatively minor defect in the identified kidneys.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Liver}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Whilst the liver identifier does perform relatively well in some of the case studies, it is clear that it could benefit from further refinement in at least three specific areas:
+%
+\begin{enumerate}
+
+\item Flooding out beyond the liver boundary towards the aorta must be prevented.
+\item Multiple disconnected pieces of the liver must be identified -- at present, the identifier only focuses on the largest connected component of the liver.
+\item Pieces of the liver must not be excluded solely on the basis of their mean grey value -- at present, the identifier avoids growing the liver into regions whose mean grey value is below a somewhat arbitrary threshold of $150$.
+
+\end{enumerate}
+%
+A better approach might be to find multiple liver seeds using branch node filtering, and use them to initialise a level sets approach. The appropriate level set parameters would need to be derived from the input image. Level sets could be used to help prevent flooding beyond the liver boundary because they allow the local curvature of the resulting contour to be controlled (see Chapter~\ref{chap:background}).
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Ribs}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The current ribs identifier works well in many cases. However, the case studies illustrated two major areas in which it could be improved:
+%
+\begin{enumerate}
+
+\item It is important to find a way of resolving the conflict between identifying regions as rib and identifying them as spine. This occurs because the two are generally connected in the slice sets chosen, and it is not always evident where one ends and the other begins due to their similar grey value distributions.
+\item Small, bright, non-rib regions in the images must be excluded from identification.
+
+\end{enumerate}
+%
+The first problem could potentially be tackled by TODO. The second problem requires an improved approach to localizing ribs in the images -- for instance, it would potentially be possible to detect the outer boundary of the body and check that the perpendicular distance betwen the centroid of a proposed rib region and this boundary was less than a certain threshold.
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\subsubsection{Spinal Canal}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 TODO
 
