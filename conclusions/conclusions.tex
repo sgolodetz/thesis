@@ -1,4 +1,4 @@
-\chapter{Concluding Remarks and Further Work}
+\chapter[Concluding Remarks and Further Work]{Concluding Remarks and\\Further Work}
 \label{chap:conclusions}
 
 %##################################################################################################
@@ -7,7 +7,7 @@
 
 An ability to edit the results of segmentation and feature identification algorithms will always be important when the treatment of real people is involved, because unless identification techniques become $100\%$ accurate in the future (a somewhat unlikely prospect), medics will always need to confirm that a program's output is correct before taking potentially critical decisions based upon it.
 
-In that context, this thesis has demonstrated the potential of partition forests as an editable image representation for segmentation and multi-organ identification in computerised tomography (CT) scans of the abdomen. It has done so by making the following specific contributions (these are cross-referenced with the contributions claimed in the introduction using bracketed numbers, for the purpose of increased clarity):
+In that context, this thesis has demonstrated the potential of partition forests as an editable image representation for segmentation and multi-organ identification in computerised tomography (CT) scans of the abdomen. It has done so by making the following specific contributions (these are cross-referenced with the contributions claimed in the introduction, using bracketed numbers, for the purpose of increased clarity):
 %
 \begin{itemize}
 
@@ -68,7 +68,27 @@ There are a number of aspects of the segmentation process used to construct part
 
 \subsection{Feature Identification Refinement}
 
-TODO
+There are many ways in which the feature identification techniques described in this thesis could benefit from further work (in particular, see Chapter~\ref{chap:assessment} for a detailed, per-identifier discussion), but these are some of the most important:
+%
+\begin{itemize}
+
+\item A number of the identifiers currently suffer from flooding beyond the desired feature boundary due to weak edges in the underlying image. This is a common trait of region growing algorithms; a potentially better approach in the longer-term is to use the partition forest to identify initial seeds for these features, and then use those seeds to initialise a level sets approach. Whilst this hybrid approach will not be straightforward from an automation perspective (level sets approaches often require a significant amount of tuning to produce the desired results), it may be possible to use it to prevent flooding by carefully controlling the curvature of the resulting contours.
+
+\item The way in which the ribs are localized needs to be improved. The current approach works relatively well in many cases, but sometimes fails to exclude small, bright rib-like regions in the images from consideration. A better approach might involve detecting the outside of the body in the images and ensuring that the perpendicular distance between a rib and this outer contour is quite small.
+
+\item Many of the feature identifiers currently use empirically-determined grow conditions that depend on somewhat arbitrary mean grey value thresholds. A better approach might be (a) to derive the threshold values from the specific images under consideration in each case, and (b) to base the grow conditions on more than just the mean grey values involved.
+
+\item At present, it is difficult to track the way in which changes to the feature identifiers affect their robustness across multiple image series. The current testing cycle involves changing feature identifiers in the code, compiling and linking, and then running the identifiers on a number of series to test their effectiveness. This consumes a vast amount amount of time (of the order of hours), regardless of the size of change made, making feature identification refinement a prolonged and frustrating task. There is hence a strong incentive to test minor changes on only small numbers of series, with clear consequences for overall robustness. It is essential that further work tackle this issue to avoid this sort of problem. The suggested approach is as follows:
+%
+\begin{enumerate}
+
+\item To eliminate the time spent compiling and linking, the feature identifiers should be implemented as scripts in an interpreted language for testing purposes. These can be changed at a whim without rebuilding the overall application.
+
+\item To eliminate the incentive to test on small numbers of series, multiple copies of the program (each testing the identifiers on a specific series) should be run in parallel, with quantitative results being automatically written into a database alongside an identifier that uniquely identifies the version of the feature identifier that was tested. A distributed approach would be best for this (funding and implementation complexity permitting!). It should always be possible to obtain the quantitative results and source code corresponding to a particular version of a feature identifier, in order to make it easier to analyse which methods are working and which are not.
+
+\end{enumerate}
+
+\end{itemize}
 
 \subsection{Parallelization}
 
