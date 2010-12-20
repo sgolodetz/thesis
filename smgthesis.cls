@@ -20,6 +20,7 @@
 \RequirePackage{epigraph}
 \RequirePackage{fancyhdr}
 \RequirePackage{float}
+\RequirePackage[number=none,style=altlist]{glossary} \makeglossary
 \RequirePackage{graphicx}
 %\RequirePackage[pdftex, pdfborder=0]{hyperref}
 
