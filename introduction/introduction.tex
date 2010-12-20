@@ -93,13 +93,13 @@ The remainder of this thesis is organised as follows.
 
 \textbf{Chapter~\ref{chap:segmentation}} shows how partition forests can be constructed from images by harnessing existing segmentation approaches such as the watershed and waterfall transforms. It looks at three different ways in which the waterfall transform can be implemented: an algorithm due to Marcotegui and Beucher \cite{marcotegui05}, a new tree-based algorithm due to my colleague Chris Nicholls \cite{nicholls09}, and my own novel tree-based approach that handles minimal plateaux in a more explicit manner. It further describes two novel partition forest construction methods that allow a single partition forest to be constructed for an entire image volume, regardless of whether the volume is segmented as a whole or individual image slices are segmented separately.
 
-\textbf{Chapter~\ref{chap:featureid}} discusses my work on automated feature identification in both 2D and 3D. It describes some techniques that are useful for partition forest-based feature identification -- including the novel multi-layer region growing technique I presented in \cite{gvcispa09} -- before presenting my 2D methods for identifying the ribs \cite{gvccimi08} and spine \cite{gvcispa09}, and my 3D methods for identifying the spine, spinal column, ribs, aorta, liver and kidneys \cite{gvcoucl10}.
+\textbf{Chapter~\ref{chap:featureid}} discusses my work on automated feature identification in both 2D and 3D. It describes some techniques that are useful for partition forest-based feature identification -- including the novel multi-layer region growing technique I presented in \cite{gvcispa09} -- before presenting my 2D methods for identifying the ribs \cite{gvccimi08} and spine \cite{gvcispa09}, and my 3D methods for identifying the spine, spinal canal, ribs, aorta, liver, kidneys and spleen \cite{gvcoucl10}.
 
 \textbf{Chapter~\ref{chap:validation}} shows how I validated my approach, and provides quantitative results.
 
 \textbf{Chapter~\ref{chap:assessment}} critically assesses the contributions I claimed above.
 
-\textbf{Chapter~\ref{chap:conclusions}} discusses potential avenues for further work, and concludes the thesis.
+\textbf{Chapter~\ref{chap:conclusions}} concludes the thesis, and discusses potential avenues for further work.
 
 \textbf{Appendix~\ref{chap:appendixds}} contains my implementations of data structures such as disjoint set forests and rooted minimum spanning trees.
 
