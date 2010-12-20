@@ -87,8 +87,6 @@ My goal in developing a new algorithm was to make its results invariant to such 
 \item Because it carefully classifies the edges in the minimum spanning tree into different types, it is very useful when implementing other waterfall algorithms -- in particular, I was able to make use of it when implementing the first step of Marcotegui's algorithm.
 \end{itemize}
 
-\newpage
-
 \noindent There are still some downsides, however:
 %
 \begin{itemize}
@@ -172,13 +170,13 @@ The 2D spine identifier, described in \S\ref{subsec:featureid-2d-spine}, uses a 
 \subsubsection{Aorta}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The case studies in Chapter~\ref{chap:validation} showed that the aorta identifier is capable of producing relatively good results. One issue that does affect it is that the underlying segmentation performed by the watershed and waterfall transforms is at times less than ideal, often generating regions that segment the aorta relatively well, but also contain small pieces of surrounding blood vessels (see Figure~\ref{?}). TODO
+The case studies in Chapter~\ref{chap:validation} showed that the aorta identifier is capable of producing relatively good results. One issue that does affect it is that the underlying segmentation performed by the watershed and waterfall transforms is at times less than ideal, often generating regions that segment the aorta relatively well, but also contain small pieces of surrounding blood vessels. A better approach might be to find a smaller seed region that lies within the aorta and then use it to initialise a level sets technique in order to find the overall aorta.
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Kidneys}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As demonstrated in the case studies, the current kidneys identifier is fairly good at identifying non-pathological kidneys (that is, kidneys that are not diseased). However, it struggles to identify kidneys affected by tumours, because tumours tend to interfere with the underlying segmentation and prevent there from being a single region in the partition forest that can be identified as kidney. Since the current approach uses branch node filtering (see Listing~\ref{code:featureid-3d-kidneysidentification}), this can cause an entire kidney to be missed in the worst case. One potential way of tackling this problem would be to use a different approach based on stratified region growing. The idea would be to look for smaller regions that could represent part of a kidney, and then flood out from them to identify the rest of the normal kidney tissue. This would still be liable to encounter problems where there are weak edges between the kidneys and surrounding features, however. For such cases, an approach based on level sets might be a more appropriate choice.
+As demonstrated in the case studies, the current kidneys identifier is fairly good at identifying non-pathological kidneys (that is, kidneys that are not diseased). However, it struggles to identify kidneys affected by tumours, because tumours tend to interfere with the underlying segmentation and prevent there from being a single region in the partition forest that can be identified as kidney. Since the current approach uses branch node filtering (see Listing~\ref{code:featureid-3d-kidneysidentification}), this can cause an entire kidney to be missed in the worst case. One potential way of tackling this problem would be to use a different approach based on stratified region growing. The idea would be to look for smaller regions that could represent part of a kidney, and then flood out from them to identify the rest of the normal kidney tissue. This would still be liable to encounter problems where there are weak edges between the kidneys and surrounding features, however. For such cases, a hybrid approach involving level sets might be a more appropriate choice.
 
 A second problem highlighted by the case studies is that there is a tendency to slightly oversegment the part of a kidney known as the \emph{renal pelvis}. This is because the blood vessels leading into the renal pelvis (the renal artery and vein) share roughly the same grey values as the surrounding kidney, making the precise boundary in some cases difficult to determine. For most purposes, this is a relatively minor defect in the identified kidneys however.
 
@@ -240,12 +238,6 @@ The first issue can potentially be tackled by replacing the branch node filterin
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As observed in \S\ref{subsec:featureid-3d-spleen}, the spleen identifier is still at an incipient stage of development at this point. However, the case studies demonstrated that it provides a sensible basis for further work. In particular, the current approach is relatively successful at finding a suitable spleen seed -- this could plausibly be used to initialise a level sets approach in the future. The EB-2 case study, in which the spleen was missed, was actually more interesting from another perspective, namely that it demonstrated the extent to which the CT window used can fundamentally affect the success or failure of a feature identification task -- on testing with a more appropriate CT window, a suitable spleen seed was identified. The lesson to be learnt is that ensuring consistency of input to the greatest extent possible is vitally important for work of this kind.
-
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\subsubsection{General Observations}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-TODO
 
 \iffalse
 + The feature identifiers are relatively quick to run
