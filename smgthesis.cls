@@ -71,6 +71,12 @@
 \vspace{-5mm}
 }
 
+% Define a way of suppressing the headers on blank pages at the end of chapters
+\newcommand{\suppressblankpageheader}
+{
+\clearpage{\pagestyle{empty}\cleardoublepage}
+}
+
 % Define shorter ways to include individual images
 \newcommand{\stufig}[4]						% images with default placement
 {
