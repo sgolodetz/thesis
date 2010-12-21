@@ -5,7 +5,7 @@ In the most general sense, the problem of segmentation is the challenge of how t
 
 Nevertheless, an ability to solve these problems, even in an imperfect way, is often a crucial precursor to applying other algorithms in various domains, making them worthy targets for research efforts. For example, in the medical imaging domain, it is helpful to be able to translate a volume of data produced by a scanner into a 3D mesh, allowing doctors to visualize the state of a patient's organs in a more direct manner. Whilst there are existing algorithms to convert \emph{labelled} volume data to a 3D mesh (e.g.~\cite{wu03}), these rely on \emph{a priori} knowledge of the location of the organs. That is, they rely on the organs having being labelled in the volume in advance. Producing such a labelling is a segmentation and feature identification problem.
 
-This thesis is about tackling the segmentation and feature identification problems for a particular type of medical image, namely computerised tomography (CT) scans of a patient's abdomen. The first practical CT scanner was developed in 1971 by Sir Godfrey Hounsfield, working at the EMI Central Research Laboratories in Hayes, UK.\footnote{Credit for the CT technique is also due to Allan McLeod Cormack of Tufts University in Massachusetts in the United States, who independently developed the theory underpinning CT in the late 1950s and early 1960s. Both men shared the 1979 Nobel Prize in Physiology or Medicine.} CT scanners work using X-rays and produce images whose pixels are scalar values on a scale of radiodensity known (after Sir Godfrey) as the Hounsfield scale. They are used extensively in modern medical practice \cite{garvey02}, both for diagnosing illness and for evaluating a patient's response to therapy.
+This thesis is about tackling the segmentation and feature identification problems for a particular type of medical image, namely computerised tomography (CT) scans of a patient's abdomen. The first practical CT scanner was developed in 1971 by Sir Godfrey Hounsfield\index{Hounsfield!Sir Godfrey}, working at the EMI Central Research Laboratories in Hayes, UK.\footnote{Credit for the CT technique is also due to Allan McLeod Cormack of Tufts University in Massachusetts in the United States, who independently developed the theory underpinning CT in the late 1950s and early 1960s. Both men shared the 1979 Nobel Prize in Physiology or Medicine.} CT scanners work using X-rays and produce images whose pixels are scalar values on a scale of radiodensity known (after Sir Godfrey) as the Hounsfield scale\index{Hounsfield!scale}. They are used extensively in modern medical practice \cite{garvey02}, both for diagnosing illness and for evaluating a patient's response to therapy.
 
 %---
 \stufigex{height=8cm}{introduction/introduction-labelledabdominalscan.png}{An abdominal CT scan of a patient with a large renal tumour on the left kidney. Some of the key features in the scan are labelled.}{fig:introduction-labelledabdominalscan}{t}
@@ -46,6 +46,8 @@ The final system, \emph{millipede}, is built using a cross-platform build framew
 %---
 \section*{Contributions}
 
+\index{contributions|(}
+
 The original contributions made by this thesis, then, are as follows:
 
 \begin{enumerate}
@@ -56,6 +58,8 @@ The original contributions made by this thesis, then, are as follows:
 \item Novel feature identification techniques for 2D and 3D abdominal CT scans (Chapter~\ref{chap:featureid}).
 \item The implementation of the \emph{centipede} and \emph{millipede} segmentation, feature identification and 3D visualization systems in C++.
 \end{enumerate}
+
+\index{contributions|)}
 
 %---
 \begin{stusubfig}{p}

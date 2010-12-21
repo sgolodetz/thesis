@@ -42,6 +42,8 @@ The majority of the segmentation techniques in current use can be divided into e
 \subsection{Thresholding}
 %################################################
 
+\index{segmentation!thresholding|(}
+
 In principle, thresholding segmentation methods are quite simple. The idea is to divide the pixels of the image into classes through the use of one or more dividing lines on the image histogram. Dividing the image into two classes is known as \emph{binary thresholding}; where more classes are used, we refer to the process as \emph{multi-thresholding}. As an example, we could use binary thresholding to divide an 8-bit image (with grey levels ranging from $0 = \mbox{black}$ to $255 = \mbox{white}$) into two classes, one containing pixels with values greater than (say) $125$, and representing the foreground of the image, and the other containing all the remaining pixels and representing the background (see Figure~\ref{fig:background-segmentation-thresholding-binaryexample}). This would allow us to achieve the goal of segmenting the brighter object in the image.
 
 %---
@@ -136,10 +138,14 @@ and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in th
 
 \noindent Thresholding's limitations can in some cases be overcome by combining thresholding with other techniques. For instance, whilst the results of thresholding often have holes in them, these can sometimes be filled in by carefully applying a technique called morphological closing (the graph-based version of which is described in Chapter~\ref{chap:featureid}). Where thresholding has produced lots of small regions across the image, it is sometimes possible to remove them and keep only the larger ones by using connected component analysis. Luc Soler's team \cite{soler01} made use of thresholding (as one technique among many) and achieved excellent automatic segmentation results for the liver. However, they did not use thresholding on its own. For instance, they segmented bones by thresholding for bright areas and then keeping only those which were near to the fat tissue (which had already been segmented). Simple thresholding alone would have been insufficient for the task, since structures such as the aorta also appeared bright on the contrast-enhanced images.
 
+\index{segmentation!thresholding|)}
+
 %################################################
 \subsection{Region Growing}
 \label{subsec:background-segmentation-regiongrowing}
 %################################################
+
+\index{segmentation!region growing|(}
 
 Region growing methods for segmentation essentially work as follows. First, one or more initial seed points are chosen for a feature of interest. Then, the region is `grown' by iteratively considering all points which are adjacent to those already in the region and adding any which satisfy certain criteria (see Figure~\ref{fig:background-segmentation-regiongrowing-process}). For example, we could choose to add adjacent pixels whose grey value differs from that of their neighbour in the region by less than a certain amount. Alternatively, we could try and add adjacent pixels which preserve the homogeneity of the entire region (for some suitable definition of homogeneity) -- e.g.~Chen et al.\ \cite{chen09} define a criterion that leads an adjacent pixel to be added to the region provided that the absolute difference between its grey value and the mean grey value of the region is less than the standard deviation of the region's grey value distribution.
 
@@ -224,10 +230,14 @@ The advantages of region growing methods are that the segmentation result is gua
 
 Whilst region growing algorithms produce connected regions around each seed, each region may still have holes in the middle of it. Whilst this may be desirable if we really are trying to segment torus-shaped features, on the whole it is necessary to post-process the region growing results to remove these holes, e.g.~using morphological closing.
 
+\index{segmentation!region growing|)}
+
 %################################################
 \subsection{Morphological Techniques}
 \label{subsec:background-segmentation-morphology}
 %################################################
+
+\index{watershed transform!background|(}
 
 Mathematical morphology is a large and rather general field based on lattice theory \cite{goutsias00}. It contains many useful image processing techniques, including the morphological operators of which we will see graph-based versions in Chapter~\ref{chap:featureid}, but in segmentation terms its key technique is the watershed transform, originally developed by Serge Beucher \cite{beucher90}.\fxnote{[IDV] [The morphological techniques section needs an image-based example]}
 
@@ -274,11 +284,17 @@ In practice, however, it is rarely possible to establish a perfect correspondenc
 \end{stusubfig}
 %---
 
+\index{watershed transform!watershed-from-markers|(}
+
 There are two main approaches in the literature for dealing with this problem, namely marker imposition (leading to an approach known rather aptly as `watershed-from-markers') and hierarchical segmentation. Marker imposition essentially works by specifying markers on particular features of interest \emph{a priori}, and flooding out only from those. This partitions an image into a number of regions equal to the number of specified markers and thereby solves the oversegmentation problem (see Figure~\ref{fig:background-segmentation-watershed-markers}). Unfortunately, it can be extremely difficult to determine the required markers automatically -- rather than solving the underlying problem, we have merely changed it into one of marker determination. This may or may not prove problematic, depending on the data available and the specifics of the application. In some cases, it may be possible to use other data to determine marker placement automatically -- for example, Grau et al.\ \cite{grau04} successfully used a statistical atlas for this. In other cases, it may simply be acceptable to place the markers manually \cite{xue05}, or to initially place them manually and then propagate them from one image in a sequence to the next \cite{flores09}.
+
+\index{watershed transform!watershed-from-markers|)}
 
 In situations where neither is the case, however, the alternative approach of hierarchical segmentation can be used. As one might expect, the general idea here is to take the oversegmented result of running the watershed transform on an image, and perform several iterations of region merging to produce a hierarchy of gradually coarser partitions of the original image. As will be illustrated in far more detail in Chapter~\ref{chap:segmentation}, this is exactly the sort of approach taken by the waterfall transform \cite{beucher90,marcotegui05}: what is unique about the waterfall, however, is that each of its iterations in which it merges regions together is itself a watershed transform.
 
 As will be discussed in Chapter~\ref{chap:methodology}, the hierarchical approach to watershed segmentation is interesting for a couple of reasons: on the one hand, it produces, without requiring a great deal of manual fine-tuning, segmentations which, whilst not perfect, are often quite reasonable to a first approximation; on the other hand, the hierarchy of partitions of the image it produces can be turned into a tree structure (see \S\ref{sec:background-partitionhierarchies}) that is amenable to further editing, allowing any flaws in the initial segmentation to be corrected in an intuitive manner. These two qualities make this approach eminently suitable in situations where automated solutions are desirable but interactive control remains important.
+
+\index{watershed transform!background|)}
 
 %################################################
 \subsection{Deformable Models}
@@ -291,6 +307,8 @@ As their name suggests, deformable models methods work by taking an initial mode
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \paragraph{Snakes}
+
+\index{segmentation!snakes|(}
 
 As originally defined by Kass, Witkin and Terzopoulos in \cite{kass88}, `A snake is an energy-minimizing spline guided by external constraint forces and influenced by image forces that pull it toward features such as lines and edges.' Essentially, the idea works as follows. We represent the position of the snake, in terms of a spline parameter $s$, as $\mathbf{v}(s) = (x(s),y(s))$, and define an \emph{energy functional}, $E_{snake}^*$, as
 %
@@ -318,6 +336,8 @@ It is important to mention that the method relies on quite a close initialisatio
 
 Problems of this kind with snakes methods have led to a great deal of interest in level sets as an alternative, although snakes also remain popular as a well-established and far simpler alternative. They also have the advantage that they can represent open structures as well as closed ones.
 
+\index{segmentation!snakes|)}
+
 \paragraph{NURBS-Based}
 
 Another type of parametric deformable model, this time based on non-uniform rational B-splines (NURBS), is described by Tsagaan et al.\ \cite{tsagaan02}, in which they use a 3D NURBS-based model of a kidney and deform it by minimizing an energy function. Their results seem good in some cases, but differ markedly from the manually segmented results they show in others.\fxnote{[IDV] [The heading isn't clear until you read the paragraph after it]}
@@ -327,6 +347,8 @@ Another type of parametric deformable model, this time based on non-uniform rati
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 \paragraph{Level Sets}
+
+\index{segmentation!level sets|(}
 
 Curves and surfaces in general can be specified either explicitly (such that they can be calculated directly from the definition) or implicitly (the opposite). For instance, an explicit (parametric) representation of a circle in terms of its radius $r$ and an angle $\theta$ might be:
 %
@@ -443,6 +465,8 @@ Another advantage of level sets is that, unlike snakes, they translate straightf
 
 An example illustrating the performance of a level set approach (the \emph{geodesic active contours} level set method from the \emph{Insight Toolkit} (ITK), as described in \S9.3.3 of \cite{itk}) on an actual image is shown in Figure~\ref{fig:background-segmentation-levelsets-ct}. By carefully tweaking the (large number of) parameters to the method, it is possible to get very good results, making it an excellent technique for interactive segmentation. However, the requirement to provide so many parameters, whose effects on the results are not always intuitively obvious, makes the technique far less attractive as a method for more automatic segmentation.
 
+\index{segmentation!level sets|)}
+
 %---
 \begin{stusubfig}{p}
 	\subfigure[The initial CT image, with seeds marked]
@@ -487,6 +511,8 @@ Learning segmentation techniques generally start with a training phase, in which
 \subsubsection{Atlas-Based Techniques}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\index{segmentation!atlas-based|(}
+
 Atlas-based methods start by constructing an atlas, or reference segmentation, from a set of training data. For instance, in \cite{park03}, Park et al.\ constructed a probabilistic atlas by registering (aligning) the manually segmented volumes of 31 patients onto that of a carefully chosen reference patient (thus the data came from 32 patients in all) -- see Figure~\ref{fig:background-segmentation-atlas-park} for a visual representation. The atlas was represented as a 3D grid of vector values, where the components of each vector corresponded to the organs under consideration, and the values of the components indicated the fractional percentage of registered data sets in which the point was labelled as the given organ. As an example, if we were considering the liver and the two kidneys, the vector $(0.4, 0.6, 0)^T$ at a point could indicate that the point was inside the liver in 40\% of the data sets and inside the right kidney in 60\% of them.
 
 After constructing such an atlas, new sets of data can be segmented by registering them onto it. In \cite{park03}, they use a \emph{maximum a posteriori} (MAP) approach after registration to find the segmentation result which best explains the observed data. The important point here is that the segmentation result is based on both the data for the individual patient and the information encoded in the atlas. The atlas provides the prior probabilities at each voxel, and these are refined in light of the actual patient data.
@@ -505,9 +531,13 @@ P(x_i = \ell) = a_{i,\ell}.
 %
 In other words, the probability of the correct segmentation result for a given voxel being $\ell$ is given by the $\ell^{th}$ component of the probabilistic atlas at that location. With this link made, the result determined will depend on both the atlas and the observed data.
 
+\index{segmentation!atlas-based|)}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Neural Network Techniques}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\index{segmentation!neural network-based|(}
 
 Neural networks (NNs) can be used to segment images in a number of ways. A simple NN technique can be found in \cite{tsai94}, where Tsai and Tanahashi use a feed-forward network to classify each pixel into one of three classes (liver, boundary or non-liver) according to the grey-level histogram of the 7x7 region centred on the pixel. (In practice, they use a histogram with 16 grey levels instead of 256, to avoid a proliferation of input nodes in the NN.) The schematic of how this works (borrowed from their paper) is shown in Figure~\ref{fig:background-segmentation-neuralnets-tsai}. The NN is initially trained by picking a suitable image from the middle of the volume and marking a significant number of training regions for each class. The well-known back-propagation algorithm for NNs \cite{aima} is used to update the weights on the network arcs accordingly.
 
@@ -525,6 +555,8 @@ A more up-to-date (and more complicated) NN scheme can be found in \cite{lee03}.
 \stufigex{height=8cm}{background/background-segmentation-neuralnets-leeresults.png}{Results of the neural network method described in \cite{lee03} (reproduced from the paper in question), showing the identified spine, left kidney, spleen and liver}{fig:background-segmentation-neuralnets-leeresults}{p}
 %---
 
+\index{segmentation!neural network-based|)}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %\subsubsection{Statistical Methods}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -540,6 +572,8 @@ Clustering is the general problem of how to collect objects into groups in such 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{K-Means}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\index{segmentation!K-means|(}
 
 A generalised description of the K-means approach to clustering is that it aims to divide a set of $n$ objects $\{o_1,\ldots,o_n\}$ into $k \le n$ groups $G = \{G_1,\ldots,G_k\}$ in such a way as to minimise the sum of squares of some measure of similarity $m$ between each object and the `mean' of the objects of its group. (At this stage of the description, what is meant by the mean in this instance is left deliberately under-specified.) More formally, if $\mu_j$ is the mean of the objects in group $G_j$, K-means aims to find a set of groups $G$ minimising:
 %
@@ -583,9 +617,13 @@ The key issues when using Lloyd's algorithm to segment images are how to define 
 \end{stusubfig}
 %---
 
+\index{segmentation!K-means|)}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Fuzzy C-Means}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\index{segmentation!fuzzy C-means|(}
 
 Fuzzy C-means is essentially a fuzzy relative of the K-means approach just described. It was originally presented by Dunn in 1974 \cite{dunn74}. The key idea is that instead of objects being divided crisply into groups (i.e.~each object belonging completely to exactly one group), objects have a degree of membership for each group. Using the same notation as before, and letting $u_{ij}$ be a real number between $0$ and $1$ indicating the degree to which object $o_i$ is a member of group $G_j$, and $1 < p < \infty$ be a real parameter (e.g.~$p = 2$), we seek to find a set of groups $G$ minimising:
 %
@@ -622,6 +660,8 @@ where $\epsilon$ is a real number between $0$ and $1$.
 \end{enumerate}
 
 \noindent Once again, as with Lloyd's algorithm for K-means, this is not guaranteed to produce the global optimum.
+
+\index{segmentation!fuzzy C-means|)}
 
 %################################################
 \subsection{Graph Partitioning}

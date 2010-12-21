@@ -23,6 +23,8 @@ This lays the foundation for Chapter~\ref{chap:validation}, in which the 3D iden
 \subsection{Node Filtering}
 %################################################
 
+\index{feature identification!(branch) node filtering|(}
+
 A basic feature identification technique is to filter all the (non-pixel) regions in the partition forest for those that satisfy a particular predicate (e.g.~those that have a mean grey value in a certain range). This is extremely simple to implement (see Listing~\ref{code:featureid-techniques-branchnodefiltering}), but can yield surprisingly good results when the features of interest are represented as individual regions in the forest. In terms of computational complexity, it is also an extremely efficient approach, being linear in the number of forest nodes.
 
 %---
@@ -45,10 +47,14 @@ To make an approach based on Bayesian classification effective, it is important 
 
 In many ways, node filtering in general can be seen as extending \emph{thresholding} from pixels to regions, taking advantage of the fact that regions, being larger, can have more interesting properties. (For example, rather than selecting pixels whose grey value is in a certain range, we can select regions whose mean grey value is in a certain range, that are of a reasonable size and that are (say) completely contained within the left-hand half of the image.) This intuitively suggests that it should be possible to lift other pixel-level segmentation algorithms to the region level; the next subsection does just that by developing what is effectively a region-level approach to region growing.
 
+\index{feature identification!(branch) node filtering|)}
+
 %################################################
 \subsection{Stratified Region Growing}
 \label{subsec:featureid-techniques-stratifiedregiongrowing}
 %################################################
+
+\index{feature identification!stratified region growing|(}
 
 In \S\ref{subsec:background-segmentation-regiongrowing}, we saw a basic implementation of a single-seed region growing algorithm. This was pixel-based -- an individual pixel was chosen as the seed, and a region was then grown from it by choosing whether to add pixels adjacent to the existing region to the selection one at a time based on their pixel properties. However, the same technique can be lifted to the region level -- a region can be chosen as the seed, with surrounding regions then added to it or not based on their region properties (generally speaking, an aggregate of the properties of their pixels).
 
@@ -85,9 +91,13 @@ Stratified region growing is interesting because the regions for the seeds are g
 
 It should be noted that there is room for a certain amount of variation in how the technique is used in practice. For instance, the 2D spine identifier that will be described later (and was originally presented in \cite{gvcispa09}) `validates' the regions grown from individual seeds before adding them to the result. The precise workings of the algorithm itself are also open to modification -- for example, the 2D spine identifier as originally defined doesn't grow regions from seeds that have already been visited during region growing from an earlier seed (though that approach does mean that an ordering must be imposed on the seeds, which makes it difficult to parallelize). For the purposes of this thesis, however, stratified region growing will refer specifically to the implementation described here, unless otherwise stated (in particular, the 2D spine identifier will be described explicitly as a variant of this approach).
 
+\index{feature identification!stratified region growing|)}
+
 %################################################
 \subsection{Conditional Morphology}
 %################################################
+
+\index{feature identification!conditional morphology|(}
 
 As originally mentioned in \S\ref{subsec:background-segmentation-morphology}, there is far more to the field of mathematical morphology than image segmentation techniques such as the watershed transform. Of particular interest for feature identification work are morphological operators such as \emph{dilation}, \emph{erosion}, \emph{opening} and \emph{closing}; closing in particular is a useful tool for filling in holes in identified features (such as those produced by region growing). The canonical formulation of these processes is as operators on binary or grey-scale images, but of more relevance for our purposes is their adaptation to graphs (e.g.~see \cite{heijmans92a}), since the partition forest is essentially a graph hierarchy. We therefore examine only graph-based morphological operators here -- interested readers are encouraged to consult \cite{gonzalez02} for a description of their more conventional, image-based equivalents.
 
@@ -251,13 +261,19 @@ The operators as described thus far are useful, but can be quite blunt instrumen
 \end{stusubfig}
 %---
 
+\index{feature identification!conditional morphology|)}
+
 %################################################
 \subsection{Connected Component Analysis}
 %################################################
 
+\index{feature identification!connected component analysis|(}
+
 When identifying features, it is sometimes useful to work with the connected components of an intermediate feature selection. For instance, it will be seen later that the 3D ribs identifier first uses stratified region growing to produce an initial selection for the ribs, and then post-processes it, examining each connected component to see how rib-like it is.
 
 Given a set of nodes in a particular layer of the partition forest, it is clearly a simple process to determine their connected components for such processing (see Appendix~\ref{chap:appendixpf} for pseudo-code). However, partition forest selections have a representation that is multi-layer (see Chapter~\ref{chap:ipfs}) -- it is therefore necessary to view the selection at a particular layer so as to ensure that all the nodes being dealt with are at the same level, namely the lowest layer containing a selected node. As explained when it was described, the view at layer algorithm splits higher-level nodes into their descendants in the chosen layer, whilst leaving lower-level nodes alone. The result in this case is thus a set of nodes in a single layer. The connected components of these nodes (and the properties of each component) can then be easily determined.
+
+\index{feature identification!connected component analysis|)}
 
 \afterpage{\clearpage}
 \newpage
@@ -276,6 +292,8 @@ Having examined some general feature identification techniques, we now turn our 
 \subsection{Ribs Identification}
 \label{subsec:featureid-2d-ribs}
 %################################################
+
+\index{feature identification!2D identifiers!ribs|(}
 
 The 2D ribs identifier, a sample result of which was originally presented in \cite{gvccimi08}, works as follows:
 
@@ -329,12 +347,16 @@ In the present case, we can (for example) define the fuzzy set of regions that h
 
 Pseudo-code for the ribs identifier is shown in Listing~\ref{code:featureid-2d-ribsidentification}. As illustrated in Figure~\ref{fig:featureid-2d-ribsidentification-example}, this approach can identify ribs quite well (although some darker ribs, such as that in (a), can be missed). However, it is evidently somewhat ad-hoc, in that the probability distributions were customised by hand -- a better approach would have been to manually identify the ribs in a training set of image series, and then automatically construct the probability distributions from the marked and unmarked regions. At the time of designing the identifier, this approach was not advisable due to the amount of data I had available at the time (only $3$ series) -- there would have been a serious risk of overfitting to a small number of images. When more data is available, automatically-constructed probability distributions are almost certainly the better option. In practice, however, a much more effective way of improving the identification of the ribs is simply to work with 3D volumes rather than 2D axial slices -- this was the approach used in \emph{millipede}, which will be described in \S\ref{subsec:featureid-3d-ribsidentification}.
 
+\index{feature identification!2D identifiers!ribs|)}
+
 \newpage
 
 %################################################
 \subsection{Spine Identification}
 \label{subsec:featureid-2d-spine}
 %################################################
+
+\index{feature identification!2D identifiers!spine|(}
 
 The 2D spine identifier, originally described in \cite{gvcispa09}, uses a variant of stratified region growing to extract a preliminary spine feature from the image, and then post-processes it to identify the final vertebra. The outline of the algorithm is as it was described in the paper:
 
@@ -481,6 +503,8 @@ In terms of results, a qualitative assessment of the identifier conducted for \c
 \end{landscape}
 %---
 
+\index{feature identification!2D identifiers!spine|)}
+
 \afterpage{\clearpage}
 \newpage
 
@@ -523,6 +547,8 @@ In this section, therefore, I present a series of methods for identifying a numb
 %################################################
 \subsection{Spine Identification}
 %################################################
+
+\index{feature identification!3D identifiers!spine|(}
 
 The first 3D feature to identify is the spine. This is an important landmark, both because it is rigid (being made of bone, it does not move within the body when the patient's position changes) and because it is clearly visible in the CT images, even to an untrained eye. It is extremely useful for \emph{localizing} (specifying the position of) other features: for instance, a helpful intuition when identifying the aorta will be that it is roughly located just in front of the spine (i.e.~just above it in the axial slices).
 
@@ -585,12 +611,16 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 \end{stusubfig}
 %---
 
+\index{feature identification!3D identifiers!spine|)}
+
 \afterpage{\clearpage}
 \newpage
 
 %################################################
 \subsection{Spinal Canal Identification}
 %################################################
+
+\index{feature identification!3D identifiers!spinal canal|(}
 
 %---
 \stufigex{height=9cm}{featureid/featureid-3d-spinalcanalidentification-region.png}{The spinal canal (selected, in red) should lie well within the (yellow) bounding box of the regions identified as the spine}{fig:featureid-3d-spinalcanalidentification-region}{h}
@@ -651,6 +681,8 @@ Regions which satisfy these criteria are unmarked as spine (if necessary) and ma
 \end{stusubfig}
 %---
 
+\index{feature identification!3D identifiers!spinal canal|)}
+
 \afterpage{\clearpage}
 \newpage
 
@@ -658,6 +690,8 @@ Regions which satisfy these criteria are unmarked as spine (if necessary) and ma
 \subsection{Ribs Identification}
 \label{subsec:featureid-3d-ribsidentification}
 %################################################
+
+\index{feature identification!3D identifiers!ribs|(}
 
 %---
 \stufigex{height=9cm}{featureid/featureid-3d-ribsidentification-region.png}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
@@ -712,12 +746,16 @@ As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this
 \end{stusubfig}
 %---
 
+\index{feature identification!3D identifiers!ribs|)}
+
 \afterpage{\clearpage}
 \newpage
 
 %################################################
 \subsection{Aorta Identification}
 %################################################
+
+\index{feature identification!3D identifiers!aorta|(}
 
 %---
 \stufigex{height=7.5cm}{featureid/featureid-3d-aortaidentification-region.png}{The spatial constraints for aorta seeds -- the seed's left-hand side must lie between the red lines, and the top of the spine (represented by the green line) must lie between the top of the seed and $20$ voxels below the bottom of it}{fig:featureid-3d-aortaidentification-region}{h}
@@ -766,6 +804,8 @@ As illustrated in Figure~\ref{fig:featureid-3d-aortaidentification-results}, thi
 \end{stusubfig}
 %---
 
+\index{feature identification!3D identifiers!aorta|)}
+
 \afterpage{\clearpage}
 \newpage
 
@@ -773,6 +813,8 @@ As illustrated in Figure~\ref{fig:featureid-3d-aortaidentification-results}, thi
 \subsection{Liver Identification}
 \label{subsec:featureid-3d-liveridentification}
 %################################################
+
+\index{feature identification!3D identifiers!liver|(}
 
 %---
 \begin{stusubfig}{h}
@@ -844,12 +886,16 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \end{stulisting}
 %---
 
+\index{feature identification!3D identifiers!liver|)}
+
 \afterpage{\clearpage}
 \newpage
 
 %################################################
 \subsection{Kidneys Identification}
 %################################################
+
+\index{feature identification!3D identifiers!kidneys|(}
 
 %---
 \stufigex{height=7.5cm}{featureid/featureid-3d-kidneysidentification-region.png}{The spatial constraints for kidneys -- they must not cross the spine centroid in the $x$ direction (indicated by the red line), and at least part of them must lie in one of the right kidney or left kidney boxes (marked RK and LK) below the green line}{fig:featureid-3d-kidneysidentification-region}{h}
@@ -921,6 +967,8 @@ As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, t
 \end{stusubfig}
 %---
 
+\index{feature identification!3D identifiers!kidneys|)}
+
 \afterpage{\clearpage}
 \newpage
 
@@ -928,6 +976,8 @@ As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, t
 \subsection{Spleen Identification}
 \label{subsec:featureid-3d-spleen}
 %################################################
+
+\index{feature identification!3D identifiers!spleen|(}
 
 %---
 \stufigex{height=9cm}{featureid/featureid-3d-spleenidentification-region.png}{The sole spatial constraint for spleen seeds -- they must stretch into the right-hand $20\%$ of the image}{fig:featureid-3d-spleenidentification-region}{h}
@@ -971,6 +1021,8 @@ A few results of the current identifier are illustrated in Figure~\ref{fig:featu
 \label{fig:featureid-3d-spleenidentification-results}
 \end{stusubfig}
 %---
+
+\index{feature identification!3D identifiers!spleen|)}
 
 \afterpage{\clearpage}
 \newpage

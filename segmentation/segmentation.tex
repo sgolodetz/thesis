@@ -14,9 +14,13 @@ I have developed two separate forest construction algorithms, which are presente
 \label{sec:segmentation-watershed}
 %##################################################################################################
 
+\index{watershed transform|(}
+
 %################################################
 \subsection{Concept}
 %################################################
+
+\index{watershed transform!concept|(}
 
 At a conceptual level, the watershed transform is about dividing a landscape into its catchment basins. A catchment basin is an area of the landscape from which water runs down to the same point (a local minimum of the landscape). A watershed (also known in some parts of the world as a drainage divide) is the boundary between adjacent catchment basins (see Figure~\ref{fig:segmentation-watershed-concept}).\footnote{The name watershed means `water divider', since shedding is an old term for splitting, or dividing -- e.g.~sheepdogs often have to `shed' specified sheep from a flock in competitions.}\fxnote{[IDV] The viewing angle is not ideal}
 
@@ -28,9 +32,9 @@ The watershed transform conceptually takes a landscape as its input and produces
 %
 \begin{enumerate}
 
-\item Rainfalling methods (e.g.~\cite{meijster98,osma-ruiz06,stoev00}) view the problem as one of determining, for each point in the landscape, the local minimum to which water placed at that point would run down (see Figure~\ref{fig:segmentation-watershed-rainfallingconcept}). In practical terms, this generally involves finding a path of steepest descent from each point in the landscape and following it until a local minimum is found. Most of the difficulty involved in this approach is associated with how to handle non-minimal plateaux in the landscape (flat areas that are not the base of a catchment basin).
+\item Rainfalling\index{watershed transform!concept!rainfalling} methods (e.g.~\cite{meijster98,osma-ruiz06,stoev00}) view the problem as one of determining, for each point in the landscape, the local minimum to which water placed at that point would run down (see Figure~\ref{fig:segmentation-watershed-rainfallingconcept}). In practical terms, this generally involves finding a path of steepest descent from each point in the landscape and following it until a local minimum is found. Most of the difficulty involved in this approach is associated with how to handle non-minimal plateaux in the landscape (flat areas that are not the base of a catchment basin).
 
-\item Flooding (also known as immersion) methods (e.g.~\cite{bieniek00,rambabu07}) instead see the problem the other way round: they aim to determine the catchment basin for each local minimum in the landscape by simulating a process of flooding from all the local minima simultaneously and conceptually adding watersheds where the pools of water from adjacent catchment basins meet. The flooding process can be visualized as taking the landscape surface, poking holes through its local minima and lowering it perpendicularly into a body of water. As the water rises, the catchment basins associated with the local minima grow (see Figure~\ref{fig:segmentation-watershed-floodingconcept}(a)). Eventually, these catchment basins will meet (Figure~\ref{fig:segmentation-watershed-floodingconcept}(b)) and a watershed will be constructed to keep them apart (Figure~\ref{fig:segmentation-watershed-floodingconcept}(c)). This process continues until the water has reached the top of the landscape (i.e.~the height of the highest peak in the landscape), at which point the process terminates. The watersheds generated during the process divide the landscape into its catchment basins (see Figure~\ref{fig:segmentation-watershed-floodingconcept}(d)).
+\item Flooding\index{watershed transform!concept!flooding} (also known as immersion) methods (e.g.~\cite{bieniek00,rambabu07}) instead see the problem the other way round: they aim to determine the catchment basin for each local minimum in the landscape by simulating a process of flooding from all the local minima simultaneously and conceptually adding watersheds where the pools of water from adjacent catchment basins meet. The flooding process can be visualized as taking the landscape surface, poking holes through its local minima and lowering it perpendicularly into a body of water. As the water rises, the catchment basins associated with the local minima grow (see Figure~\ref{fig:segmentation-watershed-floodingconcept}(a)). Eventually, these catchment basins will meet (Figure~\ref{fig:segmentation-watershed-floodingconcept}(b)) and a watershed will be constructed to keep them apart (Figure~\ref{fig:segmentation-watershed-floodingconcept}(c)). This process continues until the water has reached the top of the landscape (i.e.~the height of the highest peak in the landscape), at which point the process terminates. The watersheds generated during the process divide the landscape into its catchment basins (see Figure~\ref{fig:segmentation-watershed-floodingconcept}(d)).
 
 \end{enumerate}
 
@@ -72,10 +76,14 @@ The watershed transform conceptually takes a landscape as its input and produces
 \end{stusubfig}
 %---
 
+\index{watershed transform!concept|)}
+
 %################################################
 \subsection{Segmenting Grey-Scale Images}
 \label{subsec:segmentation-watershed-greyscale}
 %################################################
+
+\index{watershed transform!on grey-scale images|(}
 
 The watershed transform is commonly thought of not in the abstract terms just described, but as an image segmentation method. In particular, it is often used to segment grey-scale images. This requires a conceptual mapping that lets us view grey-scale images as landscapes. For example, we can view a 2D, grey-scale image $I$ as a height map (see Figure~\ref{fig:segmentation-watershed-landscapeanalogy}), where the grey value of the image at coordinates $(x,y)$ gives us the height of the landscape at that point. An analogous mapping can be made in higher dimensions (and specifically in three dimensions), although this is harder to visualize. The regions produced by applying an image-based algorithm for a watershed transform to an image correspond to the catchment basins of the discrete landscape to which the image corresponds (see Figure~\ref{fig:segmentation-watershed-regionbasincorrespondence}).
 
@@ -113,6 +121,8 @@ A variety of different image watershed algorithms are possible (e.g.~\cite{bieni
 \subsubsection{Meijster and Roerdink's Rainfalling Watershed Algorithm}
 \label{subsubsec:segmentation-watershed-meijster}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\index{watershed transform!Meijster/Roerdink algorithm|(}
 
 %~~~~~~~~~~~~~~~~~~~~~~~
 \paragraph{Definitions}
@@ -361,12 +371,17 @@ function resolve_pixel
 
 Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{code:segmentation-watershed-labelling}). The process can be made more efficient by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint set forests are implemented (see Appendix~\ref{chap:appendixds}). The output of Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
 
+\index{watershed transform!Meijster/Roerdink algorithm|)}
+\index{watershed transform!on grey-scale images|)}
+
 %################################################
 \subsection{Segmenting CT Images}
 \label{subsec:segmentation-watershed-ct}
 %################################################
 
-Having seen how to apply a watershed transform to generic grey-scale images, we can now turn our sights to the specific images that are the real target of this thesis -- computerised tomography (CT) scans of the abdomen. As described in the introduction, CT images are merely grey-scale images whose pixels are scalar values on a particular scale, namely the Hounsfield scale, and as such, they can in principle be segmented using the type of grey-scale image watershed algorithm just described. However, a number of issues must first be tackled in order to obtain desirable results.\fxnote{[IDV] This is a bit abrupt. You need a transition paragraph explaining why you move `away' from M+R's algorithm.}
+\index{watershed transform!on CT images|(}
+
+Having seen how to apply a watershed transform to generic grey-scale images, we can now turn our sights to the specific images that are the real target of this thesis -- computerised tomography (CT) scans of the abdomen. As described in the introduction, CT images are merely grey-scale images whose pixels are scalar values on a particular scale, namely the Hounsfield scale\index{Hounsfield!scale}, and as such, they can in principle be segmented using the type of grey-scale image watershed algorithm just described. However, a number of issues must first be tackled in order to obtain desirable results.\fxnote{[IDV] This is a bit abrupt. You need a transition paragraph explaining why you move `away' from M+R's algorithm.}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Smoothness}
@@ -472,7 +487,13 @@ What we need is a way of transforming our input image into one where the feature
 \label{subsubsec:segmentation-watershed-ct-windowing}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\index{windowing|(}
+
+\index{Hounsfield!scale|(textbf}
+
 A final issue to contend with when working with CT images concerns the Hounsfield scale used for their pixel values. These values, measured in Hounsfield Units (HU), are based on the radiodensity of materials with respect to water, and range from $-1024$ to $3071$. Materials that have a lower radiodensity than water, such as fatty tissue, have negative Hounsfield values; conversely, those with a greater radiodensity than water, such as muscle, have positive values. On this scale, for example, air is at $-1000$ HU, whereas bone appears at $400$ HU or more. The scale is calibrated so that water itself is at $0$ HU.
+
+\index{Hounsfield!scale|)textbf}
 
 Having the scanners calibrated to produce images whose pixel values are on a fixed scale with real-world meaning is extremely helpful, but in order to diagnose patients, radiologists need to be able to distinguish between different types of tissue on a viewable image. Unfortunately, there is a limit to how many grey values can be distinguished by the human eye, and the Hounsfield range is too wide ($> 4000$ distinct values) for Hounsfield images to be directly used for diagnostic purposes. (Looking at things another way, viewing a Hounsfield image directly would be equivalent to looking at an image with extremely low contrast.) For this reason, before being viewed by a radiologist, Hounsfield images are subjected to a process known as \emph{windowing}.
 
@@ -486,11 +507,16 @@ The reason windowing is a sensible way for radiologists to control the brightnes
 
 Windowing makes a practical difference for the purposes of segmentation. In particular, it is possible to work with either the original Hounsfield image or a windowed version of it, and these yield different results. It is noticeable that segmenting a windowed image (using an appropriately chosen window, such as the one stored with the image) tends to work better in practice, in that it produces a less pronounced oversegmentation of the image (see Figure~\ref{fig:segmentation-watershed-hounsfieldvswindowed}). This may seem surprising, since there is effectively less information in the windowed image than the original, but there is a logical explanation. When the width of window chosen is greater than the width of the greyscale range, the process of windowing will map more than one Hounsfield value to the same grey-scale output (one reason why there is a loss of information involved). This has the effect of removing some of the spurious local minima in the image, which improves the resulting watershed segmentation. In short, whilst we are losing some of the information from the original Hounsfield image, the information we are losing was actually hindering the segmentation rather than helping it.
 
+\index{windowing|)}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Summary}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To segment a CT image using the watershed transform, then, we first window it using appropriate window settings (generally speaking, the ones stored with the image by a radiologist) in order to obtain a more conventional grey-scale image. We next smooth it using anisotropic diffusion filtering and then pass it through a gradient magnitude filter to try and establish a reasonable correspondence between features of interest in the image and catchment basins in the discrete landscape associated with it. Finally, we run an image watershed algorithm on this smoothed, gradient magnitude image: in our case\fxnote{[IDV] [This sentence reads slightly weirdly]}, we use the Meijster/Roerdink algorithm, which produces an image of numeric labels. As we will see in \S\ref{sec:segmentation-ipfconstruction}, this labelled image is what we need to construct the lowest branch layer of an IPF for the image. The remainder of the IPF will be constructed using the waterfall transform, which will now be introduced.
+
+\index{watershed transform!on CT images|)}
+\index{watershed transform|)}
 
 \clearpage
 
@@ -498,6 +524,8 @@ To segment a CT image using the watershed transform, then, we first window it us
 \section{The Waterfall Transform}
 \label{sec:segmentation-waterfall}
 %##################################################################################################
+
+\index{waterfall transform|(}
 
 %################################################
 \subsection{Motivation}
@@ -628,6 +656,8 @@ The following sections describe three different MST-based waterfall algorithms -
 \subsubsection{Marcotegui's Algorithm}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\index{waterfall transform!Marcotegui's algorithm|(}
+
 Since each waterfall pass is effectively just a graph-based waterfall transform, it can be implemented using either a flooding or a rainfalling approach. The algorithm described in \cite{marcotegui05} is an example of the former. Each pass performs a flooding-based watershed transform on MSTs, consisting of the following three steps:
 
 \begin{enumerate}
@@ -690,9 +720,13 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 
 \noindent A more implementation-focused description of the algorithm, including code, can be found in \cite{golodetz08}. It is important to note that the order in which edges should be processed during the propagation step is not in general well-defined (note that I wrote `non-decreasing' rather than `increasing' order of edge weight above, since multiple edges under consideration can have the same weight). The `obvious' implementation of the propagation step uses a priority queue and pops a lowest adjacent edge for consideration each time: thus the next edge to be considered ends up depending fundamentally on the way the priority queue is implemented. The consequence of this is that non-minimal plateaux in the MST are handled in a rather arbitrary way. This is not necessarily a problem in practice -- there tend to be only a small number of non-minimal plateaux in most MSTs, so it doesn't seriously affect the end result -- but it still seems slightly undesirable to have the segmentation output depend so closely on the implementation of an internal data structure which may in principle be subject to change. I will return to this issue in \S\ref{subsubsec:segmentation-waterfall-myalgorithm}.
 
+\index{waterfall transform!Marcotegui's algorithm|)}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Nicholls' Algorithm}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\index{waterfall transform!Nicholls' algorithm|(}
 
 Marcotegui's waterfall method is fast and effective, but there are at least two aspects of it that can be refined. The first has just been mentioned -- the algorithm does not well-specify which edges should be elided when there are non-minimal plateaux in the MST, essentially leaving it to the implementor to make a sensible choice. I address this in \S\ref{subsubsec:segmentation-waterfall-myalgorithm}. The second is that the algorithm as defined is a general graph algorithm, even though it is actually operating on a tree: this makes implementing the waterfall a somewhat more intricate procedure than is strictly necessary and makes the code harder to understand.
 
@@ -776,10 +810,14 @@ Nicholls' algorithm first roots the MST (see Figure~\ref{fig:segmentation-waterf
 
 The assumption that all the implied flow is along the lowest child in the first case is this algorithm's way of dealing with non-minimal plateaux in the MST. As with the Marcotegui algorithm's dependence on the particular priority queue implementation used, this is a somewhat arbitrary way of handling non-minimal plateaux: in particular, the selected direction of implied flow from a particular node depends on both where the MST is rooted, and the specific method used to choose the lowest child. The algorithm also ignores the possibility that part of the implied flow is along the parent. All of this affects which specific edges are elided. As with Marcotegui's algorithm, this tends not to significantly degrade the end result, but it is still in principle desirable to devise an algorithm that does not depend on such implementation details. In the following subsection, I therefore present an alternative tree-based algorithm that handles non-minimal plateaux in the MST in a more robust manner.
 
+\index{waterfall transform!Nicholls' algorithm|)}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{My Algorithm}
 \label{subsubsec:segmentation-waterfall-myalgorithm}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\index{waterfall transform!my algorithm|(}
 
 Referring back to Meijster and Roerdink's image watershed algorithm in \S\ref{subsec:segmentation-watershed-greyscale}, we observe that one robust way of dealing with the problem of non-minimal plateaux in a landscape is to first transform the image to make it lower-complete: that is, we transform it into an image where every pixel that is not within a local minimum has a lower neighbour. The method for making the image lower-complete described in \cite{meijster98} has the effect of treating pixels which are further from the border of a plateau as being in some sense `higher' than those on the boundary. The same sort of idea can be applied in the context of a waterfall pass (although it is not necessary to actually transform the MST to make it lower-complete): where there are non-minimal plateaux in the MST, we can arrange to treat the nodes further from the border of the plateaux as being `higher' than their boundary counterparts. As we will see, this enables a robust decision to be made about which edges should be elided.
 
@@ -927,6 +965,8 @@ The proposed algorithm is a tree-based rainfalling method, and works in three re
 \end{stusubfig}
 %---
 
+\index{waterfall transform!my algorithm|)}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Comparison}
 \label{subsubsec:segmentation-waterfall-comparison}
@@ -1010,12 +1050,16 @@ Implementing all three algorithms in \emph{millipede} revealed that for the most
 
 Where my algorithm could potentially have an advantage is in situations where the underlying graph might be known to have only one minimum spanning tree (perhaps because it itself is a tree) and handling of non-minimal plateaux is important. My algorithm is also useful as a way of classifying individual edges in the minimum spanning tree -- as already mentioned, this makes possible a faster (and simpler) implementation of the first step of Marcotegui's algorithm.
 
+\index{waterfall transform|)}
+
 \clearpage
 
 %##################################################################################################
 \section{IPF Construction}
 \label{sec:segmentation-ipfconstruction}
 %##################################################################################################
+
+\index{partition forests!constructing|(}
 
 %################################################
 \subsection{Overview}
@@ -1189,6 +1233,8 @@ Suppose a branch node, $b$, with pixel set $B$, has $k \ge 1$ (branch) children,
 \label{subsec:segmentation-ipfconstruction-volumeatonce}
 %################################################
 
+\index{partition forests!constructing!volume-at-once method|(}
+
 Recall from the section overview that the goal of both the IPF construction methods presented in this thesis is to build the type of IPF shown in Figure~\ref{fig:segmentation-ipfconstruction-goal}. There are three key issues to be tackled in each case:
 %
 \begin{enumerate}
@@ -1302,10 +1348,14 @@ The higher branch layers of the forest are constructed using the waterfall trans
 
 Having constructed the MST, we then iteratively clone the top-most layer of the forest and run a waterfall iteration (of whichever algorithm we decide to use) on the MST. When the waterfall iteration calls for an edge to be elided, we arrange for this to not only elide the edge in the MST, but merge the relevant regions in the top-most layer of the forest as well. To do this, we modify the waterfall algorithms to support external listeners, which are informed when an edge in the MST is merged. We then add a listener that merges the corresponding regions in the top-most forest layer (see Listing~\ref{code:segmentation-ipfconstruction-volumeatonce-waterfalllistener}). The MST itself is maintained from one iteration of the waterfall to the next: at the beginning of each waterfall iteration it is the MST for the current top-most layer of the forest. This allows us to avoid rebuilding the MST for each new iteration. Figure~\ref{fig:segmentation-ipfconstruction-higherlayers} illustrates how the construction of the higher branch layers of a forest might proceed. The process continues either for a fixed number of iterations, or until the top-most layer of the forest contains only a single region. The result is the finished partition forest for the image, which is suitable for further processing.
 
+\index{partition forests!constructing!volume-at-once method|)}
+
 %################################################
 \subsection{The Subvolume Method}
 \label{subsec:segmentation-ipfconstruction-subvolume}
 %################################################
+
+\index{partition forests!constructing!subvolume method|(}
 
 The volume-at-once method described in the previous section only allows a 3D image volume to be segmented using 3D segmentation. This is the natural approach, but there are times when it can be desirable to segment individual slices in 2D and then combine the results to form a single partition forest for further editing: this is the purpose of the subvolume method.
 
@@ -1377,6 +1427,9 @@ Constructing the higher layers is somewhat more intricate. We want to be able to
 The trick here is in how we implement the waterfall listener (see Listing~\ref{code:segmentation-ipfconstruction-subvolume-waterfalllistener}). Unlike the volume-at-once waterfall listener (see Listing~\ref{code:segmentation-ipfconstruction-volumeatonce-waterfalllistener}), this one maps the indices of the nodes to be merged in a subvolume's forest to their counterparts in the overall volume's forest before performing the merge on the the overall forest. The details of this process are not especially important here -- all that matters is that this allows us to run separate waterfall processes on each of the subvolumes whilst constructing a single partition forest for the volume as a whole.
 
 As a side note, it is worth observing that the subvolume method described here is not restricted to segmenting image volumes slice by slice -- it can be used to segment them using subvolumes of any size, provided that the subvolume dimensions divide evenly into those of the overall volume. For instance, Figure~\ref{fig:segmentation-ipfconstruction-subvolumemethod-anysize} shows the results of segmenting a $512 \times 512 \times 1$ image in $64 \times 64 \times 1$ chunks. Whilst primarily an implementation quirk at present, this does have potential uses. For instance, there is in principle no reason why the approach could not be extended to arbitrary subvolume sizes, at the expense of a far more complicated implementation, which might actually be useful if the user wanted to segment separate sections of the body using different segmentation parameters.
+
+\index{partition forests!constructing!subvolume method|)}
+\index{partition forests!constructing|)}
 
 \newpage
 

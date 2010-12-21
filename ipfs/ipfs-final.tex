@@ -15,6 +15,8 @@ In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the
 \subsection{Concept}
 %################################################
 
+\index{partition forests!concept|(}
+
 A partition forest is in essence a hierarchy of adjacency graphs that all partition the same object (the sense in which a graph can partition an object will be formalised in \S\ref{sec:ipfs-definition}). The object itself can be anything that can be divided into pieces, whether that be an image, a road network or an organisation. As was seen in \S\ref{sec:background-partitionhierarchies}, partition forests (whether called by that name or otherwise) have been widely used as a hierarchical representation for images. However, surprisingly little attention has been devoted to how to edit them post-construction (with perhaps the notable exception being Nacken's work in \cite{nacken95}).
 
 The key components that make up a partition forest are illustrated in Figure~\ref{fig:ipfs-concept}, which shows a partition forest that might be constructed for a simple $4 \times 4$ image. A forest is made up of a number of layers, each of which is an adjacency graph representing a partition of an object (in this case, the image). Each partition is refined by the next highest partition, in the sense that each node in partition $i+1$ is the union of some of the nodes in partition $i$.
@@ -29,10 +31,14 @@ In addition to the forest layers themselves, a partition forest also contains fo
 \stufigex{height=21cm}{ipfs/ipfs-concept.png}{The concept of a partition forest (see main text for discussion)}{fig:ipfs-concept}{p}
 %---
 
+\index{partition forests!concept|)}
+
 %################################################
 \subsection{Definition}
 \label{sec:ipfs-definition}
 %################################################
+
+\index{partition forests!formally defined|(}
 
 It is possible to define partition forests more formally as follows:
 
@@ -128,10 +134,14 @@ Given:
 
 \noindent We can also define a parent/child relation between nodes, namely that $p = \mbox{parent}(c)$ iff $(c,p) \in \textit{FL}$. (This is equivalent to saying $c \in \mbox{children}(p)$.)
 
+\index{partition forests!formally defined|)}
+
 %##################################################################################################
 \section{Mutating Algorithms for Partition Forests}
 \label{sec:ipfs-mutatingalgorithms}
 %##################################################################################################
+
+\index{partition forests!mutating algorithms|(}
 
 Partition forests, as presented thus far, are a useful hierarchical representation for aggregate objects, but they are \emph{static}: that is, once a partition forest has been constructed for a given object, it does not change. This can be problematic, because constructing a perfect forest is potentially hard, and the number of possible forests for a given object is (at least theoretically) infinite. Even being more practical, and imposing the reasonable condition that every edge in the adjacency graph for the forest's leaf layer should have been elided (merging the two nodes it joins) by branch layer $E$, where $E$ is the total number of edges in the leaf adjacency graph, we can observe that there are still $E^2$ possible forests for an object (the $E^2$ comes from choosing a layer between $1$ and $E$ inclusive at which each leaf layer edge is removed by merging the nodes it joins). Putting this into context, that means that for a $4$-connected image of size $w \times h$, there are $(4wh - 2(w+h))^2$ possible partition forests (over a million possibilities for a $512 \times 512$ image). There is therefore a pressing need for mutating algorithms that allow us to transform one partition forest into another, in order to allow a user to work around potential issues with the initial partition forest construction. In this section, I present a hierarchy of novel algorithms (see Figure~\ref{fig:ipfs-forest-mutatingalgorithms}) that allow users to edit partition forests, thereby changing them from being merely a static data structure into being a dynamic one.
 
@@ -1052,6 +1062,8 @@ In terms of complexity analysis, we must first analyse the complexity of \texttt
 
 Returning to \texttt{parent_switch} in Listing~\ref{code:ipfs-forest-parentswitch}, lines $26$, $28$--$29$, $34$ and $40$--$42$ are all either $O(1)$ or amortised $O(1)$. Line $27$ is $O(\log n_c)$ due to the parent lookup. By the analysis given above, lines $30$--$31$ are $O((L+1-p) \log n_p)$. The most costly lines in the function are the unzipping and zipping on lines $35$ and $43$, both of which are $O((L+1-c) e_{c-1} \log e_{c-1})$. This is thus the overall complexity of the algorithm.
 
+\index{partition forests!mutating algorithms|)}
+
 \afterpage{\clearpage}
 \newpage
 
@@ -1122,6 +1134,8 @@ class PartitionForestSelection
 %################################################
 \subsection{Overview of Algorithms}
 %################################################
+
+\index{partition forests!selection algorithms|(}
 
 Having defined the partition forest selection data structure, and in particular the way in which selections are represented, we next turn to the algorithms that should be implemented for partition forest selections. These can be divided into three groups:
 
@@ -1582,12 +1596,16 @@ Pseudo-code to implement the algorithm is shown in Listing~\ref{code:ipfs-select
 \end{stulisting}
 %---
 
+\index{partition forests!selection algorithms|)}
+
 \afterpage{\clearpage}
 \newpage
 
 %##################################################################################################
 \section{Partition Forest Multi-Feature Selections}
 %##################################################################################################
+
+\index{partition forests!multi-feature selections|(}
 
 When using partition forests for image analysis, the user must be able to identify features within a forest (e.g.~that a particular node is part of the liver, etc.). In order to make this possible, it is necessary to introduce another new data structure called a \emph{partition forest multi-feature selection}. This is in essence just a map from features to partition forest selections -- in other words, a separate selection is maintained for each interesting feature. (Thus features are allowed to overlap, since the same node can appear in the selections of more than one feature.) In C++, this can be implemented as follows:
 
@@ -1651,6 +1669,8 @@ function identify_node
 \label{fig:ipfs-mfs-example}
 \end{stusubfig}
 %---
+
+\index{partition forests!multi-feature selections|)}
 
 %##################################################################################################
 \section{Chapter Summary}

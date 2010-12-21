@@ -21,6 +21,8 @@ The validation work undertaken here forms an important part of the basis for the
 \section{Validation of 3D Feature Identifiers}
 %##################################################################################################
 
+\index{validation!of 3D feature identifiers|(}
+
 To validate my 3D feature identifiers, I undertook four detailed case studies to test how well they worked on sets of slices from different series. An alternative approach of testing them on a larger number of series, but with less detailed individual analysis, would also have been possible, but in my view further work must be done on improving the robustness of the identifiers before such larger-scale validation really makes sense. The aim here is mainly to illustrate some of the areas in which the identifiers currently succeed or fail in order to highlight areas for further work.
 
 For each case study, I produced a `gold standard' result by manually identifying the aorta, kidneys, liver, ribs, spinal canal, spine and spleen using the validation tools described in Appendix~\ref{chap:appendixval}. The resulting features were checked, and corrected where necessary, by Dr Zoe Traill, a Consultant Radiologist at the Churchill Hospital, Oxford. I then identified the same features using the automated multi-feature identifier. To perform a comparison, the gold standard result ($G$) and automated result ($A$) were used to construct three derivative multi-feature selections:
@@ -431,12 +433,16 @@ The final case study is of slices $60$--$80$ from series $2$ of a patient called
 \stufigex{height=8cm}{validation/validation-EB-2-60-80-spleen-missed.png}{The spleen is missed in the EB-2 case study because there is no suitable spleen seed in layer $1$ (all the regions are too small). The gold standard outline of the spleen is shown in green, for comparison purposes.}{fig:validation-EB-2-60-80-spleen-missed}{p}
 %---
 
+\index{validation!of 3D feature identifiers|)}
+
 \afterpage{\clearpage}
 \newpage
 
 %##################################################################################################
 \section{Validation of Volume Calculations}
 %##################################################################################################
+
+\index{validation!of volume calculations|(}
 
 The ideal way to validate my volume calculations would have been to correlate them with real-world volumes calculated independently by the medics, but unfortunately these were not available. However, I was able to obtain the \emph{masses} of patients' organs calculated post-mortem as part of a study into the feasibility of performing virtual autopsies \cite{?}. These provided a reasonable (if not perfect) substitute for the volumes, since the major soft-tissue organs have known, and roughly uniform, densities (this is why they appear homogeneous on CT scans, since the Hounsfield scale used for CT images measures radiodensity). In conjunction with Dr Zoe Traill, the radiologist, it was therefore decided to focus on four different features -- the left and right kidneys, liver and spleen. I drew round these features in $19$ series ($740$ slices in total), with the results being checked, and corrected where necessary, by Dr Traill. The calculated volumes (in $\mathit{cm}^3$) resulting from this manual feature identification process are shown in Table~\ref{tbl:validation-volcalc}, alongside the corresponding masses (in $g$) calculated during the autopsies.
 
@@ -514,6 +520,8 @@ OX46 & 130 & 115.295 &            --- & 130 & 303.460 &                         
 %---
 \stufigex{height=9cm}{validation/validation-volcalc-spleen.png}{Graphing my spleen volume calculations against the spleen masses calculated during the autopsies}{fig:validation-volcalc-spleen}{p}
 %---
+
+\index{validation!of volume calculations|)}
 
 \clearpage
 \newpage
