@@ -668,6 +668,8 @@ where $\epsilon$ is a real number between $0$ and $1$.
 \label{subsec:graphpartitioning}
 %################################################
 
+\index{segmentation!normalized cuts|(}
+
 Graph partitioning segmentation algorithms work by representing an object to be segmented as a weighted, undirected graph. In the case of images, the nodes of this graph would be the pixels of the image, and each of its edges would connect a pair of adjacent pixels and be weighted according to some measure of the dissimilarity between those pixels (one possible definition, based on both the pixel values and their spatial location in the image, appears in \cite{shi00}). The idea is then to find a good way to partition the nodes of the graph into pieces. For instance, if $G = (V,E,w)$ is a graph with vertex set $V$, edge set $E$ and weight function $w$, the \emph{minimum cut} approach seeks to partition $V$ into two disjoint sets $A$ and $B$ such as to minimise:
 %
 \[
@@ -686,9 +688,13 @@ Finding a good partition given the definition of a normalized cut involves solvi
 
 The binary partitioning process thus far described then becomes part of a recursive partitioning scheme. Starting with the whole image, as good a binary partition as possible of the current image region is computed, along with the stability of the cut. If the stability is too low, the image region is not partitioned. Otherwise, the value of the cut itself is considered. If it is too high (i.e.~greater than some user-specified threshold), the recursion terminates. Otherwise, the binary partitioning process is repeated on the two sub-regions just computed. Via this recursive process, the image as a whole is partitioned into a number of groups dependent on the maximum allowed cut value and the stability criterion.
 
+\index{segmentation!normalized cuts|)}
+
 %################################################
 \subsection{Hybrid Techniques}
 %################################################
+
+\index{segmentation!hybrid|(}
 
 It is sometimes possible to achieve better results by combining a number of different segmentation methods than it is by using a single method on its own. A strikingly successful example of this sort of technique can be seen in the work of Luc Soler et al.\ \cite{soler01}, in which they describe an extensively hybrid technique for automatic segmentation of the liver from spiral CT scans. Their segmentation method first uses thresholding, morphological operators and distance maps to identify the skin, bones, lungs, kidneys and spleen. They next use a clever deformable model approach to embed a reference model of the liver into the image and automatically deform it to the liver contours. Later stages use Gaussian fitting on the image histogram to separate normal liver tissue from blood vessels and lesions (tumours), a result which is further refined by their own analytical methods. The final stage of their method makes use of higher-level medical knowledge to label the hepatic portal vein and segment the liver automatically according to an anatomically-based definition by Couinaud \cite{couinaud57}. The results of this technique are excellent -- see Figure~\ref{fig:background-segmentation-hybrid-soler}.
 
@@ -700,12 +706,16 @@ Other hybrid methods can be found in e.g.~\cite{ng06} and \cite{itk}. In \cite{n
 
 \fxnote{[IDV] I'd put a section/paragraph on ITK here}
 
+\index{segmentation!hybrid|)}
+
 \clearpage
 
 %##################################################################################################
 \section{Partition Hierarchies}
 \label{sec:background-partitionhierarchies}
 %##################################################################################################
+
+\index{partition forests!background|(}
 
 %TODO: (i) Brief description of what a partition tree is; (ii) Explain, with suitable references, the various situations in which they are used; (iii) Narrow it down to images and survey the various techniques, noting the key differences between the representations (e.g.~whether or not adjacency information is maintained, etc.); (iv) Explain (at a high level) how partition forests fit into the picture
 
@@ -796,6 +806,8 @@ To find an optimal path between two nodes using this scheme, we observe that suc
 We then consider all possible paths $s_i \mbox{++} p_j \mbox{++} d_k$ (where $\mbox{++}$ represents path concatenation) and pick one with the lowest cost. This is minimised against any possible intra-cluster route where necessary to give a path that is optimal overall.
 
 Thus far, we have only considered a pathfinding hierarchy with two layers, but the scheme can easily be extended to allow more layers if e.g.~the transition tables for the individual clusters are still considered too memory-intensive. The easiest way to do this is to treat each individual cluster as a graph in its own right and partition it into pieces (a top-down approach), although bottom-up approaches are also possible (one such approach, referred to in \cite{kim98}, can be found in \cite{jing96}). Actually constructing the partitions of individual graphs automatically is the problem known as graph partitioning or graph clustering (see e.g.~\cite{huang96,jing98}, or indeed \S\ref{subsec:graphpartitioning}). In certain domains (such as the computer games industry), the partitions may actually be constructed manually to gain finer control over the end result \cite{dickheiser04}. In either case, however, it is helpful to be able to edit the resulting partition forest interactively to try and minimise the amount of memory required to store the transition tables. This can be facilitated by the partition forest algorithms I will present in Chapter~\ref{chap:ipfs}.
+
+\index{partition forests!background|)}
 
 %##################################################################################################
 \section{Chapter Summary}

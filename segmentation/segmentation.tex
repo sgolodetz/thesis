@@ -400,6 +400,8 @@ The solution lies partly in smoothing the original image (a pre-processing step)
 \paragraph{Anisotropic Diffusion Filtering}
 %~~~~~~~~~~~~~~~~~~~~~~~
 
+\index{anisotropic diffusion filtering|(}
+
 The anisotropic diffusion filtering (ADF) technique was originally introduced by Perona and Malik in \cite{perona90}. The basic idea stems from the fact that solving a heat equation of the form
 %
 \[
@@ -455,6 +457,8 @@ The results of smoothing using ADF are shown in Figure~\ref{fig:segmentation-wat
 \label{fig:segmentation-watershed-adfexample}
 \end{stusubfig}
 %---
+
+\index{anisotropic diffusion filtering|)}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Features vs. Catchment Basins}
@@ -1067,7 +1071,7 @@ Where my algorithm could potentially have an advantage is in situations where th
 \label{sec:segmentation-ipfconstruction}
 %##################################################################################################
 
-\index{partition forests!constructing|(}
+\index{partition forests!construction|(}
 
 %################################################
 \subsection{Overview}
@@ -1241,7 +1245,7 @@ Suppose a branch node, $b$, with pixel set $B$, has $k \ge 1$ (branch) children,
 \label{subsec:segmentation-ipfconstruction-volumeatonce}
 %################################################
 
-\index{partition forests!constructing!volume-at-once method|(}
+\index{partition forests!construction!volume-at-once method|(}
 
 Recall from the section overview that the goal of both the IPF construction methods presented in this thesis is to build the type of IPF shown in Figure~\ref{fig:segmentation-ipfconstruction-goal}. There are three key issues to be tackled in each case:
 %
@@ -1356,14 +1360,14 @@ The higher branch layers of the forest are constructed using the waterfall trans
 
 Having constructed the MST, we then iteratively clone the top-most layer of the forest and run a waterfall iteration (of whichever algorithm we decide to use) on the MST. When the waterfall iteration calls for an edge to be elided, we arrange for this to not only elide the edge in the MST, but merge the relevant regions in the top-most layer of the forest as well. To do this, we modify the waterfall algorithms to support external listeners, which are informed when an edge in the MST is merged. We then add a listener that merges the corresponding regions in the top-most forest layer (see Listing~\ref{code:segmentation-ipfconstruction-volumeatonce-waterfalllistener}). The MST itself is maintained from one iteration of the waterfall to the next: at the beginning of each waterfall iteration it is the MST for the current top-most layer of the forest. This allows us to avoid rebuilding the MST for each new iteration. Figure~\ref{fig:segmentation-ipfconstruction-higherlayers} illustrates how the construction of the higher branch layers of a forest might proceed. The process continues either for a fixed number of iterations, or until the top-most layer of the forest contains only a single region. The result is the finished partition forest for the image, which is suitable for further processing.
 
-\index{partition forests!constructing!volume-at-once method|)}
+\index{partition forests!construction!volume-at-once method|)}
 
 %################################################
 \subsection{The Subvolume Method}
 \label{subsec:segmentation-ipfconstruction-subvolume}
 %################################################
 
-\index{partition forests!constructing!subvolume method|(}
+\index{partition forests!construction!subvolume method|(}
 
 The volume-at-once method described in the previous section only allows a 3D image volume to be segmented using 3D segmentation. This is the natural approach, but there are times when it can be desirable to segment individual slices in 2D and then combine the results to form a single partition forest for further editing: this is the purpose of the subvolume method.
 
@@ -1436,8 +1440,8 @@ The trick here is in how we implement the waterfall listener (see Listing~\ref{c
 
 As a side note, it is worth observing that the subvolume method described here is not restricted to segmenting image volumes slice by slice -- it can be used to segment them using subvolumes of any size, provided that the subvolume dimensions divide evenly into those of the overall volume. For instance, Figure~\ref{fig:segmentation-ipfconstruction-subvolumemethod-anysize} shows the results of segmenting a $512 \times 512 \times 1$ image in $64 \times 64 \times 1$ chunks. Whilst primarily an implementation quirk at present, this does have potential uses. For instance, there is in principle no reason why the approach could not be extended to arbitrary subvolume sizes, at the expense of a far more complicated implementation, which might actually be useful if the user wanted to segment separate sections of the body using different segmentation parameters.
 
-\index{partition forests!constructing!subvolume method|)}
-\index{partition forests!constructing|)}
+\index{partition forests!construction!subvolume method|)}
+\index{partition forests!construction|)}
 
 \newpage
 
