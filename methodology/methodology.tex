@@ -9,6 +9,8 @@ In Chapter~\ref{chap:background}, the major techniques currently in use for medi
 %---
 \section{Goals}
 
+\index{research!goals|(}
+
 The overarching goal of my doctorate has been to conduct research into ways of segmenting abdominal CT scans and identifying salient features therein. There are a number of important use cases which make research into this area worthwhile, but the two I have been particularly interested in are those of volume visualization and volume estimation (see Appendix~\ref{chap:appendixapps}).
 
 \textbf{Visualization} is the process of rendering information in a manner intended to aid human understanding. In the context of medical imaging, the term volume visualization (also known as volume rendering) generally refers to the process of taking a three-dimensional volume of scan data (for example, a series of CT slices) and rendering it onto a two-dimensional screen. This is potentially useful to clinicians because it allows them to view the state of the imaged part of the body as a whole, rather than having to mentally visualize the situation based on what they can see on the individual 2D images. For similar reasons, it is also potentially of benefit to anyone with a less finely-honed knowledge of anatomy (e.g.~non-medics, or indeed early-stage medical students). In order to work, volume visualization techniques need some idea of where different features are in the images: for example, the multiple material marching cubes algorithm \cite{wu03} for volume rendering takes as input a volume where each voxel is assigned a label corresponding to a feature of interest (e.g.~a kidney). The construction of such a labelled volume from an initial data-set is the kind of segmentation/feature identification problem discussed in this dissertation.
@@ -21,8 +23,12 @@ These two considerations of automation and supervision have proved key to the de
 
 The goal I therefore adopted for my segmentation and feature identification work was a compromise: to devise an approach that was as automated as possible, to reduce the interactivity burden on the user, whilst simultaneously allowing (but not requiring) as much interaction as possible, to allow the user to correct any errors in the results. This principle fundamentally affected the methods I chose, as described in the next section.
 
+\index{research!goals|)}
+
 %---
 \section{Methods}
+
+\index{research!methods|(}
 
 %---
 \begin{table}[p]
@@ -115,14 +121,20 @@ The watershed and waterfall transforms, and the way in which I used them to cons
 
 For other features, I developed a more sophisticated region growing approach that works on the adjacency graphs of the hierarchy. Region growing was an appropriate technique in this case because the disadvantages listed for it in Table~\ref{fig:methodology-methods-comparison} were less applicable here. Firstly, seed regions in the hierarchy were relatively easy to generate, as a result of the large number of properties associated with each region on which such a decision could be based. Secondly, the features being identified (e.g.~the spine and kidneys) were relatively homogeneous in the image, so the results produced tended not to contain an excessive number of holes. Finally, my method produced as its result the selection of a manageable number of nodes in the partition hierarchy, which could be easily edited using the hierarchy algorithms presented in Chapter~\ref{chap:ipfs}.
 
+\index{research!methods|)}
+
 %---
 \section{Real-World Context}
+
+\index{research!context|(}
 
 Medical image research cannot (and, in any case, should not) be undertaken without active collaboration with those in the medical profession. In the case of my doctoral work, we were fortunate enough to establish such links with four consultants in the Churchill Hospital, Oxford, through the invaluable help of Professor Sir Mike Brady (at the time, running a medical imaging group in Oxford University's engineering department).
 
 However, the time it takes to set up such a collaboration should not be underestimated (especially because medics have commitments to patients that limit the amount of time they are able to spend on research), and this had important implications for the way my research evolved. Not least of these was that the initial research plan and early work had to be designed in something of a vacuum, with the aim of convincing the doctors that the project was worthwhile. Whilst this presented certain difficulties (my lack of the relevant medical knowledge made it hard to devise a coherent plan, and early on I had no access to any CT images on which to try out my ideas), it also made the process very interesting, because it gave me valuable insights into how research links are established -- in many ways, the process involves as much marketing as technical development, something of which I had previously had little experience.
 
 Since establishing medical links, the project has proceeded well from the perspective of my doctoral work. However, it will become important in future to establish further links with both potential end-users and the external companies that currently supply them if any of the techniques described in this thesis are ultimately to be put to use in a clinical environment.
+
+\index{research!context|)}
 
 %---
 \section{Chapter Summary}

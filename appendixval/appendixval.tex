@@ -5,6 +5,8 @@
 \section{Drawing Tools}
 %##################################################################################################
 
+\index{validation!drawing tools|(}
+
 %---
 \stufigex{height=10cm}{appendixval/appendixval-pen-closeup.png}{Close-up view of Bamboo Fun tablet and pen (manufactured by Wacom)}{fig:appendixval-pen-closeup}{p}
 %---
@@ -58,6 +60,8 @@ Each of the three implemented tools is described below, after which it will be s
 \subsection{Box Tool}
 %################################################
 
+\index{validation!drawing tools!box tool|(}
+
 The box tool is relatively straightforward to implement, as shown in Listing~\ref{code:appendixval-boxdrawingtool}. Two points are maintained to represent the extents of the box: an \emph{anchor} point and an \emph{other} point. When drawing a box, the user first presses the mouse: this initialises both points to the position of the mouse press. The user then drags the mouse, which moves the \emph{other} point away from the \emph{anchor} to make the box (see Figure~\ref{fig:appendixval-boxtool}(a)). Finally, the user releases the mouse; since the tool is not of the multi-click variety, this results in \texttt{BoxDrawingTool::selected_positions()} being called to evaluate the actual voxels contained within the box. These are initially in 2D (since the drawing tools are designed as an independent package that doesn't know about the 3D image volume), but are subsequently converted into 3D based on the slice being viewed, and used to construct a partition forest selection (see Figure~\ref{fig:appendixval-boxtool}(b)). The details of this will be described in \S\ref{subsec:appendixval-integration}. Actually determining which voxels are in the box is a trivial process: all that is required is to traverse the box from one of its corners to the other in the obvious manner.
 
 %---
@@ -81,6 +85,8 @@ The box tool is relatively straightforward to implement, as shown in Listing~\re
 \lstinputlisting[style=Default,language=C++]{appendixval/appendixval-boxdrawingtool.lst}
 \end{stulisting}
 %---
+
+\index{validation!drawing tools!box tool|)}
 
 %################################################
 \subsection{Line-Based Tools}
@@ -112,6 +118,8 @@ Polyline rasterization (which is the same problem as concave polygon rasterizati
 \subsubsection{Lasso Tool}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\index{validation!drawing tools!lasso tool|(}
+
 With polyline rasterization implemented, the lasso tool becomes straightforward (see Listing~\ref{code:appendixval-lassodrawingtool}). All that is required is to add the points clicked or dragged over by the user to the list of drawn locations maintained by the \texttt{LineBasedDrawingTool} super-class. Figure~\ref{fig:appendixval-lassotool} shows the lasso tool in use.
 
 %---
@@ -136,9 +144,13 @@ With polyline rasterization implemented, the lasso tool becomes straightforward 
 \end{stusubfig}
 %---
 
+\index{validation!drawing tools!lasso tool|)}
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Line Loop Tool}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\index{validation!drawing tools!line loop tool|(}
 
 The line loop tool is also straightforward in principle -- all that is really necessary is to specify that it is a multi-click tool, and then add the points clicked to the list of drawn locations in its \texttt{mouse_pressed()} method -- but in practice, the tool can be made substantially more usable with a few simple improvements.
 
@@ -169,12 +181,16 @@ Rendering must also be improved for this to work well -- instead of just renderi
 \end{stulisting}
 %---
 
+\index{validation!drawing tools!line loop tool|)}
+
 \newpage
 
 %################################################
 \subsection{GUI Integration}
 \label{subsec:appendixval-integration}
 %################################################
+
+\index{validation!drawing tools!GUI integration|(}
 
 In \emph{millipede}, the interactions between the drawing tools and the rest of the application are handled in a class called \texttt{DICOMCanvas}, which represents a canvas that displays CT scans. There are two pieces of code necessary -- (a) the canvas's mouse handlers, which process the user's input, forward it to the current drawing tool as necessary and decide when the user has finished drawing (see Listing~\ref{code:appendixval-mousehandlers}), and (b) the \texttt{finish_drawing()} method, which is called by the mouse handlers to rasterize the current drawing, project the rasterized drawing into 3D, and modify the partition forest selection as necessary (see Listing~\ref{code:appendixval-finishdrawing}).
 
@@ -214,12 +230,17 @@ The \texttt{finish_drawing()} method itself first invokes \texttt{selected_posit
 \end{stulisting}
 %---
 
+\index{validation!drawing tools!GUI integration|)}
+\index{validation!drawing tools|)}
+
 \newpage
 
 %##################################################################################################
 \section{Feature Comparisons}
 \label{sec:appendixval-featurecomparisons}
 %##################################################################################################
+
+\index{validation!feature comparisons|(}
 
 In order to facilitate comparisons between the results of the automatic feature identifiers and manually-produced, gold standard results for the same image volumes, \emph{millipede} allows the user to maintain multiple feature selections for an image volume at the same time. These are managed using the dialog box shown in Figure~\ref{fig:appendixval-featureselectionsdialog}. The user can:
 
@@ -253,3 +274,5 @@ The validation dialog compares two feature selections on a per-feature basis, di
 \]
 %
 Note that this attains a maximum of $1$ when $T = \mathit{GS}$ (i.e.~when the target feature exactly matches that in the gold standard result), and a minimum of $0$ when $T \cap \mathit{GS} = \emptyset$.
+
+\index{validation!feature comparisons|)}

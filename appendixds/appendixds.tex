@@ -6,6 +6,8 @@
 \label{sec:appendixds-dsf}
 %##################################################################################################
 
+\index{disjoint set forests|(}
+
 Echoing the more general definition of partitioning in Chapter~\ref{chap:ipfs}, we first observe that:
 
 \begin{definition}
@@ -110,12 +112,16 @@ The basic idea (initially ignoring the details) is that MAKE-SET makes a single 
 \end{stusubfig}
 %---
 
+\index{disjoint set forests|)}
+
 \afterpage{\clearpage}
 \newpage
 
 %##################################################################################################
 \section{Rooted Minimum Spanning Trees}
 %##################################################################################################
+
+\index{rooted MSTs|(}
 
 From basic graph theory, recall that given a positively-weighted, undirected graph $G = (V,E,w)$ with vertex set $V$, edge set $E$ and weight function $w: E \times E \to \mathbb{R}^+$, we say that $T$ is a (there can be more than one possibility) minimum spanning tree (MST) for $G$ iff:
 %
@@ -130,6 +136,8 @@ For our purposes here, we build on this definition to define a \emph{rooted MST}
 %################################################
 \subsection{Construction}
 %################################################
+
+\index{rooted MSTs!construction|(}
 
 %---
 \begin{stulisting}[p]
@@ -151,9 +159,13 @@ For our purposes here, we build on this definition to define a \emph{rooted MST}
 
 There are several algorithms for constructing normal MSTs of graphs, the best-known of which are perhaps Kruskal's algorithm (which sorts the edges in non-decreasing order of weight and then adds edges -- starting from the one with the smallest weight -- that do not create a cycle until all the vertices have been spanned) and Prim's algorithm (which maintains a set of spanned vertices -- initially an arbitrary start vertex -- and then repeatedly adds the smallest edge that connects a currently unspanned vertex to the vertices in this set until all the vertices have been spanned). To construct a \emph{rooted} MST, however, Prim's algorithm is superior to Kruskal's, because it works by gradually expanding a tree, starting from an initial vertex -- this can be easily adapted to build a rooted MST by choosing the initial vertex to be the root. A suitable implementation is shown in Listing~\ref{code:appendixds-rootedmst-construction}. This represents the tree using an adjacency graph (referred to using \texttt{base()} in the code) that stores parent pointers at each vertex. Constructing a rooted MST using Kruskal's algorithm would involve far more work, because Kruskal's adds edges all over the graph and only guarantees to join them up by the time the algorithm terminates.
 
+\index{rooted MSTs!construction|)}
+
 %################################################
 \subsection{Node Merging}
 %################################################
+
+\index{rooted MSTs!node merging|(}
 
 For rooted MSTs to be used as the underlying data structure for the various waterfall algorithms, they need to be augmented with a \emph{node merging} operation (see Listing~\ref{code:appendixds-rootedmst-mergenodes}). Since we're dealing with a rooted tree, the only nodes which can merge must form a parent/child pair in the tree. The basic algorithm is simple (remove one of the nodes and move its children across to the other one), but in practice things are slightly more complicated. The first step is to pick which node should survive and which should be removed. In the implementation here, the lower-indexed node is retained, because the rooted MSTs are being used in the construction of partition forests, which assign nodes an index corresponding to the lowest-indexed pixel they contain. Other implementations might want/need to make a different choice here.
 
@@ -184,3 +196,6 @@ The next step depends on whether we are retaining the parent of the pair being m
 %---
 
 It is important to check whether the root node is the one being removed -- if so, we need to make the surviving node into the new root node. Finally, we remove the node as planned and return the index of the surviving node.
+
+\index{rooted MSTs!node merging|)}
+\index{rooted MSTs|)}
