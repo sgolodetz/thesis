@@ -628,7 +628,7 @@ The key issues when using Lloyd's algorithm to segment images are how to define 
 Fuzzy C-means is essentially a fuzzy relative of the K-means approach just described. It was originally presented by Dunn in 1974 \cite{dunn74}. The key idea is that instead of objects being divided crisply into groups (i.e.~each object belonging completely to exactly one group), objects have a degree of membership for each group. Using the same notation as before, and letting $u_{ij}$ be a real number between $0$ and $1$ indicating the degree to which object $o_i$ is a member of group $G_j$, and $1 < p < \infty$ be a real parameter (e.g.~$p = 2$), we seek to find a set of groups $G$ minimising:
 %
 \[
-\sum_{j=1}^k \sum_{o_i \in G_j} u_{ij}^p \cdot m(o,\mu_j)^2
+\sum_{j=1}^k \sum_{o_i \in G_j} u_{ij}^p \cdot m(o_i,\mu_j)^2
 \]
 %
 The standard algorithm for fuzzy C-means (as per \cite{matteucci}) is once again an iterative, heuristic method:
