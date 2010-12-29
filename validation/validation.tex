@@ -9,7 +9,7 @@
 
 In order to evaluate the effectiveness of my approach, I undertook two separate pieces of validation work. The first piece involved quantifying the accuracy of the 3D feature identifiers presented in the previous chapter -- this was done by comparing their output to `gold standard' results produced manually in collaboration with a radiologist. The second piece involved validating the accuracy of my volume calculations (see \S\ref{sec:appendixapps-volumecalc}). To do this, I first manually identified the liver, kidneys and spleen in a number of series and used my program to calculate their volumes in each case. The volume results were then correlated with known weights provided by the radiologist (bearing in mind that the densities of the organs in question are relatively uniform).
 
-Both producing the gold standard results and making inter-result comparisons involved implementing special features for the purpose in \emph{millipede}. For the gold standard production, manual drawing tools were implemented to allow the user to draw round features of interest in the images. To make life easier for the user, the actual drawing was done using a \emph{Bamboo Fun} pen tablet (manufactured by Wacom) -- see Figure~\ref{fig:validation-pentablet-usage} -- although it would also have been possible to use a standard mouse. The inter-result comparisons were implemented as a dialog box allowing the user to compare multi-feature selections on a per-feature basis. The implementation of all the validation-specific features is discussed in Appendix~\ref{chap:appendixval}.
+Both producing the gold standard results and making inter-result comparisons involved implementing special features for the purpose in \emph{millipede}. For the gold standard production, manual drawing tools were implemented to allow the user to draw round features of interest in the images. The actual drawing was done using a \emph{Bamboo Fun} pen tablet manufactured by Wacom (see Figure~\ref{fig:validation-pentablet-usage}), as this provides more accurate user control here than would a standard mouse. The inter-result comparisons were implemented as a dialog box allowing the user to compare multi-feature selections on a per-feature basis. The implementation of all the validation-specific features is discussed in Appendix~\ref{chap:appendixval}.
 
 The validation work undertaken here forms an important part of the basis for the following chapter, in which I critically assess all the contributions claimed in the introduction.
 
@@ -33,13 +33,13 @@ For each case study, I produced a `gold standard' result by manually identifying
 \item $A \cap G$, which contains the parts of the features that were correctly identified.
 \end{enumerate}
 %
-These were then used to calculate the Dice similarity coefficient for each feature, as described in \S\ref{sec:appendixval-featurecomparisons}, providing a quantitative measure of the extent to which the automated and gold standard results correspond.
+These were then used to calculate the Dice similarity coefficient for each feature, as described in \S\ref{sec:appendixval-featurecomparisons}, providing a quantitative measure of the extent to which the automated and gold standard results correspond. Dice similarity coefficients range from $0$ to $1$, with $1$ indicating a perfect correspondence between two results and $0$ indicating that they do not correspond at all.
 
 %################################################
 \subsection{Series BT-2, Slices $60$--$80$}
 %################################################
 
-The first case study is of slices $60$--$80$ from series $2$ of a patient called BT. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-BT-2-60-80} and Figure~\ref{fig:validation-BT-2-60-80}. The identified features can be analysed as follows:
+The first case study is of slices $60$--$80$ from series $2$ of a patient known as BT. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-BT-2-60-80} and Figure~\ref{fig:validation-BT-2-60-80}. The identified features can be analysed as follows:
 %
 \begin{itemize}
 
@@ -136,7 +136,7 @@ The first case study is of slices $60$--$80$ from series $2$ of a patient called
 \subsection{Series SD-2, Slices $70$--$90$}
 %################################################
 
-The second case study is of slices $70$--$90$ from series $2$ of a patient called SD. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-SD-2-70-90} and Figure~\ref{fig:validation-SD-2-70-90}. The identified features can be analysed as follows:
+The second case study is of slices $70$--$90$ from series $2$ of a patient known as SD. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-SD-2-70-90} and Figure~\ref{fig:validation-SD-2-70-90}. The identified features can be analysed as follows:
 %
 \begin{itemize}
 
@@ -235,7 +235,7 @@ The second case study is of slices $70$--$90$ from series $2$ of a patient calle
 \subsection{Series MC-2, Slices $110$--$130$}
 %################################################
 
-The third case study is of slices $110$--$130$ from series $2$ of a patient called MC. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-MC-2-110-130} and Figures~\ref{fig:validation-MC-2-110-130} and \ref{fig:validation-MC-2-110-130-differences}. The identified features can be analysed as follows:
+The third case study is of slices $110$--$130$ from series $2$ of a patient known as MC. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-MC-2-110-130} and Figures~\ref{fig:validation-MC-2-110-130} and \ref{fig:validation-MC-2-110-130-differences}. The identified features can be analysed as follows:
 %
 \begin{itemize}
 
@@ -360,7 +360,7 @@ Another problem with the liver identification in this case is that it misses bot
 \subsection{Series EB-2, Slices $60$--$80$}
 %################################################
 
-The final case study is of slices $60$--$80$ from series $2$ of a patient called EB. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-EB-2-60-80} and Figure~\ref{fig:validation-EB-2-60-80}. The identified features can be analysed as follows:
+The final case study is of slices $60$--$80$ from series $2$ of a patient known as EB. Side-by-side comparisons of the automated and gold standard results are shown in Table~\ref{tbl:validation-EB-2-60-80} and Figure~\ref{fig:validation-EB-2-60-80}. The identified features can be analysed as follows:
 %
 \begin{itemize}
 
