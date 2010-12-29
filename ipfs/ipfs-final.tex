@@ -1149,7 +1149,7 @@ For this reason, it is necessary to introduce a more sophisticated approach to p
 
 The partition forest selection data structure should contain an array of sets of node indices, one per forest layer, and some type of pointer to the partition forest to which it corresponds.\footnote{The actual code also contains a pointer to the application's command manager and a `composite listener' to allow observers to listen to changes in the selection, but these are implementation details.} In C++, this can be implemented as follows (noting that \texttt{shared_ptr} is a kind of reference-counted smart pointer -- e.g.~see \cite{btcppsl-sharedptr}):
 
-\begin{lstlisting}[style=Default,language=C++]
+\begin{lstlisting}[style=Default,language=C++,backgroundcolor={\color[gray]{0.8}}]
 template <typename LeafLayer, typename BranchLayer>
 class PartitionForestSelection
 {
@@ -1394,7 +1394,7 @@ Implementing an iterator-based version of the algorithm is only marginally more 
 
 As previously mentioned, the \emph{node selection} and \emph{node deselection} algorithms return selection modifications that can be used to undo their effects. The \emph{undo modification} algorithm reinserts nodes that were erased from the representation, and removes nodes that were inserted:
 
-\begin{lstlisting}[style=Default]
+\begin{lstlisting}[style=Default,backgroundcolor={\color[gray]{0.8}}]
 function undo_modification
 :	(modification : Modification) $\to \emptyset$
 
@@ -1413,7 +1413,7 @@ function undo_modification
 
 Selection modifications that were undone by \emph{undo modification} can also be redone (there is no need to execute the original command a second time, which would involve recalculating the necessary nodes to erase/insert). The \emph{redo modification} algorithm re-erases any nodes in the \texttt{erased} set, and re-inserts any nodes in the \texttt{inserted} set:
 
-\begin{lstlisting}[style=Default]
+\begin{lstlisting}[style=Default,backgroundcolor={\color[gray]{0.8}}]
 function redo_modification
 :	(modification : Modification) $\to \emptyset$
 
@@ -1450,7 +1450,7 @@ void layer_was_cloned(int index);
 
 Rather than inserting the new layer into the selection representation above the cloned layer, and then migrating any nodes upwards, the actual implementation instead inserts an empty layer into the representation below the cloned layer:
 
-\begin{lstlisting}[style=Default]
+\begin{lstlisting}[style=Default,backgroundcolor={\color[gray]{0.8}}]
 function layer_was_cloned
 :	(index : int) $\to \emptyset$
 
@@ -1679,7 +1679,7 @@ Pseudo-code to implement the algorithm is shown in Listing~\ref{code:ipfs-select
 
 When using partition forests for image analysis, the user must be able to identify features within a forest (e.g.~that a particular node is part of the liver, etc.). In order to make this possible, it is necessary to introduce another new data structure called a \emph{partition forest multi-feature selection}. This is in essence just a map from features to partition forest selections -- in other words, a separate selection is maintained for each interesting feature. (Thus features are allowed to overlap, since the same node can appear in the selections of more than one feature.) In C++, this can be implemented as follows:
 
-\begin{lstlisting}[style=Default,language=C++]
+\begin{lstlisting}[style=Default,language=C++,backgroundcolor={\color[gray]{0.8}}]
 template <typename LeafLayer, typename BranchLayer, typename Feature>
 class PartitionForestMultiFeatureSelection
 {
@@ -1703,7 +1703,7 @@ class PartitionForestMultiFeatureSelection
 
 \noindent All of these can be implemented straightforwardly in terms of their selection counterparts. For example, the following pseudo-code shows how a node can be identified as a feature:
 
-\begin{lstlisting}[style=Default]
+\begin{lstlisting}[style=Default,backgroundcolor={\color[gray]{0.8}}]
 function identify_node
 :	(node : NodeID; feature : Feature) $\to$ $\emptyset$
 	selection(feature).select_node(node);
