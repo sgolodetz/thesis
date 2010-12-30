@@ -2,7 +2,7 @@ digraph
 {
 	compound = true;
 	node [shape=circle, label=""];
-	edge [dir=both, arrowtail=none, arrowhead=none];
+	edge [dir=both, arrowtail=none, arrowhead=none, penwidth=3, arrowsize=1.5];
 
 	subgraph cluster1before
 	{

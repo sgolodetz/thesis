@@ -1,7 +1,7 @@
 digraph
 {
 	node [shape=circle, label=""];
-	edge [dir=both, arrowtail=none, arrowhead=none];
+	edge [dir=both, arrowtail=none, arrowhead=none, penwidth=3];
 
 	r -> n00 [label="&infin;"];
 	n00 -> n10 [label=3, color=green];

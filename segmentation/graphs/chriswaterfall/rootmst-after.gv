@@ -3,7 +3,7 @@ digraph
 	node [shape=circle];
 	edge [dir=both, arrowtail=none, arrowhead=none];
 
-	r -> a [label="&infin;", color=green];
+	r -> a [label="&infin;", color=green, penwidth=3];
 	a -> b [label=2];
 	a -> c [label=3];
 	b -> d [label=5];
