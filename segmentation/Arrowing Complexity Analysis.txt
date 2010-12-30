@@ -1,0 +1,34 @@
+(4-5) O(1)
+
+(8-9) O(1)
+
+(10-14) O(#image log #image) due to the add_element calls
+
+- In the worst case, there could be O(#image) minima
+- Everything inside the loop is O(1) except for line 14
+- (14) add_element is a set insertion internally, hence logarithmic
+
+(16-32) O(#image), but with a large constant factor
+
+- The branch in (23-32) is O(1), even though there is a reasonable amount of work done
+  - That branch definitely happens at worst O(#image) times, so the total work done here is O(#image)
+
+- The branch in (17-21) is dominated by the union_sets in line 21
+  - The key bit on line 21 happens at most O(#minima) times
+  - It is amortised O(invAck(#minima))
+  - Since invAck(#minima) is incredibly slow-growing, this is more or less amortised O(1)
+  - The total work done here is thus practically O(#minima), which is O(#image) since #minima < #image
+
+(36) O(1)
+
+(37-46) O(#image log #image)
+
+Assume lc(p) = 0 for O(#image) pixels in the worst case
+
+- (39) is more or less O(#image) over all iterations
+- The (41-44) branch is O(1) per iteration
+- The (46) branch is O(log #minima) per iteration due to the DSF implementation (set lookup required)
+- The (46) branch is also overwhelmingly more prevalent (most points are not canonical ones)
+- So the loop as a whole is O(#image log #minima), which is potentially O(#image log #image)
+
+Overall: O(#image log #image)

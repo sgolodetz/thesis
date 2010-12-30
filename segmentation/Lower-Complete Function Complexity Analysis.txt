@@ -1,0 +1,21 @@
+Suppose image is m x n = #image
+
+(4-5) O(1)
+
+(8-15) O(#image) overall
+
+- (9) O(#image) over all iterations of outer loop
+
+- (10-15)
+  - Each pixel has a constant number of neighbours, thus constant number of iterations for inner loop
+  - (11-15) are O(1) per iteration
+
+(20-23) O(1)
+
+(24-39) O(#image), because does O(1) work for each pixel in the worst case
+
+- In the worst case, every pixel in the image will pass through this queue
+- The branch in (27-29) is O(1) and hardly ever happens - ignore
+- The branch in (31-39) is also O(1), but more costly
+
+(43-45) O(#image) overall
