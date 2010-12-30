@@ -117,9 +117,11 @@ As discussed in detail in Chapter~\ref{chap:background}, there are a wide variet
 
 \end{enumerate}
 %
-The watershed and waterfall transforms, and the way in which I used them to construct a partition hierarchy, are described in Chapter~\ref{chap:segmentation}. To actually identify features within the hierarchy, I used two separate approaches, both of which are discussed in more detail in Chapter~\ref{chap:featureid}. For distinctive features such as ribs, I simply applied a Bayesian classifier to each region in the hierarchy. This was appropriate because each rib generally corresponded directly to a very small number (usually $1$ or $2$) of regions in the hierarchy.
+The watershed and waterfall transforms, and the way in which I used them to construct a partition hierarchy, are described in Chapter~\ref{chap:segmentation}.
 
-For other features, I developed a more sophisticated region growing approach that works on the adjacency graphs of the hierarchy. Region growing was an appropriate technique in this case because the disadvantages listed for it in Table~\ref{fig:methodology-methods-comparison} were less applicable here. Firstly, seed regions in the hierarchy were relatively easy to generate, as a result of the large number of properties associated with each region on which such a decision could be based. Secondly, the features being identified (e.g.~the spine and kidneys) were relatively homogeneous in the image, so the results produced tended not to contain an excessive number of holes. Finally, my method produced as its result the selection of a manageable number of nodes in the partition hierarchy, which could be easily edited using the hierarchy algorithms presented in Chapter~\ref{chap:ipfs}.
+To actually identify features within the hierarchy, I used a number of customised approaches, all of which are discussed in more detail in Chapter~\ref{chap:featureid}. Most of these approaches are based on one of two fundamental techniques: \emph{branch node filtering} (searching for branch nodes in the hierarchy that satisfy specific criteria) or \emph{stratified region growing} (finding seed regions throughout the hierarchy and performing region growing on a per-layer basis before combining the results) -- see \S\ref{sec:featureid-techniques}. Branch node filtering was used when a feature (e.g.~the spinal canal) was seen to be relatively distinctive in the images, leading it to correspond to a very small number of regions in the hierarchy; otherwise, stratified region growing was used instead.
+
+Despite being based on region growing, with its various disadvantages listed in Table~\ref{fig:methodology-methods-comparison}, stratified region growing has some merit for the type of region-level feature identification used here, because the disadvantages are somewhat less applicable in this case. Firstly, seed regions in the hierarchy are relatively easy to generate, since it is possible to associate a large number of properties with each region in the hierarchy on which such a decision can be based. Secondly, the features identified (e.g.~the spine and kidneys) are relatively homogeneous in the images, so the results produced tend not to contain an excessive number of holes. Finally, stratified region growing produces as its result the selection of a manageable number of nodes in the partition hierarchy, which can be easily edited using the hierarchy algorithms presented in Chapter~\ref{chap:ipfs}.
 
 \index{research!methods|)}
 
@@ -135,6 +137,8 @@ However, the time it takes to set up such a collaboration should not be underest
 Since establishing medical links, the project has proceeded well from the perspective of my doctoral work. However, it will become important in future to establish further links with both potential end-users and the external companies that currently supply them if any of the techniques described in this thesis are ultimately to be put to use in a clinical environment.
 
 \index{research!context|)}
+
+\newpage
 
 %---
 \section{Chapter Summary}
