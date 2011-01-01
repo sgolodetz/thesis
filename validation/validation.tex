@@ -452,21 +452,47 @@ As shown in Table~$3$ of \cite{woodard86}, the accepted densities of the kidneys
 
 As illustrated by the graphs in Figures~\ref{fig:validation-volcalc-leftkidney} to \ref{fig:validation-volcalc-spleen}, these expectations were largely borne out. To $2$ decimal places, the densities (in $g \; \mathit{cm}^{-3}$) of the organs as calculated from the linear regression lines on the graphs were $1.15$ for the left kidney, $1.12$ for the right kidney, $1.07$ for the liver and $1.14$ for the spleen. These were considered to be reasonably good results, especially for the liver.
 
+%---
+\begin{table}[t]
+\begin{center}
+\begin{tabular}{c|ccccccc}
+\footnotesize \textbf{Feature} & \footnotesize \textbf{First (F)} & \footnotesize \textbf{Second (S)} & \footnotesize \textbf{F -- S} & \footnotesize \textbf{S -- F} & \footnotesize \textbf{F $\cap$ S} & \footnotesize \textbf{Dice} \\
+\hline
+\footnotesize Aorta & \footnotesize 13973 & \footnotesize 13470 & \footnotesize 858 & \footnotesize 355 & \footnotesize 13115 & \footnotesize 0.956 \\
+\footnotesize Kidney & \footnotesize 73715 & \footnotesize 73705 & \footnotesize 2011 & \footnotesize 2001 & \footnotesize 71704 & \footnotesize 0.973 \\
+\footnotesize Liver & \footnotesize 180693 & \footnotesize 181157 & \footnotesize 4342 & \footnotesize 4806 & \footnotesize 176351 & \footnotesize 0.975 \\
+\footnotesize Rib & \footnotesize 31125 & \footnotesize 29531 & \footnotesize 3557 & \footnotesize 1963 & \footnotesize 27568 & \footnotesize 0.909 \\
+\footnotesize Spinal Cord & \footnotesize 11002 & \footnotesize 10900 & \footnotesize 657 & \footnotesize 555 & \footnotesize 10345 & \footnotesize 0.945 \\
+\footnotesize Spleen & \footnotesize 15077 & \footnotesize 14455 & \footnotesize 1035 & \footnotesize 413 & \footnotesize 14042 & \footnotesize 0.951 \\
+\footnotesize Vertebra & \footnotesize 113385 & \footnotesize 113526 & \footnotesize 3056 & \footnotesize 3197 & \footnotesize 110329 & \footnotesize 0.972 \\
+\end{tabular}
+\end{center}
+\caption{Quantifying the extent to which subjectivity problems can affect validation, by comparing the results of manually segmenting the set of slices from the BT-2 case study on two separate occasions}
+\label{tbl:validation-subjectivity}
+\end{table}
+%---
+
 There are number of sources of potential inaccuracy which can explain the discrepancies between the calculated densities and the accepted densities provided in \cite{woodard86}:
 %
 \begin{enumerate}
 
-\item At the volume calculation end, it is sometimes very difficult even for an experienced radiologist to be certain of the precise boundary round a given organ -- indeed, subjectivity between different radiologists is a well-known issue in medical imaging (e.g.~see \cite{sampat06}). Since the series used for validation here were all imaged post-mortem (and thus without the benefit of a contrast agent), being certain of the precise boundaries was more than usually difficult for some patients in this case.
+\item At the volume calculation end, it is sometimes very difficult even for an experienced radiologist to be certain of the precise boundary round a given organ -- indeed, both inter-observer and intra-observer subjectivity (variations between the results of two different users, and between those of the same user at two different times) are well-known issues in medical imaging (e.g.~see \cite{sampat06}). Since the series used for validation here were all imaged post-mortem (and thus without the benefit of a contrast agent), being certain of the precise boundaries was more than usually difficult for some patients in this case.
+
+\emph{As a way of indicating the extent to which subjectivity problems can affect validation, I manually drew round the set of slices from the BT-2 case study twice and compared the results (see Table~\ref{tbl:validation-subjectivity}). Whilst there is generally a good correspondence between the two sets of results (no feature has a Dice similarity coefficient of less than $0.90$), the exercise does at least illustrate that producing `reliable' gold standard results is a non-trivial process (note that no feature has a Dice similarity coefficient of greater than $0.98$). For larger-scale validation, better results can potentially be obtained by combining the results of multiple radiologists together to produce an average. However, such an approach requires greater resources than were available during my doctorate.}
 
 \item At the mass calculation end, the precise masses calculated depend on the way in which the organs are resected during the autopsies. It is highly unlikely that anyone performing an organ resection would be able to attain an organ boundary that precisely matched that shown on the CT scan.
-
-%(Indeed, having witnessed an operation in the past and seen some of the difficulties involved in surgical procedures, I find it encouraging that the results match up as closely as they do in this case.)
 
 \item In many of the series being validated, cysts were present on one or both kidneys. Depending on the type of cyst involved, these were either more or less dense than the adjoining kidney tissue, thus affecting the uniform density assumption. In most cases, however, these cysts were not large enough to significantly affect the results.
 
 \end{enumerate}
 %
 Given the above factors affecting the results, I consider that my volume calculation method itself is relatively accurate. From a medical perspective, this suggests that it may be possible to predict the masses of organs by using volumes calculated from CT scans. This could be useful in cases where it is considered undesirable to perform an autopsy.
+
+%##################################################################################################
+\section{Chapter Summary}
+%##################################################################################################
+
+In this chapter, both my feature identification work and volume calculation method were validated against `gold standard' results produced in collaboration with a radiologist. The next chapter critically assesses both the feature identification work validated here and the other original contributions claimed in Chapter~\ref{chap:introduction}.
 
 %---
 \begin{landscape}
@@ -522,12 +548,3 @@ OX46 & 130 & 115.295 &            --- & 130 & 303.460 &                         
 %---
 
 \index{validation!of volume calculations|)}
-
-\clearpage
-\newpage
-
-%##################################################################################################
-\section{Chapter Summary}
-%##################################################################################################
-
-In this chapter, both my feature identification work and volume calculation method were validated against `gold standard' results produced in collaboration with a radiologist. The next chapter critically assesses both the feature identification work validated here and the other original contributions claimed in Chapter~\ref{chap:introduction}.
