@@ -624,7 +624,7 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 \index{feature identification!3D identifiers!spinal canal|(}
 
 %---
-\stufigex{height=9cm}{featureid/featureid-3d-spinalcanalidentification-region.png}{The spinal canal (selected, in red) should lie well within the (yellow) bounding box of the regions identified as the spine}{fig:featureid-3d-spinalcanalidentification-region}{h}
+\stufigex{height=8cm}{featureid/featureid-3d-spinalcanalidentification-region.png}{The spinal canal (selected, in red) should lie well within the (yellow) bounding box of the regions identified as the spine}{fig:featureid-3d-spinalcanalidentification-region}{h}
 %---
 
 \noindent Having first identified the spine, identifying the spinal canal becomes a much simpler task. The intuition is to search for regions well within the $x-y$ bounding box of the spine (see Figure~\ref{fig:featureid-3d-spinalcanalidentification-region}) that:
@@ -638,7 +638,7 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 
 \end{itemize}
 %
-Regions which satisfy these criteria are unmarked as spine (if necessary) and marked as spinal canal. Unlike the spine identifier, the spinal canal identifier clearly cannot be run in isolation, but it is possible to visualize the results of spinal canal identification by running both the spine and spinal canal identifiers and then either rendering the spinal canal on its own, or rendering the spine as transparent. As illustrated in Figure~\ref{fig:featureid-3d-spinalcanalidentification-results}, the identifier is quite robust, and able to automatically identify the spinal canal in a number of different image series. There is, however, definitely room for further work to improve the detailed contour of the canal -- this could perhaps be done by using the automatic result produced thus far to initialise a level sets approach.
+Regions which satisfy these criteria are unmarked as spine (if necessary) and marked as spinal canal. Unlike the spine identifier, the spinal canal identifier clearly cannot be run in isolation, but it is possible to visualize the results of spinal canal identification by running both the spine and spinal canal identifiers and then either rendering the spinal canal on its own, or rendering the spine as transparent. As illustrated in Figure~\ref{fig:featureid-3d-spinalcanalidentification-results}, the identifier is quite robust, and able to automatically identify the spinal canal in a number of different image series. There is, however, definitely room for further work to improve the detailed contour of the canal -- this could perhaps be done by using the automatic result produced thus far to initialise a level sets approach. The performance of the identifier is examined further in the case studies in Chapter~\ref{chap:validation}.
 
 %---
 \begin{stulisting}[!b]
@@ -915,7 +915,6 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \item Have a voxel count of between $2000$ and $6000$ voxels per (axial) slice.
 \end{itemize}
 %
-As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, the identifier has been used to produce appealing results for volumes from a number of different patients. However, as with some of the other identifiers, it needs further work to make it more robust on arbitrary series. In particular, the current approach struggles to deal with kidneys affected by tumours, partly because they tend to prevent a kidney from being represented by a single region in the partition forest. In the EB-2 case shown in Figure~\ref{fig:featureid-3d-kidneysidentification-results}(d), this results in the left kidney being completely missed due to the presence of a large tumour (see Figure~\ref{fig:featureid-3d-kidneysidentification-tumourhandling}). It is anticipated that it should be possible to solve such problems using a stratified region growing approach in the future, but it will be important to define precisely what should be segmented in cases like this (there is, at the very least, a choice between segmenting just the normal kidney tissue, or the normal kidney tissue and all \emph{internal} kidney tumours, or the normal kidney tissue and all kidney tumours in general).
 
 %---
 \begin{stusubfig}{!t}
@@ -930,6 +929,8 @@ As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, t
 \label{fig:featureid-3d-kidneysidentification-tumourhandling}
 \end{stusubfig}
 %---
+
+\noindent As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, the identifier has been used to produce appealing results for volumes from a number of different patients. However, as with some of the other identifiers, it needs further work to make it more robust on arbitrary series -- we will see some of the issues involved in the case studies in Chapter~\ref{chap:validation}. In particular, the current approach struggles to deal with kidneys affected by tumours, partly because they tend to prevent a kidney from being represented by a single region in the partition forest. In the EB-2 case shown in Figure~\ref{fig:featureid-3d-kidneysidentification-results}(d), this results in the left kidney being completely missed due to the presence of a large tumour (see Figure~\ref{fig:featureid-3d-kidneysidentification-tumourhandling}). It is anticipated that it may be possible to solve such problems using a stratified region growing approach in the future, but it will be important to define precisely what should be segmented in cases like this (there is, at the very least, a choice between segmenting just the normal kidney tissue, or the normal kidney tissue and all \emph{internal} kidney tumours, or the normal kidney tissue and all kidney tumours in general).
 
 %---
 \begin{stulisting}[p]
