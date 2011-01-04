@@ -1,11 +1,17 @@
 \chapter{Partition Forests}
 \label{chap:ipfs}
 
+\vspace{-1.5\baselineskip}
+
+\enlargethispage*{\baselineskip}
+
 %##################################################################################################
 \section{Chapter Overview}
 %##################################################################################################
 
-In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a hierarchical representation for aggregate objects in general, and images in particular. I present a hierarchy of novel editing algorithms for partition forests, and propose partition forest selection and partition forest multi-feature selection data structures to support subtree-based selection and identification of nodes within forests. I further show how these features can be integrated into a graphical user interface for working with image partition forests (that is, partition forests in an imaging context). This lays the foundation for the following two chapters, which describe how partition forests can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}).
+In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the methods I chose to try to achieve them. This chapter introduces partition forests as a hierarchical representation for images and, more generally, for any type of aggregate entity. I present a hierarchy of novel editing algorithms for partition forests, and propose partition forest selection and partition forest multi-feature selection data structures to support subtree-based selection and identification of nodes within forests. I further show how these features can be integrated into a graphical user interface for working with image partition forests (that is, partition forests in an imaging context). This lays the foundation for the following two chapters, which describe how partition forests can be constructed from images (Chapter~\ref{chap:segmentation}) and then used to identify features therein (Chapter~\ref{chap:featureid}).
+
+Due to the highly algorithmic nature of this part of my work, and the large number of algorithms being explained and analysed, this chapter is slightly longer than usual. It was felt to be more helpful to the reader to present all the key pieces of each algorithm (explanation, pseudo-code, example and complexity analysis) in one place, rather than following the alternative approach of placing some of them into appendices, forcing the reader to iterate between two separate parts of the thesis. However, it is recognised that the chosen presentation has the potential to place more information `up-front' than may be readily digested in one sitting -- for that reason, it is suggested that the reader may wish to read only the most salient parts (the algorithm descriptions and examples) when reading this chapter for the first time.
 
 %##################################################################################################
 \section{What is a Partition Forest?}
@@ -17,13 +23,13 @@ In Chapter~\ref{chap:methodology}, I discussed the goals of my doctorate and the
 
 \index{partition forests!concept|(}
 
-A partition forest is in essence a hierarchy of adjacency graphs that all partition the same object (the sense in which a graph can partition an object will be formalised in \S\ref{sec:ipfs-definition}). The object itself can be anything that can be divided into pieces, whether that be an image, a road network or an organisation. As was seen in \S\ref{sec:background-partitionhierarchies}, partition forests (whether called by that name or otherwise) have been widely used as a hierarchical representation for images. However, surprisingly little attention has been devoted to how to edit them post-construction (with perhaps the notable exception being Nacken's work in \cite{nacken95}).
+A partition forest is in essence a hierarchy of adjacency graphs that all partition the same aggregate entity (the sense in which a graph can partition an entity will be formalised in \S\ref{sec:ipfs-definition}). The entity itself can be anything that can be divided into pieces, whether that be an image, a road network or an organisation. As was seen in \S\ref{sec:background-partitionhierarchies}, partition forests (whether called by that name or otherwise) have been widely used as a hierarchical representation for images. However, surprisingly little attention has been devoted to how to edit them post-construction (with perhaps the notable exception being Nacken's work in \cite{nacken95}).
 
-The key components that make up a partition forest are illustrated in Figure~\ref{fig:ipfs-concept}, which shows a partition forest that might be constructed for a simple $4 \times 4$ image. A forest is made up of a number of layers, each of which is an adjacency graph representing a partition of an object (in this case, the image). Each partition is refined by the next highest partition, in the sense that each node in partition $i+1$ is the union of some of the nodes in partition $i$.
+The key components that make up an \emph{image} partition forest are illustrated in Figure~\ref{fig:ipfs-concept}, which shows a partition forest that might be constructed for a simple $4 \times 4$ image. A forest is made up of a number of layers, each of which is an adjacency graph representing a partition of the image. Each partition is refined by the next highest partition, in the sense that each node in partition $i+1$ is the union of some of the nodes in partition $i$.
 
-The nodes in each layer represent groups of the smallest sub-objects into which the represented object can be divided (in this case, each node represents an image region, consisting of a group of pixels), and can have layer-dependent properties associated with them (shown as blue text in the figure). Properties of nodes in the leaf layer can be assigned arbitrarily, but properties of nodes in branch layers must be functions of the properties of their children in the layer below (this will be defined formally in \S\ref{sec:ipfs-definition}). In this example, a single, arbitrary value has been associated with each node in the leaf layer of the forest. Nodes in higher layers have been given a `mean value' property that is calculated from the values of the subsumed leaf nodes.
+The nodes in each layer represent image regions (sets of pixels), and can have layer-dependent properties associated with them (shown as blue text in the figure). Properties of nodes in the leaf layer (which correspond to individual pixels in the image) can be assigned arbitrarily, but properties of nodes in branch layers must be functions of the properties of their children in the layer below (this will be defined formally in \S\ref{sec:ipfs-definition}). In this example, a single, arbitrary value has been associated with each node in the leaf layer of the forest. Nodes in higher layers have been given a `mean value' property that is calculated from the values of the subsumed leaf nodes.
 
-Each layer also contains edges between nodes that are in some sense adjacent (in the case of images, this is defined in such a way that the nodes are considered adjacent if their corresponding regions are adjacent in the image). Each edge has an associated value (shown as underlined text in the figure). The values on the edges in the leaf layer can be assigned according to any scheme desired -- in this example, they represent the height of the `lowest pass point' between adjacent nodes, based on the values associated with the pixels. The value on an edge between a pair of nodes in a branch layer must be a function of the values on any edges between their respective children in the layer below (again, this will be defined formally in \S\ref{sec:ipfs-definition}). In this example, the value on an edge between two nodes, $u$ and $v$, in a branch layer is calculated to be the smallest value on any edge between a child of $u$ and a child of $v$, in keeping with the lowest pass idea above.
+Each layer also contains edges between nodes whose corresponding regions are adjacent in the image. Each edge has an associated value (shown as underlined text in the figure). The values on the edges in the leaf layer can be assigned according to any scheme desired -- in this example, they represent the height of the `lowest pass point' between adjacent regions, based on the values associated with the pixels. The value on an edge between a pair of nodes in a branch layer must be a function of the values on any edges between their respective children in the layer below (again, this will be defined formally in \S\ref{sec:ipfs-definition}). In this example, the value on an edge between two nodes, $u$ and $v$, in a branch layer is calculated to be the smallest value on any edge between a child of $u$ and a child of $v$, in keeping with the lowest pass idea above.
 
 In addition to the forest layers themselves, a partition forest also contains forest links that join the nodes in adjacent layers together (the coloured, dashed lines in the figure). In particular, there is a link between each node and the node that contains it in the layer above. These links naturally define parent/child relationships between forest nodes.
 
@@ -40,52 +46,54 @@ In addition to the forest layers themselves, a partition forest also contains fo
 
 \index{partition forests!formally defined|(}
 
-It is possible to define partition forests more formally as follows:
+It is possible to define partition forests more formally (and in a non-image-specific way) as follows. Readers with an intuitive grasp of the partition forest concept may be happy to skip this section on a first reading.
 
 \begin{definition}
-An \textbf{object} is a non-empty set of basic components which together form a contiguous whole. (For example, a contiguous image region would be a non-empty set of pixels.)
+An \textbf{aggregate entity} is a non-empty set of basic components which together form a contiguous whole. (For example, a contiguous image region would be a non-empty set of pixels.) Note: In the definitions that follow, I write `entity' instead of `aggregate entity' for reasons of brevity, but with that implied meaning.
 \end{definition}
 
 \begin{definition}
-A set of k objects $\{o'_1,\ldots,o'_k\}$ \textbf{partitions} an object $o$ iff $\bigcup_i o'_i = o$ and $\forall i,j \cdot i \ne j \Rightarrow o'_i \cap o'_j = \emptyset$. We write the relation as $\mathcal{P}(\{o'_1,\ldots,o'_k\}, o)$.
+A set of k entities $\{x'_1,\ldots,x'_k\}$ \textbf{partitions} an entity $x$ iff $\bigcup_i x'_i = x$ and $\forall i,j \cdot i \ne j \Rightarrow x'_i \cap x'_j = \emptyset$. We write the relation as $\mathcal{P}(\{x'_1,\ldots,x'_k\}, x)$.
 \end{definition}
 
 \begin{definition}
-Given an object $o$, and two objects sets $O'_f = \{o'_{f1},\ldots,o'_{fk_f}\}$ and $O'_c = \{o'_{c1},\ldots,o'_{ck_c}\}$, satisfying $\mathcal{P}(O'_f,o)$ and $\mathcal{P}(O'_c,o)$, we say that $O'_c$ is a \textbf{coarser partition} of $o$ than $O'_f$ (written $O'_f \sqsubseteq O'_c$) iff for every object $o'_{ci} \in O'_c$ there exists a subset $S_i \subseteq O'_f$ such that $\mathcal{P}(S_i,o'_{ci})$. (In other words, $O'_f$ is a partition of $o$ in which each individual object in $O'_c$ has itself been partitioned.)
+Given an entity $x$, and two entity sets $X'_f = \{x'_{f1},\ldots,x'_{fk_f}\}$ and $X'_c = \{x'_{c1},\ldots,x'_{ck_c}\}$, satisfying $\mathcal{P}(X'_f,x)$ and $\mathcal{P}(X'_c,x)$, we say that $X'_c$ is a \textbf{coarser partition} of $x$ than $X'_f$ (written $X'_f \sqsubseteq X'_c$) iff for every entity $x'_{ci} \in X'_c$ there exists a subset $S_i \subseteq X'_f$ such that $\mathcal{P}(S_i,x'_{ci})$. (In other words, $X'_f$ is a partition of $x$ in which each individual entity in $X'_c$ has itself been partitioned.)
 \end{definition}
 
 \begin{definition}
-Letting $\mbox{adj}_o(o'_i, o'_j)$ denote that sub-objects $o'_i$ and $o'_j$ are (in some sense) adjacent in an object $o$, we define a \textbf{weight function} $w_o$ for $o$ to be a function of type $\mathbb{P}(o) \times \mathbb{P}(o) \to \mathbb{R}^+$ that satisfies the following two requirements:
+Letting $\mbox{adj}_x(x'_i, x'_j)$ denote that sub-entities $x'_i$ and $x'_j$ are (in some sense) adjacent in an entity $x$, we define a \textbf{weight function} $w_x$ for $x$ to be a function of type $\mathbb{P}(x) \times \mathbb{P}(x) \to \mathbb{R}^+$ that satisfies the following two requirements:
 %
 \begin{enumerate}
 
-\item $w_o(o'_i, o'_j) \ne \infty$ when, and only when, $adj_o(o'_i, o'_j)$ is true
+\item $w_x(x'_i, x'_j) \ne \infty$ when, and only when, $adj_x(x'_i, x'_j)$ is true
 
-\item Given any sets $S_i$ and $S_j$ satisfying $\mathcal{P}(S_i,o'_i)$ and $\mathcal{P}(S_j,o'_j)$, the value $w_o(o'_i, o'_j)$ is a function of only the values in the set $\{w_o(s_i, s_j) \; | \; s_i \in S_i, \; s_j \in S_j\}$.
+\item Given any sets $S_i$ and $S_j$ satisfying $\mathcal{P}(S_i,x'_i)$ and $\mathcal{P}(S_j,x'_j)$, the value $w_x(x'_i, x'_j)$ is a function of only the values in the set $\{w_x(s_i, s_j) \; | \; s_i \in S_i, \; s_j \in S_j\}$.
 
 \end{enumerate}
 
 \end{definition}
 
 \begin{definition}
-A \textbf{property set} is an ordered set (a tuple) of properties, each of which is a function that maps an object to a value (the types of the values may differ). For example, in the context of imaging it would be possible to have an area property that calculates the area of a given image region in pixels.
+A \textbf{property set} is an ordered set (a tuple) of properties, each of which is a function that maps an entity to a value (the types of the values may differ). For example, in the context of imaging it would be possible to have an area property that calculates the area of a given image region in pixels.
 \end{definition}
 
 \begin{definition}
-Given a property set $P = (p_1,\ldots,p_k)$ and an object $o$, the \textbf{property value set} $V_P(o)$ is the ordered set that results from applying each property in $P$ to the object $o$, namely $(p_1(o),\ldots,p_k(o))$.
+Given a property set $P = (p_1,\ldots,p_k)$ and an entity $x$, the \textbf{property value set} $V_P(x)$ is the ordered set that results from applying each property in $P$ to the entity $x$, namely $(p_1(x),\ldots,p_k(x))$.
 \end{definition}
 
 \begin{definition}
-We call a property set $P$ \textbf{directly calculable} from a property set $P'$ iff, for any given set of sub-objects $O'$ and object $o$ satisfying $\mathcal{P}(O',o)$, the property value set $V_P(o)$ is a function of only the property value sets in $\{V_{P'}(o') \; | \; o' \in O'\}$. We write this relation as $P' \hookrightarrow P$.
+We call a property set $P$ \textbf{directly calculable} from a property set $P'$ iff, for any given set of sub-entities $X'$ and entity $x$ satisfying $\mathcal{P}(X',x)$, the property value set $V_P(x)$ is a function of only the property value sets in $\{V_{P'}(x') \; | \; x' \in X'\}$. We write this relation as $P' \hookrightarrow P$.
 \end{definition}
 
 \begin{definition}
-A \textbf{partition node} is a node in a partition forest. Each node $n$ represents a given object, denoted as $\mbox{obj}(n)$. The set of objects represented by a node set $N$ can be denoted as $\mbox{Objs}(N)$.
+A \textbf{partition node} is a node in a partition forest. Each node $n$ represents a given entity, denoted as $\mbox{obj}(n)$. The set of entities represented by a node set $N$ can be denoted as $\mbox{Objs}(N)$.
 \end{definition}
 
 \begin{definition}
-A \textbf{partitioning graph} $G(N,w_o,P)$ of an object $o$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),o)$, edge set $E = \{(\{n_i,n_j\},w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \in N \mbox{ and } n_i \ne n_j\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \in N)$.
+A \textbf{partitioning graph} $G(N,w_x,P)$ of an entity $x$ is an undirected graph with weighted edges and property values on each node. It has ordered node set $N$, satisfying $\mathcal{P}(\mbox{Objs}(N),x)$, edge set $E = \{(\{n_i,n_j\},w(\mbox{obj}(n_i),\mbox{obj}(n_j))) \; | \; n_i, n_j \in N \mbox{ and } n_i \ne n_j\}$, and property value set tuple $\textit{VS} = (V_P(\mbox{obj}(n)) \; | \; n \in N)$.
 \end{definition}
+
+\newpage
 
 \begin{definition}
 Given:
@@ -93,26 +101,26 @@ Given:
 %-
 \begin{enumerate}
 
-\item An object $o$
+\item An entity $x$
 \item A non-empty tuple $\textit{NS} = (N_1,\ldots,N_k)$, where:
 
 %--
 \begin{enumerate}
 
-\item $\forall N_i \in \textit{NS} \cdot \mathcal{P}(\mbox{Objs}(N_i),o)$
+\item $\forall N_i \in \textit{NS} \cdot \mathcal{P}(\mbox{Objs}(N_i),x)$
 \item $\mbox{Objs}(N_1) \sqsubseteq \ldots \sqsubseteq \mbox{Objs}(N_k)$ 
 \item $\forall n \in N_1 \cdot |\mbox{obj}(n)| = 1$
 
 \end{enumerate}
 %--
 
-\item A weight function $w_o$ for $o$
+\item A weight function $w_x$ for $x$
 \item A non-empty tuple $\textit{PS} = (P_1,\ldots,P_k)$ satisfying $P_1 \hookrightarrow \ldots \hookrightarrow P_k$
 
 \end{enumerate}
 %-
 
-\noindent We define the \textbf{partition forest} $PF_{\textit{NS},w_o,\textit{PS}}(o)$ to be the pair $(\textit{FL},\textit{PG})$, in which:
+\noindent We define the \textbf{partition forest} $PF_{\textit{NS},w_x,\textit{PS}}(x)$ to be the pair $(\textit{FL},\textit{PG})$, in which:
 
 \begin{itemize}
 
@@ -122,10 +130,10 @@ Given:
 \{(n_c,n_p) \; | \; \exists i \in [1,k-1] \cdot n_c \in N_i \mbox { and } n_p \in N_{i+1} \mbox{ and } \mbox{obj}(n_c) \subseteq \mbox{obj}(n_p)\}
 \]
 
-\item $\textit{PG}$ is an ordered set of partitioning graphs of $o$, defined as:
+\item $\textit{PG}$ is an ordered set of partitioning graphs of $x$, defined as:
 %
 \[
-(G(N_1,w_o,P_1),\ldots,G(N_k,w_o,P_k))
+(G(N_1,w_x,P_1),\ldots,G(N_k,w_x,P_k))
 \]
 
 \end{itemize}
@@ -135,6 +143,8 @@ Given:
 \noindent We can also define a parent/child relation between nodes, namely that $p = \mbox{parent}(c)$ iff $(c,p) \in \textit{FL}$. (This is equivalent to saying $c \in \mbox{children}(p)$.)
 
 \index{partition forests!formally defined|)}
+
+\newpage
 
 %##################################################################################################
 \section{Mutating Algorithms for Partition Forests}
