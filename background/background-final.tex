@@ -60,7 +60,7 @@ In principle, thresholding segmentation methods are quite simple. The idea is to
 	%
 	\subfigure[The image histogram and threshold (at grey value $125$)]
 	{\includegraphics[height=.2\textheight]{background/background-segmentation-thresholding-binaryexample-c.png}}%
-\caption{Segmenting the brighter of two adjacent objects in an 8-bit greyscale image using binary thresholding (the objects are easily separated in this case because the distribution of grey values in the image is bimodal)}
+\caption[Segmenting the brighter of two adjacent objects in an 8-bit greyscale image using binary thresholding]{Segmenting the brighter of two adjacent objects in an 8-bit greyscale image using binary thresholding (the objects are easily separated in this case because the distribution of grey values in the image is bimodal)}
 \label{fig:background-segmentation-thresholding-binaryexample}
 \end{stusubfig}
 %---
@@ -121,7 +121,7 @@ and attains a maximum when $F(T) = 0.5$. This is equivalent to saying that in th
 	%
 	\subfigure[{The results of trying to segment the kidneys using thresholding with a foreground range of $[175,195]$}]
 	{\includegraphics[width=.45\linewidth]{background/background-segmentation-thresholding-ct-c.png}}%
-\caption{Trying to segment the kidneys in the CT image in (a) using thresholding alone doesn't work. If we choose a wide foreground range, as in (b), we oversegment the kidneys, dragging in lots of unrelated features across the image. If we choose a narrower range to try and prevent this, as in (c), we miss pieces of the kidneys themselves and end up with holes. Note that even in (c), we are unable to prevent other features being segmented as well as the kidneys, as the grey value distributions of the kidneys and other features overlap.}
+\caption[Thresholding failure due to overlapping grey value distributions]{Trying to segment the kidneys in the CT image in (a) using thresholding alone doesn't work. If we choose a wide foreground range, as in (b), we oversegment the kidneys, dragging in lots of unrelated features across the image. If we choose a narrower range to try and prevent this, as in (c), we miss pieces of the kidneys themselves and end up with holes. Note that even in (c), we are unable to prevent other features being segmented as well as the kidneys, as the grey value distributions of the kidneys and other features overlap.}
 \label{fig:background-segmentation-thresholding-ct}
 \end{stusubfig}
 %---
@@ -168,7 +168,7 @@ Region growing methods for segmentation essentially work as follows. First, one 
 	%
 	\subfigure[Final state]
 	{\includegraphics[height=4.5cm]{background/background-segmentation-regiongrowing-process-d.png}}%
-\caption{An example region growing process -- black pixels are those not yet considered, red pixels are those currently in the region, green pixels are those under consideration, and yellow pixels are those that already failed the similarity criterion. The algorithm terminates when there are no further pixels to consider. The final result is shown in red in (d).}
+\caption[An example region growing process]{An example region growing process -- black pixels are those not yet considered, red pixels are those currently in the region, green pixels are those under consideration, and yellow pixels are those that already failed the similarity criterion. The algorithm terminates when there are no further pixels to consider. The final result is shown in red in (d).}
 \label{fig:background-segmentation-regiongrowing-process}
 \end{stusubfig}
 %---
@@ -260,7 +260,7 @@ In practice, however, it is rarely possible to establish a perfect correspondenc
 	%
 	\subfigure[]
 	{\includegraphics[width=.4\linewidth]{background/background-segmentation-watershed-markers-b.png}}%
-\caption{The watershed-from-markers technique can be used to solve the oversegmentation problem that plagues the normal watershed, but it can require a significant amount of user input, making it unsuitable for use as an \emph{automated} segmentation method. Here, watershed-from-markers is provided with a user-specified marker image (a) and used to segment the gradient magnitude image from Figure~\ref{fig:background-segmentation-watershed-normal}(b). The result (b) is relatively good, but only because the marker image provides the algorithm with far more information than it would have without user involvement. Generating such a marker image automatically is non-trivial.}
+\caption[An example of the watershed-from-markers technique]{The watershed-from-markers technique can be used to solve the oversegmentation problem that plagues the normal watershed, but it can require a significant amount of user input, making it unsuitable for use as an \emph{automated} segmentation method. Here, watershed-from-markers is provided with a user-specified marker image (a) and used to segment the gradient magnitude image from Figure~\ref{fig:background-segmentation-watershed-normal}(b). The result (b) is relatively good, but only because the marker image provides the algorithm with far more information than it would have without user involvement. Generating such a marker image automatically is non-trivial.}
 \label{fig:background-segmentation-watershed-markers}
 \end{stusubfig}
 %---
@@ -279,7 +279,7 @@ In practice, however, it is rarely possible to establish a perfect correspondenc
 	%
 	\subfigure[]
 	{\includegraphics[width=.45\linewidth]{background/background-segmentation-watershed-normal-c.png}}%
-\caption{Running a normal watershed on an image tends to produce an oversegmented result. Here, an example CT image (a) is first passed through a gradient magnitude filter to try and establish more of a correspondence between catchment basins and features (b). A watershed transform is then performed on the gradient magnitude image, producing a significant oversegmentation due to the large number of spurious catchment basins in the landscape (c). A few larger regions, such as part of the stomach, have been successfully segmented, because their pixels share a single grey value in the image, but the rest of the segmentation is clearly inadequate without further processing.}
+\caption[Running a normal watershed on an image tends to produce an oversegmented result]{Running a normal watershed on an image tends to produce an oversegmented result. Here, an example CT image (a) is first passed through a gradient magnitude filter to try and establish more of a correspondence between catchment basins and features (b). A watershed transform is then performed on the gradient magnitude image, producing a significant oversegmentation due to the large number of spurious catchment basins in the landscape (c). A few larger regions, such as part of the stomach, have been successfully segmented, because their pixels share a single grey value in the image, but the rest of the segmentation is clearly inadequate without further processing.}
 \label{fig:background-segmentation-watershed-normal}
 \end{stusubfig}
 %---
@@ -331,7 +331,7 @@ where $\mathbf{f_{ex,r_i}}$ is an \emph{external} force term corresponding to th
 It is important to mention that the method relies on quite a close initialisation (i.e.~image features have quite a short capture range). In \cite{ree05}, this problem is circumvented by peforming a watershed-from-markers segmentation and using the result of that to initialise the snake. Another alternative, referred to there, is to try and add additional external forces to solve the problem: in particular, some success has been had with \emph{balloon forces} \cite{cohen91} and \emph{gradient vector flow} (GVF) \cite{xu98}. For example, Figure~\ref{fig:background-segmentation-snakes-gvfexample} shows a GVF snake successfully segmenting the left ventricle of a human heart.
 
 %---
-\stufigex{height=9cm}{background/background-segmentation-snakes-gvfexample.png}{The basic snakes method suffers from a poor capture range, but techniques such as gradient vector flow \cite{xu98} can mitigate this -- the figure (reproduced from the paper in question) shows a GVF snake deforming from an initial, circular contour to segment the left ventricle of a human heart }{fig:background-segmentation-snakes-gvfexample}{p}
+\stufigexx{height=9cm}{background/background-segmentation-snakes-gvfexample.png}{The basic snakes method suffers from a poor capture range, but techniques such as gradient vector flow \cite{xu98} can mitigate this}{The basic snakes method suffers from a poor capture range, but techniques such as gradient vector flow \cite{xu98} can mitigate this -- the figure (reproduced from the paper in question) shows a GVF snake deforming from an initial, circular contour to segment the left ventricle of a human heart }{fig:background-segmentation-snakes-gvfexample}{p}
 %---
 
 Problems of this kind with snakes methods have led to a great deal of interest in level sets as an alternative, although snakes also remain popular as a well-established and far simpler alternative. They also have the advantage that they can represent open structures as well as closed ones.
@@ -486,13 +486,13 @@ An example illustrating the performance of a level set approach (the \emph{geode
 	%
 	\subfigure[Both results superimposed on the initial image]
 	{\hspace{4mm}\includegraphics[height=4.5cm]{background/background-segmentation-levelsets-ct-d.png}\hspace{4mm}}%
-\caption{The results of using the \emph{geodesic active contours} level set method from the \emph{Insight Toolkit} to identify the kidneys in an example CT image. The (large number of) parameters had to be carefully tweaked by hand for each kidney, which is a downside of level set approaches.}
+\caption[The results of using the \emph{geodesic active contours} level set method from the \emph{Insight Toolkit} to identify the kidneys in an example CT image]{The results of using the \emph{geodesic active contours} level set method from the \emph{Insight Toolkit} to identify the kidneys in an example CT image. The (large number of) parameters had to be carefully tweaked by hand for each kidney, which is a downside of level set approaches.}
 \label{fig:background-segmentation-levelsets-ct}
 \end{stusubfig}
 %---
 
 %---
-\stufigex{height=5.5cm}{background/background-segmentation-atlas-park.png}{Volume rendering of a probabilistic atlas constructed by Park et al.\ in \cite{park03} (extracted from Figure $2$ of the paper in question) -- the colours and brightnesses of the voxels depend on the probability values for the various organs at the voxels in question}{fig:background-segmentation-atlas-park}{p}
+\stufigexx{height=5.5cm}{background/background-segmentation-atlas-park.png}{Volume rendering of a probabilistic atlas constructed by Park et al.\ in \cite{park03} (extracted from Figure $2$ of the paper in question)}{Volume rendering of a probabilistic atlas constructed by Park et al.\ in \cite{park03} (extracted from Figure $2$ of the paper in question) -- the colours and brightnesses of the voxels depend on the probability values for the various organs at the voxels in question}{fig:background-segmentation-atlas-park}{p}
 %---
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -612,7 +612,7 @@ The key issues when using Lloyd's algorithm to segment images are how to define 
 	%
 	\subfigure[]
 	{\includegraphics[width=.4\linewidth]{background/background-segmentation-kmeans-b.png}}%
-\caption{An example of K-means clustering, produced using an implementation in the \emph{Insight Toolkit} -- note that clustering the pixels of the example image (a) based on their values tends to produce non-contiguous clusters (b). For this example, the initial means chosen were $0$, $150$, $160$, $190$ and $255$.}
+\caption[An example of K-means clustering, produced using an implementation in the \emph{Insight Toolkit}]{An example of K-means clustering, produced using an implementation in the \emph{Insight Toolkit} -- note that clustering the pixels of the example image (a) based on their values tends to produce non-contiguous clusters (b). For this example, the initial means chosen were $0$, $150$, $160$, $190$ and $255$.}
 \label{fig:background-segmentation-kmeans}
 \end{stusubfig}
 %---
@@ -782,7 +782,7 @@ As is well-known among computer scientists, the basic pathfinding problem over g
 	& F  & D & D & D & D & E & $\times$
 	\end{tabular}}
 	}%
-\caption{A graph and its corresponding transition table -- each table entry $t_{SD}$ stores the node after $S$ on the optimal path between $S$ and $D$}
+\caption[A graph and its corresponding transition table]{A graph and its corresponding transition table -- each table entry $t_{SD}$ stores the node after $S$ on the optimal path between $S$ and $D$}
 \label{fig:background-partitionhierarchies-pathfinding-transitiontable}
 \end{stusubfig}
 %---
@@ -790,7 +790,7 @@ As is well-known among computer scientists, the basic pathfinding problem over g
 Hierarchical pathfinding is an approach designed to reduce these prohibitive storage costs. The essence of the idea is to partition the graph into clusters. This partitioning of the graph into clusters creates a two-layer partition hierarchy (in this case a partition forest) of the graph nodes. Pathfinding schemes can then be devised that still produce optimal paths, but only store the substantially smaller transition tables for paths within each cluster and a transition table for an inter-cluster `super-graph' -- for an illustration of this sort of scheme, see Figure~\ref{fig:background-partitionhierarchies-pathfinding-kim}. The kind of storage savings that can be expected from this sort of approach are quantified by Dickheiser in \cite{dickheiser04}.
 
 %---
-\stufigex{height=10cm}{background/background-partitionhierarchies-pathfinding-kim.png}{Partitioning a large graph into clusters allows us to only store transition tables for each cluster (b) and the super-graph (c), rather than a transition table for the entire graph. When finding paths, all the necessary information is contained in the transition tables for the source cluster, the destination cluster and the super-graph (d). (The figure is reproduced from Kim et al.\ \cite{kim98}.)}{fig:background-partitionhierarchies-pathfinding-kim}{p}
+\stufigexx{height=10cm}{background/background-partitionhierarchies-pathfinding-kim.png}{Partitioning a large graph into clusters allows us to only store transition tables for each cluster and the super-graph, rather than a transition table for the entire graph (the figure is reproduced from Kim et al.\ \cite{kim98})}{Partitioning a large graph into clusters allows us to only store transition tables for each cluster (b) and the super-graph (c), rather than a transition table for the entire graph. When finding paths, all the necessary information is contained in the transition tables for the source cluster, the destination cluster and the super-graph (d). (The figure is reproduced from Kim et al.\ \cite{kim98}.)}{fig:background-partitionhierarchies-pathfinding-kim}{p}
 %---
 
 To find an optimal path between two nodes using this scheme, we observe that such a route can either (a) go from the source node to a boundary node of the source cluster, then (via the super-graph) to a boundary node of the destination cluster, then to the destination node, or (b) go directly from the source node to the destination node if they are in the same cluster. (Note that the shortest path between two nodes in the same cluster may actually go via the super-graph, so we have to consider both options in such a case.) An optimal intra-cluster route (where applicable) can simply be looked up in the cluster's transition table, but to find an optimal inter-cluster route is slightly more involved. To do so, we find three sets of optimal sub-paths:

@@ -83,7 +83,7 @@ The idea of stratified region growing is to take this region-level region growin
 	%
 	\subfigure[After unioning the results]
 	{\includegraphics[height=6cm]{featureid/featureid-techniques-stratifiedregiongrowing-unioned.png}}%
-\caption{A visual representation of the stratified region growing process: in (a), seeds are identified in multiple layers of the forest; in (b), regions are grown from each of the seeds in their respective layers; in (c), these regions are unioned together to produce the final result.}
+\caption[A visual representation of the stratified region growing process]{A visual representation of the stratified region growing process: in (a), seeds are identified in multiple layers of the forest; in (b), regions are grown from each of the seeds in their respective layers; in (c), these regions are unioned together to produce the final result.}
 \label{fig:featureid-techniques-stratifiedregiongrowing}
 \end{stusubfig}
 %---
@@ -125,7 +125,7 @@ In other words, performing an elementary non-structured dilation on a set $S$ of
 	%
 	\subfigure[After dilating]
 	{\includegraphics[height=8cm]{featureid/featureid-techniques-dilation-b.png}}%
-\caption{Elementary non-structured morphological dilation on graphs: the black nodes are those initially selected and the blue nodes are those added by the dilation.}
+\caption[Elementary non-structured morphological dilation on graphs]{Elementary non-structured morphological dilation on graphs: the black nodes are those initially selected and the blue nodes are those added by the dilation.}
 \label{fig:featureid-techniques-dilation}
 \end{stusubfig}
 %---
@@ -159,7 +159,7 @@ That is, performing an elementary non-structured erosion on $S$ means removing a
 	%
 	\subfigure[After eroding]
 	{\includegraphics[height=8cm]{featureid/featureid-techniques-erosion-b.png}}%
-\caption{Elementary non-structured morphological erosion on graphs: the black nodes are those initially selected and the red nodes are those removed by the erosion.}
+\caption[Elementary non-structured morphological erosion on graphs]{Elementary non-structured morphological erosion on graphs: the black nodes are those initially selected and the red nodes are those removed by the erosion.}
 \label{fig:featureid-techniques-erosion}
 \end{stusubfig}
 %---
@@ -212,7 +212,7 @@ The intuition is that this starts by expanding the boundaries of the selection (
 	%
 	\subfigure[The final result]
 	{\includegraphics[width=.3\linewidth]{featureid/featureid-techniques-closing-c.png}}%
-\caption{Elementary non-structured morphological closing on graphs: the selected nodes in (a) are first dilated, adding the nodes shown in blue in (b); the new set of nodes is then eroded, removing the nodes shown in red in (c). This has the effect of closing the hole on the left of the graph, but also slightly affects the outer boundary.}
+\caption[Elementary non-structured morphological closing on graphs]{Elementary non-structured morphological closing on graphs: the selected nodes in (a) are first dilated, adding the nodes shown in blue in (b); the new set of nodes is then eroded, removing the nodes shown in red in (c). This has the effect of closing the hole on the left of the graph, but also slightly affects the outer boundary.}
 \label{fig:featureid-techniques-closing}
 \end{stusubfig}
 %---
@@ -257,7 +257,7 @@ The operators as described thus far are useful, but can be quite blunt instrumen
 	%
 	\subfigure[After conditionally eroding (c)]
 	{\includegraphics[width=.45\linewidth]{featureid/featureid-techniques-conditionalclosing-e.png}}%
-\caption{Comparing normal morphological closing with conditional morphological closing. In (b) and (d), the initial selection in (a) is morphologically closed using the normal approach -- this fills in the hole on the right, but also affects the boundary on the left of the selection. In (c) and (e), which together illustrate \emph{conditional} morphological closing on (a), the inner hole is still filled, but damage to the boundary is prevented by using a condition that prevents dilation into / erosion from the pixels beyond the boundary (we assume that such a condition can be specified in this case for illustrative purposes). Colour Scheme: Blue nodes are those that have just been added by dilation and red nodes are those that have just been removed by erosion. The condition is indicated by colouring nodes that are excluded from dilation / erosion in green.}
+\caption[Comparing normal morphological closing with conditional morphological closing]{Comparing normal morphological closing with conditional morphological closing. In (b) and (d), the initial selection in (a) is morphologically closed using the normal approach -- this fills in the hole on the right, but also affects the boundary on the left of the selection. In (c) and (e), which together illustrate \emph{conditional} morphological closing on (a), the inner hole is still filled, but damage to the boundary is prevented by using a condition that prevents dilation into / erosion from the pixels beyond the boundary (we assume that such a condition can be specified in this case for illustrative purposes). Colour Scheme: Blue nodes are those that have just been added by dilation and red nodes are those that have just been removed by erosion. The condition is indicated by colouring nodes that are excluded from dilation / erosion in green.}
 \label{fig:featureid-techniques-conditionalclosing}
 \end{stusubfig}
 %---
@@ -448,7 +448,7 @@ Figure~\ref{fig:featureid-2d-spineidentification-seedfinding} illustrates the ar
 	%
 	\subfigure[An example layer $2$ spine seed]
 	{\includegraphics[width=.3\linewidth]{featureid/featureid-2d-spineidentification-seedfinding-c.png}}%
-\caption{Finding suitable spine seeds: it suffices to look for moderately-sized, bright regions with centroids within the box shown (this originally appeared as Figure $3$ in \cite{gvcispa09})}
+\caption[Finding suitable spine seeds (originally Figure $3$ in \cite{gvcispa09})]{Finding suitable spine seeds: it suffices to look for moderately-sized, bright regions with centroids within the box shown (this originally appeared as Figure $3$ in \cite{gvcispa09})}
 \label{fig:featureid-2d-spineidentification-seedfinding}
 \end{stusubfig}
 %---
@@ -495,12 +495,12 @@ The removal criterion was formulated as a disjunction of two different cases, on
 In terms of results, a qualitative assessment of the identifier conducted for \cite{gvcispa09} proved encouraging -- as described there, I tested the identifier on images from $7$ different series, with results that correlated well with the manual segmentation I would have drawn by hand in the overwhelming majority ($> 85\%$) of cases (some examples are shown in Figure~\ref{fig:featureid-2d-spineidentification-results}). The identifier does still fail in some cases: in particular, this tends to happen when either the spine is significantly darker than usual (e.g.~see case MC-2-135 in the figure) or where there are small pieces of spine that are not connected to the primary feature (e.g.~see cases MC-2-136 and MC-2-137). However, as implemented in the \emph{centipede} system, these cases can be readily corrected by the user, since the identification result is represented as a partition forest multi-feature selection.
 
 %---
-\stufigex{height=11cm}{featureid/featureid-2d-spineidentification-results.png}{Results of the 2D spine identification algorithm on images from four different series (BT-2, EJ-2, MC-2 and SD-2): each sub-region is surrounded by its own red border, thus double-thickness borders indicate an internal boundary rather than the boundary of the feature (this originally appeared as Figure $5$ in \cite{gvcispa09})}{fig:featureid-2d-spineidentification-results}{p}
+\stufigexx{height=11cm}{featureid/featureid-2d-spineidentification-results.png}{Results of the 2D spine identification algorithm on images from four different series (originally Figure $5$ in \cite{gvcispa09})}{Results of the 2D spine identification algorithm on images from four different series (BT-2, EJ-2, MC-2 and SD-2): each sub-region is surrounded by its own red border, thus double-thickness borders indicate an internal boundary rather than the boundary of the feature (this originally appeared as Figure $5$ in \cite{gvcispa09})}{fig:featureid-2d-spineidentification-results}{p}
 %---
 
 %---
 \begin{landscape}
-\stufigex{height=.5\linewidth}{featureid/featureid-2d-spineidentification.png}{A graphical overview of the 2D spine identification process (this originally appeared as Figure $4$ in \cite{gvcispa09})}{fig:featureid-2d-spineidentification}{p}
+\stufigexx{height=.5\linewidth}{featureid/featureid-2d-spineidentification.png}{A graphical overview of the 2D spine identification process (originally Figure $4$ in \cite{gvcispa09})}{A graphical overview of the 2D spine identification process (this originally appeared as Figure $4$ in \cite{gvcispa09})}{fig:featureid-2d-spineidentification}{p}
 \end{landscape}
 %---
 
@@ -538,7 +538,7 @@ Whilst identifying features in 2D can be made to work well much of the time, as 
 %---
 
 %---
-\stufigex{width=.95\linewidth}{featureid/featureid-3d-multifeatureidentifier.png}{The structure of the multi-feature identifier, with dependencies between individual 3D feature identifiers shown as arrows pointing from the identifiers that are run earlier in the identification process to those that depend on them}{fig:featureid-3d-multifeatureidentifier}{p}
+\stufigexx{width=.95\linewidth}{featureid/featureid-3d-multifeatureidentifier.png}{The structure of the multi-feature identifier}{The structure of the multi-feature identifier, with dependencies between individual 3D feature identifiers shown as arrows pointing from the identifiers that are run earlier in the identification process to those that depend on them}{fig:featureid-3d-multifeatureidentifier}{p}
 %---
 
 Whilst there is more than one way of taking such information into account (for instance, it is possible to imagine a scheme whereby the feature outline from one slice could be propagated to the next slice and deformed to fit the information in the new image), one of the cleanest ways of doing so is to construct a partition forest for the entire 3D CT volume (as described in Chapter~\ref{chap:segmentation}) and then construct new feature identifiers that work in 3D. Using this approach, information from adjacent slices is implicitly taken into account when segmenting the volume into 3D regions.
@@ -695,7 +695,7 @@ Regions which satisfy these criteria are unmarked as spine (if necessary) and ma
 \index{feature identification!3D identifiers!ribs|(}
 
 %---
-\stufigex{height=9cm}{featureid/featureid-3d-ribsidentification-region.png}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
+\stufigexx{height=9cm}{featureid/featureid-3d-ribsidentification-region.png}{The spatial constraints for rib seeds}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
 %---
 
 \noindent In contrast to the spine and spinal canal identifiers, which can (at least to a first approximation) often identify their features using only branch node filtering, the 3D ribs identifier is necessarily more involved, because it is unusual for each rib to be represented by only a single node in the forest. For that reason, a stratified region growing method is preferred in this case, followed by customised post-processing to tidy up the results. The first step is to identify suitable seeds for the ribs, namely regions that:
@@ -759,7 +759,7 @@ As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this
 \index{feature identification!3D identifiers!aorta|(}
 
 %---
-\stufigex{height=7.5cm}{featureid/featureid-3d-aortaidentification-region.png}{The spatial constraints for aorta seeds -- the seed's left-hand side must lie between the red lines, and the top of the spine (represented by the green line) must lie between the top of the seed and $20$ voxels below the bottom of it}{fig:featureid-3d-aortaidentification-region}{h}
+\stufigexx{height=7.5cm}{featureid/featureid-3d-aortaidentification-region.png}{The spatial constraints for aorta seeds}{The spatial constraints for aorta seeds -- the seed's left-hand side must lie between the red lines, and the top of the spine (represented by the green line) must lie between the top of the seed and $20$ voxels below the bottom of it}{fig:featureid-3d-aortaidentification-region}{h}
 %---
 
 \vspace{-5mm}
@@ -899,7 +899,7 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \index{feature identification!3D identifiers!kidneys|(}
 
 %---
-\stufigex{height=7.5cm}{featureid/featureid-3d-kidneysidentification-region.png}{The spatial constraints for kidneys -- they must not cross the spine centroid in the $x$ direction (indicated by the red line), and at least part of them must lie in one of the right kidney or left kidney boxes (marked RK and LK) below the green line}{fig:featureid-3d-kidneysidentification-region}{h}
+\stufigexx{height=7.5cm}{featureid/featureid-3d-kidneysidentification-region.png}{The spatial constraints for kidneys}{The spatial constraints for kidneys -- they must not cross the spine centroid in the $x$ direction (indicated by the red line), and at least part of them must lie in one of the right kidney or left kidney boxes (marked RK and LK) below the green line}{fig:featureid-3d-kidneysidentification-region}{h}
 %---
 
 \vspace{-5mm}

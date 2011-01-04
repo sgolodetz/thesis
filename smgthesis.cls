@@ -100,6 +100,17 @@
 	\end{figure}
 }
 
+\newcommand{\stufigexx}[6]					% images that have an additional short caption (for the list of figures)
+{
+	\begin{figure}[#6]
+	\begin{center}
+		\includegraphics[#1]{#2}
+		\caption[#3]{#4}
+		\label{#5}
+	\end{center}
+	\end{figure}
+}
+
 \newcommand{\stufignc}[2]					% images without captions
 {
 	\begin{figure}[H]

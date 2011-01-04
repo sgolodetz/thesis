@@ -483,7 +483,7 @@ What we need is a way of transforming our input image into one where the feature
 	%
 	\subfigure[Segmentation of the same image after windowing]
 	{\includegraphics[width=.45\linewidth]{segmentation/segmentation-watershed-hounsfieldvswindowed-w.png}}%
-\caption{Windowing images before segmenting them leads to a less pronounced oversegmentation -- note in particular the generally larger regions in (b)}
+\caption[Windowing images before segmenting them leads to a less pronounced oversegmentation]{Windowing images before segmenting them leads to a less pronounced oversegmentation -- note in particular the generally larger regions in (b)}
 \label{fig:segmentation-watershed-hounsfieldvswindowed}
 \end{stusubfig}
 %---
@@ -605,7 +605,7 @@ The waterfall transform is a multi-pass, hierarchical segmentation method. It ge
 	%
 	\subfigure[After the 4th waterfall iteration]
 	{\includegraphics[width=.35\linewidth]{segmentation/segmentation-waterfall-partitionsequence-f.png}}%
-\caption{An example of a waterfall partition sequence (note that the final, single-region partition is not shown). The example image was smoothed using anisotropic diffusion filtering prior to segmentation.}
+\caption[An example of a waterfall partition sequence]{An example of a waterfall partition sequence (note that the final, single-region partition is not shown). The example image was smoothed using anisotropic diffusion filtering prior to segmentation.}
 \label{fig:segmentation-waterfall-partitionsequence}
 \end{stusubfig}
 %---
@@ -659,7 +659,7 @@ Conceptually, each pass of the waterfall takes its input partition (Figure~\ref{
 In practice, actually transforming the landscape for each waterfall pass would be a slow process and is better avoided. More practical implementations of the waterfall are possible which work on a weighted graph whose edges correspond to watershed boundaries and whose nodes correspond to regions in the input partition (in other words, the region adjacency graph of the input partition: this is illustrated in Figure~\ref{fig:segmentation-waterfall-rag}). The weights on the graph edges, in correspondence with the conceptual description of the algorithm given above, are the heights of the lowest pass points along the corresponding watershed boundaries.
 
 %---
-\stufigex{height=8cm}{segmentation/segmentation-waterfall-rag.jpg}{An example image partition and its region adjacency graph. Note that this is an abstract diagram designed for explication purposes only: regions have been given arbitrary colours, and edges to the surrounding (beige) region and weights on all other edges have been omitted, in order to reduce unnecessary clutter in the image.}{fig:segmentation-waterfall-rag}{p}
+\stufigexx{height=8cm}{segmentation/segmentation-waterfall-rag.jpg}{An example image partition and its region adjacency graph}{An example image partition and its region adjacency graph. Note that this is an abstract diagram designed for explication purposes only: regions have been given arbitrary colours, and edges to the surrounding (beige) region and weights on all other edges have been omitted, in order to reduce unnecessary clutter in the image.}{fig:segmentation-waterfall-rag}{p}
 %---
 
 In fact, it is shown in \cite{marcotegui05} that it actually suffices to work just on a minimum spanning tree/MST (see \S\ref{sec:appendixds-rmsts}) of such a graph. Each waterfall pass then takes such an MST as its input and elides appropriate edges in it (eliding an edge means combining the nodes at either end of the edge and removing the edge itself from the MST). This has the effect of merging the partition regions joined by the edges (since the nodes which are combined actually represent regions in the partition). It is worth observing in passing (because it sheds some insight on the development of the algorithms which follow) that the goal of an MST-based waterfall algorithm is only to decide which edges in the MST need to be elided: if concerns are properly separated at a code level, the issue of how this elision process takes place can be entirely ignored for the purposes of the waterfall, and different waterfall implementations can be substituted for each other with relative impunity.
@@ -721,7 +721,7 @@ Since each waterfall pass is effectively just a graph-based waterfall transform,
 	%
 	\subfigure[The other 5 edge is lowest (and elidable), so elide it; all remaining edges will be considered in order but not elided because they are not elidable]
 	{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-marcotegui-propagation-f.png}}%
-\caption{The propagation step of Marcotegui's waterfall algorithm, illustrated on the graph in \cite{marcotegui05}: blue edges are those that have already been elided, green edges are the ones currently under consideration, and red edges are those that will not be elided.}
+\caption[The propagation step of Marcotegui's waterfall algorithm, illustrated on the graph in \cite{marcotegui05}]{The propagation step of Marcotegui's waterfall algorithm, illustrated on the graph in \cite{marcotegui05}: blue edges are those that have already been elided, green edges are the ones currently under consideration, and red edges are those that will not be elided.}
 \label{fig:segmentation-waterfall-marcotegui-propagation}
 \end{stusubfig}
 %---
@@ -769,7 +769,7 @@ This latter problem was the motivation behind the development of a simpler, tree
 	%
 	\subfigure[The considered edge is the unique lowest edge]
 	{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-nicholls-cases-b.png}}%
-\caption{Case analysis for the recursive step of Nicholls' algorithm: black edges are non-guards, red edges are guards, blue edges are those which have been elided and the green edge is the one under active consideration. The arrow (on the node) indicates the direction in which the algorithm presumes water to flow.}
+\caption[Case analysis for the recursive step of Nicholls' algorithm]{Case analysis for the recursive step of Nicholls' algorithm: black edges are non-guards, red edges are guards, blue edges are those which have been elided and the green edge is the one under active consideration. The arrow (on the node) indicates the direction in which the algorithm presumes water to flow.}
 \label{fig:segmentation-waterfall-nicholls-cases}
 \end{stusubfig}
 %---
@@ -791,7 +791,7 @@ This latter problem was the motivation behind the development of a simpler, tree
 	\subfigure[Level 1]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-g.png}}%
 	\hspace{4mm}%
 	\subfigure[Result]{\includegraphics[width=.17\linewidth]{segmentation/segmentation-waterfall-nicholls-example-h.png}}%
-\caption{Nicholls' algorithm in action (considering all the edges in each level at a time for space reasons): black edges are non-guards, red edges are guards, blue edges are those which have been elided and green edges are ones under active consideration.}
+\caption[Nicholls' algorithm in action]{Nicholls' algorithm in action (considering all the edges in each level at a time for space reasons): black edges are non-guards, red edges are guards, blue edges are those which have been elided and green edges are ones under active consideration.}
 \label{fig:segmentation-waterfall-nicholls-example}
 \end{stusubfig}
 %---
@@ -902,7 +902,7 @@ The proposed algorithm is a tree-based rainfalling method, and works in three re
 	\subfigure[NF/AI]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-nfai.png}}%
 	\hspace{4mm}
 	\subfigure[NF/AO]{\includegraphics[height=5cm]{segmentation/segmentation-waterfall-smg-mergecases-nfao.png}}%
-\caption{Case analysis for the edge elision step of my waterfall algorithm (a blue edge indicates that the edge would be elided; a red edge indicates that it wouldn't). The labels are AI = ambiguous in, AO = ambiguous out, NF = no flow, UI = unambiguous in and UO = unambiguous out.}
+\caption[Case analysis for the edge elision step of my waterfall algorithm]{Case analysis for the edge elision step of my waterfall algorithm (a blue edge indicates that the edge would be elided; a red edge indicates that it wouldn't). The labels are AI = ambiguous in, AO = ambiguous out, NF = no flow, UI = unambiguous in and UO = unambiguous out.}
 \label{fig:segmentation-waterfall-smg-mergecases}
 \end{stusubfig}
 %---
@@ -962,7 +962,7 @@ The proposed algorithm is a tree-based rainfalling method, and works in three re
 	%
 	\subfigure[There is a better route via the parent node]
 	{\includegraphics[height=6cm]{segmentation/segmentation-waterfall-smg-resolutioncases-d.png}}%
-\caption{Case analysis for the resolution step of my waterfall algorithm (the circled node is the one currently under consideration in each case)}
+\caption[Case analysis for the resolution step of my waterfall algorithm]{Case analysis for the resolution step of my waterfall algorithm (the circled node is the one currently under consideration in each case)}
 \label{fig:segmentation-waterfall-smg-resolutioncases}
 \end{stusubfig}
 %---
@@ -974,7 +974,7 @@ The proposed algorithm is a tree-based rainfalling method, and works in three re
 	\subfigure[After the first pass]{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-smg-example-pass1.png}}%
 	\hspace{4mm}%
 	\subfigure[After the second pass]{\includegraphics[width=.3\linewidth]{segmentation/segmentation-waterfall-smg-example-pass2.png}}%
-\caption{My waterfall algorithm running on a real example: the arrows on the nodes indicate the flow direction, blue edges are those that will be elided and red edges are those that won't be.}
+\caption[My waterfall algorithm running on a real example]{My waterfall algorithm running on a real example: the arrows on the nodes indicate the flow direction, blue edges are those that will be elided and red edges are those that won't be.}
 \label{fig:segmentation-waterfall-smg-example}
 \end{stusubfig}
 %---
@@ -1082,7 +1082,7 @@ Where my algorithm could potentially have an advantage is in situations where th
 Having now seen how the watershed and waterfall transforms can be implemented, it remains to demonstrate how they can be used to construct an image partition forest as defined in the previous chapter. As mentioned in the chapter overview, I developed two separate algorithms to achieve this -- the \emph{volume-at-once} method and the \emph{subvolume} method. The goal in both cases is to construct a single IPF for the entire volume, of the type shown in Figure~\ref{fig:segmentation-ipfconstruction-goal}. The leaf layer corresponds directly to the original image, in that each node in it corresponds to a pixel in the image. The branch layers represent partitions of the image that become increasingly coarse as we ascend the forest. (Of course, the leaf layer is itself a partition of the image, if a trivial one.)
 
 %---
-\stufigex{height=20cm}{segmentation/segmentation-ipfconstruction-goal.png}{The goal of the IPF construction process: coloured edges represent tree (forest) links between layers, whilst the dotted edges in each layer represent the layer's region adjacency graph}{fig:segmentation-ipfconstruction-goal}{p}
+\stufigexx{height=20cm}{segmentation/segmentation-ipfconstruction-goal.png}{The goal of the IPF construction process}{The goal of the IPF construction process: coloured edges represent tree (forest) links between layers, whilst the dotted edges in each layer represent the layer's region adjacency graph}{fig:segmentation-ipfconstruction-goal}{p}
 %---
 
 For the volume-at-once method, we observe that the image watershed algorithm described earlier can be used to produce an initial (relatively fine) partition of the image, which is then iteratively refined by the waterfall to give a sequence of ever coarser partitions. The basic idea, therefore, is that the lowest branch layer of the forest will correspond to the initial partition of the image output by the watershed, with higher branch layers being created by the waterfall; how to arrange this is described in \S\ref{subsec:segmentation-ipfconstruction-volumeatonce}.
@@ -1380,7 +1380,7 @@ The volume-at-once method described in the previous section only allows a 3D ima
 The subvolume method starts by generating the leaf layer and lowest branch layer for the overall volume. An example of the way this works for a volume containing three slices is shown in Figure~\ref{fig:segmentation-ipfconstruction-subvolumemethod-lowestlayers}. The first step is to split the 3D image volume into its constituent subvolumes (the slices, in the example) -- these must all be the same size. For each subvolume, we then construct a separate leaf layer and lowest branch layer, using the approaches described for the volume-at-once method -- in particular, a watershed algorithm is applied to segment each subvolume separately. Finally, the leaf layers for the various subvolumes are combined into a leaf layer for the overall volume, and the lowest branch layers for the subvolumes are combined to form the volume's lowest branch layer.
 
 %---
-\stufigex{height=19cm}{segmentation/segmentation-ipfconstruction-subvolumemethod-lowestlayers.png}{Constructing the lowest two layers using the subvolume method -- the image volume is divided into equally-sized pieces, each of which has a leaf layer ($\mathit{LL}$) and lowest branch layer ($\mathit{LBL}$) constructed for it as per the volume-at-once method. The corresponding layers are then combined together again to produce the leaf layer and lowest branch layer for the volume as a whole. This example works on a volume with three slices, but the approach generalises in the natural way.}{fig:segmentation-ipfconstruction-subvolumemethod-lowestlayers}{p}
+\stufigexx{height=19cm}{segmentation/segmentation-ipfconstruction-subvolumemethod-lowestlayers.png}{Constructing the lowest two layers using the subvolume method}{Constructing the lowest two layers using the subvolume method -- the image volume is divided into equally-sized pieces, each of which has a leaf layer ($\mathit{LL}$) and lowest branch layer ($\mathit{LBL}$) constructed for it as per the volume-at-once method. The corresponding layers are then combined together again to produce the leaf layer and lowest branch layer for the volume as a whole. This example works on a volume with three slices, but the approach generalises in the natural way.}{fig:segmentation-ipfconstruction-subvolumemethod-lowestlayers}{p}
 %---
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
