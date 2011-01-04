@@ -156,8 +156,10 @@ Given:
 Partition forests, as presented thus far, are a useful hierarchical representation for aggregate entities in general (and images in particular), but they are \emph{static}: that is, once a partition forest has been constructed for a given entity, it does not change. This can be problematic, because constructing a perfect forest is potentially hard, and the number of possible forests for a given entity is (at least theoretically) infinite. Even being more practical, and imposing the reasonable condition that every edge in the adjacency graph for the forest's leaf layer should have been elided (merging the two nodes it joins) by branch layer $E$, where $E$ is the total number of edges in the leaf adjacency graph, we can observe that there are still $E^2$ possible forests for an entity (the $E^2$ comes from choosing a layer between $1$ and $E$ inclusive at which each leaf layer edge is removed by merging the nodes it joins). Putting this into context, that means that for a $4$-connected image of size $w \times h$, there are $(4wh - 2(w+h))^2$ possible partition forests (over a million possibilities for a $512 \times 512$ image). There is therefore a pressing need for mutating algorithms that allow us to transform one partition forest into another, in order to allow a user to work around potential issues with the initial partition forest construction. In this section, I present a hierarchy of novel algorithms (see Figure~\ref{fig:ipfs-forest-mutatingalgorithms}) that allow users to edit partition forests, thereby changing them from being merely a static data structure into being a dynamic one.
 
 %---
-\stufigex{height=13cm}{ipfs/ipfs-forest-mutatingalgorithms.png}{The hierarchy of mutating algorithms for partition forests}{fig:ipfs-forest-mutatingalgorithms}{t}
+\stufigex{height=13.5cm}{ipfs/ipfs-forest-mutatingalgorithms.png}{The hierarchy of mutating algorithms for partition forests}{fig:ipfs-forest-mutatingalgorithms}{t}
 %---
+
+\vspace{-\baselineskip}
 
 %################################################
 \subsection{Core Algorithms}
