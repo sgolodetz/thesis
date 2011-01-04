@@ -195,6 +195,7 @@ It is possible to transform any partition forest $F$ for a particular entity int
 
 \noindent Theorem~\ref{thrm:ipfs-transformation} proves that only three core operations are strictly necessary to allow partition forests to be edited arbitrarily. However, in practice it is vitally important to also directly support node splitting as a core operation if efficient editing is desired (it is technically possible to split a node by reconstructing its entire layer, but this is clearly impractical). For this reason, the core partition forest algorithms are defined as (1) layer cloning, (2) layer deletion, (3) sibling node merging and (4) node splitting. Each of these operations is now examined in detail. Since they were ultimately designed for use as part of an interactive system for image analysis, a sample user interface for each operation is presented in that context (where relevant). The descriptions also focus not only on how each operation can be executed, but also on how it can be undone, and on what preconditions need checking before it is executed. When analysing the complexity of the algorithms, I make the following assumptions about the data structures used:
 
+%---
 \begin{itemize}
 \item The forest layers are stored in some sort of resizeable array (for example, a std::vector in C++).
 \item The nodes in the forest's leaf layer are also stored in some sort of array (not necessarily resizeable). This makes particular sense for image partition forests, where the leaf layer contains the regular grid of pixels in the image.
@@ -203,8 +204,11 @@ It is possible to transform any partition forest $F$ for a particular entity int
 \item Edges in other layers are stored using some sort of tree-based data structure (such as the multi-index container provided in C++'s Boost libraries).
 \item The children of each node are stored in a tree-based set (for example, a std::set in C++).
 \end{itemize}
+%---
 
 \noindent All of these data structures are assumed to provide their usual complexity guarantees (e.g.~logarithmic lookup for tree-based maps, etc.)
+
+As a final point before turning to look at the algorithms themselves, it is worth briefly describing the scheme used to index partition forest nodes: each node is given an ID of the form \texttt{(layer,index)}, where \texttt{layer} is the node's layer (indexed upwards from $0$, where $0$ is the leaf layer) and \texttt{index} is the minimum of the indices of the node's children in the partition forest. The identities of nodes are thus tied directly to the sub-entities they represent, and change to reflect any changes that the mutating algorithms make to the forest.
 
 \newpage
 
