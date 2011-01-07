@@ -208,7 +208,9 @@ It is possible to transform any partition forest $F$ for a particular entity int
 \end{itemize}
 %---
 
-\noindent All of these data structures are assumed to provide their usual complexity guarantees (e.g.~logarithmic lookup for tree-based maps, etc.)
+\enlargethispage*{\baselineskip}
+
+\noindent All of these data structures are assumed to provide their usual complexity guarantees (e.g.~logarithmic lookup for tree-based maps, etc.). More details about common C++ data structures and the complexities of their individual operations may be found in e.g.~\cite{stl}.
 
 As a final point before turning to look at the algorithms themselves, it is worth briefly describing the scheme used to index partition forest nodes: each node is given an ID of the form \texttt{(layer,index)}, where \texttt{layer} is the node's layer (indexed upwards from $0$, where $0$ is the leaf layer) and \texttt{index} is the minimum of the indices of the node's children in the partition forest. The identities of nodes are thus tied directly to the sub-entities they represent, and change to reflect any changes that the mutating algorithms make to the forest.
 
