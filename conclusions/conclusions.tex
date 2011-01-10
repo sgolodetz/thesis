@@ -48,7 +48,7 @@ TODO: The list below contains some of the things I should mention.
 
 \fi
 
-My research has highlighted a number of potential areas that seem suitable for further work. These can be broadly placed under the headings of \emph{segmentation refinement}, \emph{feature identification refinement} and \emph{parallelization}. The first two are effectively a continuation of the two major strands of work discussed in this thesis; parallelization is important to speed up the implementation of the algorithms for the purposes of more rapid testing and (hopefully) future deployment in a clinical setting.
+My research has highlighted a number of potential areas that seem suitable for further work. These can be broadly placed under the headings of \emph{segmentation refinement}, \emph{feature identification refinement}, \emph{parallelization} and \emph{requirements analysis}. The first two are effectively a continuation of the two major strands of work discussed in this thesis. Parallelization is important to speed up the implementation of the algorithms for the purposes of more rapid testing and (hopefully) future deployment in a clinical setting. Requirements analysis is essential if the system is ultimately to be useful to its target users (e.g.~radiotherapists).
 
 \subsection{Segmentation Refinement}
 
@@ -97,3 +97,7 @@ Since one of the reasons for trying to automate the segmentation and feature ide
 In particular, a number of parallel algorithms exist for the watershed transform (e.g.~\cite{bieniek97,moga98}) and, in addition to implementing one, it would be interesting to see whether graph-based waterfall algorithms (which are, after all, merely a series of graph-based watershed transforms) can be similarly parallelized. Visualization is another area which is especially susceptible to parallelization -- indeed, recent GPU-based, massively parallel implementations of single material marching cubes (which can be iterated to extract multiple isosurfaces), such as \cite{dyken08}, have been made to run in real-time on normal consumer hardware.
 
 Another potential target for a massively parallel implementation on the GPU is the anisotropic diffusion process. Despite using a robust, CPU-based implementation from the Insight Toolkit \cite{itk}, this is currently the most costly part of the entire segmentation process (it has to do a lot of work, so this isn't surprising). It would be interesting to try re-implementing the process using a parallel computing architecture like CUDA \cite{cuda} to try and improve performance.
+
+\subsection{Requirements Analysis}
+
+For a system based on the research described in this thesis to see use in a clinical environment, it will ultimately be essential to undertake a more rigorous analysis of the medics' requirements than has been possible during my doctorate. Based on discussions I have had with the medics at the Churchill Hospital, the radiotherapists appear to be some of the most plausible end-users for such a system, on the basis that they are current users of existing tools to semi-automatically identify features of interest in medical images. Whilst early-stage conversations with them have been fruitful, there is a great deal of potential for future collaboration with them on how to take the work described here forward in a direction that they would find clinically useful.
