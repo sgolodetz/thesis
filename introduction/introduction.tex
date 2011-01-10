@@ -41,7 +41,7 @@ With the forest constructed to represent the 3D image, it is possible to devise 
 
 I have implemented all of the described techniques and algorithms in C++. Specifically, two separate systems were developed to do segmentation, feature identification and 3D visualization. The trial system, \emph{centipede}, ran only on Microsoft Windows, and segmented each slice in a CT (or MRI) series into its own separate image partition forest. The user could mark features manually, or identify features such as the ribs and spine automatically in 2D CT images (see Figure~\ref{fig:introduction-centipede}). This work was published in \cite{gvccimi08} and \cite{gvcispa09}, with the former paper receiving the Professor Yasuhiko Dote award\index{awards!Professor Yasuhiko Dote} for the Best Workshop Paper at the Fifth International Conference on Soft Computing as Transdisciplinary Science and Technology (CSTST '08). It was also possible to visualize the results as a wireframe 3D mesh (generated using the multiple material marching cubes algorithm \cite{wu03}).
 
-The final system, \emph{millipede}, is built using a cross-platform build framework called CMake, and runs on Microsoft Windows, Linux and Mac OS X (see Figure~\ref{fig:introduction-millipede-seg}). It allows the user to segment slices from a CT (or MRI) series either as a 3D volume, or as individual axial, coronal or sagittal slices, in all cases producing a single image partition forest for the entire image volume used. Among many other improvements, it supports far better automatic feature identification, this time in 3D, and has built-in tools for validation. It can also visualize the feature identification results as a Phong-lit 3D mesh (see Figure~\ref{fig:introduction-millipede-vis}).
+The final system, \emph{millipede}, is built using a cross-platform build framework called CMake \cite{cmake}, and runs on Microsoft Windows, Linux and Mac OS X (see Figure~\ref{fig:introduction-millipede-seg}). It allows the user to segment slices from a CT (or MRI) series either as a 3D volume, or as individual axial, coronal or sagittal slices, in all cases producing a single image partition forest for the entire image volume used. Among many other improvements, it supports far better automatic feature identification, this time in 3D, and has built-in tools for validation. It can also visualize the feature identification results as a Phong-lit 3D mesh (see Figure~\ref{fig:introduction-millipede-vis}).
 
 %---
 \section*{Contributions}
@@ -116,3 +116,5 @@ The remainder of this thesis is organised as follows.
 \textbf{Appendix~\ref{chap:appendixeth}} explains how the ethical issues that arise from work in medical image analysis were accounted for in this work.
 
 \textbf{Appendix~\ref{chap:appendixlang}} contains a brief reference for the pseudo-code language I have used in listings throughout this thesis.
+
+The appendices are followed by a glossary of terms, an index and a bibliography.
