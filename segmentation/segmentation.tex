@@ -325,7 +325,7 @@ function construct_arrows
 	// the arrows of the non-canonical points point to them.
 	labelCount := 1;
 	for each p : PixelCoords $\in$ $\Omega$
-		if lc(p) $\ne$ 0 then continue
+		if lc(p) $\ne$ 0 then continue;
 		var root : int := minima.find_set(labels(p));
 		if root = labels(p) then
 			// This is a canonical point.
@@ -353,8 +353,8 @@ function resolve_all
 
 function resolve_pixel
 : (p : PixelCoords;
-	 arrows : Image<$\Omega$,PixelCoords>;
-	 labels : ref Image<$\Omega$,int) $\to$ PixelCoords
+   arrows : Image<$\Omega$,PixelCoords>;
+   labels : ref Image<$\Omega$,int) $\to$ PixelCoords
 
 	var parent : PixelCoords := arrows(p);
 	if parent $\ne$ p then
