@@ -41,7 +41,7 @@ function flood_from
 
 	var curProperties : BranchProperties := forest().branch_properties(cur);
 	for each adj $\in$ forest().adjacent_nodes(cur)
-		if not used.contains(adj)
+		if not used.contains(adj) then
 			used.insert(adj);
 			var adjProperties : BranchProperties := forest().branch_properties(adj);
 			if flood_criterion(cur, adj, curProperties, adjProperties, seed) then
