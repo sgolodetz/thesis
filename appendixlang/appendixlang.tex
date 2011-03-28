@@ -117,7 +117,7 @@ function f : (r : ref int) $\to$ $\emptyset$
 	r := 9;
 ...
 var i := 23;
-f(ref i);		// set i to 9
+f(i);		// set i to 9 (can also write f(ref i); for clarity)
 \end{lstlisting}
 
 \noindent Optionals can be used as follows:
