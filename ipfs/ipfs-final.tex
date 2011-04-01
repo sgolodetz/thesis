@@ -946,7 +946,7 @@ The user interface for non-sibling node merging is very simple, as illustrated i
 
 \paragraph{Precondition Checking}
 
-The great advantage of non-sibling node merging over sibling node merging is that it has fewer preconditions; in fact, it owes its existence to the need to provide a less-constrained, more user-friendly merging algorithm for partition forest. It is therefore unsurprising that its preconditions are a strict subset of those of sibling node merging:
+The great advantage of non-sibling node merging over sibling node merging is that it has fewer preconditions; in fact, it owes its existence to the need to provide a less-constrained, more user-friendly merging algorithm for partition forests. It is therefore unsurprising that its preconditions are a strict subset of those of sibling node merging:
 
 \begin{enumerate}
 
@@ -1098,7 +1098,7 @@ There are three preconditions that must be checked for parent switching (see Lis
 
 \paragraph{Implementation}
 
-Pseudo-code to implement parent switching is shown in Listing~\ref{code:ipfs-forest-parentswitch}. The first step is to determine the common ancestor of the current and new parents of the node being moved (in the example, this would be the common ancestor of $(1,3)$ and $(1,0)$, namely $(3,0)$). In the process of doing so, we make sure to keep track of the chain of nodes leading down from the common ancestor (non-inclusive) to the new parent (in the example, this would be $[(2,0), (1,0)]$). The node being moved is then unzipped to the layer below the common ancestor, and its chain leading down from the common ancestor (non-inclusive) must then be zipped to the chain leading down the new parent. This completes the move.
+Pseudo-code to implement parent switching is shown in Listing~\ref{code:ipfs-forest-parentswitch}. The first step is to determine the common ancestor of the current and new parents of the node being moved (in the example, this would be the common ancestor of $(1,3)$ and $(1,0)$, namely $(3,0)$). In the process of doing so, we make sure to keep track of the chain of nodes leading down from the common ancestor (non-inclusive) to the new parent (in the example, this would be $[(2,0), (1,0)]$). The node being moved is then unzipped to the layer below the common ancestor, and its chain leading down from the common ancestor (non-inclusive) must then be zipped to the chain leading down from the new parent. This completes the move.
 
 %---
 \begin{stulisting}[p]
