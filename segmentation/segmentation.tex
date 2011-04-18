@@ -429,33 +429,33 @@ The results of smoothing using ADF are shown in Figure~\ref{fig:segmentation-wat
 %---
 \begin{stusubfig}{p}
 	\subfigure[Unsmoothed image]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-adfexample-unsmoothed.png}}%
+	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-unsmoothed.png}\hspace{4mm}}%
 	%
-	\hspace{4mm}%
+	\hspace{8mm}%
 	%
 	\subfigure[Smoothed image]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-adfexample-smoothed.png}}%
+	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-smoothed.png}\hspace{4mm}}%
 	%
 	\\
 	%
 	\subfigure[Gradient magnitude of the unsmoothed image]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-adfexample-unsmoothedgm.png}}%
+	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-unsmoothedgm.png}\hspace{4mm}}%
 	%
-	\hspace{4mm}%
+	\hspace{8mm}%
 	%
 	\subfigure[Gradient magnitude of the smoothed image]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-adfexample-smoothedgm.png}}%
+	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-smoothedgm.png}\hspace{4mm}}%
 	%
 	\\
 	%
 	\subfigure[Watershed of the unsmoothed image]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-adfexample-unsmoothedws.png}}%
+	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-unsmoothedws.png}\hspace{4mm}}%
 	%
-	\hspace{4mm}%
+	\hspace{8mm}%
 	%
 	\subfigure[Watershed of the smoothed image]
-	{\includegraphics[height=6cm]{segmentation/segmentation-watershed-adfexample-smoothedws.png}}%
-\caption{The results of running a watershed algorithm on an image smoothed by anisotropic diffusion filtering (ADF) are far superior, because ADF smoothes away all the unnecessary detail within features whilst preserving the crucial edges between them.}
+	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-smoothedws.png}\hspace{4mm}}%
+\caption{The results of running a watershed algorithm on an image smoothed by anisotropic diffusion filtering (ADF) are far superior, because ADF smoothes away all the unnecessary detail within features whilst preserving the crucial edges between them. The smoothed results here were produced using $20$ iterations of the gradient anisotropic diffusion method from ITK, with a conductance of $1.0$ and a time step of $0.0625$.}
 \label{fig:segmentation-watershed-adfexample}
 \end{stusubfig}
 %---
