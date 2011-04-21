@@ -2,18 +2,18 @@
 \label{chap:appendixapps}
 
 %##################################################################################################
-\section{Volume Visualization}
+\section{Volume Visualisation}
 %##################################################################################################
 
-\index{visualization|(}
+\index{visualisation|(}
 
-One key application of my feature identification work in Chapter~\ref{chap:featureid} is to enable medics to visualize the state of a patient's organs in 3D. As part of my work, I therefore implemented a 3D visualizer in both the \emph{centipede} and \emph{millipede} systems, making use of the multiple material marching cubes algorithm described by Wu and Sullivan \cite{wu03}. In the final system, \emph{millipede}, the visualizer was implemented in its own window, with simple slider controls allowing the user to alter the focus point, distance, azimuth and inclination, and to clip the model along the three principal axes to look inside different features (see Figure~\ref{fig:appendixapps-visdialog}). Individual features can also be enabled/disabled as necessary. (This slider-based interface was designed to be easier for the medics to control than the corresponding interface in \emph{centipede}, which used \emph{Quake}-style keyboard controls.)
+One key application of my feature identification work in Chapter~\ref{chap:featureid} is to enable medics to visualise the state of a patient's organs in 3D. As part of my work, I therefore implemented a 3D visualiser in both the \emph{centipede} and \emph{millipede} systems, making use of the multiple material marching cubes algorithm described by Wu and Sullivan \cite{wu03}. In the final system, \emph{millipede}, the visualiser was implemented in its own window, with simple slider controls allowing the user to alter the focus point, distance, azimuth and inclination, and to clip the model along the three principal axes to look inside different features (see Figure~\ref{fig:appendixapps-visdialog}). Individual features can also be enabled/disabled as necessary. (This slider-based interface was designed to be easier for the medics to control than the corresponding interface in \emph{centipede}, which used \emph{Quake}-style keyboard controls.)
 
 %---
-\stufigex{height=14cm}{appendixapps/appendixapps-visdialog.png}{The 3D visualization window implemented in \emph{millipede}}{fig:appendixapps-visdialog}{t}
+\stufigex{height=14cm}{appendixapps/appendixapps-visdialog.png}{The 3D visualisation window implemented in \emph{millipede}}{fig:appendixapps-visdialog}{t}
 %---
 
-As I discussed in two magazine articles for the Association of C and C++ Users \cite{golodetz08vis1,golodetz08vis2}, the goal of Wu and Sullivan's approach, in common with other visualization techniques, is to convert a labelled volume (e.g.~with labels such as `kidney', `liver', etc.) into a 3D mesh. It achieves this in three stages:
+As I discussed in two magazine articles for the Association of C and C++ Users \cite{golodetz08vis1,golodetz08vis2}, the goal of Wu and Sullivan's approach, in common with other visualisation techniques, is to convert a labelled volume (e.g.~with labels such as `kidney', `liver', etc.) into a 3D mesh. It achieves this in three stages:
 %
 \begin{enumerate}
 
@@ -25,7 +25,7 @@ As I discussed in two magazine articles for the Association of C and C++ Users \
 %
 The implementation details of the algorithm are sadly outside the scope of this thesis, but a detailed discussion of the \emph{centipede} implementation can be found in the aforementioned articles, and the \emph{millipede} source code will be made available online for the benefit of the interested reader. The \emph{millipede} implementation may be more interesting for anyone wishing to parallelize the code, as it uses a job-based design.
 
-\index{visualization|)}
+\index{visualisation|)}
 
 %##################################################################################################
 \section{Volume Calculation}

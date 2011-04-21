@@ -21,7 +21,7 @@ In that context, this thesis has demonstrated the potential of partition forests
 %
 In addition to these primary contributions, I also developed a new, implementation-invariant algorithm for the waterfall transform $(3)$ on minimum spanning trees (see \S\ref{subsubsec:segmentation-waterfall-myalgorithm}), designed to robustly handle minimal plateaux in the minimum spanning tree, as neither Marcotegui's waterfall algorithm \cite{marcotegui05}, nor a new tree-based algorithm devised by my colleague Chris Nicholls \cite{nicholls09}, do so.
 
-I implemented two segmentation, feature identification and 3D visualization systems, known as \emph{centipede} and \emph{millipede}, to demonstrate the practical effectiveness of the techniques described in this thesis $(6)$. As assessed in Chapter~\ref{chap:assessment}, these were both substantial, medium-sized systems. In particular, \emph{millipede} (the final system), is highly portable, having been successfully used on Microsoft Windows, Linux (Ubuntu) and Mac OS X (Snow Leopard). I anticipate that it should provide a sound basis for further work in this area.
+I implemented two segmentation, feature identification and 3D visualisation systems, known as \emph{centipede} and \emph{millipede}, to demonstrate the practical effectiveness of the techniques described in this thesis $(6)$. As assessed in Chapter~\ref{chap:assessment}, these were both substantial, medium-sized systems. In particular, \emph{millipede} (the final system), is highly portable, having been successfully used on Microsoft Windows, Linux (Ubuntu) and Mac OS X (Snow Leopard). I anticipate that it should provide a sound basis for further work in this area.
 
 %##################################################################################################
 \section{Further Work}
@@ -43,7 +43,7 @@ TODO: The list below contains some of the things I should mention.
 \item Work on getting the boundaries `right' between e.g.~spine and ribs.
 \item Make the feature identifiers more \emph{robust}. The key issue here is being able to check how you're doing as you go along, otherwise the compile/link/test cycle takes ages on multiple series. Evidently the implementation needs to be faster (see parallelization below). An ideal setup would involve having multiple copies of the program running in parallel on \emph{specific test series} every time a change is made (think distributed computing). (Otherwise, the temptation is always to find series that give good results.)
 \item Rather than using ad-hoc thresholds in the feature identifiers, either make them fuzzy or base them on the images involved somehow.
-\item Look at ways of parallelizing the implementation (e.g.~using CUDA) -- particularly important for things like visualization.
+\item Look at ways of parallelizing the implementation (e.g.~using CUDA) -- particularly important for things like visualisation.
 \end{itemize}
 
 \fi
@@ -94,7 +94,7 @@ There are many ways in which the feature identification techniques described in 
 
 Since one of the reasons for trying to automate the segmentation and feature identification tasks is to save users time, achieving good performance is important when developing systems that are intended to see clinical use. For that reason, it would be beneficial to investigate ways of implementing some of the more time-consuming algorithms used in \emph{millipede} in parallel.
 
-In particular, a number of parallel algorithms exist for the watershed transform (e.g.~\cite{bieniek97,moga98}) and, in addition to implementing one, it would be interesting to see whether graph-based waterfall algorithms (which are, after all, merely a series of graph-based watershed transforms) can be similarly parallelized. Visualization is another area which is especially susceptible to parallelization -- indeed, recent GPU-based, massively parallel implementations of single material marching cubes (which can be iterated to extract multiple isosurfaces), such as \cite{dyken08}, have been made to run in real-time on normal consumer hardware.
+In particular, a number of parallel algorithms exist for the watershed transform (e.g.~\cite{bieniek97,moga98}) and, in addition to implementing one, it would be interesting to see whether graph-based waterfall algorithms (which are, after all, merely a series of graph-based watershed transforms) can be similarly parallelized. Visualisation is another area which is especially susceptible to parallelization -- indeed, recent GPU-based, massively parallel implementations of single material marching cubes (which can be iterated to extract multiple isosurfaces), such as \cite{dyken08}, have been made to run in real-time on normal consumer hardware.
 
 Another potential target for a massively parallel implementation on the GPU is the anisotropic diffusion process. Despite using a robust, CPU-based implementation from the Insight Toolkit \cite{itk}, this is currently the most costly part of the entire segmentation process (it has to do a lot of work, so this isn't surprising). It would be interesting to try re-implementing the process using a parallel computing architecture like CUDA \cite{cuda} to try and improve performance.
 
