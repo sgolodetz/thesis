@@ -1442,4 +1442,12 @@ As a side note, it is worth observing that the subvolume method described here i
 \section{Chapter Summary}
 %##################################################################################################
 
-In this chapter, we saw how to generate IPFs from medical images using the morphological watershed and waterfall transforms. The next chapter will show how the generated IPFs can be used when automatically identifying salient features in the original images.
+In this chapter, we saw how to generate IPFs from medical images using the morphological watershed and waterfall transforms, thereby accounting for the third and fourth contributions claimed in Chapter~\ref{chap:introduction}:
+%
+\begin{enumerate}
+\setcounter{enumi}{2}
+\item A new, implementation-invariant algorithm for the waterfall transform on minimum spanning trees (\S\ref{subsubsec:segmentation-waterfall-myalgorithm}).
+\item Two techniques to construct image partition forests for 3D images, making use of the existing watershed and waterfall transforms (\S\ref{sec:segmentation-ipfconstruction}).
+\end{enumerate}
+%
+The next chapter will show how the generated IPFs can be used when automatically identifying salient features in the original images.
