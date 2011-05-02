@@ -25,7 +25,7 @@ Due to the highly algorithmic nature of this part of my work, and the large numb
 
 A partition forest is in essence a hierarchy of adjacency graphs that all partition the same aggregate entity (the sense in which a graph can partition an entity will be formalised in \S\ref{sec:ipfs-definition}). The entity itself can be anything that can be divided into pieces, whether that be an image, a road network or an organisation. As was seen in \S\ref{sec:background-partitionhierarchies}, partition forests (whether called by that name or otherwise) have been widely used as a hierarchical representation for images. However, surprisingly little attention has been devoted to how to edit them post-construction (with perhaps the notable exception being Nacken's work in \cite{nacken95}).
 
-The key components that make up an \emph{image} partition forest are illustrated in Figure~\ref{fig:ipfs-concept}, which shows a partition forest that might be constructed for a simple $4 \times 4$ image. A forest is made up of a number of layers, each of which is an adjacency graph representing a partition of the image. Each partition is refined by the next highest partition, in the sense that each node in partition $i+1$ is the union of some of the nodes in partition $i$.
+The key components that make up an \emph{image} partition forest are illustrated in Figure~\ref{fig:ipfs-concept}, which shows a partition forest that might be constructed for a simple $4 \times 4$ image. (For a larger-scale example on a real image, see Figure~\ref{fig:ipfs-ctconcept}.) A forest is made up of a number of layers, each of which is an adjacency graph representing a partition of the image. Each partition is refined by the next highest partition, in the sense that each node in partition $i+1$ is the union of some of the nodes in partition $i$.
 
 The nodes in each layer represent image regions (sets of pixels), and can have layer-dependent properties associated with them (shown as blue text in the figure). Properties of nodes in the leaf layer (which correspond to individual pixels in the image) can be assigned arbitrarily, but properties of nodes in branch layers must be functions of the properties of their children in the layer below (this will be defined formally in \S\ref{sec:ipfs-definition}). In this example, a single, arbitrary value has been associated with each node in the leaf layer of the forest. Nodes in higher layers have been given a `mean value' property that is calculated from the values of the subsumed leaf nodes.
 
@@ -35,6 +35,10 @@ In addition to the forest layers themselves, a partition forest also contains fo
 
 %---
 \stufigexx{height=21cm}{ipfs/ipfs-concept.png}{The concept of a partition forest}{The concept of a partition forest (see main text for discussion)}{fig:ipfs-concept}{p}
+%---
+
+%---
+\stufigex{height=21cm}{ipfs/ipfs-ctconcept.png}{An example partition forest for a real image}{fig:ipfs-ctconcept}{p}
 %---
 
 \index{partition forests!concept|)}
