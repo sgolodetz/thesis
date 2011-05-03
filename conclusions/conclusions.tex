@@ -7,21 +7,28 @@
 
 An ability to edit the results of segmentation and feature identification algorithms will always be important when the treatment of real people is involved, because unless identification techniques become $100\%$ accurate in the future (a somewhat unlikely prospect), medics will always need to confirm that a program's output is correct before taking potentially critical decisions based upon it.
 
-In that context, this thesis has demonstrated the potential of partition forests as an editable image representation for segmentation and multi-organ identification in computerised tomography (CT) scans of the abdomen. It has done so by making the following specific contributions (these are cross-referenced with the contributions claimed in the introduction, using bracketed numbers, for the purpose of increased clarity):
+In that context, this thesis has demonstrated the potential of partition forests as an editable image representation for segmentation and multi-organ identification in computerised tomography (CT) scans of the abdomen. It has done so by making the following specific contributions (as outlined in the introduction):
 %
-\begin{itemize}
-
-\item The development of a novel editing framework for partition forests (see Chapter~\ref{chap:ipfs}), consisting of a comprehensive set of mutating algorithms for partition forests $(1)$, and subtree-based partition forest selection and multi-feature selection data structures $(2)$. Taken together, these allow the user to completely rearrange the partition forest in any way they see fit, and edit feature identification results in an intuitive and efficient manner. Prior to the development of these mutating algorithms, partition forests, once built, were a static data structure that could not be edited further; these algorithms turn it into a dynamic data structure, lessening the importance of attaining the perfect partition forest during the initial construction process.
-
-\item The development of two watershed-based partition forest construction methods (see \S\ref{sec:segmentation-ipfconstruction}), which allow a single partition forest to be constructed for an image volume $(4)$, regardless of whether the entire volume is segmented in 3D (the \emph{volume-at-once} method), or individual slices are segmented in 2D before combining the results (the \emph{subvolume} method). The subvolume method is particularly novel -- existing methods (e.g.~\cite{yu02,marfil07}) can construct a partition forest by segmenting an entire volume at once, even if they do not use the specific approach taken by the volume-at-once method described herein, but there is no algorithm in the literature that enables a partition forest to be constructed using slice-by-slice segmentation. Such an ability can be useful if the slices in an image series are particularly thick, as the results of 2D segmentation tend to be better than those of 3D in such cases.
-
-\item The development of novel feature identification techniques $(5)$ for 2D and 3D abdominal CT scans (see Chapter~\ref{chap:featureid}). Whilst further refinement is necessary to improve the performance of these techniques in the general case, as observed in the previous two chapters, their current level of performance nevertheless demonstrates the potential of this approach for automated feature identification in the future.
-
-\end{itemize}
+\begin{enumerate}
+\item A hierarchy of undoable operations to mutate partition forests, and their integration into a graphical user interface (\S\ref{sec:ipfs-mutatingalgorithms}).
+\item A subtree-based, self-updating partition forest selection data structure (\S\ref{sec:ipfs-selections}).
+\item A new, implementation-invariant algorithm for the waterfall transform on minimum spanning trees (\S\ref{subsubsec:segmentation-waterfall-myalgorithm}).
+\item Two techniques to construct image partition forests for 3D images, making use of the existing watershed and waterfall transforms (\S\ref{sec:segmentation-ipfconstruction}).
+\item Novel feature identification techniques for 2D (\S\ref{sec:featureid-2d}) and 3D (\S\ref{sec:featureid-3d}) abdominal CT scans.
+\item The implementation of the \emph{centipede} and \emph{millipede} segmentation, feature identification and 3D visualisation systems in C++.
+\end{enumerate}
 %
-In addition to these primary contributions, I also developed a new, implementation-invariant algorithm for the waterfall transform $(3)$ on minimum spanning trees (see \S\ref{subsubsec:segmentation-waterfall-myalgorithm}), designed to robustly handle minimal plateaux in the minimum spanning tree, as neither Marcotegui's waterfall algorithm \cite{marcotegui05}, nor a new tree-based algorithm devised by my colleague Chris Nicholls \cite{nicholls09}, do so.
+As presented in Chapter~\ref{chap:ipfs}, the first two contributions allow the user to completely rearrange a partition forest in any way they see fit, and edit feature identification results in an intuitive and efficient manner. Prior to the development of the mutating algorithms, partition forests, once built, were a static data structure that could not be edited further; these algorithms turn it into a dynamic data structure, lessening the importance of attaining the perfect partition forest during the initial construction process.
 
-I implemented two segmentation, feature identification and 3D visualisation systems, known as \emph{centipede} and \emph{millipede}, to demonstrate the practical effectiveness of the techniques described in this thesis $(6)$. As assessed in Chapter~\ref{chap:assessment}, these were both substantial, medium-sized systems. In particular, \emph{millipede} (the final system), is highly portable, having been successfully used on Microsoft Windows, Linux (Ubuntu) and Mac OS X (Snow Leopard). I anticipate that it should provide a sound basis for further work in this area.
+The two partition forest construction techniques presented in Chapter~\ref{chap:segmentation} (Contribution $4$) allow a single partition forest to be constructed for an image volume, regardless of whether the entire volume is segmented in 3D (the \emph{volume-at-once} method), or individual slices are segmented in 2D before combining the results (the \emph{subvolume} method). The subvolume method is particularly novel -- existing methods (e.g.~\cite{yu02,marfil07}) can construction a partition forest by segmenting an entire volume at once, even if they do not use the specific approach taken by the volume-at-once method described herein, but there is no algorithm in the literature that enables a partition forest to be constructed using slice-by-slice segmentation. Such an ability can be useful if the slices in an image series are particularly thick, as the results of 2D segmentation tend to be better than those of 3D in such cases.
+
+The 2D and 3D feature identification techniques for abdominal CT scans presented in Chapter~\ref{chap:featureid} (Contribution $5$) allow the user to identify features such as organs relatively automatically. Whilst further refinement is necessary to improve the performance of these techniques in the general case, as observed in the previous two chapters, their current level of performance nevertheless demonstrates the potential of this approach for automated feature identification in the future.
+
+In addition to these primary contributions, I also developed a new, implementation-invariant algorithm for the waterfall transform on minimum spanning trees (Contribution $3$), designed to robustly handle minimal plateaux in a minimum spanning tree, as neither Marcotegui's waterfall algorithm \cite{marcotegui05}, nor a new tree-based algorithm devised by my colleague Chris Nicholls \cite{nicholls09}, do so. This was presented in Chapter~\ref{chap:segmentation}.
+
+I implemented two segmentation, feature identification and 3D visualisation systems, known as \emph{centipede} and \emph{millipede}, to demonstrate the practical effectiveness of the techniques described in this thesis (Contribution $6$). As assessed in Chapter~\ref{chap:assessment}, these were both substantial, medium-sized systems. In particular, \emph{millipede} (the final system), is highly portable, having been successfully used on Microsoft Windows, Linux (Ubuntu) and Mac OS X (Snow Leopard). I anticipate that it should provide a sound basis for further work in this area.
+
+\newpage
 
 %##################################################################################################
 \section{Further Work}
@@ -89,6 +96,8 @@ There are many ways in which the feature identification techniques described in 
 \end{enumerate}
 
 \end{itemize}
+
+\vspace{-\baselineskip}
 
 \subsection{Parallelization}
 
