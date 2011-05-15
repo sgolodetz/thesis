@@ -104,19 +104,19 @@ The goal I therefore adopted for my segmentation and feature identification work
 %---
 \begin{table}[p]
 \begin{center}
-\begin{tabular}{c||c|c|c|c|c|c|c|c|c|c}
-& \rotatebox{90}{Robustness (to image changes)} & \rotatebox{90}{Accuracy} & \rotatebox{90}{Noise resilience} & \rotatebox{90}{Training data required?} & \rotatebox{90}{Input parameter requirements} & \rotatebox{90}{Input parameter generality} & \rotatebox{90}{Ease of editing results} & \rotatebox{90}{Suitable for unclear images?} & \rotatebox{90}{Suitable for unusual cases?} & \rotatebox{90}{Contiguous regions easily produced?} \\
+\begin{tabular}{c||c|c|c|c|c|c|c|c|c}
+& \rotatebox{90}{Robustness (to image changes)} & \rotatebox{90}{Accuracy} & \rotatebox{90}{Noise resilience} & \rotatebox{90}{Training data required?} & \rotatebox{90}{Input parameter requirements} & \rotatebox{90}{Input parameter generality} & \rotatebox{90}{Ease of editing results} & \rotatebox{90}{Suitable for unclear images?} & \rotatebox{90}{Contiguous regions easily produced?} \\
 \hline\hline
-Thresholding & \textcolor{green}{High} & \textcolor{red}{Low} & \textcolor{red}{Low} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{red}{No} & \textcolor{green}{Yes} & \textcolor{red}{No} \\
-Region Growing & \textcolor{red}{Low} & \textcolor{gold}{Mid}  & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{gold}{Mid} & \textcolor{red}{Low} & \textcolor{green}{Easy} & \textcolor{red}{No} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
-Watershed from Markers & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{No} & \textcolor{red}{High} & \textcolor{red}{Low} & \textcolor{red}{Hard} & \textcolor{red}{No} & \textcolor{green}{Yes} & \textcolor{green}{Yes} \\
-Watershed + Waterfall & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{red}{No} & \textcolor{green}{Yes} & \textcolor{green}{Yes} \\
-Snakes & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{red}{Low} & \textcolor{green}{No} & \textcolor{red}{High} & \textcolor{red}{Low} & \textcolor{green}{Easy} & \textcolor{red}{No} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
-Level Sets & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{red}{High} & \textcolor{red}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{No} & \textcolor{red}{No} & \textcolor{green}{Yes?} \\
-Atlas-Based & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{red}{Yes} & None & N/A & \textcolor{gold}{Mid} & \textcolor{green}{Yes} & \textcolor{red}{No} & \textcolor{green}{Yes?} \\
-Neural Nets & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{High?} & \textcolor{red}{Yes} & None & N/A & \textcolor{gold}{Mid} & \textcolor{green}{Yes} & \textcolor{red}{No} & \textcolor{green}{Yes?} \\
-Clustering & \textcolor{green}{High} & \textcolor{red}{Low} & ? & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{red}{No?} & \textcolor{red}{No} & \textcolor{red}{No} \\
-Normalized Cuts & \textcolor{green}{High} & \textcolor{red}{Low} & \textcolor{green}{High} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{green}{Yes} & \textcolor{green}{Yes} & \textcolor{red}{No?}
+Thresholding & \textcolor{green}{High} & \textcolor{red}{Low} & \textcolor{red}{Low} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{red}{No} & \textcolor{red}{No} \\
+Region Growing & \textcolor{red}{Low} & \textcolor{gold}{Mid}  & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{gold}{Mid} & \textcolor{red}{Low} & \textcolor{green}{Easy} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
+Watershed from Markers & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{No} & \textcolor{red}{High} & \textcolor{red}{Low} & \textcolor{red}{Hard} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
+Watershed + Waterfall & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
+Snakes & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{red}{Low} & \textcolor{green}{No} & \textcolor{red}{High} & \textcolor{red}{Low} & \textcolor{green}{Easy} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
+Level Sets & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{red}{High} & \textcolor{red}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{No} & \textcolor{green}{Yes?} \\
+Atlas-Based & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{red}{Yes} & None & N/A & \textcolor{gold}{Mid} & \textcolor{green}{Yes} & \textcolor{green}{Yes?} \\
+Neural Nets & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{High?} & \textcolor{red}{Yes} & None & N/A & \textcolor{gold}{Mid} & \textcolor{green}{Yes} & \textcolor{green}{Yes?} \\
+Clustering & \textcolor{green}{High} & \textcolor{red}{Low} & ? & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{red}{No?} & \textcolor{red}{No} \\
+Normalized Cuts & \textcolor{green}{High} & \textcolor{red}{Low} & \textcolor{green}{High} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{green}{Yes} & \textcolor{red}{No?}
 \end{tabular}
 \end{center}
 \caption{A comparison of available segmentation methods}
