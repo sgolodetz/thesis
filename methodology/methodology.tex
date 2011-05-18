@@ -120,7 +120,7 @@ Level Sets & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{gold}{
 Atlas-Based & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{red}{Yes} & None & N/A & \textcolor{gold}{Mid} & \textcolor{green}{Yes} & \textcolor{green}{Yes} \\
 Neural Nets & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{red}{Yes} & None & N/A & \textcolor{gold}{Mid} & \textcolor{green}{Yes} & \textcolor{green}{Yes} \\
 Clustering & \textcolor{gold}{Mid} & \textcolor{red}{Low} & \textcolor{red}{Low} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{red}{No} & \textcolor{red}{No} \\
-Normalized Cuts & \textcolor{green}{High} & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{green}{Yes} & \textcolor{green}{Yes}
+Normalized Cuts & \textcolor{green}{High} & \textcolor{red}{Low} & \textcolor{green}{High} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{green}{Yes} & \textcolor{green}{Yes}
 \end{tabular}
 \end{center}
 \caption{A comparison of available segmentation methods}
@@ -136,11 +136,13 @@ As discussed in detail in Chapter~\ref{chap:background}, there are a wide variet
 
 \item It produces contiguous regions. Region contiguity is desirable because the objects of interest in an image tend to be contiguous (or, at worst, split into a few pieces). Thresholding generally produces regions which are neither contiguous nor hole-free, as do clustering techniques.
 
-\item It provides a mechanism for the user to edit the initial segmentation, as its output can be used to construct a partition hierarchy that can be edited using the algorithms I will present in Chapter~\ref{chap:ipfs}. By contrast, it is unclear how to facilitate editing for a number of other techniques such as thresholding, watershed from markers, clustering, normalized cuts or region growing over pixels (although, as we will see later, editing the results of region growing over nodes in an adjacency graph is more possible).
+\item It provides a mechanism for the user to edit the initial segmentation, as its output can be used to construct a partition hierarchy that can be edited using the algorithms I will present in Chapter~\ref{chap:ipfs}. By contrast, it is unclear how to facilitate editing for a number of other techniques such as thresholding, watershed from markers, clustering or normalized cuts.
+
+\pagebreak[4]
 
 \item It handles unusual cases well because -- unlike, for example, atlas-based and neural network methods -- it does not rely on specific features being in their expected places in an image. Moreover, it does not have the requirements of those methods for large amounts of training data to be available.
 
-\item It can be easily extended to work with 3D images (unlike snakes).
+%\item It can be easily extended to work with 3D images (unlike snakes).
 
 \end{enumerate}
 %
