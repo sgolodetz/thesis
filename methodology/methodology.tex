@@ -113,7 +113,7 @@ The goal I therefore adopted for my segmentation and feature identification work
 \hline\hline
 Thresholding & \textcolor{gold}{Mid} & \textcolor{red}{Low} & \textcolor{red}{Low} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{Hard} & \textcolor{red}{No} & \textcolor{red}{No} \\
 Region Growing & \textcolor{red}{Low} & \textcolor{gold}{Mid}  & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{gold}{Mid} & \textcolor{red}{Low} & \textcolor{green}{Easy} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
-Watershed from Markers & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{No} & \textcolor{red}{High} & \textcolor{red}{Low} & \textcolor{red}{Hard} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
+Watershed from Markers & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{green}{High} & \textcolor{green}{No} & \textcolor{red}{High} & \textcolor{red}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
 Watershed + Waterfall & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{green}{Low} & \textcolor{gold}{Mid} & \textcolor{gold}{Mid} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
 Snakes & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{gold}{Mid} & \textcolor{red}{Low} & \textcolor{green}{Easy} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
 Level Sets & \textcolor{gold}{Mid} & \textcolor{green}{High} & \textcolor{gold}{Mid} & \textcolor{green}{No} & \textcolor{gold}{Mid} & \textcolor{red}{Low} & \textcolor{gold}{Mid} & \textcolor{red}{No} & \textcolor{green}{Yes} \\
@@ -146,7 +146,7 @@ As discussed in detail in Chapter~\ref{chap:background}, there are a wide variet
 
 \end{enumerate}
 %
-The watershed and waterfall transforms, and the way in which I used them to construct a partition hierarchy, are described in Chapter~\ref{chap:segmentation}.
+It is worth observing that the choice between the watershed/waterfall approach and the more interactive marker-based watershed approach is not an entirely straightforward one. Whilst watershed from markers requires more up-front user input than watershed/waterfall, it can use this to improve the accuracy of its results. The initial results produced by watershed/waterfall are reasonable, but can sometimes require further refinement to attain similar levels of accuracy to the marker-based approach. There is thus a trade-off to be made: the marker-based approach requires more input initially, but involves less subsequent refinement; conversely, the watershed/waterfall approach requires far less input initially, but produces results that may need to be refined further. For the research described in this thesis, I found that the results produced by the watershed/waterfall approach were in many cases suitable for feature identification purposes with no further refinement required, hence I opted for that over the marked-based method, but it is easy to imagine situations in which the choice could be resolved the other way (e.g.~when the input images are of poor quality and the watershed/waterfall approach does not produce satisfactory results). The watershed and waterfall transforms, and the way in which I used them to construct a partition hierarchy, are described in Chapter~\ref{chap:segmentation}.
 
 To actually identify features within the hierarchy, I used a number of customised approaches, all of which are discussed in more detail in Chapter~\ref{chap:featureid}. Most of these approaches are based on one of two fundamental techniques: \emph{branch node filtering} (searching for branch nodes in the hierarchy that satisfy specific criteria) or \emph{stratified region growing} (finding seed regions throughout the hierarchy and performing region growing on a per-layer basis before combining the results) -- see \S\ref{sec:featureid-techniques}. Branch node filtering was used when a feature (e.g.~the spinal canal) was seen to be relatively distinctive in the images, leading it to correspond to a very small number of regions in the hierarchy; otherwise, stratified region growing was used instead.
 
@@ -166,8 +166,6 @@ However, the time it takes to set up such a collaboration should not be underest
 Since establishing medical links, the project has proceeded well from the perspective of my doctoral work. However, it will become important in future to establish further links with both potential end-users and the external companies that currently supply them if any of the techniques described in this thesis are ultimately to be put to use in a clinical environment.
 
 \index{research!context|)}
-
-\newpage
 
 %---
 \section{Chapter Summary}
