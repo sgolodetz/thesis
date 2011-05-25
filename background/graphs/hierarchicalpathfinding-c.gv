@@ -1,7 +1,7 @@
 graph
 {
 	node [shape="point", width=0.5];
-	edge [penwidth=3, color=yellow];
+	edge [penwidth=3, color=red];
 
 	g [pos="8,8!"];
 	h [pos="11,8!"];
