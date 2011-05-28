@@ -364,7 +364,7 @@ function resolve_pixel
 \paragraph{Labelling}
 %~~~~~~~~~~~~~~~~~~~~~~~
 
-Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{code:segmentation-watershed-labelling}). The process can be done in linear time by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint set forests are implemented (see Appendix~\ref{chap:appendixds}). The output of the Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
+Once arrows have been assigned to all the pixels in the image, the paths they form from each pixel to a local minimum are followed and each pixel is assigned the label of the appropriate local minimum (see Listing~\ref{code:segmentation-watershed-labelling}). The process can be done in linear time by using path compression when following a path to a minimum (i.e.~we make all the arrows on the path point to the minimum once we've found it). This bears some similarities to the way disjoint set forests are implemented (see Appendix~\ref{chap:appendixds}). The output of \stuhl{the} Meijster/Roerdink algorithm is a labelled image, as shown in Figure~\ref{fig:segmentation-watershed-example}(d). It is thus an algorithm which outputs catchment basins rather than watershed lines.
 
 \index{watershed transform!Meijster/Roerdink algorithm|)}
 \index{watershed transform!on grey-scale images|)}
@@ -429,12 +429,12 @@ The results of smoothing using ADF are shown in Figure~\ref{fig:segmentation-wat
 	%
 	\\
 	%
-	\subfigure[Gradient magnitude of the unsmoothed image (after equalising histogram)]
+	\subfigure[Gradient magnitude of the unsmoothed image \stuhl{(after equalising histogram)}]
 	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-unsmoothedgm-eh.png}\hspace{4mm}}%
 	%
 	\hspace{8mm}%
 	%
-	\subfigure[Gradient magnitude of the smoothed image (after equalising histogram)]
+	\subfigure[Gradient magnitude of the smoothed image \stuhl{(after equalising histogram)}]
 	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-smoothedgm-eh.png}\hspace{4mm}}%
 	%
 	\\
@@ -446,7 +446,7 @@ The results of smoothing using ADF are shown in Figure~\ref{fig:segmentation-wat
 	%
 	\subfigure[Watershed of the smoothed image]
 	{\hspace{4mm}\includegraphics[height=5.8cm]{segmentation/segmentation-watershed-adfexample-smoothedws.png}\hspace{4mm}}%
-\caption{The results of running a watershed algorithm on an image smoothed by anisotropic diffusion filtering (ADF) are far superior, because ADF smoothes away all the unnecessary detail within features whilst preserving the crucial edges between them. The smoothed results here were produced using $20$ iterations of the gradient anisotropic diffusion method from ITK, with a conductance of $1.0$ and a time step of $0.0625$.}
+\caption{The results of running a watershed algorithm on an image smoothed by anisotropic diffusion filtering (ADF) are far superior, because ADF smoothes away all the unnecessary detail within features whilst preserving the crucial edges between them. \stuhl{The smoothed results here were produced using $20$ iterations of the gradient anisotropic diffusion method from ITK, with a conductance of $1.0$ and a time step of $0.0625$.}}
 \label{fig:segmentation-watershed-adfexample}
 \end{stusubfig}
 %---
@@ -663,7 +663,7 @@ The following sections describe three different MST-based waterfall algorithms -
 
 \index{waterfall transform!Marcotegui's algorithm|(}
 
-Since each waterfall pass is effectively just a graph-based watershed transform, it can be implemented using either a flooding or a rainfalling approach. The algorithm described in \cite{marcotegui05} is an example of the former. Each pass performs a flooding-based watershed transform on MSTs, consisting of the following three steps:
+Since each waterfall pass is effectively just a graph-based \stuhl{watershed} transform, it can be implemented using either a flooding or a rainfalling approach. The algorithm described in \cite{marcotegui05} is an example of the former. Each pass performs a flooding-based watershed transform on MSTs, consisting of the following three steps:
 
 \begin{enumerate}
 
@@ -1442,12 +1442,12 @@ As a side note, it is worth observing that the subvolume method described here i
 \section{Chapter Summary}
 %##################################################################################################
 
-In this chapter, we saw how to generate IPFs from medical images using the morphological watershed and waterfall transforms, thereby accounting for the third and fourth contributions claimed in Chapter~\ref{chap:introduction}:
+In this chapter, we saw how to generate IPFs from medical images using the morphological watershed and waterfall transforms, \stuhl{thereby accounting for the third and fourth contributions claimed in Chapter~\ref{chap:introduction}:
 %
 \begin{enumerate}
 \setcounter{enumi}{2}
 \item A new, implementation-invariant algorithm for the waterfall transform on minimum spanning trees (\S\ref{subsubsec:segmentation-waterfall-myalgorithm}).
 \item Two techniques to construct image partition forests for 3D images, making use of the existing watershed and waterfall transforms (\S\ref{sec:segmentation-ipfconstruction}).
-\end{enumerate}
+\end{enumerate}}
 %
-The next chapter will show how the generated IPFs can be used when automatically identifying salient features in the original images.
+\noindent The next chapter will show how the generated IPFs can be used when automatically identifying salient features in the original images.
