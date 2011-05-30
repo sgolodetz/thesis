@@ -700,25 +700,28 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 \index{feature identification!3D identifiers!ribs|(}
 
 %---
-\stufigexx{height=9cm}{featureid/featureid-3d-ribsidentification-region.png}{The spatial constraints for rib seeds}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
+\stufigexx{height=8cm}{featureid/featureid-3d-ribsidentification-region.png}{The spatial constraints for rib seeds}{The spatial constraints for rib seeds -- they must be at least partly in one of the regions labelled `R', and no part of them must lie in the region labelled `T'}{fig:featureid-3d-ribsidentification-region}{h}
 %---
+
+\enlargethispage*{0.5\baselineskip}
+\vspace{-0.5\baselineskip}
 
 \noindent In contrast to the spine and spinal canal identifiers, which can (at least to a first approximation) often identify their features using only branch node filtering, the 3D ribs identifier is necessarily more involved, because it is unusual for each rib to be represented by only a single node in the forest. For that reason, a stratified region growing method is preferred in this case, followed by customised post-processing to tidy up the results. The first step is to identify suitable seeds for the ribs, namely regions that:
 %
 \begin{itemize}
 
-\item \stuhl{Have a voxel count of less than $500$ voxels per slice.}
-\item Have a high mean grey value $\ge 200$.
-\item Do not extend significantly below the spine (this helps to exclude pieces of the table on which the patient is lying, which might otherwise look quite rib-like).
-\item Are not completely contained within the spine's bounding box in the $x$ axis.
+\item \stuhl{Have a voxel count of less than $500$ voxels per (axial) slice.}
+\item Have a mean grey value $\ge 200$.
+\item Do not extend significantly below the spine. This helps to exclude pieces of the table on which the patient is lying, which might otherwise look quite rib-like.
+\item Are not completely contained within the spine's bounding box in the $x$ axis. \stuhl{This helps to exclude small regions within the spine whose properties would otherwise make them seem like ribs.}
 
 \end{itemize}
 %
-The spatial constraints are illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-region}. Having found suitable seeds, the next step is to grow regions from them, using the grow condition that we should flood into an adjacent region iff its mean grey value is $\ge 180$ and it is not already marked as spine. Setting the mean grey value threshold slightly lower than that required for seeds makes it possible to identify ribs that are slightly grey in places. Excluding the spine is done to prevent ribs growing into the spine, since they are attached to the spinal column. As mentioned when describing the spine identifier, the identifiers do not currently manage to perfectly separate the spine and ribs -- the current approach effectively assigns pieces to the spine when in doubt. This is a suitable area for further work.
+\stuhl{As with previous identifiers, the specific limit values were chosen empirically via careful examination of the relevant regions from a number of different image series.} The spatial constraints are illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-region}. Having found suitable seeds, the next step is to grow regions from them, using the grow condition that we should flood into an adjacent region iff its mean grey value is $\ge 180$ and it is not already marked as spine. Setting the mean grey value threshold slightly lower than that required for seeds makes it possible to identify ribs that are slightly grey in places. Excluding the spine is done to prevent ribs growing into the spine, since they are attached to the spinal column. As mentioned when describing the spine identifier, the identifiers do not currently manage to perfectly separate the spine and ribs -- the current approach effectively assigns pieces to the spine when in doubt. This is a suitable area for further work.
 
-The final step is to post-process the results of the stratified region growing process, which at this point in the algorithm are represented as a partition forest selection. As the post-processing involves connected component analysis, the selection must first be viewed at the level of the selected nodes' \emph{merge layer} (so called because it is the layer in which the nodes would be merged), namely the lowest layer containing a selected node. We will call the nodes \emph{viewed nodes} when viewed at this level. Of these viewed nodes, we remove any that are too dark to be part of the ribs -- specified as having a mean grey value $< 150$. We then find the connected components of the remaining viewed nodes, after which each connected component has its voxel count compared to minimum and maximum thresholds. Connected components that meet the size requirements are added to the final result, whilst the remainder are discarded.
+The final step is to post-process the results of the stratified region growing process, which at this point in the algorithm are represented as a partition forest selection. As the post-processing involves connected component analysis, the selection must first be viewed at the level of the selected nodes' \emph{merge layer} (so called because it is the layer in which the nodes would be merged), namely the lowest layer containing a selected node. We will call the nodes \emph{viewed nodes} when viewed at this level. Of these viewed nodes, we remove any that are too dark to be part of the ribs -- specified as having a mean grey value $< 150$ \stuhl{(this value was determined experimentally)}. We then find the connected components of the remaining viewed nodes, after which each connected component has its voxel count compared to minimum and maximum thresholds. Connected components that meet the size requirements are added to the final result, whilst the remainder are discarded.
 
-As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this identification process has been used to produce satisfactory results on images from multiple series. However, it needs further refinement to make it more robust. Two specific issues to be addressed in further work are that some of the ribs can be inadvertently captured by the spine, since the features are connected and share similar grey value distributions, and that some of the hard size constraints can cause ribs to be missed when they are too large or too small. The accuracy of the identifier in cases where it does and does not work well will be examined in the next chapter.
+As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this identification process has been used to produce satisfactory results on images from multiple series. However, it needs further refinement to make it more robust. Two specific issues to be addressed in further work are that some of \pagebreak[4] the ribs can be inadvertently captured by the spine, since the features are connected and share similar grey value distributions, and that some of the hard size constraints can cause ribs to be missed when they are too large or too small. The accuracy of the identifier in cases where it does and does not work well will be examined in the next chapter.
 
 %---
 \begin{stulisting}[p]
@@ -729,7 +732,7 @@ As illustrated in Figure~\ref{fig:featureid-3d-ribsidentification-results}, this
 %---
 
 %---
-\begin{stusubfig}{p}
+\begin{stusubfig}{!b}
 	\subfigure[Series BT-2 (Slices 60--80)]
 	{\includegraphics[width=.45\linewidth]{featureid/featureid-3d-ribsidentification-BT-2-60-80.png}}%
 	%
