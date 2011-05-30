@@ -907,7 +907,7 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \index{feature identification!3D identifiers!kidneys|(}
 
 %---
-\stufigexx{height=7.5cm}{featureid/featureid-3d-kidneysidentification-region.png}{The spatial constraints for kidneys}{The spatial constraints for kidneys -- they must not cross the spine centroid in the $x$ direction (indicated by the red line), and at least part of them must lie in one of the right kidney or left kidney boxes (marked RK and LK) below the green line}{fig:featureid-3d-kidneysidentification-region}{h}
+\stufigexx{height=8cm}{featureid/featureid-3d-kidneysidentification-region.png}{The spatial constraints for kidneys}{The spatial constraints for kidneys -- they must not cross the spine centroid in the $x$ direction (indicated by the red line), and at least part of them must lie in one of the right kidney or left kidney boxes (marked RK and LK) below the green line}{fig:featureid-3d-kidneysidentification-region}{h}
 %---
 
 \vspace{-5mm}
@@ -919,20 +919,20 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \item Have a mean grey value in the range $[160,190]$ (kidneys are generally a relatively bright grey in colour).
 \item Not cross the spine centroid in the $x$ direction (kidneys must be on one side of the body or the other, not in the middle).
 \item Extend back as far as the spine in the $y$ direction (kidneys are located posteriorly in the body).
-\item \stuhl{Have an $x$-$y$ \emph{aspect ratio} of between $\frac{1}{4}$ and $4$} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
-\item Have a voxel count of between $2000$ and $6000$ voxels per (axial) slice.
+\item \stuhl{Have an $x$-$y$ \emph{aspect ratio} of between $\frac{1}{4}$ and $4$} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other \stuhl{(kidneys are relatively compact)}.
+\item Have a voxel count of between $2000$ and $6000$ voxels per (axial) slice \stuhl{(determined empirically by examining kidney cross-sections in a number of image series)}.
 \end{itemize}
 %
 
 %---
 \begin{stusubfig}{!t}
 	\subfigure[The original CT image]
-	{\includegraphics[height=5.5cm]{featureid/featureid-3d-kidneysidentification-tumourhandling-a.png}}%
+	{\includegraphics[height=7cm]{featureid/featureid-3d-kidneysidentification-tumourhandling-a.png}}%
 	%
 	\hspace{4mm}%
 	%
 	\subfigure[The relevant partition in the forest]
-	{\hspace{4mm}\includegraphics[height=5.5cm]{featureid/featureid-3d-kidneysidentification-tumourhandling-b.png}\hspace{4mm}}%
+	{\hspace{4mm}\includegraphics[height=7cm]{featureid/featureid-3d-kidneysidentification-tumourhandling-b.png}\hspace{4mm}}%
 \caption{Tumours can interfere with kidney segmentation -- in this example, the tumour has prevented the left kidney of the EB-2 series from being represented by a single region in the partition forest, which will cause it to be missed by the kidneys identifier}
 \label{fig:featureid-3d-kidneysidentification-tumourhandling}
 \end{stusubfig}
@@ -941,7 +941,7 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \noindent As illustrated in Figure~\ref{fig:featureid-3d-kidneysidentification-results}, the identifier has been used to produce appealing results for volumes from a number of different patients. However, as with some of the other identifiers, it needs further work to make it more robust on arbitrary series -- we will see some of the issues involved in the case studies in Chapter~\ref{chap:validation}. In particular, the current approach struggles to deal with kidneys affected by tumours, partly because they tend to prevent a kidney from being represented by a single region in the partition forest. In the EB-2 case shown in Figure~\ref{fig:featureid-3d-kidneysidentification-results}(d), this results in the left kidney being completely missed due to the presence of a large tumour (see Figure~\ref{fig:featureid-3d-kidneysidentification-tumourhandling}). It is anticipated that it may be possible to solve such problems using a stratified region growing approach in the future, but it will be important to define precisely what should be segmented in cases like this (there is, at the very least, a choice between segmenting just the normal kidney tissue, or the normal kidney tissue and all \emph{internal} kidney tumours, or the normal kidney tissue and all kidney tumours in general).
 
 %---
-\begin{stulisting}[p]
+\begin{stulisting}[!b]
 \caption{Kidneys Identification in 3D}
 \label{code:featureid-3d-kidneysidentification}
 \lstinputlisting[style=Default]{featureid/featureid-3d-kidneysidentification.lst}
