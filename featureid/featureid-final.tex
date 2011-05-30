@@ -629,6 +629,9 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 \stufigex{height=8cm}{featureid/featureid-3d-spinalcanalidentification-region.png}{The spinal canal (selected, in red) should lie well within the (yellow) bounding box of the regions identified as the spine}{fig:featureid-3d-spinalcanalidentification-region}{h}
 %---
 
+\enlargethispage*{0.5\baselineskip}
+\vspace{-0.5\baselineskip}
+
 \noindent Having first identified the spine, identifying the spinal canal becomes a much simpler task. The intuition is to search for regions well within the $x-y$ bounding box of the spine (see Figure~\ref{fig:featureid-3d-spinalcanalidentification-region}) that:
 %
 \begin{itemize}
@@ -640,7 +643,7 @@ As the spine identifier has no dependencies on other identifiers, it can be run 
 
 \end{itemize}
 %
-Regions which satisfy these criteria are unmarked as spine (if necessary) and marked as spinal canal. Unlike the spine identifier, the spinal canal identifier clearly cannot be run in isolation, but it is possible to visualise the results of spinal canal identification by running both the spine and spinal canal identifiers and then either rendering the spinal canal on its own, or rendering the spine as transparent. As illustrated in Figure~\ref{fig:featureid-3d-spinalcanalidentification-results}, the identifier is quite robust, and able to automatically identify the spinal canal in a number of different image series. There is, however, definitely room for further work to improve the detailed contour of the canal -- this could perhaps be done by using the automatic result produced thus far to initialise a level sets approach. The performance of the identifier is examined further in the case studies in Chapter~\ref{chap:validation}.
+\stuhl{As with the spine identifier, the specific limit values were chosen empirically via careful examination of the relevant regions from a number of different image series.} Regions which satisfy the criteria are unmarked as spine (if necessary) and marked as spinal canal. Unlike the spine identifier, the spinal canal identifier clearly cannot be run in isolation, but it is possible to visualise the results of spinal canal identification by running both the spine and spinal canal identifiers and then either rendering the spinal canal on its own, or rendering the spine as transparent. As illustrated in Figure~\ref{fig:featureid-3d-spinalcanalidentification-results}, the identifier is quite robust, and able to automatically identify the spinal canal in a number of different image series. There is, however, definitely room for further work to improve the detailed contour of the canal -- this could perhaps be done by using the automatic result produced thus far to initialise a level sets approach. The performance of the identifier is examined further in the case studies in Chapter~\ref{chap:validation}.
 
 %---
 \begin{stulisting}[!b]
