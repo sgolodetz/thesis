@@ -1001,9 +1001,9 @@ As shown in Listing~\ref{code:featureid-3d-spleenidentification}, the first step
 %
 \begin{itemize}
 \item Be in the lowest branch layer (regions in higher layers tend to oversegment the spleen).
-\item Have a mean grey value in the range $[140,170]$.
-\item Stretch into the right-hand $20\%$ of the image (see Figure~\ref{fig:featureid-3d-spleenidentification-region}).
-\item Have a voxel count of between $1000$ and $7000$ voxels per (axial) slice.
+\item Have a mean grey value in the range $[140,170]$ \stuhl{(the spleen is generally a relatively bright grey in colour)}.
+\item Stretch into the right-hand $20\%$ of the image (see Figure~\ref{fig:featureid-3d-spleenidentification-region}). \stuhl{This is a weak constraint used to specify that the spleen lies on the left-hand side of the body. The $20\%$ is a conservative value, determined empirically by examining slices from a number of series.}
+\item Have a voxel count of between $1000$ and $7000$ voxels per (axial) slice. \stuhl{The limits are loose bounds determined by examining spleen cross-sections in slices from a number of series.}
 \end{itemize}
 %
 The identifier takes the candidate regions identified in this way, and picks the one that stretches furthest to the right of the image. This is then selected as the spleen seed (and, at present, marked as the spleen).
