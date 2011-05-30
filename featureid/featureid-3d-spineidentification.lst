@@ -1,16 +1,13 @@
 function identify_spine_3d : (mfs : ref PartitionForestMultiFeatureSelection) $\to$ $\emptyset$
-
 	var nodes : List<NodeID> := filter_branch_nodes(is_spine);
 	for each n $\in$ nodes
 		mfs.identify_node(n, VERTEBRA);
 
 function is_spine : (node : NodeID; properties : BranchProperties) $\to$ bool
-
 	var aspectRatioXY : double := properties.aspect_ratio_xy();
 	var volumeSize : Vec<int,3> := dicom_volume().size();
 	var minV : int := 800 * volumeSize.z;			// at least 800 voxels per slice
 	var maxV : int := 8000 * volumeSize.z;			// at most 8000 voxels per slice
-
 	return properties.x_min() < volumeSize.x/2 and	// straddles volumeSize.x/2
 	       properties.x_max() > volumeSize.x/2 and
 	       properties.y_max() > volumeSize.y/2 and	// base below y = volumeSize.y/2

@@ -562,13 +562,13 @@ Because the spine is so easily distinguishable in the images, a simple branch no
 \item Straddle the centre of the image in the $x$ direction.
 \item Be at least partially below the centre of the image in the $y$ direction.
 \item Extend through all the (axial) slices in the $z$ direction.
-\item \stuhl{Have an $x$-$y$ \emph{aspect ratio} of between $\frac{1}{4}$ and $4$} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
-\item Have a mean grey value $\ge 180$.
-\item Have a voxel count of between $800$ and $8000$ voxels per (axial) slice.
+\item \stuhl{Have an $x$-$y$ \emph{aspect ratio} of between $\frac{1}{4}$ and $4$} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other. \stuhl{The specific ratio limits chosen are somewhat arbitrary, but are designed to exclude long, thin regions such as the table on which the patient is lying.}
+\item Have a mean grey value $\ge 180$. \stuhl{The limit was chosen by examining spine regions in a number of image series.}
+\item Have a voxel count of between $800$ and $8000$ voxels per (axial) slice. \stuhl{These limits were chosen by examining the areas of spine cross-sections in slices from a number of image series.}
 
 \end{itemize}
 %
-Of these, perhaps the most powerful is the criterion that the spine must appear in every slice -- this is particularly effective when there are a significant number of slices in the 3D volume, because very few regions do so, and, in combination with the grey value criterion, more or less prevents false positives. However, it must be applied with an awareness of the \stuhl{scan's} location in the body: it would clearly not be appropriate to use such a criterion when viewing scans that go up or down as far as the head or legs.
+\stuhl{In general, each criterion was designed to be fairly weak in order to avoid false negatives: the idea is that the criteria should work well together to identify the spine. One exception is the more powerful criterion that the spine must appear in every slice -- this is particularly effective when there are a significant number of slices in the 3D volume, because very few regions do so, and, in combination with the grey value criterion, more or less prevents false positives. However, it must be applied with an awareness of the \stuhl{scan's} location in the body: it would clearly not be appropriate to use such a criterion when viewing scans that go up or down as far as the head or legs.}
 
 %---
 \begin{stulisting}[t]
@@ -578,7 +578,7 @@ Of these, perhaps the most powerful is the criterion that the spine must appear 
 \end{stulisting}
 %---
 
-As the spine identifier has no dependencies on other identifiers, it can be run individually on the CT volume to extract the spine feature. The results of running it on volumes from several different patients, as visualised in Figure~\ref{fig:featureid-3d-spineidentification-results}, give an indication that it works fairly robustly across a wide range of image series; its accuracy will be quantified in Chapter~\ref{chap:validation}. When the identifier is run in isolation, the identified spine tends to also include the spinal canal, as no attempt has thus far been made to exclude it. When identifying multiple features, however, this is later rectified by the spinal canal identifier, which unmarks any regions incorrectly labelled as spine where necessary. The identified spine can sometimes also include pieces of rib where they join onto the spinal column; the current approach to rib identification does not handle this at present, but it is an interesting area for further work.
+As the spine identifier has no dependencies on other identifiers, it can be run individually on the CT volume to extract the spine feature. The results of running it on volumes from several different patients, as visualised in Figure~\ref{fig:featureid-3d-spineidentification-results}, give an indication that it works robustly across a wide range of image series; its accuracy will be quantified in Chapter~\ref{chap:validation}. When the identifier is run in isolation, the identified spine often includes the spinal canal, as no attempt has thus far been made to exclude it. When identifying multiple features, however, this is later rectified by the spinal canal identifier, which unmarks any regions incorrectly labelled as spine where necessary. The identified spine can sometimes also include pieces of rib where they join onto the spinal column; the current approach to rib identification does not handle this at present, but it is an interesting area for further work.
 
 %---
 \begin{stusubfig}{p}
