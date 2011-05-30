@@ -423,17 +423,17 @@ The 2D spine identifier, originally described in \cite{gvcispa09}, uses a varian
 \subsubsection{Seed Finding}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To find suitable seeds for the region growing process in $512 \times 512$ images, we just have to define an appropriate seed criterion. In the case of the spine, we can specify that seeds should be:
+To find suitable seeds for the region growing process in $512 \times 512$ images, we just have to define appropriate seed criteria. In the case of the spine, we can specify that seeds should:
 %
 \begin{itemize}
 
-\item Moderately-sized (area $\ge 500$ pixels)
-\item Fairly bright (grey value mean $\ge 190$, where $0$ is black and $255$ is white)
-\item Roughly-centred in the bottom-middle of the image (centroid $(x,y)$ satisfies $200 \le x \le 312$ and $y \ge 200$)
+\item \stuhl{Have an area $\ge 500$ pixels}
+\item \stuhl{Have a grey value mean $\ge 190$, where $0$ is black and $255$ is white}
+\item \stuhl{Lie in the bottom-middle of the image (centroid $(x,y)$ satisfies $200 \le x \le 312$ and $y \ge 200$)}
 
 \end{itemize}
 %
-Figure~\ref{fig:featureid-2d-spineidentification-seedfinding} illustrates the area of the image that we search for seeds, together with two examples of the seeds chosen by this approach. As observed in \cite{gvcispa09}, the constraints listed tend to work quite well, because the ribs (the only other features of comparable brightness in the image) are generally smaller than the specified threshold, or fall outside the area of interest.
+\stuhl{Figure~\ref{fig:featureid-2d-spineidentification-seedfinding} illustrates the area of the image that we search for seeds, together with two examples of the seeds chosen by this approach. The criteria were constructed empirically by observing the size, grey value mean and centroids of spine regions in the slices of a small number of image series. As observed in \cite{gvcispa09}, they are generally effective in isolating the spine, because the ribs (the only other features of comparable brightness in the image) are generally smaller than the specified threshold, or fall outside the area of interest.}
 
 %---
 \begin{stusubfig}{p}
@@ -462,14 +462,14 @@ The stratified region growing method itself has already been described in detail
 %
 \begin{itemize}
 
-\item It is at least relatively bright (mean grey value $> 170$)
+\item \stuhl{It has a mean grey value $> 170$}
 \item Its centroid $(x,y)$ satisfies $200 \le x \le 312$ and $y \ge 256$
 
 \end{itemize}
 %
-In this, the threshold for the mean grey value is slightly lower than it was when identifying the spine seeds -- the intuition is that a partial spine should contain at least some regions which are very bright (the seeds), but its mean grey value overall might be lower (this allows pieces of the spine that are more grey than white to be identified by the algorithm).
+\stuhl{In this, a mean grey value threshold of $170$ was chosen to allow for the identification of pieces of the spine that are more grey than white -- the intuition is that a partial spine should contain at least some regions which are very bright (the seeds, which must satisfy a higher mean grey value threshold), but that its mean grey value overall might be lower. The centroid constraints are based on those used when identifying seeds, but with a slightly more constrained lower bound for the $y$ coordinate -- the idea is that whilst a bit of flexibility should be allowed when choosing seeds, the actual flooding process should be constrained to a smaller region of the image.}
 
-The validation criterion for partial spines merely ensures that the centroid $(x,y)$ of the partial spine as a whole satisfies $200 \le x \le 312$ and $y \ge 256$.
+\stuhl{For the same reason, the validation criterion for partial spines ensures that the centroid $(x,y)$ of the partial spine as a whole satisfies $200 \le x \le 312$ and $y \ge 256$. The idea is} \stuhl{that whilst some of the seeds for a partial spine may lie slightly higher up the image, the partial spine as a whole after region growing should lie further down it.}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \subsubsection{Post-Processing}
@@ -562,13 +562,13 @@ Because the spine is so easily distinguishable in the images, a simple branch no
 \item Straddle the centre of the image in the $x$ direction.
 \item Be at least partially below the centre of the image in the $y$ direction.
 \item Extend through all the (axial) slices in the $z$ direction.
-\item Have a reasonable $x$-$y$ \emph{aspect ratio} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
+\item \stuhl{Have an $x$-$y$ \emph{aspect ratio} of between $\frac{1}{4}$ and $4$} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
 \item Have a mean grey value $\ge 180$.
 \item Have a voxel count of between $800$ and $8000$ voxels per (axial) slice.
 
 \end{itemize}
 %
-Of these, perhaps the most powerful is the criterion that the spine must appear in every slice -- this is particularly effective when there are a significant number of slices in the 3D volume, because very few regions do so, and, in combination with the grey value criterion, more or less prevents false positives. However, it must be applied with an awareness of the scans' location in the body: it would clearly not be appropriate to use such a criterion when viewing scans that go up or down as far as the head or legs.
+Of these, perhaps the most powerful is the criterion that the spine must appear in every slice -- this is particularly effective when there are a significant number of slices in the 3D volume, because very few regions do so, and, in combination with the grey value criterion, more or less prevents false positives. However, it must be applied with an awareness of the \stuhl{scan's} location in the body: it would clearly not be appropriate to use such a criterion when viewing scans that go up or down as far as the head or legs.
 
 %---
 \begin{stulisting}[t]
@@ -704,7 +704,7 @@ Regions which satisfy these criteria are unmarked as spine (if necessary) and ma
 %
 \begin{itemize}
 
-\item Are relatively small, having a voxel count of less than $500$ voxels per slice.
+\item \stuhl{Have a voxel count of less than $500$ voxels per slice.}
 \item Have a high mean grey value $\ge 200$.
 \item Do not extend significantly below the spine (this helps to exclude pieces of the table on which the patient is lying, which might otherwise look quite rib-like).
 \item Are not completely contained within the spine's bounding box in the $x$ axis.
@@ -913,7 +913,7 @@ As illustrated in the sample results (refer again to Figure~\ref{fig:featureid-3
 \item Have a mean grey value in the range $[160,190]$ (kidneys are generally a relatively bright grey in colour).
 \item Not cross the spine centroid in the $x$ direction (kidneys must be on one side of the body or the other, not in the middle).
 \item Extend back as far as the spine in the $y$ direction (kidneys are located posteriorly in the body).
-\item Have a reasonable $x$-$y$ \emph{aspect ratio} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
+\item \stuhl{Have an $x$-$y$ \emph{aspect ratio} of between $\frac{1}{4}$ and $4$} -- i.e.~neither the $x$ nor $y$ dimension of the region's bounding box must be greater than $4$ times the other.
 \item Have a voxel count of between $2000$ and $6000$ voxels per (axial) slice.
 \end{itemize}
 %
