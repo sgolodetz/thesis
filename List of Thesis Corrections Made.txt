@@ -1,0 +1,112 @@
+#######################
+Thesis Corrections Made
+#######################
+
+Notes:
+
+* The page numbers in the below refer to pages in the corrected thesis, not the viva thesis.
+* As noted below, I assumed that p.187 in Correction 7 was actually intended to refer to p.363 (the conclusion), since we talked about consolidating the contribution lists in the conclusion and the introduction during the viva.
+
+[Correction 1]
+
+p.188 Added a summary of contributions to Chapter 4
+p.257 Added a summary of contributions to Chapter 5
+p.314 Added a summary of contributions to Chapter 6
+
+[Correction 2]
+
+* Created a new BibTeX style file (in BAFLL) based on 'alpha' to fix the formatting of the references
+* Added missing page numbers to references (except where unavailable due to CD-only proceedings)
+* Replaced 'visualiz~' with 'visualis~' on a thesis-wide basis.
+
+p.33 Changed the wording from 'known as' to 'that I call' (as explained in the text, other authors use various names for partition forests)
+p.33 Added 'under a variety of different names'
+p.33 Changed the wording from 'seeing widespread use' to 'being widely used'
+p.33 Removed '(and this has been done)' (it has, but there's no obvious reference because it's so trivial)
+p.110 Removed 'in order to allow a user to work around potential issues with the initial partition forest construction'
+p.112 Changed the order in which the core operations are listed to make it match what is now Figure 4.3
+p.138 Explained command managers in a footnote
+p.206 Equalised the histograms for Figures 5.11 (c) and (d) to make it easier to distinguish between them
+p.218 Fixed a typo (I wrote 'waterfall' where I meant 'watershed')
+p.259 Changed 'saw' to 'discussed'
+p.319 Added a reference for Dice similarity coefficients
+p.417 Added a reference for Dice similarity coefficients
+
+[Correction 3]
+
+p.279 Removed the subjective wordings used for the spine seed criteria
+p.281 Added a sentence explaining that the criteria were determined empirically by looking at a number of image series
+p.281 Removed the subjective wording used for one of the grow criteria
+p.281-2 Improved the justification for the grow criteria
+p.288 Removed the subjective wording used for the aspect ratio criterion
+p.288 Justified the choice of parameters
+p.289 Rewrote the paragraph discussing the criteria to point out that the different criteria are 'weak' by design
+p.291 Added a sentence explaining that the specific limit values were chosen empirically by looking at the scans
+p.294 Removed the subjective wording used for the voxel count criterion
+p.294 Added a justification for the bounding box criterion
+p.295 Added a sentence explaining that the value-based criteria had their limits determined empirically
+p.295 Mentioned that the removal criterion (< 150) was determined experimentally
+p.298-9 Justified the choice of parameters
+p.302-3 Justified the choice of parameters
+p.307 Removed the subjective wordings used for the kidney criteria
+p.307 Justified the choice of parameters
+p.311 Justified the choice of parameters
+
+[Correction 4]
+
+p.97 Replaced Table 3.1 with a proper critera-based comparison of the segmentation methods
+p.96-7 Updated the list of positive reasons for choosing the watershed/waterfall approach (in particular, removed the claim that snakes doesn't translate as easily to 3D)
+
+[Correction 5]
+
+p.104 Changed the text to reference the new figure
+p.107 Added Figure 4.2, an image equivalent of Figure 4.1
+
+[Correction 6]
+
+p.35-6 Reworked the paragraph describing my publications to incorporate my other two peer-reviewed papers
+
+[Correction 7]
+
+p.363-5 Consolidated the contributions on p.363 with those in the introduction (I've assumed that the p.187 in the list was a typo, since we talked about consolidating the introduction and conclusion in the viva - please let me know if that's not the case)
+
+[Correction 8]
+
+p.31 Changed the caption of Figure 1.2 to reflect the fact that its reproduction is covered by ELCVIA's Creative Commons License for published papers
+p.32 Obtained permission from Springer and Akinobu Shimizu (an author) to reuse Figure 1.3 and changed the caption as specified
+p.53 Obtained permission from IEEE to reuse Figure 2.6 and changed the caption as specified
+p.62 Obtained permission from IEEE to reuse Figure 2.10 and changed the caption as specified
+p.70 Obtained permission from IEEE to reuse Figure 2.17 and changed the caption as specified
+p.74 Obtained permission from IEEE to reuse Figure 2.18 and changed the caption as specified
+p.75 Obtained permission from IEEE to reuse Figures 2.19 and 2.20 and changed the captions as specified
+p.82 Obtained permission from Luc Soler to reuse Figure 2.22 and changed the caption appropriately
+p.90 Redrew Figure 2.26 as the publisher was non-obvious and the authors did not respond
+
+[Correction 9]
+
+p.98 Added a paragraph discussing the cost-benefit issues of marker-based methods vs. my method
+
+[Correction 10]
+
+p.260 Changed the wording to 'an approach loosely based on Bayesian classification was used to design the 2D ribs identifier presented in \cite{gvccimi08}'
+p.261 Added '(as fuzzy sets)'
+p.261 Changed the wording to 'As such, the 2D ribs identifier is really a `Bayesian-style' classifier rather than a conventional Bayesian classifier. A proper Bayesian approach involving learning'
+p.273 Changed the wording to '`Bayesian-style' classifier based on \emph{fuzzy sets}'
+p.274 Changed the wording to 'in place of the probability distribution $\mathbf{P}(\mathit{Area} | \mathit{rib})$ that would be used in a conventional Bayesian classifier'
+p.274 Added 'unlike a conventional Bayesian classifier'
+
+[Correction 11]
+
+p.202 Removed Figure 5.10 (as was) and changed the text accordingly
+
+[Correction 12]
+
+p.206 Stated the parameters used for the gradient anisotropic diffusion method in the new Figure 5.10 (which used to be Figure 5.11)
+
+[Miscellaneous]
+
+p.36 Made Contribution 5 refer to the relevant sections more clearly
+p.63 Corrected the equation for hypercircles
+p.89 Slightly changed the text referring to Figure 2.26
+p.162 Added a missing word
+p.202 Added a missing word
